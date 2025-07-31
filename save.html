@@ -1,0 +1,470 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Media Storage App with Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+@keyframes marquee {
+    0%   { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+
+  .animate-marquee {
+    display: inline-block;
+    animation: marquee 15s linear infinite;
+  }
+      .image-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+  .image-wrapper img {
+    width: 200px;
+    height: auto;
+    filter: blur(10px);
+    transition: filter 0.3s ease;
+    border-radius: 10px;
+  }
+  .image-wrapper.unblur img {
+    filter: none;
+  }
+  .eye-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 4px 6px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+  }
+      
+    .kitty-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.hello-kitty {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  background: #fff;
+  border: 3px solid #000;
+  border-radius: 50%;
+}
+
+.ear {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: #fff;
+  border: 3px solid #000;
+  border-radius: 50%;
+  top: -15px;
+}
+.ear.left { left: -10px; }
+.ear.right { right: -10px; }
+
+.face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.ribbon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 20px;
+  height: 20px;
+  background: red;
+  border-radius: 50%;
+  box-shadow: 15px 0 red, 7px -7px red;
+}
+
+.eye {
+  position: absolute;
+  width: 12px;
+  height: 16px;
+  background: #000;
+  border-radius: 50%;
+  top: 40px;
+}
+.eye.left { left: 30px; }
+.eye.right { right: 30px; }
+
+.hello-kitty.closed .eye {
+  height: 3px;
+  top: 45px;
+}
+
+.nose {
+  position: absolute;
+  width: 10px;
+  height: 7px;
+  background: pink;
+  border-radius: 50%;
+  top: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.mouth {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  width: 18px;
+  height: 10px;
+  border-bottom: 3px solid #000;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  transition: all 0.3s ease;
+}
+
+.whisker {
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background: #000;
+}
+.left.top {
+  top: 50px;
+  left: 5px;
+  transform: rotate(-15deg);
+}
+.left.bottom {
+  top: 60px;
+  left: 5px;
+  transform: rotate(15deg);
+}
+.right.top {
+  top: 50px;
+  right: 5px;
+  transform: rotate(15deg);
+}
+.right.bottom {
+  top: 60px;
+  right: 5px;
+  transform: rotate(-15deg);
+}
+
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+  <div id="app" class="flex-grow flex flex-col justify-center items-center px-4">
+    <!-- Login Page -->
+    <section id="loginPage" class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+  <div class="kitty-container">
+  <div class="hello-kitty" id="helloKitty">
+    <div class="ear left"></div>
+    <div class="ear right"></div>
+    <div class="face">
+      <div class="ribbon"></div>
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+      <div class="nose"></div>
+      <div class="whisker left top"></div>
+      <div class="whisker left bottom"></div>
+      <div class="whisker right top"></div>
+      <div class="whisker right bottom"></div>
+      <div class="mouth" id="mouth"></div>
+    </div>
+  </div>
+</div>
+
+      <h1 class="text-3xl font-semibold text-center mb-6 text-gray-800">Admin Login</h1>
+      <form id="loginForm" class="space-y-6" onsubmit="event.preventDefault(); login()">
+        <div>
+          <label for="username" class="block text-gray-700 font-medium mb-1">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            autocomplete="username"
+            required
+            class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter username"
+          />
+        </div>
+        <div>
+          <label for="password" class="block text-gray-700 font-medium mb-1">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            autocomplete="current-password"
+            required
+            class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter password"
+          />
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-blue-600 text-white py-2 rounded-md text-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Login
+        </button>
+      </form>
+      <p id="loginError" class="mt-4 text-red-600 text-center hidden">Invalid username or password.</p>
+    </section>
+
+    <!-- Media Storage Page -->
+    <section id="mediaStoragePage" class="hidden w-full max-w-4xl bg-white p-8 rounded-lg shadow-md flex flex-col">
+        
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800">Media Storage (Photos & Videos)</h2>
+        <button
+          id="logoutBtn"
+          class="text-red-600 hover:text-red-800 focus:outline-none text-lg"
+          aria-label="Logout"
+          title="Logout"
+          onclick="logout()"
+        >
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+
+      <form id="mediaForm" class="space-y-6" onsubmit="event.preventDefault(); saveMedia()">
+        <div>
+          <label for="mediaName" class="block text-gray-700 font-medium mb-1">Media Name</label>
+          <input
+            type="text"
+            id="mediaName"
+            name="mediaName"
+            required
+            placeholder="Enter media name"
+            class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label for="mediaFile" class="block text-gray-700 font-medium mb-1">Select Photo or Video</label>
+          <input
+            type="file"
+            id="mediaFile"
+            name="mediaFile"
+            accept="image/*,video/*"
+            required
+            class="w-full"
+          />
+        </div>
+        <button
+          type="submit"
+          class="bg-green-600 text-white py-2 px-6 rounded-md text-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
+          Save Media
+        </button>
+      </form>
+
+      <h3 class="mt-10 mb-4 text-xl font-semibold text-gray-800">Saved Media</h3>
+      <div id="mediaList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 overflow-y-auto max-h-[480px]">
+        <!-- Saved media will appear here -->
+      </div>
+    </section>
+  </div>
+
+<div class="relative overflow-hidden bg-blue-200 py-2 rounded-lg shadow">
+  <div class="animate-marquee whitespace-nowrap text-blue-900 font-semibold">
+    <span class="mx-4"><a href="https://instagram.com/asmarabot">Terima kasih telah menggunakan website ini. jangan lupa follow instagram @asmarabot.                         100% creator tidak mengetahui isi file kalian, karena ini berbasis storage masing masing hp.          apabila lupa passwordnya bisa dm ke owner saja</a></span>
+  </div>
+</div>
+
+  <script>
+    // Hardcoded credentials
+    const ADMIN_USERNAME = 'admin';
+    const ADMIN_PASSWORD = 'indraganteng';
+
+    // Elements
+    const loginPage = document.getElementById('loginPage');
+    const mediaStoragePage = document.getElementById('mediaStoragePage');
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    const mediaForm = document.getElementById('mediaForm');
+    const mediaList = document.getElementById('mediaList');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Check if user is logged in on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('isLoggedIn') === 'true') {
+        showMediaStoragePage();
+        loadMedia();
+      } else {
+        showLoginPage();
+      }
+    });
+
+    function showLoginPage() {
+      loginPage.classList.remove('hidden');
+      mediaStoragePage.classList.add('hidden');
+      loginError.classList.add('hidden');
+      loginForm.reset();
+    }
+
+    function showMediaStoragePage() {
+      loginPage.classList.add('hidden');
+      mediaStoragePage.classList.remove('hidden');
+      mediaForm.reset();
+    }
+
+    function login() {
+      const username = loginForm.username.value.trim();
+      const password = loginForm.password.value.trim();
+
+      if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        localStorage.setItem('isLoggedIn', 'true');
+        showMediaStoragePage();
+        loadMedia();
+      } else {
+        loginError.classList.remove('hidden');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      showLoginPage();
+    }
+
+    // Save media data in localStorage as array of objects {name, dataUrl, type}
+    function saveMedia() {
+      const mediaName = mediaForm.mediaName.value.trim();
+      const mediaFile = mediaForm.mediaFile.files[0];
+
+      if (!mediaName || !mediaFile) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const dataUrl = e.target.result;
+        const type = mediaFile.type.startsWith('video/') ? 'video' : 'image';
+
+        // Get existing media from localStorage
+        let mediaItems = JSON.parse(localStorage.getItem('mediaItems')) || [];
+
+        // Check if media name already exists (case insensitive)
+        const exists = mediaItems.some(
+          (m) => m.name.toLowerCase() === mediaName.toLowerCase()
+        );
+        if (exists) {
+          alert('A media item with this name already exists. Please choose a different name.');
+          return;
+        }
+
+        mediaItems.push({ name: mediaName, dataUrl, type });
+        localStorage.setItem('mediaItems', JSON.stringify(mediaItems));
+        mediaForm.reset();
+        loadMedia();
+      };
+      reader.readAsDataURL(mediaFile);
+    }
+
+    function loadMedia() {
+      mediaList.innerHTML = '';
+      const mediaItems = JSON.parse(localStorage.getItem('mediaItems')) || [];
+
+      if (mediaItems.length === 0) {
+        mediaList.innerHTML = `<p class="text-gray-500 col-span-full text-center">No media saved yet.</p>`;
+        return;
+      }
+
+      mediaItems.forEach(({ name, dataUrl, type }, index) => {
+        const mediaCard = document.createElement('article');
+        mediaCard.className =
+          'bg-white rounded-lg shadow p-4 flex flex-col items-center space-y-3';
+
+        if (type === 'image') {
+          const img = document.createElement('img');
+          img.src = dataUrl;
+          img.alt = `Photo named ${name}`;
+          img.className = 'w-full h-48 object-cover rounded-md';
+          mediaCard.appendChild(img);
+        } else if (type === 'video') {
+          const video = document.createElement('video');
+          video.src = dataUrl;
+          video.controls = true;
+          video.className = 'w-full h-48 rounded-md object-cover bg-black';
+          video.setAttribute('aria-label', `Video named ${name}`);
+          mediaCard.appendChild(video);
+        }
+
+        const caption = document.createElement('p');
+        caption.textContent = name;
+        caption.className = 'text-gray-800 font-medium text-center truncate w-full';
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className =
+          'mt-2 bg-red-600 text-white px-4 py-1 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.setAttribute('aria-label', `Delete media named ${name}`);
+        deleteBtn.onclick = () => {
+          if (confirm(`Are you sure you want to delete the media "${name}"?`)) {
+            deleteMedia(index);
+          }
+        };
+
+        mediaCard.appendChild(caption);
+        mediaCard.appendChild(deleteBtn);
+
+        mediaList.appendChild(mediaCard);
+      });
+    }
+
+    function deleteMedia(index) {
+      let mediaItems = JSON.parse(localStorage.getItem('mediaItems')) || [];
+      mediaItems.splice(index, 1);
+      localStorage.setItem('mediaItems', JSON.stringify(mediaItems));
+      loadMedia();
+    }
+
+  const password = document.getElementById("password");
+const username = document.getElementById("username");
+const kitty = document.getElementById("helloKitty");
+
+password.addEventListener("focus", () => {
+  kitty.classList.add("closed");
+});
+password.addEventListener("blur", () => {
+  kitty.classList.remove("closed");
+});
+
+function appendBlurredImage(src) {
+  const mediaList = document.getElementById("mediaList");
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "image-wrapper relative";
+
+  const img = document.createElement("img");
+  img.src = src;
+  img.className = "w-full h-auto rounded-lg blur-md transition duration-300";
+
+  const eye = document.createElement("div");
+  eye.className = "eye-icon absolute top-2 right-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded-full cursor-pointer text-sm z-10";
+  eye.innerHTML = "👁️";
+
+  eye.addEventListener("click", () => {
+    const pass = prompt("Masukkan password untuk membuka gambar:");
+    if (pass === "123") {
+      img.classList.remove("blur-md");
+    } else {
+      alert("❌ Password salah!");
+    }
+  });
+
+  wrapper.appendChild(img);
+  wrapper.appendChild(eye);
+  mediaList.appendChild(wrapper);
+}
+
+  </script>
+</body>
+</html>
