@@ -1,0 +1,110 @@
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>for you</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .cursor-blink {
+      animation: blink 1s step-start infinite;
+    }
+    @keyframes blink {
+      50% {
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-6">
+  <main class="max-w-3xl w-full bg-white rounded-xl shadow-lg p-8">
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-6 text-center">
+      Hai cantiknya aku
+    </h1>
+    <section class="text-lg text-gray-700 leading-relaxed min-h-[120px]">
+      <span id="typed-text" aria-live="polite" class="whitespace-pre-wrap"></span
+      ><span class="cursor-blink text-indigo-600 font-bold">|</span>
+    </section>
+  </main>
+
+  <script>
+    const textLines = [
+      "hai cantiknya aku",
+"selamat pagi sayangnya aku,kamu udah sarapan belom? kalo belom sarapan dulu gih",
+    "oh iya aku mau ngomong nih",
+        "aku harap hari-harimu bahagia ya, aku minta maaf sedalam-dalamnya",
+"maaf aku cenggeng, maaf aku egois, maaf aku kayak anak kecil, maaf sering ngeluh.",
+        "entah udah berapa kali aku meminta maaf di hubungan kita ini",
+"maafin lelaki sampah ini ya, maafin lelaki ga guna dan maafin juga lelaki ini yang tidak tau effort atau perjuangan dan aku minta maaf ga pernah ngertiin kamu",
+        "ada satu hal yang selalu aku takuti yaitu aku takut kamu memiliki aku hanya buat balas dendam mantanmu itu",
+        "jujur aku nyesek banget pas kamu bilang semalam, tapi okey gpp,itu buat pembelajaran diri aku supaya lebih dewasa",
+"mungkin mulai hari ini aku memilih diam aja dan gamau ngeluh lagi.ini bukan salah paham kok",
+        "aku selalu terima kejujuran kamu itu",
+"aku tetap mencintaimu kok,semisal kamu udah emosi dan bosen bilang aja ya",
+"love u sayang",
+"-website by lelaki ga berguna-"
+    ];
+
+    const typedTextElement = document.getElementById("typed-text");
+    const typingSpeed = 30; // milidetik per karakter
+    const pauseBetweenLines = 1200; // jeda antar kalimat
+
+    let lineIndex = 0;
+    let charIndex = 0;
+
+    function typeLine() {
+      if (lineIndex >= textLines.length) {
+        // Setelah selesai semua kalimat, ulangi dari awal dengan delay
+        setTimeout(() => {
+          typedTextElement.textContent = "";
+          lineIndex = 0;
+          charIndex = 0;
+          typeLine();
+        }, 3000);
+        return;
+      }
+
+      const currentLine = textLines[lineIndex];
+
+      if (charIndex < currentLine.length) {
+        typedTextElement.textContent += currentLine.charAt(charIndex);
+        charIndex++;
+        setTimeout(typeLine, typingSpeed);
+      } else {
+        // selesai satu baris, tunggu sebentar lalu lanjut ke baris berikutnya
+        typedTextElement.textContent += "\n";
+        lineIndex++;
+        charIndex = 0;
+        setTimeout(typeLine, pauseBetweenLines);
+      }
+    }
+
+    window.onload = () => {
+      typeLine();
+      const audio = document.getElementById("background-music");
+      // Coba play audio, beberapa browser mungkin blokir autoplay tanpa interaksi
+      audio.play().catch(() => {
+        // Jika autoplay diblokir, buat tombol play muncul
+        const btn = document.createElement("button");
+        btn.textContent = "Putar Musik";
+        btn.className = "mt-6 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition";
+        btn.onclick = () => {
+          audio.play();
+          btn.remove();
+        };
+        document.body.appendChild(btn);
+      });
+    };
+  </script>
+</body>
+</html>
