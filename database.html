@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Konsumen Motor</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="w-full max-w-sm bg-white p-6 rounded-lg shadow-md">
+  <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
+  <form id="loginForm" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium">Username</label>
+      <input type="text" id="username" class="w-full border rounded p-2" required>
+    </div>
+    <div>
+      <label class="block text-sm font-medium">Password</label>
+      <input type="password" id="password" class="w-full border rounded p-2" required>
+    </div>
+    <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded">Login</button>
+  </form>
+</div>
+
+<!-- MAIN PAGE -->
+<div id="mainPage" class="hidden w-full max-w-6xl p-6">
+  <h1 class="text-2xl font-bold mb-4">Data Konsumen Motor</h1>
+
+  <!-- Form Input -->
+  <form id="customerForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-lg shadow">
+    <input type="hidden" id="editIndex">
+
+    <div>
+      <label class="block">Nama</label>
+      <input type="text" id="nama" required class="w-full border rounded p-2">
+    </div>
+    <div>
+      <label class="block">Nomor HP</label>
+      <input type="text" id="nomorHp" required class="w-full border rounded p-2">
+    </div>
+    <div>
+      <label class="block">Unit</label>
+      <select id="unit" required class="w-full border rounded p-2">
+        <option value="">Pilih Unit</option>
+        <option>Beat CBS</option>
+        <option>Beat Deluxe</option>
+        <option>Scoopy Stylish</option>
+        <option>PCX ABS</option>
+        <option>Vario 160 CBS</option>
+      </select>
+    </div>
+    <div>
+      <label class="block">OTR</label>
+      <input type="text" id="otr" readonly class="w-full border rounded p-2 bg-gray-100">
+    </div>
+    <div>
+      <label class="block">Kecamatan</label>
+      <select id="kecamatan" required class="w-full border rounded p-2">
+        <option value="">Pilih Kecamatan</option>
+        <option value="koja">Koja</option>
+        <option value="tanjung priok">Tanjung Priok</option>
+        <option value="cilincing">Cilincing</option>
+        <option value="penjaringan">Penjaringan</option>
+        <option value="lainnya">Lainnya</option>
+      </select>
+    </div>
+    <div>
+      <label class="block">Keterangan</label>
+      <select id="keterangan" required class="w-full border rounded p-2">
+        <option value="">Pilih Keterangan</option>
+        <option value="Cash">Cash</option>
+        <option value="Kredit">Kredit</option>
+        <option value="Prospek">Prospek</option>
+      </select>
+    </div>
+
+    <!-- Kredit Fields -->
+    <div id="leasingContainer" class="hidden">
+      <label class="block">Leasing</label>
+      <select id="leasing" class="w-full border rounded p-2">
+        <option value="">Pilih Leasing</option>
+        <option>FIF</option><option>OTO</option><option>MCF</option><option>WOM</option>
+        <option>ADIRA</option><option>MPM</option><option>IMFI</option><option>MF</option>
+      </select>
+    </div>
+    <div id="dpContainer" class="hidden">
+      <label class="block">DP System</label>
+      <select id="dpSystem" class="w-full border rounded p-2">
+        <option value="">Pilih DP System</option>
+      </select>
+    </div>
+    <div id="tenorContainer" class="hidden">
+      <label class="block">Tenor</label>
+      <select id="tenor" class="w-full border rounded p-2">
+        <option value="">Pilih Tenor</option>
+        <option value="11">11</option>
+        <option value="17">17</option>
+        <option value="23">23</option>
+        <option value="27">27</option>
+        <option value="33">33</option>
+        <option value="35">35</option>
+      </select>
+    </div>
+    <div id="diskonContainer">
+      <label class="block">Diskon</label>
+      <input type="number" id="diskon" value="0" class="w-full border rounded p-2">
+    </div>
+    <div id="dpBayarContainer" class="hidden">
+      <label class="block">DP Bayar</label>
+      <input type="number" id="dpBayar" readonly class="w-full border rounded p-2 bg-gray-100">
+    </div>
+    <div id="angsuranContainer" class="hidden">
+      <label class="block">Angsuran</label>
+      <input type="text" id="angsuran" readonly class="w-full border rounded p-2 bg-gray-100">
+    </div>
+    <div id="totalCashContainer" class="hidden">
+      <label class="block">Total Bayar</label>
+      <input type="number" id="totalCash" readonly class="w-full border rounded p-2 bg-gray-100">
+    </div>
+
+    <div class="md:col-span-2 flex gap-2">
+      <button type="submit" id="btnSubmit" class="bg-green-500 text-white px-4 py-2 rounded">Simpan</button>
+      <button type="reset" id="btnReset" class="bg-gray-400 text-white px-4 py-2 rounded">Reset</button>
+    </div>
+  </form>
+
+  <!-- Tabel Data -->
+  <div class="mt-6 bg-white p-4 rounded-lg shadow">
+    <table class="w-full border">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="border p-2">Nama</th>
+          <th class="border p-2">Nomor HP</th>
+          <th class="border p-2">Unit</th>
+          <th class="border p-2">OTR</th>
+          <th class="border p-2">Kecamatan</th>
+          <th class="border p-2">Keterangan</th>
+          <th class="border p-2">Leasing</th>
+          <th class="border p-2">DP Bayar</th>
+          <th class="border p-2">Tenor</th>
+          <th class="border p-2">Angsuran</th>
+          <th class="border p-2">Diskon</th>
+          <th class="border p-2">Total Cash</th>
+          <th class="border p-2">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="customerTableBody"></tbody>
+    </table>
+    <p id="emptyMessage" class="text-center text-gray-500 mt-2">Belum ada data konsumen</p>
+  </div>
+</div>
+
+<script>
+// LOGIN
+const loginForm = document.getElementById("loginForm");
+const loginPage = document.getElementById("loginPage");
+const mainPage = document.getElementById("mainPage");
+
+loginForm.addEventListener("submit", function(e){
+  e.preventDefault();
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+  if(user === "admin" && pass === "1234"){
+    loginPage.classList.add("hidden");
+    mainPage.classList.remove("hidden");
+  }else{
+    alert("Username / password salah!");
+  }
+});
+
+// DATA
+let customers = JSON.parse(localStorage.getItem("customers")) || [];
+let editIndex = null;
+
+// Fields
+const form = document.getElementById("customerForm");
+const tbody = document.getElementById("customerTableBody");
+const emptyMessage = document.getElementById("emptyMessage");
+const unitSelect = document.getElementById("unit");
+const otrInput = document.getElementById("otr");
+const keterangan = document.getElementById("keterangan");
+const leasingContainer = document.getElementById("leasingContainer");
+const dpContainer = document.getElementById("dpContainer");
+const tenorContainer = document.getElementById("tenorContainer");
+const dpBayarContainer = document.getElementById("dpBayarContainer");
+const angsuranContainer = document.getElementById("angsuranContainer");
+const totalCashContainer = document.getElementById("totalCashContainer");
+
+const dpSystemSelect = document.getElementById("dpSystem");
+const dpBayarInput = document.getElementById("dpBayar");
+const angsuranInput = document.getElementById("angsuran");
+const diskonInput = document.getElementById("diskon");
+const totalCashInput = document.getElementById("totalCash");
+const leasingSelect = document.getElementById("leasing");
+const tenorSelect = document.getElementById("tenor");
+
+// OTR mapping
+const otrPrices = {
+  "Beat CBS": 19113000,
+  "Beat Deluxe": 20405000,
+  "Scoopy Stylish": 24374000,
+  "PCX ABS": 39757000,
+  "Vario 160 CBS": 28330000
+};
+
+// DP System mapping per unit
+const dpSystemMapping = {
+  "Beat CBS": [3000000,4000000,5000000],
+  "Beat Deluxe": [3500000,4500000,5500000],
+  "Scoopy Stylish": [4000000,5000000,6000000],
+  "PCX ABS": [6000000,7000000,8000000],
+  "Vario 160 CBS": [5000000,6000000,7000000]
+};
+
+// Angsuran mapping (unit + tenor) manual
+const angsuranMapping = {
+  "Beat CBS": {"11":"1200000","17":"900000","23":"700000","27":"650000","33":"600000","35":"580000"},
+  "Beat Deluxe": {"11":"1300000","17":"1000000","23":"750000","27":"700000","33":"650000","35":"620000"},
+  "Scoopy Stylish": {"11":"1400000","17":"1100000","23":"850000","27":"800000","33":"750000","35":"720000"},
+  "PCX ABS": {"11":"2000000","17":"1500000","23":"1200000","27":"1100000","33":"1000000","35":"950000"},
+  "Vario 160 CBS": {"11":"1500000","17":"1200000","23":"950000","27":"900000","33":"850000","35":"800000"}
+};
+
+// Update OTR
+unitSelect.addEventListener("change", ()=>{
+  otrInput.value = otrPrices[unitSelect.value] || "";
+  updateDPSystem();
+  updateAngsuran();
+  updateTotalCash();
+});
+
+// Update DPSystem dropdown per unit
+function updateDPSystem(){
+  const unit = unitSelect.value;
+  dpSystemSelect.innerHTML = '<option value="">Pilih DP System</option>';
+  if(unit && dpSystemMapping[unit]){
+    dpSystemMapping[unit].forEach(val=>{
+      dpSystemSelect.innerHTML += `<option value="${val}">${val.toLocaleString()}</option>`;
+    });
+  }
+  updateDPBayar();
+}
+
+// Update DP Bayar = DP System − Diskon
+function updateDPBayar(){
+  const dpVal = parseInt(dpSystemSelect.value) || 0;
+  const diskon = parseInt(diskonInput.value) || 0;
+  dpBayarInput.value = dpVal - diskon;
+}
+
+// Update Angsuran
+function updateAngsuran(){
+  const unit = unitSelect.value;
+  const tenor = tenorSelect.value;
+  if(unit && tenor && angsuranMapping[unit] && angsuranMapping[unit][tenor]){
+    angsuranInput.value = angsuranMapping[unit][tenor];
+  }else{
+    angsuranInput.value = "";
+  }
+}
+
+// Update Total Cash
+function updateTotalCash(){
+  const otr = parseInt(otrInput.value) || 0;
+  const diskon = parseInt(diskonInput.value) || 0;
+  totalCashInput.value = otr - diskon;
+}
+
+// Show/hide fields based on keterangan
+keterangan.addEventListener("change", ()=>{
+  if(keterangan.value === "Kredit"){
+    leasingContainer.classList.remove("hidden");
+    dpContainer.classList.remove("hidden");
+    tenorContainer.classList.remove("hidden");
+    dpBayarContainer.classList.remove("hidden");
+    angsuranContainer.classList.remove("hidden");
+    totalCashContainer.classList.add("hidden");
+  }else if(keterangan.value === "Cash"){
+    leasingContainer.classList.add("hidden");
+    dpContainer.classList.add("hidden");
+    tenorContainer.classList.add("hidden");
+    dpBayarContainer.classList.add("hidden");
+    angsuranContainer.classList.add("hidden");
+    totalCashContainer.classList.remove("hidden");
+  }else{
+    leasingContainer.classList.add("hidden");
+    dpContainer.classList.add("hidden");
+    tenorContainer.classList.add("hidden");
+    dpBayarContainer.classList.add("hidden");
+    angsuranContainer.classList.add("hidden");
+    totalCashContainer.classList.add("hidden");
+  }
+});
+
+// Event listeners
+dpSystemSelect.addEventListener("change", updateDPBayar);
+diskonInput.addEventListener("input", ()=>{
+  updateDPBayar();
+  updateTotalCash();
+});
+tenorSelect.addEventListener("change", updateAngsuran);
+
+// Form submit
+form.addEventListener("submit", e=>{
+  e.preventDefault();
+  const newCustomer = {
+    nama: document.getElementById("nama").value,
+    nomorHp: document.getElementById("nomorHp").value,
+    unit: unitSelect.value,
+    otr: otrInput.value,
+    kecamatan: document.getElementById("kecamatan").value,
+    keterangan: keterangan.value,
+    leasing: leasingSelect.value,
+    dpBayar: dpBayarInput.value,
+    tenor: tenorSelect.value,
+    angsuran: angsuranInput.value,
+    diskon: diskonInput.value,
+    totalCash: totalCashInput.value
+  };
+
+  if(editIndex.value){
+    customers[editIndex.value] = newCustomer;
+    editIndex.value = "";
+  }else{
+    customers.push(newCustomer);
+  }
+
+  localStorage.setItem("customers", JSON.stringify(customers));
+  form.reset();
+  resetDynamicFields();
+  renderTable();
+});
+
+// Reset dynamic fields
+function resetDynamicFields(){
+  leasingContainer.classList.add("hidden");
+  dpContainer.classList.add("hidden");
+  tenorContainer.classList.add("hidden");
+  dpBayarContainer.classList.add("hidden");
+  angsuranContainer.classList.add("hidden");
+  totalCashContainer.classList.add("hidden");
+  dpSystemSelect.innerHTML = '<option value="">Pilih DP System</option>';
+}
+
+// Render table
+function renderTable(){
+  tbody.innerHTML = "";
+  if(customers.length === 0){
+    emptyMessage.style.display = "block";
+    return;
+  }
+  emptyMessage.style.display = "none";
+  customers.forEach((c,i)=>{
+    const tr = document.createElement("tr");
+    tr.className = i%2===0?"bg-white":"bg-gray-50";
+    tr.innerHTML = `
+      <td class="border p-1">${c.nama}</td>
+      <td class="border p-1">${c.nomorHp}</td>
+      <td class="border p-1">${c.unit}</td>
+      <td class="border p-1">${c.otr}</td>
+      <td class="border p-1">${c.kecamatan}</td>
+      <td class="border p-1">${c.keterangan}</td>
+      <td class="border p-1">${c.leasing||''}</td>
+      <td class="border p-1">${c.dpBayar||''}</td>
+      <td class="border p-1">${c.tenor||''}</td>
+      <td class="border p-1">${c.angsuran||''}</td>
+      <td class="border p-1">${c.diskon||''}</td>
+      <td class="border p-1">${c.totalCash||''}</td>
+      <td class="border p-1 text-center">
+        <button onclick="editCustomer(${i})" class="bg-yellow-400 px-2 rounded">Edit</button>
+        <button onclick="deleteCustomer(${i})" class="bg-red-500 px-2 rounded text-white">Hapus</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// Edit
+function editCustomer(index){
+  const c = customers[index];
+  document.getElementById("nama").value = c.nama;
+  document.getElementById("nomorHp").value = c.nomorHp;
+  unitSelect.value = c.unit;
+  otrInput.value = c.otr;
+  document.getElementById("kecamatan").value = c.kecamatan;
+  keterangan.value = c.keterangan;
+  diskonInput.value = c.diskon;
+
+  if(c.keterangan === "Kredit"){
+    leasingContainer.classList.remove("hidden");
+    dpContainer.classList.remove("hidden");
+    tenorContainer.classList.remove("hidden");
+    dpBayarContainer.classList.remove("hidden");
+    angsuranContainer.classList.remove("hidden");
+    totalCashContainer.classList.add("hidden");
+
+    leasingSelect.value = c.leasing;
+    updateDPSystem();
+    dpSystemSelect.value = dpSystemSelect.querySelector(`option[value="${c.dpBayar*1 + c.diskon*1}"]`)?.value || "";
+    tenorSelect.value = c.tenor;
+    updateAngsuran();
+    updateDPBayar();
+  }else if(c.keterangan === "Cash"){
+    totalCashContainer.classList.remove("hidden");
+    leasingContainer.classList.add("hidden");
+    dpContainer.classList.add("hidden");
+    tenorContainer.classList.add("hidden");
+    dpBayarContainer.classList.add("hidden");
+    angsuranContainer.classList.add("hidden");
+    updateTotalCash();
+  }
+
+  editIndex.value = index;
+}
+
+// Delete
+function deleteCustomer(index){
+  if(confirm(`Hapus data ${customers[index].nama}?`)){
+    customers.splice(index,1);
+    localStorage.setItem("customers", JSON.stringify(customers));
+    renderTable();
+  }
+}
+
+// Initial render
+renderTable();
+
+</script>
+</body>
+</html>
