@@ -5,64 +5,142 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Database Penyimpanan Komisi By Indra</title>
   <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-  .marquee {
-    overflow: hidden;
-    position: relative;
-    background: linear-gradient(90deg, #1e3a8a, #3b82f6, #9333ea); /* biru tua → biru → ungu */
-    color: #fff;
-    font-weight: bold;
-    font-size: 1.1rem;
-    text-shadow: 0 0 5px rgba(255,255,255,0.6), 0 0 10px rgba(255,255,255,0.4);
-    white-space: nowrap;
-  }
+  <style>
+    .marquee {
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(90deg, #1e3a8a, #3b82f6, #9333ea);
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.1rem;
+      text-shadow: 0 0 5px rgba(255,255,255,0.6), 0 0 10px rgba(255,255,255,0.4);
+      white-space: nowrap;
+    }
 
-  .marquee span {
-    display: inline-block;
-    padding-left: 100%;
-    animation: marquee 15s linear infinite;
-  }
+    .marquee span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 15s linear infinite;
+    }
 
-  @keyframes marquee {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
-  }
-</style>
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
 
+      .hidden { display: none; }
+    #doraemonFace { width: 180px; height: 180px; margin: 0 auto 2rem auto; }
+    .eye { fill: white; stroke: #004a7c; stroke-width: 2; transition: all 0.3s ease; transform-origin: center; }
+    .pupil { fill: black; transition: all 0.3s ease; }
+    .eye.closed { ry: 2 !important; fill: #004a7c !important; stroke-width: 0 !important; }
+    .pupil.closed { opacity: 0 !important; }
+    #nose { fill: #e60012; transition: transform 0.3s ease; transform-origin: center; }
+    .wiggle { animation: wiggle 0.4s ease-in-out 3; }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(15deg); }
+      50% { transform: rotate(-15deg); }
+      75% { transform: rotate(15deg); }
+    }
+
+      .font-pacifico {
+      font-family: 'Pacifico', cursive;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-6">
+  <body class="bg-gradient-to-br from-blue-200 to-indigo-400 min-h-screen">
+
+<!-- === LOGIN SECTION === -->
+<section id="authPage" class="flex items-center justify-center py-10 px-4">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-5xl w-full p-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
+    <!-- Doraemon Face -->
+    <div class="lg:col-span-1 flex flex-col items-center">
+      <div id="doraemonFace">
+        <svg width="180" height="180" viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="85" fill="#00a0de" stroke="#004a7c" stroke-width="4"/>
+          <circle cx="90" cy="110" r="65" fill="white"/>
+          <circle id="nose" cx="90" cy="85" r="12"/>
+          <ellipse id="leftEye" class="eye" cx="60" cy="70" rx="18" ry="25"/>
+          <ellipse id="rightEye" class="eye" cx="120" cy="70" rx="18" ry="25"/>
+          <circle id="leftPupil" class="pupil" cx="60" cy="80" r="9"/>
+          <circle id="rightPupil" class="pupil" cx="120" cy="80" r="9"/>
+          <path id="mouth" d="M50 120 Q90 130 130 120" stroke="#a3000a" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="mt-4 text-center text-indigo-800 font-semibold">Login dulu ya ~</p>
+    </div>
+
+    <!-- Login Form -->
+    <div class="lg:col-span-1 bg-indigo-50 rounded-2xl p-6">
+      <h2 class="text-2xl text-center font-semibold text-indigo-700 mb-6">Login</h2>
+      <form id="loginForm" class="space-y-4">
+        <input type="email" id="loginEmail" placeholder="Email" required class="w-full px-4 py-2 border rounded-lg" />
+        <input type="password" id="loginPassword" placeholder="Password" required class="w-full px-4 py-2 border rounded-lg" />
+        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700">Login</button>
+        <p id="loginErrorMsg" class="text-red-600 text-center hidden">Email atau password salah</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- === MAIN CONTENT (WEBSITE BUCIN) === -->
+<section id="mainPage" class="hidden">
+  <!-- INI ADALAH HALAMAN WEBSITE BUCIN ASLI KAMU -->
   <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
     <h1 class="text-2xl font-bold mb-4">Database Komisi</h1>
 
     <!-- Form Tambah Data -->
     <form id="dataForm" class="grid grid-cols-2 gap-4 mb-6">
-      <input type="text" id="nama" placeholder="Nama" class="border p-2 rounded" required />
-      <input type="text" id="nomor" placeholder="Nomor" class="border p-2 rounded" required />
+      <div class="flex flex-col">
+        <label for="nama" class="font-semibold">Nama Konsumen</label>
+        <input type="text" id="nama" placeholder="Nama" class="border p-2 rounded" required />
+      </div>
 
-      <!-- Dropdown Unit -->
-      <select id="unit" class="border p-2 rounded" required>
-        <option value="">-- Pilih Unit --</option>
-        <option value="Beat CBS">Beat CBS</option>
-        <option value="Beat Deluxe">Beat Deluxe</option>
-        <option value="Beat Deluxe Smart Key">Beat Deluxe Smart Key</option>
-        <option value="Vario 160 CBS">Vario 160 CBS</option>
-        <option value="Vario 160 CBS SP">Vario 160 CBS SP</option>
-        <option value="Vario 160 ABS">Vario 160 ABS</option>
-        <option value="Vario 125 CBS">Vario 125 CBS</option>
-        <option value="Vario 125 CBS ISS">Vario 125 CBS ISS</option>
-        <option value="Scoopy Prestige">Scoopy Prestige</option>
-        <option value="Scoopy Energetik">Scoopy Energetik</option>
-        <option value="Scoopy Stylish">Scoopy Stylish</option>
-        <option value="Scoopy Fashion">Scoopy Fashion</option>
-        <option value="PCX 160 CBS">PCX 160 CBS</option>
-        <option value="PCX 160 ABS">PCX 160 ABS</option>
-      </select>
+      <div class="flex flex-col">
+        <label for="nomor" class="font-semibold">Nomor Konsumen</label>
+        <input type="text" id="nomor" placeholder="Nomor" class="border p-2 rounded" required />
+      </div>
 
-      <input type="text" id="komisi" placeholder="Komisi (Rp)" class="border p-2 rounded" required />
-      <input type="date" id="tanggalInput" class="border p-2 rounded" required />
-      <input type="date" id="tanggalCair" class="border p-2 rounded" />
+      <div class="flex flex-col">
+        <label for="unit" class="font-semibold">Unit Motor</label>
+        <select id="unit" class="border p-2 rounded" required>
+          <option value="">-- Pilih Unit --</option>
+          <option value="Beat CBS">Beat CBS</option>
+          <option value="Beat Deluxe">Beat Deluxe</option>
+          <option value="Beat Deluxe Smart Key">Beat Deluxe Smart Key</option>
+          <option value="Vario 160 CBS">Vario 160 CBS</option>
+          <option value="Vario 160 CBS SP">Vario 160 CBS SP</option>
+          <option value="Vario 160 ABS">Vario 160 ABS</option>
+          <option value="Vario 125 CBS">Vario 125 CBS</option>
+          <option value="Vario 125 CBS ISS">Vario 125 CBS ISS</option>
+          <option value="Scoopy Prestige">Scoopy Prestige</option>
+          <option value="Scoopy Energetik">Scoopy Energetik</option>
+          <option value="Scoopy Stylish">Scoopy Stylish</option>
+          <option value="Scoopy Fashion">Scoopy Fashion</option>
+          <option value="PCX 160 CBS">PCX 160 CBS</option>
+          <option value="PCX 160 ABS">PCX 160 ABS</option>
+        </select>
+      </div>
 
-      <input type="text" id="jumlahTf" placeholder="Jumlah TF (otomatis)" class="border p-2 rounded bg-gray-100" readonly />
+      <div class="flex flex-col">
+        <label for="komisi" class="font-semibold">Komisi (Rp)</label>
+        <input type="text" id="komisi" placeholder="Komisi" class="border p-2 rounded" required />
+      </div>
+
+      <div class="flex flex-col">
+        <label for="tanggalInput" class="font-semibold">Tanggal Input</label>
+        <input type="date" id="tanggalInput" class="border p-2 rounded" required />
+      </div>
+
+      <div class="flex flex-col">
+        <label for="tanggalCair" class="font-semibold">Tanggal Cair</label>
+        <input type="date" id="tanggalCair" class="border p-2 rounded" />
+      </div>
+
+      <div class="flex flex-col col-span-2">
+        <label for="jumlahTf" class="font-semibold">Jumlah TF (Rp, otomatis)</label>
+        <input type="text" id="jumlahTf" placeholder="Jumlah TF (otomatis)" class="border p-2 rounded bg-gray-100" readonly />
+      </div>
 
       <button type="submit" class="col-span-2 bg-blue-500 text-white p-2 rounded">Tambah</button>
     </form>
@@ -83,9 +161,11 @@
       </thead>
       <tbody id="dataTable"></tbody>
     </table>
-      <div class="marquee fixed bottom-0 left-0 w-full p-2 shadow-lg">
-  <span>Website by Indra Yunias Mara | Data ini cuman kesimpan di local storage aja ya | Gunakan dengan bijak ya</span>
-</div>
+
+    <!-- Marquee -->
+    <div class="marquee fixed bottom-0 left-0 w-full p-2 shadow-lg">
+      <span>Website by Indra Yunias Mara | Data ini cuman kesimpan di local storage aja ya | Gunakan dengan bijak ya</span>
+    </div>
   </div>
 
   <!-- Modal Edit -->
@@ -93,31 +173,55 @@
     <div class="bg-white p-6 rounded-lg w-1/2">
       <h2 class="text-xl font-bold mb-4">Edit Data</h2>
       <form id="editForm" class="grid grid-cols-2 gap-4">
-        <input type="text" id="editNama" class="border p-2 rounded" required />
-        <input type="text" id="editNomor" class="border p-2 rounded" required />
+        <div class="flex flex-col">
+          <label for="editNama" class="font-semibold">Nama Konsumen</label>
+          <input type="text" id="editNama" class="border p-2 rounded" required />
+        </div>
 
-        <!-- Dropdown Unit Edit -->
-        <select id="editUnit" class="border p-2 rounded" required>
-          <option value="Beat CBS">Beat CBS</option>
-          <option value="Beat Deluxe">Beat Deluxe</option>
-          <option value="Beat Deluxe Smart Key">Beat Deluxe Smart Key</option>
-          <option value="Vario 160 CBS">Vario 160 CBS</option>
-          <option value="Vario 160 CBS SP">Vario 160 CBS SP</option>
-          <option value="Vario 160 ABS">Vario 160 ABS</option>
-          <option value="Vario 125 CBS">Vario 125 CBS</option>
-          <option value="Vario 125 CBS ISS">Vario 125 CBS ISS</option>
-          <option value="Scoopy Prestige">Scoopy Prestige</option>
-          <option value="Scoopy Energetik">Scoopy Energetik</option>
-          <option value="Scoopy Stylish">Scoopy Stylish</option>
-          <option value="Scoopy Fashion">Scoopy Fashion</option>
-          <option value="PCX 160 CBS">PCX 160 CBS</option>
-          <option value="PCX 160 ABS">PCX 160 ABS</option>
-        </select>
+        <div class="flex flex-col">
+          <label for="editNomor" class="font-semibold">Nomor Konsumen</label>
+          <input type="text" id="editNomor" class="border p-2 rounded" required />
+        </div>
 
-        <input type="text" id="editKomisi" class="border p-2 rounded" required />
-        <input type="date" id="editTanggalInput" class="border p-2 rounded" required />
-        <input type="date" id="editTanggalCair" class="border p-2 rounded" />
-        <input type="text" id="editJumlahTf" class="border p-2 rounded bg-gray-100" readonly />
+        <div class="flex flex-col">
+          <label for="editUnit" class="font-semibold">Unit Motor</label>
+          <select id="editUnit" class="border p-2 rounded" required>
+            <option value="Beat CBS">Beat CBS</option>
+            <option value="Beat Deluxe">Beat Deluxe</option>
+            <option value="Beat Deluxe Smart Key">Beat Deluxe Smart Key</option>
+            <option value="Vario 160 CBS">Vario 160 CBS</option>
+            <option value="Vario 160 CBS SP">Vario 160 CBS SP</option>
+            <option value="Vario 160 ABS">Vario 160 ABS</option>
+            <option value="Vario 125 CBS">Vario 125 CBS</option>
+            <option value="Vario 125 CBS ISS">Vario 125 CBS ISS</option>
+            <option value="Scoopy Prestige">Scoopy Prestige</option>
+            <option value="Scoopy Energetik">Scoopy Energetik</option>
+            <option value="Scoopy Stylish">Scoopy Stylish</option>
+            <option value="Scoopy Fashion">Scoopy Fashion</option>
+            <option value="PCX 160 CBS">PCX 160 CBS</option>
+            <option value="PCX 160 ABS">PCX 160 ABS</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col">
+          <label for="editKomisi" class="font-semibold">Komisi (Rp)</label>
+          <input type="text" id="editKomisi" class="border p-2 rounded" required />
+        </div>
+
+        <div class="flex flex-col">
+          <label for="editTanggalInput" class="font-semibold">Tanggal Input</label>
+          <input type="date" id="editTanggalInput" class="border p-2 rounded" required />
+        </div>
+
+        <div class="flex flex-col">
+          <label for="editTanggalCair" class="font-semibold">Tanggal Cair</label>
+          <input type="date" id="editTanggalCair" class="border p-2 rounded" />
+        </div>
+
+        <div class="flex flex-col col-span-2">
+          <label for="editJumlahTf" class="font-semibold">Jumlah TF (Rp, otomatis)</label>
+          <input type="text" id="editJumlahTf" class="border p-2 rounded bg-gray-100" readonly />
+        </div>
 
         <div class="col-span-2 flex justify-end space-x-2">
           <button type="button" id="closeEdit" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</button>
@@ -261,5 +365,79 @@
 
     renderTable();
   </script>
+
+    <script>
+  const passwordInput = document.getElementById('loginPassword');
+  const leftEye = document.getElementById('leftEye');
+  const rightEye = document.getElementById('rightEye');
+  const leftPupil = document.getElementById('leftPupil');
+  const rightPupil = document.getElementById('rightPupil');
+
+  // Doraemon eye animation
+  passwordInput.addEventListener('focus', () => {
+    leftEye.classList.add('closed');
+    rightEye.classList.add('closed');
+    leftPupil.classList.add('closed');
+    rightPupil.classList.add('closed');
+  });
+
+  passwordInput.addEventListener('blur', () => {
+    leftEye.classList.remove('closed');
+    rightEye.classList.remove('closed');
+    leftPupil.classList.remove('closed');
+    rightPupil.classList.remove('closed');
+  });
+
+  const loginForm = document.getElementById('loginForm');
+  const loginError = document.getElementById('loginErrorMsg');
+
+  // Static login data
+  const validEmail = "indrayuniasmara@gmail.com";
+  const validPassword = "Indra2005";
+
+  // Login validation
+  loginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    if (email === validEmail && password === validPassword) {
+      document.getElementById('authPage').classList.add('hidden');
+      document.getElementById('mainPage').classList.remove('hidden');
+    } else {
+      loginError.classList.remove('hidden');
+    }
+  });
+
+    // Form submission handling
+    const formLove = document.getElementById('loveMessageForm');
+    const thankYouMessage = document.getElementById('thankYouMessage');
+
+    formLove.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      form.reset();
+      thankYouMessage.classList.remove('hidden');
+      setTimeout(() => {
+        thankYouMessage.classList.add('hidden');
+      }, 5000);
+    });
+</script>
+    <script>
+
+        const logoutBtn = document.getElementById('logoutBtn');
+
+logoutBtn.addEventListener('click', () => {
+  // sembunyikan main page
+  document.getElementById('mainPage').classList.add('hidden');
+  // tampilkan login page
+  document.getElementById('authPage').classList.remove('hidden');
+  // optional: reset form login
+  document.getElementById('loginForm').reset();
+});
+</script>
 </body>
 </html>
