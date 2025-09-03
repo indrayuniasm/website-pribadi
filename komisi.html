@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Database Penyimpanan Komisi By Indra</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+  .marquee {
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(90deg, #1e3a8a, #3b82f6, #9333ea); /* biru tua → biru → ungu */
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-shadow: 0 0 5px rgba(255,255,255,0.6), 0 0 10px rgba(255,255,255,0.4);
+    white-space: nowrap;
+  }
+
+  .marquee span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 15s linear infinite;
+  }
+
+  @keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+</style>
+
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
+    <h1 class="text-2xl font-bold mb-4">Database Komisi</h1>
+
+    <!-- Form Tambah Data -->
+    <form id="dataForm" class="grid grid-cols-2 gap-4 mb-6">
+      <input type="text" id="nama" placeholder="Nama" class="border p-2 rounded" required />
+      <input type="text" id="nomor" placeholder="Nomor" class="border p-2 rounded" required />
+
+      <!-- Dropdown Unit -->
+      <select id="unit" class="border p-2 rounded" required>
+        <option value="">-- Pilih Unit --</option>
+        <option value="Beat CBS">Beat CBS</option>
+        <option value="Beat Deluxe">Beat Deluxe</option>
+        <option value="Beat Deluxe Smart Key">Beat Deluxe Smart Key</option>
+        <option value="Vario 160 CBS">Vario 160 CBS</option>
+        <option value="Vario 160 CBS SP">Vario 160 CBS SP</option>
+        <option value="Vario 160 ABS">Vario 160 ABS</option>
+        <option value="Vario 125 CBS">Vario 125 CBS</option>
+        <option value="Vario 125 CBS ISS">Vario 125 CBS ISS</option>
+        <option value="Scoopy Prestige">Scoopy Prestige</option>
+        <option value="Scoopy Energetik">Scoopy Energetik</option>
+        <option value="Scoopy Stylish">Scoopy Stylish</option>
+        <option value="Scoopy Fashion">Scoopy Fashion</option>
+        <option value="PCX 160 CBS">PCX 160 CBS</option>
+        <option value="PCX 160 ABS">PCX 160 ABS</option>
+      </select>
+
+      <input type="text" id="komisi" placeholder="Komisi (Rp)" class="border p-2 rounded" required />
+      <input type="date" id="tanggalInput" class="border p-2 rounded" required />
+      <input type="date" id="tanggalCair" class="border p-2 rounded" />
+
+      <input type="text" id="jumlahTf" placeholder="Jumlah TF (otomatis)" class="border p-2 rounded bg-gray-100" readonly />
+
+      <button type="submit" class="col-span-2 bg-blue-500 text-white p-2 rounded">Tambah</button>
+    </form>
+
+    <!-- Tabel Data -->
+    <table class="w-full border text-sm text-center">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="border p-2">Nama</th>
+          <th class="border p-2">Nomor</th>
+          <th class="border p-2">Unit</th>
+          <th class="border p-2">Komisi</th>
+          <th class="border p-2">Jumlah TF</th>
+          <th class="border p-2">Tanggal Input</th>
+          <th class="border p-2">Tanggal Cair</th>
+          <th class="border p-2">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="dataTable"></tbody>
+    </table>
+      <div class="marquee fixed bottom-0 left-0 w-full p-2 shadow-lg">
+  <span>Website by Indra Yunias Mara | Data ini cuman kesimpan di local storage aja ya | Gunakan dengan bijak ya</span>
+</div>
+  </div>
+
+  <!-- Modal Edit -->
+  <div id="editModal" class="fixed inset-0 hidden bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg w-1/2">
+      <h2 class="text-xl font-bold mb-4">Edit Data</h2>
+      <form id="editForm" class="grid grid-cols-2 gap-4">
+        <input type="text" id="editNama" class="border p-2 rounded" required />
+        <input type="text" id="editNomor" class="border p-2 rounded" required />
+
+        <!-- Dropdown Unit Edit -->
+        <select id="editUnit" class="border p-2 rounded" required>
+          <option value="Beat CBS">Beat CBS</option>
+          <option value="Beat Deluxe">Beat Deluxe</option>
+          <option value="Beat Deluxe Smart Key">Beat Deluxe Smart Key</option>
+          <option value="Vario 160 CBS">Vario 160 CBS</option>
+          <option value="Vario 160 CBS SP">Vario 160 CBS SP</option>
+          <option value="Vario 160 ABS">Vario 160 ABS</option>
+          <option value="Vario 125 CBS">Vario 125 CBS</option>
+          <option value="Vario 125 CBS ISS">Vario 125 CBS ISS</option>
+          <option value="Scoopy Prestige">Scoopy Prestige</option>
+          <option value="Scoopy Energetik">Scoopy Energetik</option>
+          <option value="Scoopy Stylish">Scoopy Stylish</option>
+          <option value="Scoopy Fashion">Scoopy Fashion</option>
+          <option value="PCX 160 CBS">PCX 160 CBS</option>
+          <option value="PCX 160 ABS">PCX 160 ABS</option>
+        </select>
+
+        <input type="text" id="editKomisi" class="border p-2 rounded" required />
+        <input type="date" id="editTanggalInput" class="border p-2 rounded" required />
+        <input type="date" id="editTanggalCair" class="border p-2 rounded" />
+        <input type="text" id="editJumlahTf" class="border p-2 rounded bg-gray-100" readonly />
+
+        <div class="col-span-2 flex justify-end space-x-2">
+          <button type="button" id="closeEdit" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</button>
+          <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Fungsi format Rupiah
+    function formatRupiah(angka) {
+      if (!angka) return "";
+      return "Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function parseRupiah(rp) {
+      return Number(rp.replace(/[^0-9]/g, "")) || 0;
+    }
+
+    // Ambil data dari LocalStorage
+    let dataEntries = JSON.parse(localStorage.getItem("komisiData")) || [];
+    let editIndex = null;
+
+    const form = document.getElementById("dataForm");
+    const table = document.getElementById("dataTable");
+    const editModal = document.getElementById("editModal");
+    const editForm = document.getElementById("editForm");
+
+    const komisiInput = document.getElementById("komisi");
+    const jumlahTfInput = document.getElementById("jumlahTf");
+
+    komisiInput.addEventListener("input", () => {
+      const komisi = parseRupiah(komisiInput.value);
+      jumlahTfInput.value = formatRupiah(Math.round(komisi - komisi * 0.025));
+      komisiInput.value = formatRupiah(komisi);
+    });
+
+    const editKomisiInput = document.getElementById("editKomisi");
+    const editJumlahTfInput = document.getElementById("editJumlahTf");
+
+    editKomisiInput.addEventListener("input", () => {
+      const komisi = parseRupiah(editKomisiInput.value);
+      editJumlahTfInput.value = formatRupiah(Math.round(komisi - komisi * 0.025));
+      editKomisiInput.value = formatRupiah(komisi);
+    });
+
+    function saveData() {
+      localStorage.setItem("komisiData", JSON.stringify(dataEntries));
+    }
+
+    function renderTable() {
+      table.innerHTML = "";
+      dataEntries.forEach((entry, index) => {
+        const row = `
+          <tr>
+            <td class="border p-2">${entry.nama}</td>
+            <td class="border p-2">${entry.nomor}</td>
+            <td class="border p-2">${entry.unit}</td>
+            <td class="border p-2">${formatRupiah(entry.komisi)}</td>
+            <td class="border p-2">${formatRupiah(entry.jumlahTf)}</td>
+            <td class="border p-2">${entry.tanggalInput}</td>
+            <td class="border p-2">${entry.tanggalCair || ""}</td>
+            <td class="border p-2 space-x-2">
+              <button onclick="editData(${index})" class="bg-yellow-400 px-2 py-1 rounded">Edit</button>
+              <button onclick="deleteData(${index})" class="bg-red-500 px-2 py-1 rounded text-white">Hapus</button>
+            </td>
+          </tr>
+        `;
+        table.innerHTML += row;
+      });
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const nama = document.getElementById("nama").value.trim();
+      const nomor = document.getElementById("nomor").value.trim();
+      const unit = document.getElementById("unit").value;
+      const komisi = parseRupiah(document.getElementById("komisi").value);
+      const tanggalInput = document.getElementById("tanggalInput").value;
+      const tanggalCair = document.getElementById("tanggalCair").value;
+      const jumlahTf = parseRupiah(document.getElementById("jumlahTf").value);
+
+      if (!nama || !nomor || !unit || !komisi || !tanggalInput) {
+        alert("Data wajib diisi.");
+        return;
+      }
+
+      dataEntries.push({ nama, nomor, unit, komisi, jumlahTf, tanggalInput, tanggalCair });
+      saveData();
+      renderTable();
+      form.reset();
+      jumlahTfInput.value = "";
+    });
+
+    function editData(index) {
+      editIndex = index;
+      const entry = dataEntries[index];
+      document.getElementById("editNama").value = entry.nama;
+      document.getElementById("editNomor").value = entry.nomor;
+      document.getElementById("editUnit").value = entry.unit;
+      document.getElementById("editKomisi").value = formatRupiah(entry.komisi);
+      document.getElementById("editTanggalInput").value = entry.tanggalInput;
+      document.getElementById("editTanggalCair").value = entry.tanggalCair;
+      document.getElementById("editJumlahTf").value = formatRupiah(entry.jumlahTf);
+      editModal.classList.remove("hidden");
+    }
+
+    editForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const nama = document.getElementById("editNama").value.trim();
+      const nomor = document.getElementById("editNomor").value.trim();
+      const unit = document.getElementById("editUnit").value;
+      const komisi = parseRupiah(document.getElementById("editKomisi").value);
+      const tanggalInput = document.getElementById("editTanggalInput").value;
+      const tanggalCair = document.getElementById("editTanggalCair").value;
+      const jumlahTf = parseRupiah(document.getElementById("editJumlahTf").value);
+
+      if (!nama || !nomor || !unit || !komisi || !tanggalInput) {
+        alert("Data wajib diisi.");
+        return;
+      }
+
+      dataEntries[editIndex] = { nama, nomor, unit, komisi, jumlahTf, tanggalInput, tanggalCair };
+      saveData();
+      renderTable();
+      editModal.classList.add("hidden");
+    });
+
+    document.getElementById("closeEdit").addEventListener("click", () => {
+      editModal.classList.add("hidden");
+    });
+
+    function deleteData(index) {
+      if (confirm("Yakin hapus data?")) {
+        dataEntries.splice(index, 1);
+        saveData();
+        renderTable();
+      }
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
