@@ -47,7 +47,8 @@
 
 ### 🧠 Kata Kata Hari Ini
 
-> _“tetaplah belajar sampai kamu menjadi orang sukses” – draaa_
+> _“aku hanya orang baru yang ingin berusaha mengantikan posisi masa lalumu, tapi kalo kamu lebih bahagia dengan dirinya maka pergilah dan tinggalkan aku."_
+>  – draaa_
 
 ---
 
