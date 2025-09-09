@@ -87,10 +87,11 @@
               <option value="" disabled selected>Pilih hasil</option>
               <option value="gaji">Gaji</option>
               <option value="komisi">Komisi</option>
+            <option value="tip">Tip</option>
               <option value="lainnya">Lainnya</option>
             </select>
           </div>
-          <div id="containerDropdownBiaya" class="hidden col-span-full sm:col-span-2">
+          <div id="containerDropdownBiaya" class="hidden">
             <label for="selectBiaya" class="block font-medium mb-1">Biaya</label>
             <select
               id="selectBiaya"
@@ -141,8 +142,8 @@
             <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-r border-gray-300">Jam</th>
             <th class="px-4 py-2 text-right text-sm font-medium text-gray-700 border-r border-gray-300">Nominal (Rp)</th>
             <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-r border-gray-300">Jenis</th>
-            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-r border-gray-300">Hasil</th>
-            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-r border-gray-300">Biaya</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-r border-gray-300">Sumber Penghasilan</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-r border-gray-300">Keterangan</th>
             <th class="px-4 py-2 text-center text-sm font-medium text-gray-700 border-gray-300">Aksi</th>
           </tr>
         </thead>
@@ -197,7 +198,7 @@
     const totalSeluruhnyaEl = document.getElementById('totalSeluruhnya');
 
     let entries = [];
-    let hasilTable = ['gaji', 'komisi', 'lainnya'];
+    let hasilTable = ['gaji', 'komisi', 'tip', 'lainnya'];
     let biayaTable = ['biaya nikah', 'lainnya'];
     let pengeluaranTable = ['liquid', 'kuota', 'kapas', 'jajan', 'lainnya'];
 
