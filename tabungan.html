@@ -1,0 +1,526 @@
+<html lang="id" class="scroll-smooth" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Database Tabungan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+  <header class="bg-blue-600 text-white p-4 shadow-md">
+    <h1 class="text-2xl font-semibold text-center">Database Tabungan</h1>
+  </header>
+
+  <main class="flex-grow container mx-auto p-4 max-w-4xl">
+    <section class="bg-white rounded-lg shadow p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Tambah Data Tabungan / Pengeluaran</h2>
+      <form id="formEntry" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="inputHari" class="block font-medium mb-1">Hari</label>
+            <input
+              type="date"
+              id="inputHari"
+              name="hari"
+              required
+              class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label for="inputJam" class="block font-medium mb-1">Jam</label>
+            <input
+              type="time"
+              id="inputJam"
+              name="jam"
+              required
+              class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label for="inputNominal" class="block font-medium mb-1">Nominal (Rp)</label>
+            <input
+              type="number"
+              id="inputNominal"
+              name="nominal"
+              min="0"
+              step="1000"
+              required
+              placeholder="0"
+              class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label for="selectJenis" class="block font-medium mb-1">Jenis</label>
+            <select
+              id="selectJenis"
+              name="jenis"
+              required
+              class="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="" disabled selected>Pilih jenis</option>
+              <option value="tabungan">Tabungan</option>
+              <option value="pengeluaran">Pengeluaran</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="containerDropdownHasilBiaya" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 hidden">
+          <div id="containerDropdownHasil" class="hidden">
+            <label for="selectHasil" class="block font-medium mb-1">Hasil</label>
+            <select
+              id="selectHasil"
+              name="hasil"
+              class="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="" disabled selected>Pilih hasil</option>
+              <option value="gaji">Gaji</option>
+              <option value="komisi">Komisi</option>
+              <option value="lainnya">Lainnya</option>
+            </select>
+          </div>
+          <div id="containerDropdownBiaya" class="hidden col-span-full sm:col-span-2">
+            <label for="selectBiaya" class="block font-medium mb-1">Biaya</label>
+            <select
+              id="selectBiaya"
+              name="biaya"
+              class="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="" disabled selected>Pilih biaya</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="containerDropdownPengeluaran" class="hidden mt-4">
+          <label for="selectPengeluaran" class="block font-medium mb-1">Pengeluaran</label>
+          <select
+            id="selectPengeluaran"
+            name="pengeluaran"
+            class="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="" disabled selected>Pilih pengeluaran</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end space-x-2 mt-6">
+          <button
+            type="submit"
+            id="btnSubmit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Tambah
+          </button>
+          <button
+            type="button"
+            id="btnCancelEdit"
+            class="hidden bg-gray-400 hover:bg-gray-500 text-white font-semibold px-5 py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+          >
+            Batal Edit
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="bg-white rounded-lg shadow p-6 mb-8 overflow-x-auto">
+      <h2 class="text-xl font-semibold mb-4">Data Tabungan & Pengeluaran</h2>
+      <table class="min-w-full border border-gray-300 divide-y divide-gray-200">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-r border-gray-300">Hari</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-r border-gray-300">Jam</th>
+            <th class="px-4 py-2 text-right text-sm font-medium text-gray-700 border-r border-gray-300">Nominal (Rp)</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-r border-gray-300">Jenis</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-r border-gray-300">Hasil</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-r border-gray-300">Biaya</th>
+            <th class="px-4 py-2 text-center text-sm font-medium text-gray-700 border-gray-300">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody" class="divide-y divide-gray-200 bg-white"></tbody>
+      </table>
+    </section>
+
+    <section class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Total</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+        <div class="bg-green-100 rounded p-4">
+          <p class="text-lg font-semibold text-green-700">Total Tabungan</p>
+          <p id="totalTabungan" class="text-2xl font-bold text-green-900">Rp 0</p>
+        </div>
+        <div class="bg-red-100 rounded p-4">
+          <p class="text-lg font-semibold text-red-700">Total Pengeluaran</p>
+          <p id="totalPengeluaran" class="text-2xl font-bold text-red-900">Rp 0</p>
+        </div>
+        <div class="bg-blue-100 rounded p-4">
+          <p class="text-lg font-semibold text-blue-700">Total Seluruhnya</p>
+          <p id="totalSeluruhnya" class="text-2xl font-bold text-blue-900">Rp 0</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-blue-600 text-white text-center p-4 mt-8">
+    &copy; 2025 - database indra
+  </footer>
+
+  <script>
+    // Data structure:
+    // entries = [{id, hari, jam, nominal, jenis, hasil, biaya}]
+    // For tabungan: hasil and biaya from hasilTable and biayaTable
+    // For pengeluaran: biaya from pengeluaranTable, hasil = null
+
+    const formEntry = document.getElementById('formEntry');
+    const selectJenis = document.getElementById('selectJenis');
+    const containerDropdownHasilBiaya = document.getElementById('containerDropdownHasilBiaya');
+    const containerDropdownHasil = document.getElementById('containerDropdownHasil');
+    const containerDropdownBiaya = document.getElementById('containerDropdownBiaya');
+    const containerDropdownPengeluaran = document.getElementById('containerDropdownPengeluaran');
+    const selectHasil = document.getElementById('selectHasil');
+    const selectBiaya = document.getElementById('selectBiaya');
+    const selectPengeluaran = document.getElementById('selectPengeluaran');
+    const tableBody = document.getElementById('tableBody');
+    const btnCancelEdit = document.getElementById('btnCancelEdit');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    const totalTabunganEl = document.getElementById('totalTabungan');
+    const totalPengeluaranEl = document.getElementById('totalPengeluaran');
+    const totalSeluruhnyaEl = document.getElementById('totalSeluruhnya');
+
+    let entries = [];
+    let hasilTable = ['gaji', 'komisi', 'lainnya'];
+    let biayaTable = ['biaya nikah', 'lainnya'];
+    let pengeluaranTable = ['liquid', 'kuota', 'kapas', 'jajan', 'lainnya'];
+
+    let editId = null;
+
+    // Load from localStorage
+    function loadData() {
+      const data = localStorage.getItem('dbTabunganEntries');
+      if (data) {
+        entries = JSON.parse(data);
+      } else {
+        entries = [];
+      }
+    }
+
+    // Save to localStorage
+    function saveData() {
+      localStorage.setItem('dbTabunganEntries', JSON.stringify(entries));
+    }
+
+    // Format number to Rupiah
+    function formatRupiah(number) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(number);
+    }
+
+    // Render table rows
+    function renderTable() {
+      tableBody.innerHTML = '';
+      if (entries.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 7;
+        td.className = 'text-center py-4 text-gray-500';
+        td.textContent = 'Belum ada data.';
+        tr.appendChild(td);
+        tableBody.appendChild(tr);
+        updateTotals();
+        return;
+      }
+
+      entries.forEach((entry) => {
+        const tr = document.createElement('tr');
+
+        // Hari
+        const tdHari = document.createElement('td');
+        tdHari.className = 'px-4 py-2 border-r border-gray-300';
+        tdHari.textContent = entry.hari;
+        tr.appendChild(tdHari);
+
+        // Jam
+        const tdJam = document.createElement('td');
+        tdJam.className = 'px-4 py-2 border-r border-gray-300';
+        tdJam.textContent = entry.jam;
+        tr.appendChild(tdJam);
+
+        // Nominal
+        const tdNominal = document.createElement('td');
+        tdNominal.className = 'px-4 py-2 text-right border-r border-gray-300 font-mono';
+        tdNominal.textContent = formatRupiah(entry.nominal);
+        tr.appendChild(tdNominal);
+
+        // Jenis
+        const tdJenis = document.createElement('td');
+        tdJenis.className = 'px-4 py-2 border-r border-gray-300 capitalize';
+        tdJenis.textContent = entry.jenis;
+        tr.appendChild(tdJenis);
+
+        // Hasil
+        const tdHasil = document.createElement('td');
+        tdHasil.className = 'px-4 py-2 border-r border-gray-300 capitalize';
+        tdHasil.textContent = entry.jenis === 'tabungan' ? (entry.hasil || '-') : '-';
+        tr.appendChild(tdHasil);
+
+        // Biaya (for tabungan biaya, for pengeluaran pengeluaran)
+        const tdBiaya = document.createElement('td');
+        tdBiaya.className = 'px-4 py-2 border-r border-gray-300 capitalize';
+        if (entry.jenis === 'tabungan') {
+          tdBiaya.textContent = entry.biaya || '-';
+        } else if (entry.jenis === 'pengeluaran') {
+          tdBiaya.textContent = entry.biaya || '-';
+        } else {
+          tdBiaya.textContent = '-';
+        }
+        tr.appendChild(tdBiaya);
+
+        // Aksi
+        const tdAksi = document.createElement('td');
+        tdAksi.className = 'px-4 py-2 border-gray-300 text-center space-x-2';
+
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'text-blue-600 hover:text-blue-800 focus:outline-none';
+        btnEdit.title = 'Edit';
+        btnEdit.innerHTML = '<i class="fas fa-edit"></i>';
+        btnEdit.addEventListener('click', () => {
+          startEditEntry(entry.id);
+        });
+
+        const btnDelete = document.createElement('button');
+        btnDelete.className = 'text-red-600 hover:text-red-800 focus:outline-none';
+        btnDelete.title = 'Hapus';
+        btnDelete.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        btnDelete.addEventListener('click', () => {
+          deleteEntry(entry.id);
+        });
+
+        tdAksi.appendChild(btnEdit);
+        tdAksi.appendChild(btnDelete);
+        tr.appendChild(tdAksi);
+
+        tableBody.appendChild(tr);
+      });
+
+      updateTotals();
+    }
+
+    // Update totals
+    function updateTotals() {
+      let totalTabungan = 0;
+      let totalPengeluaran = 0;
+
+      entries.forEach((entry) => {
+        if (entry.jenis === 'tabungan') {
+          totalTabungan += Number(entry.nominal);
+        } else if (entry.jenis === 'pengeluaran') {
+          totalPengeluaran += Number(entry.nominal);
+        }
+      });
+
+      totalTabunganEl.textContent = formatRupiah(totalTabungan);
+      totalPengeluaranEl.textContent = formatRupiah(totalPengeluaran);
+      totalSeluruhnyaEl.textContent = formatRupiah(totalTabungan - totalPengeluaran);
+    }
+
+    // Reset form
+    function resetForm() {
+      formEntry.reset();
+      containerDropdownHasilBiaya.classList.add('hidden');
+      containerDropdownHasil.classList.add('hidden');
+      containerDropdownBiaya.classList.add('hidden');
+      containerDropdownPengeluaran.classList.add('hidden');
+      btnCancelEdit.classList.add('hidden');
+      btnSubmit.textContent = 'Tambah';
+      editId = null;
+      clearBiayaOptions();
+      clearPengeluaranOptions();
+    }
+
+    // Start editing an entry
+    function startEditEntry(id) {
+      const entry = entries.find((e) => e.id === id);
+      if (!entry) return;
+
+      editId = id;
+      formEntry.hari.value = entry.hari;
+      formEntry.jam.value = entry.jam;
+      formEntry.nominal.value = entry.nominal;
+      formEntry.jenis.value = entry.jenis;
+
+      handleJenisChange();
+
+      if (entry.jenis === 'tabungan') {
+        selectHasil.value = entry.hasil || '';
+        selectBiaya.value = entry.biaya || '';
+      } else if (entry.jenis === 'pengeluaran') {
+        selectPengeluaran.value = entry.biaya || '';
+      }
+
+      btnCancelEdit.classList.remove('hidden');
+      btnSubmit.textContent = 'Simpan';
+    }
+
+    // Delete entry
+    function deleteEntry(id) {
+      if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+        entries = entries.filter((e) => e.id !== id);
+        saveData();
+        renderTable();
+        if (editId === id) {
+          resetForm();
+        }
+      }
+    }
+
+    // Handle jenis dropdown change
+    function handleJenisChange() {
+      const jenis = selectJenis.value;
+      if (jenis === 'tabungan') {
+        containerDropdownHasilBiaya.classList.remove('hidden');
+        containerDropdownHasil.classList.remove('hidden');
+        containerDropdownBiaya.classList.remove('hidden');
+        containerDropdownPengeluaran.classList.add('hidden');
+
+        // Reset pengeluaran dropdown
+        selectPengeluaran.value = '';
+
+        // Populate biaya dropdown with biayaTable
+        populateBiayaOptions(biayaTable);
+      } else if (jenis === 'pengeluaran') {
+        containerDropdownHasilBiaya.classList.remove('hidden');
+        containerDropdownHasil.classList.add('hidden');
+        containerDropdownBiaya.classList.remove('hidden');
+        containerDropdownPengeluaran.classList.add('hidden');
+
+        // Reset hasil dropdown
+        selectHasil.value = '';
+
+        // Populate biaya dropdown with pengeluaranTable
+        populateBiayaOptions(pengeluaranTable);
+      } else {
+        containerDropdownHasilBiaya.classList.add('hidden');
+        containerDropdownHasil.classList.add('hidden');
+        containerDropdownBiaya.classList.add('hidden');
+        containerDropdownPengeluaran.classList.add('hidden');
+
+        selectHasil.value = '';
+        selectBiaya.value = '';
+        selectPengeluaran.value = '';
+      }
+    }
+
+    // Populate biaya dropdown options
+    function populateBiayaOptions(options) {
+      clearBiayaOptions();
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      defaultOption.textContent = 'Pilih biaya';
+      selectBiaya.appendChild(defaultOption);
+
+      options.forEach((opt) => {
+        const option = document.createElement('option');
+        option.value = opt;
+        option.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
+        selectBiaya.appendChild(option);
+      });
+    }
+
+    // Clear biaya dropdown options
+    function clearBiayaOptions() {
+      selectBiaya.innerHTML = '';
+    }
+
+    // Clear pengeluaran dropdown options (not used now but kept for structure)
+    function clearPengeluaranOptions() {
+      selectPengeluaran.innerHTML = '';
+    }
+
+    // Generate unique ID
+    function generateId() {
+      return '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    // Form submit handler
+    formEntry.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const hari = formEntry.hari.value;
+      const jam = formEntry.jam.value;
+      const nominal = Number(formEntry.nominal.value);
+      const jenis = formEntry.jenis.value;
+
+      if (!hari || !jam || !jenis || nominal < 0) {
+        alert('Mohon isi semua data dengan benar.');
+        return;
+      }
+
+      if (jenis === 'tabungan') {
+        const hasil = selectHasil.value;
+        const biaya = selectBiaya.value;
+        if (!hasil || !biaya) {
+          alert('Mohon pilih hasil dan biaya untuk tabungan.');
+          return;
+        }
+
+        if (editId) {
+          // Edit existing
+          const idx = entries.findIndex((e) => e.id === editId);
+          if (idx !== -1) {
+            entries[idx] = { id: editId, hari, jam, nominal, jenis, hasil, biaya };
+          }
+        } else {
+          // Add new
+          entries.push({ id: generateId(), hari, jam, nominal, jenis, hasil, biaya });
+        }
+      } else if (jenis === 'pengeluaran') {
+        const biaya = selectBiaya.value;
+        if (!biaya) {
+          alert('Mohon pilih biaya pengeluaran.');
+          return;
+        }
+
+        if (editId) {
+          const idx = entries.findIndex((e) => e.id === editId);
+          if (idx !== -1) {
+            entries[idx] = { id: editId, hari, jam, nominal, jenis, hasil: null, biaya };
+          }
+        } else {
+          entries.push({ id: generateId(), hari, jam, nominal, jenis, hasil: null, biaya });
+        }
+      } else {
+        alert('Jenis tidak valid.');
+        return;
+      }
+
+      saveData();
+      renderTable();
+      resetForm();
+    });
+
+    // Cancel edit button
+    btnCancelEdit.addEventListener('click', () => {
+      resetForm();
+    });
+
+    // Listen jenis change
+    selectJenis.addEventListener('change', () => {
+      handleJenisChange();
+    });
+
+    // Initial load
+    loadData();
+    renderTable();
+  </script>
+</body>
+</html>
