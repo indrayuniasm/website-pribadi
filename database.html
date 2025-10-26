@@ -44,11 +44,22 @@
       <label class="block">Unit</label>
       <select id="unit" required class="w-full border rounded p-2">
         <option value="">Pilih Unit</option>
-        <option>Beat CBS</option>
-        <option>Beat Deluxe</option>
-        <option>Scoopy Stylish</option>
-        <option>PCX ABS</option>
+        <option>Beat CBS NEW</option>
+        <option>Beat Deluxe NEW</option>
+        <option>Beat Deluxe Smart Key NEW</option>
+        <option>Beat Street NEW</option>
+        <option>PCX 160 CBS</option>
+        <option>PCX 160 ABS</option>
+        <option>PCX 160 Roadshing</option>
+        <option>Vario 125 CBS</option>
+        <option>Vario 125 CBS ISS</option>
         <option>Vario 160 CBS</option>
+        <option>Vario 160 CBS SP</option>
+        <option>Vario 160 ABS</option>
+        <option>Scoopy Prestige</option>
+        <option>Scoopy Stylish</option>
+        <option>Scoopy Energetik</option>
+        <option>Scoopy Fashion</option>
       </select>
     </div>
     <div>
@@ -56,13 +67,18 @@
       <input type="text" id="otr" readonly class="w-full border rounded p-2 bg-gray-100">
     </div>
     <div>
-      <label class="block">Kecamatan</label>
+      <label class="block">Area KTP</label>
       <select id="kecamatan" required class="w-full border rounded p-2">
-        <option value="">Pilih Kecamatan</option>
-        <option value="koja">Koja</option>
-        <option value="tanjung priok">Tanjung Priok</option>
+        <option value="">Pilih Area</option>
+        <option value="Koja">Koja</option>
+        <option value="Tanjung Priok">Tanjung Priok</option>
         <option value="cilincing">Cilincing</option>
-        <option value="penjaringan">Penjaringan</option>
+        <option value="Kelapa Gading">Kelapa Gading</option>
+          <option value="Penjaringan">Penjaringan</option>
+          <option value="JakTim">JakTim</option>
+          <option value="JakSel">Jaksel</option>
+          <option value="JakPus">Jakpus</option>
+          <option value="Bekasi">Bekasi</option>
         <option value="lainnya">Lainnya</option>
       </select>
     </div>
@@ -72,6 +88,7 @@
         <option value="">Pilih Keterangan</option>
         <option value="Cash">Cash</option>
         <option value="Kredit">Kredit</option>
+        <option value="Proses Leasing">Proses Leasing</option>
         <option value="Prospek">Prospek</option>
       </select>
     </div>
@@ -101,6 +118,14 @@
         <option value="27">27</option>
         <option value="33">33</option>
         <option value="35">35</option>
+      </select>
+    </div>
+      <!-- Hasil Fields -->
+    <div id="hasilContainer" class="hidden">
+      <label class="block">Hasilnya</label>
+      <select id="hasil" class="w-full border rounded p-2">
+        <option value="">Pilih Hasil</option>
+        <option>PO</option><option>Riject</option><option>Survey</option>
       </select>
     </div>
     <div id="diskonContainer">
@@ -142,6 +167,7 @@
           <th class="border p-2">Tenor</th>
           <th class="border p-2">Angsuran</th>
           <th class="border p-2">Diskon</th>
+        <th class="border p-2">Hasil</th>
           <th class="border p-2">Total Cash</th>
           <th class="border p-2">Aksi</th>
         </tr>
@@ -162,17 +188,17 @@ loginForm.addEventListener("submit", function(e){
   e.preventDefault();
   const user = document.getElementById("username").value;
   const pass = document.getElementById("password").value;
-  if(user === "admin" && pass === "1234"){
+  if(user === "admin" && pass === "admin"){
     loginPage.classList.add("hidden");
     mainPage.classList.remove("hidden");
   }else{
-    alert("Username / password salah!");
+    alert("password lu salah ngentod");
   }
 });
 
 // DATA
 let customers = JSON.parse(localStorage.getItem("customers")) || [];
-let editIndex = null;
+
 
 // Fields
 const form = document.getElementById("customerForm");
@@ -182,6 +208,7 @@ const unitSelect = document.getElementById("unit");
 const otrInput = document.getElementById("otr");
 const keterangan = document.getElementById("keterangan");
 const leasingContainer = document.getElementById("leasingContainer");
+    const hasilContainer = document.getElementById("hasilContainer");
 const dpContainer = document.getElementById("dpContainer");
 const tenorContainer = document.getElementById("tenorContainer");
 const dpBayarContainer = document.getElementById("dpBayarContainer");
@@ -198,30 +225,177 @@ const tenorSelect = document.getElementById("tenor");
 
 // OTR mapping
 const otrPrices = {
-  "Beat CBS": 19113000,
-  "Beat Deluxe": 20405000,
-  "Scoopy Stylish": 24374000,
-  "PCX ABS": 39757000,
-  "Vario 160 CBS": 28330000
+    "Beat CBS NEW": 19163000,
+    "Beat Deluxe NEW": 20457000,
+    "Beat Deluxe Smart Key NEW": 20987000,
+    "Beat Street NEW": 20457000,
+    "PCX 160 CBS": 34580000,
+    "PCX 160 ABS": 39766500,
+    "PCX 160 Roadshing": 42763500,
+    "Vario 125 CBS": 24878000,
+    "Vario 125 CBS ISS": 26533000,
+    "Vario 160 CBS": 28330000,
+    "Vario 160 CBS SP":28580000,
+    "Vario 160 ABS": 32079000,
+    "Scoopy Prestige": 24377500,
+    "Scoopy Stylish": 24377500,
+    "Scoopy Energetik": 23572500,
+    "Scoopy Fashion": 23572500,
 };
 
 // DP System mapping per unit
 const dpSystemMapping = {
-  "Beat CBS": [3000000,4000000,5000000],
-  "Beat Deluxe": [3500000,4500000,5500000],
-  "Scoopy Stylish": [4000000,5000000,6000000],
-  "PCX ABS": [6000000,7000000,8000000],
-  "Vario 160 CBS": [5000000,6000000,7000000]
+  "Beat CBS NEW": [2000000,2200000,2400000,2600000,2900000,3900000],
+  "Beat Deluxe NEW": [2100000,2300000,2600000,2800000,3100000,4100000],
+    "Beat Deluxe Smart Key NEW": [2100000,2400000,2700000,2900000,3200000,4200000],
+    "Beat Street NEW": [2100000,2300000,2600000,2800000,3100000,4100000],
+    "PCX 160 CBS": [2100000,2300000,2600000,2800000,3100000,4100000],
+    "PCX 160 ABS": [2100000,2300000,2600000,2800000,3100000,4100000],
+    "PCX 160 Roadshing": [2100000,2300000,2600000,2800000,3100000,4100000],
+    "Vario 125 CBS": [2100000,2300000,2600000,2800000,3100000,4100000],
+    "Vario 125 CBS ISS":[2100000,2300000,2600000,2800000,3100000,4100000],
+    "Vario 160 CBS":[3000000,3300000,3600000,3900000,4300000,5700000],
+    "Vario 160 CBS SP":[3100000,3300000,3600000,3900000,4300000,5800000],
+    "Vario 160 ABS": [3400000,3700000,4100000,4500000,4900000,6500000],
+    "Scoopy Prestige": [2500000,2800000,3100000,3400000,3700000,4900000],
+    "Scoopy Stylish": [2500000,2800000,3100000,3400000,3700000,4900000],
+    "Scoopy Energetik": [2400000,2600000,2800000,3000000,3600000,4800000],
+    "Scoopy Fashion": [2400000,2600000,2800000,3000000,3600000,4800000]
 };
 
 // Angsuran mapping (unit + tenor) manual
 const angsuranMapping = {
-  "Beat CBS": {"11":"1200000","17":"900000","23":"700000","27":"650000","33":"600000","35":"580000"},
-  "Beat Deluxe": {"11":"1300000","17":"1000000","23":"750000","27":"700000","33":"650000","35":"620000"},
-  "Scoopy Stylish": {"11":"1400000","17":"1100000","23":"850000","27":"800000","33":"750000","35":"720000"},
-  "PCX ABS": {"11":"2000000","17":"1500000","23":"1200000","27":"1100000","33":"1000000","35":"950000"},
-  "Vario 160 CBS": {"11":"1500000","17":"1200000","23":"950000","27":"900000","33":"850000","35":"800000"}
+  "Beat CBS NEW": {
+    "2000000": {"11":2120000, "17":1522000, "23":1247000, "27":1132000, "33":1017000, "35":986000},
+    "2200000": {"11":2093000, "17":1501000, "23":1229000, "27":1115000, "33":1001000, "35":970000},
+    "2400000": {"11":2071000, "17":1485000, "23":1216000, "27":1104000, "33":991000, "35":960000},
+    "2600000": {"11":2049000, "17":1469000, "23":1203000, "27":1092000, "33":981000, "35":950000},
+    "2900000": {"11":2015000, "17":1446000, "23":1184000, "27":1075000, "33":965000, "35":935000},
+    "3900000": {"11":1869000, "17":1330000, "23":1089000, "27":987000, "33":883000, "35":854000}
+  },
+  "Beat Deluxe NEW": {
+    "2100000": {"11":2258000, "17":1621000, "23":1329000, "27":1207000, "33":1085000, "35":1051000},
+    "2300000": {"11":2230000, "17":1600000, "23":1310000, "27":1190000, "33":1068000, "35":1035000},
+    "2600000": {"11":2197000, "17":1577000, "23":1291000, "27":1172000, "33":1053000, "35":1020000},
+    "2800000": {"11":2175000, "17":1561000, "23":1278000, "27":1161000, "33":1043000, "35":1011000},
+    "3100000": {"11":2142000, "17":1537000, "23":1259000, "27":1144000, "33":1027000, "35":996000},
+    "4100000": {"11":1996000, "17":1422000, "23":1165000, "27":1057000, "33":946000, "35":915000}
+  },
+      "Beat Deluxe Smart Key NEW": {
+    "2100000": {"11":2318000, "17":1664000, "23":1364000, "27":1239000, "33":1114000, "35":1079000},
+    "2400000": {"11":2279000, "17":1635000, "23":1339000, "27":1216000, "33":1092000, "35":1058000},
+    "2700000": {"11":2246000, "17":1612000, "23":1320000, "27":1199000, "33":1077000, "35":1043000},
+    "2900000": {"11":2224000, "17":1596000, "23":1307000, "27":1187000, "33":1066000, "35":1033000},
+    "3200000": {"11":2191000, "17":1572000, "23":1288000, "27":1170000, "33":1051000, "35":1019000},
+    "4200000": {"11":2044000, "17":1456000, "23":1193000, "27":1083000, "33":969000, "35":937000}
+  },
+      "Beat Street NEW": {
+    "2100000": {"11":2258000, "17":1621000, "23":1327000, "27":1206000, "33":1083000, "35":1050000},
+    "2300000": {"11":2230000, "17":1600000, "23":1308000, "27":1187000, "33":1066000, "35":1033000},
+    "2600000": {"11":2197000, "17":1577000, "23":1289000, "27":1170000, "33":1051000, "35":1018000},
+    "2800000": {"11":2175000, "17":1561000, "23":1276000, "27":1159000, "33":1040000, "35":1008000},
+    "3100000": {"11":2142000, "17":1537000, "23":1257000, "27":1142000, "33":1025000, "35":993000},
+    "4100000": {"11":1989000, "17":1415000, "23":1156000, "27":1047000, "33":946000, "35":916000}
+  },
+      "PCX 160 CBS": {
+    "3700000": {"11":3658000, "17":2621000, "23":2142000, "27":1943000, "33":1744000, "35":1689000},
+    "3900000": {"11":3636000, "17":2606000, "23":2130000, "27":1931000, "33":1734000, "35":1679000},
+    "4100000": {"11":3614000, "17":2590000, "23":2117000, "27":1920000, "33":1724000, "35":1670000},
+    "4400000": {"11":3581000, "17":2566000, "23":2098000, "27":1903000, "33":1708000, "35":1655000},
+    "4600000": {"11":3559000, "17":2551000, "23":2085000, "27":1891000, "33":1698000, "35":1645000},
+    "5200000": {"11":3493000, "17":2504000, "23":2047000, "27":1857000, "33":1668000, "35":1616000}
+  },
+    "PCX 160 ABS": {
+    "4200000": {"11":4184000, "17":2996000, "23":2448000, "27":2219000, "33":1992000, "35":1929000},
+    "4400000": {"11":4161000, "17":2981000, "23":2435000, "27":2208000, "33":1982000, "35":1919000},
+    "4700000": {"11":4128000, "17":2957000, "23":2416000, "27":2191000, "33":1966000, "35":1905000},
+    "5000000": {"11":4095000, "17":2934000, "23":2398000, "27":2174000, "33":1951000, "35":1890000},
+    "5200000": {"11":4073000, "17":2918000, "23":2385000, "27":2163000, "33":1941000, "35":1880000},
+    "6000000": {"11":3985000, "17":2856000, "23":2334000, "27":2117000, "33":1901000, "35":1841000}
+  },
+                "PCX 160 Roadshing": {
+    "4500000": {"11":4482000, "17":3208000, "23":2620000, "27":2374000, "33":2130000, "35":2062000},
+    "4800000": {"11":4449000, "17":3185000, "23":2601000, "27":2357000, "33":2114000, "35":2048000},
+    "5100000": {"11":4416000, "17":3162000, "23":2582000, "27":2340000, "33":2099000, "35":2033000},
+    "5400000": {"11":4383000, "17":3138000, "23":2563000, "27":2323000, "33":2084000, "35":2018000},
+    "5600000": {"11":4361000, "17":3123000, "23":2550000, "27":2312000, "33":2074000, "35":2009000},
+    "6500000": {"11":4262000, "17":3052000, "23":2494000, "27":2261000, "33":2029000, "35":1965000}
+  },
+                "Vario 125 CBS": {
+    "2500000": {"11":2685000, "17":1918000, "23":1579000, "27":1432000, "33":1297000, "35":1242000},
+    "2700000": {"11":2663000, "17":1903000, "23":1566000, "27":1421000, "33":1287000, "35":1232000},
+    "2900000": {"11":2641000, "17":1887000, "23":1554000, "27":1409000, "33":1277000, "35":1223000},
+    "3200000": {"11":2608000, "17":1864000, "23":1535000, "27":1392000, "33":1261000, "35":1208000},
+    "3800000": {"11":2536000, "17":1811000, "23":1490000, "27":1351000, "33":1224000, "35":1172000},
+    "5000000": {"11":2394000, "17":1707000, "23":1399000, "27":1267000, "33":1151000, "35":1114000}
+  },
+                "Vario 125 CBS ISS": {
+    "2700000": {"11":2851000, "17":2038000, "23":1678000, "27":1522000, "33":1373000, "35":1323000},
+    "3000000": {"11":2818000, "17":2015000, "23":1659000, "27":1505000, "33":1358000, "35":1308000},
+    "3400000": {"11":2774000, "17":1984000, "23":1634000, "27":1483000, "33":1338000, "35":1288000},
+    "4000000": {"11":2702000, "17":1931000, "23":1589000, "27":1441000, "33":1300000, "35":1252000},
+    "4200000": {"11":2668000, "17":1902000, "23":1559000, "27":1413000, "33":1282000, "35":1242000},
+    "5400000": {"11":2537000, "17":1810000, "23":1484000, "27":1346000, "33":1222000, "35":1183000}
+  },
+
+                //blom jadi
+                "Vario 160 CBS": {
+    "3000000": {"11":3037000, "17":2169000, "23":1769000, "27":1613000, "33":1459000, "35":1397000},
+    "3300000": {"11":3004000, "17":2146000, "23":1751000, "27":1596000, "33":1443000, "35":1382000},
+    "3600000": {"11":2971000, "17":2123000, "23":1732000, "27":1579000, "33":1428000, "35":1368000},
+    "3900000": {"11":2911000, "17":2078000, "23":1698000, "27":1547000, "33":1397000, "35":1337000},
+    "4300000": {"11":2867000, "17":2047000, "23":1673000, "27":1524000, "33":1377000, "35":1318000},
+    "5700000": {"11":2714000, "17":1939000, "23":1567000, "27":1420000, "33":1282000, "35":1241000}
+  },
+                "Vario 160 CBS SP": {
+    "3100000": {"11":3054000, "17":2182000, "23":1783000, "27":1626000, "33":1471000, "35":1409000},
+    "3300000": {"11":3032000, "17":2166000, "23":1770000, "27":1614000, "33":1460000, "35":1399000},
+    "3600000": {"11":2999000, "17":2143000, "23":1751000, "27":1597000, "33":1445000, "35":1384000},
+    "4300000": {"11":2895000, "17":2067000, "23":1692000, "27":1542000, "33":1393000, "35":1334000},
+    "5800000": {"11":2731000, "17":1951000, "23":1579000, "27":1432000, "33":1294000, "35":1252000}
+  },
+                "Vario 160 ABS": {
+    "3400000": {"11":3417000, "17":2441000, "23":1994000, "27":1819000, "33":1645000, "35":1576000},
+    "3700000": {"11":3384000, "17":2417000, "23":1975000, "27":1802000, "33":1630000, "35":1561000},
+    "4100000": {"11":3339000, "17":2386000, "23":1950000, "27":1779000, "33":1609000, "35":1541000},
+    "4900000": {"11":3221000, "17":2300000, "23":1883000, "27":1716000, "33":1551000, "35":1484000},
+    "6500000": {"11":3046000, "17":2177000, "23":1762000, "27":1598000, "33":1443000, "35":1397000}
+  },
+                "Scoopy Prestige": {
+    "2500000": {"11":2638000, "17":1888000, "23":1538000, "27":1394000, "33":1283000, "35":1244000},
+    "2800000": {"11":2600000, "17":1860000, "23":1514000, "27":1371000, "33":1262000, "35":1223000},
+    "3100000": {"11":2567000, "17":1836000, "23":1495000, "27":1355000, "33":1246000, "35":1208000},
+    "3400000": {"11":2534000, "17":1813000, "23":1476000, "27":1338000, "33":1231000, "35":1193000},
+    "3700000": {"11":2501000, "17":1789000, "23":1457000, "27":1321000, "33":1215000, "35":1178000},
+    "3900000": {"11":2332000, "17":1657000, "23":1350000, "27":1223000, "33":1121000, "35":1086000}
+  },
+"Scoopy Stylish": {
+   "2500000": {"11":2638000, "17":1888000, "23":1538000, "27":1394000, "33":1283000, "35":1244000},
+    "2800000": {"11":2600000, "17":1860000, "23":1514000, "27":1371000, "33":1262000, "35":1223000},
+    "3100000": {"11":2567000, "17":1836000, "23":1495000, "27":1355000, "33":1246000, "35":1208000},
+    "3400000": {"11":2534000, "17":1813000, "23":1476000, "27":1338000, "33":1231000, "35":1193000},
+    "3700000": {"11":2501000, "17":1789000, "23":1457000, "27":1321000, "33":1215000, "35":1178000},
+    "3900000": {"11":2332000, "17":1657000, "23":1350000, "27":1223000, "33":1121000, "35":1086000}
+  },
+"Scoopy Energetik": {
+    "2400000": {"11":2577000, "17":1850000, "23":1512000, "27":1373000, "33":1233000, "35":1195000},
+    "2600000": {"11":2550000, "17":1830000, "23":1494000, "27":1356000, "33":1217000, "35":1179000},
+    "2800000": {"11":2528000, "17":1814000, "23":1481000, "27":1345000, "33":1207000, "35":1169000},
+    "3000000": {"11":2506000, "17":1798000, "23":1469000, "27":1333000, "33":1197000, "35":1159000},
+    "3600000": {"11":2440000, "17":1751000, "23":1430000, "27":1299000, "33":1166000, "35":1130000},
+    "4800000": {"11":2267000, "17":1615000, "23":1320000, "27":1197000, "33":1197000, "35":1036000}
+  },
+"Scoopy Fashion": {
+    "2400000": {"11":2577000, "17":1850000, "23":1512000, "27":1373000, "33":1233000, "35":1195000},
+    "2600000": {"11":2550000, "17":1830000, "23":1494000, "27":1356000, "33":1217000, "35":1179000},
+    "2800000": {"11":2528000, "17":1814000, "23":1481000, "27":1345000, "33":1207000, "35":1169000},
+    "3000000": {"11":2506000, "17":1798000, "23":1469000, "27":1333000, "33":1197000, "35":1159000},
+    "3600000": {"11":2440000, "17":1751000, "23":1430000, "27":1299000, "33":1166000, "35":1130000},
+    "4800000": {"11":2267000, "17":1615000, "23":1320000, "27":1197000, "33":1197000, "35":1036000}
+  },
+
 };
+
 
 // Update OTR
 unitSelect.addEventListener("change", ()=>{
@@ -253,13 +427,16 @@ function updateDPBayar(){
 // Update Angsuran
 function updateAngsuran(){
   const unit = unitSelect.value;
+  const dp = dpSystemSelect.value;
   const tenor = tenorSelect.value;
-  if(unit && tenor && angsuranMapping[unit] && angsuranMapping[unit][tenor]){
-    angsuranInput.value = angsuranMapping[unit][tenor];
-  }else{
+
+  if(unit && dp && tenor && angsuranMapping[unit] && angsuranMapping[unit][dp] && angsuranMapping[unit][dp][tenor]){
+    angsuranInput.value = angsuranMapping[unit][dp][tenor].toLocaleString("id-ID");
+  } else {
     angsuranInput.value = "";
   }
 }
+
 
 // Update Total Cash
 function updateTotalCash(){
@@ -277,6 +454,7 @@ keterangan.addEventListener("change", ()=>{
     dpBayarContainer.classList.remove("hidden");
     angsuranContainer.classList.remove("hidden");
     totalCashContainer.classList.add("hidden");
+     hasilContainer.classList.add("hidden"); 
   }else if(keterangan.value === "Cash"){
     leasingContainer.classList.add("hidden");
     dpContainer.classList.add("hidden");
@@ -284,6 +462,15 @@ keterangan.addEventListener("change", ()=>{
     dpBayarContainer.classList.add("hidden");
     angsuranContainer.classList.add("hidden");
     totalCashContainer.classList.remove("hidden");
+      hasilContainer.classList.add("hidden"); 
+  }else if(keterangan.value === "Proses Leasing"){
+    leasingContainer.classList.remove("hidden");
+    dpContainer.classList.remove("hidden");
+    tenorContainer.classList.remove("hidden");
+    dpBayarContainer.classList.remove("hidden");
+    angsuranContainer.classList.remove("hidden");
+    totalCashContainer.classList.add("hidden");
+    hasilContainer.classList.remove("hidden");
   }else{
     leasingContainer.classList.add("hidden");
     dpContainer.classList.add("hidden");
@@ -291,16 +478,18 @@ keterangan.addEventListener("change", ()=>{
     dpBayarContainer.classList.add("hidden");
     angsuranContainer.classList.add("hidden");
     totalCashContainer.classList.add("hidden");
+      hasilContainer.classList.add("hidden"); 
   }
 });
 
 // Event listeners
-dpSystemSelect.addEventListener("change", updateDPBayar);
-diskonInput.addEventListener("input", ()=>{
+
+    dpSystemSelect.addEventListener("change", ()=>{
   updateDPBayar();
-  updateTotalCash();
+  updateAngsuran();
 });
 tenorSelect.addEventListener("change", updateAngsuran);
+
 
 // Form submit
 form.addEventListener("submit", e=>{
@@ -312,6 +501,7 @@ form.addEventListener("submit", e=>{
     otr: otrInput.value,
     kecamatan: document.getElementById("kecamatan").value,
     keterangan: keterangan.value,
+      hasil: hasil.value,
     leasing: leasingSelect.value,
     dpBayar: dpBayarInput.value,
     tenor: tenorSelect.value,
@@ -367,6 +557,7 @@ function renderTable(){
       <td class="border p-1">${c.tenor||''}</td>
       <td class="border p-1">${c.angsuran||''}</td>
       <td class="border p-1">${c.diskon||''}</td>
+      <td class="border p-1">${c.hasil||''}</td>
       <td class="border p-1">${c.totalCash||''}</td>
       <td class="border p-1 text-center">
         <button onclick="editCustomer(${i})" class="bg-yellow-400 px-2 rounded">Edit</button>
@@ -387,6 +578,7 @@ function editCustomer(index){
   document.getElementById("kecamatan").value = c.kecamatan;
   keterangan.value = c.keterangan;
   diskonInput.value = c.diskon;
+ hasil.value = c.hasil;
 
   if(c.keterangan === "Kredit"){
     leasingContainer.classList.remove("hidden");
@@ -394,6 +586,7 @@ function editCustomer(index){
     tenorContainer.classList.remove("hidden");
     dpBayarContainer.classList.remove("hidden");
     angsuranContainer.classList.remove("hidden");
+    hasilContainer.classList.add("hidden");
     totalCashContainer.classList.add("hidden");
 
     leasingSelect.value = c.leasing;
@@ -406,6 +599,7 @@ function editCustomer(index){
     totalCashContainer.classList.remove("hidden");
     leasingContainer.classList.add("hidden");
     dpContainer.classList.add("hidden");
+    hasilContainer.classList.add("hidden");
     tenorContainer.classList.add("hidden");
     dpBayarContainer.classList.add("hidden");
     angsuranContainer.classList.add("hidden");
