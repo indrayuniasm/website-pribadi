@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Simulasi Motor By Indra</title>
+<style>
+    body { font-family: Arial, sans-serif; padding: 20px; background:#f7f7f7; }
+    h2 { margin-top: 30px; }
+    select, input {
+        padding: 8px; margin: 7px 0; width: 250px;
+    }
+    .box {
+        background: white; padding: 20px; border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px;
+    }
+    table { border-collapse: collapse; width: 400px; margin-top: 10px; }
+    table td { border:1px solid #ccc; padding: 6px; background: #fff; }
+</style>
+</head>
+<body>
+
+<h1>Simulasi Pembelian Motor Honda</h1>
+
+<div class="box">
+    <label>Pilih Motor:</label><br>
+    <select id="motorSelect" onchange="updateWarna()">
+        <option value="">-- Pilih Motor --</option>
+    </select><br>
+
+    <label>Pilih Warna:</label><br>
+    <select id="warnaSelect">
+        <option value="">-- Pilih Warna --</option>
+    </select><br>
+
+    <label>Pilih Pembelian:</label><br>
+    <select id="tipeSelect" onchange="toggleCashKredit()">
+        <option value="">-- Pilih --</option>
+        <option value="cash">Cash</option>
+        <option value="kredit">Kredit</option>
+    </select>
+</div>
+
+<!-- Kredit -->
+<div id="kreditBox" class="box" style="display:none;">
+    <label>Pilih Tenor:</label><br>
+    <select id="tenorSelect" onchange="hitungKredit()">
+        <option value="">-- Pilih Tenor --</option>
+        <option value="11">11</option>
+        <option value="17">17</option>
+        <option value="23">23</option>
+        <option value="27">27</option>
+        <option value="29">29</option>
+        <option value="33">33</option>
+        <option value="35">35</option>
+    </select><br>
+
+    <label>DP Bayar (input customer):</label><br>
+    <input type="number" id="dpBayar" oninput="hitungKredit()"><br>
+
+    <h3>Hasil Kredit</h3>
+    <table>
+        <tr><td>DP System</td><td id="dpSystemDisp"></td></tr>
+        <tr><td>Diskon</td><td id="diskonKreditDisp"></td></tr>
+        <tr><td>Total DP disarankan</td><td id="totalDPDisp"></td></tr>
+        <tr><td>Status</td><td id="statusKredit"></td></tr>
+    </table>
+</div>
+
+<!-- Cash -->
+<div id="cashBox" class="box" style="display:none;">
+    <h3>Hasil Cash</h3>
+    <table>
+        <tr><td>OTR</td><td id="otrDisp"></td></tr>
+        <tr><td>Diskon</td><td id="diskonCashDisp"></td></tr>
+        <tr><td>Maksimal Bayar</td><td id="maxBayarDisp"></td></tr>
+    </table>
+</div>
+
+    <marquee style="background:green;color:#ffffff;">Plafon November level 2 yaitu 12,5% - Website by indra</marquee>
+
+
+<script>
+// ===================== DATA UNIT ======================
+const dataMotor = {
+    "Beat CBS MJ1": {
+        warna: ["Merah Hitam", "Putih Hitam", "Hitam"],
+        otr: 19163000,
+        kredit: {
+            11:{ dp:2400000, diskon:2200000 },
+            17:{ dp:2400000, diskon:2200000 },
+            23:{ dp:2400000, diskon:2300000 },
+            27:{ dp:2400000, diskon:2300000 },
+            29:{ dp:2400000, diskon:2300000 },
+            33:{ dp:2400000, diskon:2400000 },
+            35:{ dp:2400000, diskon:2400000 },
+        },
+        diskonCash: 800000
+    },
+
+    "Beat Deluxe X66": {
+        warna: ["Hijau", "Silver"],
+        otr: 20457000,
+        kredit: {
+            11:{ dp:2600000, diskon:2000000 },
+            17:{ dp:2600000, diskon:2000000 },
+            23:{ dp:2600000, diskon:2200000 },
+            27:{ dp:2600000, diskon:2200000 },
+            29:{ dp:2600000, diskon:2200000 },
+            33:{ dp:2600000, diskon:2300000 },
+            35:{ dp:2600000, diskon:2300000 },
+        },
+        diskonCash: 800000
+    },
+
+    "Beat Street X64": {
+        warna: ["Putih", "Cokelat", "Hitam"],
+        otr: 20457000,
+        kredit: {
+            11:{ dp:2600000, diskon:1700000 },
+            17:{ dp:2600000, diskon:1700000 },
+            23:{ dp:2600000, diskon:1800000 },
+            27:{ dp:2600000, diskon:1800000 },
+            29:{ dp:2600000, diskon:1800000 },
+            33:{ dp:2600000, diskon:1900000 },
+            35:{ dp:2600000, diskon:1900000 },
+        },
+        diskonCash: 900000
+    },
+    
+    "Beat Deluxe SK X65": {
+        warna: ["Cokelat", "Biru", "Hitam"],
+        otr: 20987000,
+        kredit: {
+            11:{ dp:2700000, diskon:2200000 },
+            17:{ dp:2700000, diskon:2200000 },
+            23:{ dp:2700000, diskon:2400000 },
+            27:{ dp:2700000, diskon:2400000 },
+            29:{ dp:2700000, diskon:2400000 },
+            33:{ dp:2700000, diskon:2400000 },
+            35:{ dp:2700000, diskon:2400000 },
+        },
+        diskonCash: 800000
+    },
+
+        "Genio CBS LY1": {
+        warna: ["Hitam"],
+        otr: 20258000,
+        kredit: {
+            11:{ dp:2600000, diskon:1900000 },
+            17:{ dp:2600000, diskon:1900000 },
+            23:{ dp:2600000, diskon:2000000 },
+            27:{ dp:2600000, diskon:2000000 },
+            29:{ dp:2600000, diskon:2000000 },
+            33:{ dp:2600000, diskon:2300000 },
+            35:{ dp:2600000, diskon:2300000 },
+        },
+        diskonCash: 888000
+    },
+
+    "Genio CBS ISS LZ1": {
+        warna: ["Cokelat", "Hijau", "Hitam"],
+        otr: 20878000,
+        kredit: {
+            11:{ dp:2700000, diskon:1900000 },
+            17:{ dp:2700000, diskon:1900000 },
+            23:{ dp:2700000, diskon:2000000 },
+            27:{ dp:2700000, diskon:2000000 },
+            29:{ dp:2700000, diskon:2000000 },
+            33:{ dp:2700000, diskon:2300000 },
+            35:{ dp:2700000, diskon:2300000 },
+        },
+        diskonCash: 888000
+    },
+
+    "Scoopy Prestige": {
+        warna: ["Putih", "Hitam"],
+        otr: 24377500,
+        kredit: {
+            11:{ dp:3100000, diskon:2200000 },
+            17:{ dp:3100000, diskon:2200000 },
+            23:{ dp:3100000, diskon:2300000 },
+            27:{ dp:3100000, diskon:2300000 },
+            29:{ dp:3100000, diskon:2300000 },
+            33:{ dp:3100000, diskon:2400000 },
+            35:{ dp:3100000, diskon:2400000 },
+        },
+        diskonCash: 900000
+    },
+
+    "Scoopy Stylish": {
+        warna: ["Hijau", "Merah"],
+        otr: 24377500,
+        kredit: {
+            11:{ dp:3100000, diskon:2200000 },
+            17:{ dp:3100000, diskon:2200000 },
+            23:{ dp:3100000, diskon:2300000 },
+            27:{ dp:3100000, diskon:2300000 },
+            29:{ dp:3100000, diskon:2300000 },
+            33:{ dp:3100000, diskon:2400000 },
+            35:{ dp:3100000, diskon:2400000 },
+        },
+        diskonCash: 900000
+    },
+
+    "Scoopy Energetik": {
+        warna: ["Merah Hitam"],
+        otr: 23572500,
+        kredit: {
+            11:{ dp:3000000, diskon:2200000 },
+            17:{ dp:3000000, diskon:2200000 },
+            23:{ dp:3000000, diskon:2300000 },
+            27:{ dp:3000000, diskon:2300000 },
+            29:{ dp:3000000, diskon:2300000 },
+            33:{ dp:3000000, diskon:2400000 },
+            35:{ dp:3000000, diskon:2400000 },
+        },
+        diskonCash: 900000
+    },
+
+    "Scoopy Fashion": {
+        warna: ["Biru Putih"],
+        otr: 23572500,
+        kredit: {
+            11:{ dp:3000000, diskon:2000000 },
+            17:{ dp:3000000, diskon:2000000 },
+            23:{ dp:3000000, diskon:2100000 },
+            27:{ dp:3000000, diskon:2100000 },
+            29:{ dp:3000000, diskon:2100000 },
+            33:{ dp:3000000, diskon:2200000 },
+            35:{ dp:3000000, diskon:2200000 },
+        },
+        diskonCash: 900000
+    },
+
+    "Scoopy Kuromi": {
+        warna: ["indent"],
+        otr: 24681000,
+        kredit: {
+            11:{ dp:3100000, diskon:2200000 },
+            17:{ dp:3100000, diskon:2200000 },
+            23:{ dp:3100000, diskon:2300000 },
+            27:{ dp:3100000, diskon:2300000 },
+            29:{ dp:3100000, diskon:2300000 },
+            33:{ dp:3100000, diskon:2400000 },
+            35:{ dp:3100000, diskon:2400000 },
+        },
+        diskonCash: 300000
+    },
+
+    "Vario 125 CBS": {
+        warna: ["Merah hitam", "Hitam"],
+        otr: 24878000,
+        kredit: {
+            11:{ dp:3200000, diskon:2200000 },
+            17:{ dp:3200000, diskon:2200000 },
+            23:{ dp:3200000, diskon:2400000 },
+            27:{ dp:3200000, diskon:2400000 },
+            29:{ dp:3200000, diskon:2400000 },
+            33:{ dp:3200000, diskon:2500000 },
+            35:{ dp:3200000, diskon:2500000 },
+        },
+        diskonCash: 800000
+    },
+
+    "Vario 125 CBS ISS": {
+        warna: ["Merah", "Hitam", "Biru"],
+        otr: 26533000,
+        kredit: {
+            11:{ dp:3400000, diskon:1900000 },
+            17:{ dp:3400000, diskon:3500000 },
+            23:{ dp:3400000, diskon:3000000 },
+            27:{ dp:3400000, diskon:2500000 },
+            29:{ dp:3400000, diskon:2200000 },
+            33:{ dp:3400000, diskon:2000000 },
+            35:{ dp:3400000, diskon:1800000 },
+        },
+        diskonCash: 800000
+    },
+
+    "Vario 160 CBS": {
+        warna: ["Hitam", "Silver", "Putih"],
+        otr: 28330000,
+        kredit: {
+            11:{ dp:3600000, diskon:1900000 },
+            17:{ dp:3600000, diskon:1900000 },
+            23:{ dp:3600000, diskon:2000000 },
+            27:{ dp:3600000, diskon:2000000 },
+            29:{ dp:3600000, diskon:2000000 },
+            33:{ dp:3600000, diskon:2300000 },
+            35:{ dp:3600000, diskon:2300000 },
+        },
+        diskonCash: 900000
+    },
+
+    "Vario 160 CBS SP": {
+        warna: ["Hitam", "Silver", "Putih"],
+        otr: 28580000,
+        kredit: {
+            11:{ dp:3600000, diskon:1800000 },
+            17:{ dp:3600000, diskon:1800000 },
+            23:{ dp:3600000, diskon:2000000 },
+            27:{ dp:3600000, diskon:2000000 },
+            29:{ dp:3600000, diskon:2000000 },
+            33:{ dp:3600000, diskon:2300000 },
+            35:{ dp:3600000, diskon:2300000 },
+        },
+        diskonCash: 900000
+    },
+
+    "Vario 160 ABS": {
+        warna: ["Hitam", "Silver", "Putih"],
+        otr: 32079000,
+        kredit: {
+            11:{ dp:4100000, diskon:1800000 },
+            17:{ dp:4100000, diskon:1800000 },
+            23:{ dp:4100000, diskon:1900000 },
+            27:{ dp:4100000, diskon:1900000 },
+            29:{ dp:4100000, diskon:1900000 },
+            33:{ dp:4100000, diskon:2000000 },
+            35:{ dp:4100000, diskon:2000000 },
+        },
+        diskonCash: 900000
+    },
+
+    "PCX 160 CBS": {
+        warna: ["Hitam", "Silver", "Putih"],
+        otr: 34580000,
+        kredit: {
+            11:{ dp:4400000, diskon:2400000 },
+            17:{ dp:4400000, diskon:2400000 },
+            23:{ dp:4400000, diskon:2600000 },
+            27:{ dp:4400000, diskon:2600000 },
+            29:{ dp:4400000, diskon:2600000 },
+            33:{ dp:4400000, diskon:2900000 },
+            35:{ dp:4400000, diskon:2900000 },
+        },
+        diskonCash: 900000
+    },
+
+    "PCX 160 ABS": {
+        warna: ["Hitam", "Silver", "Putih"],
+        otr: 39766500,
+        kredit: {
+            11:{ dp:5000000, diskon:2200000 },
+            17:{ dp:5000000, diskon:2200000 },
+            23:{ dp:5000000, diskon:2200000 },
+            27:{ dp:5000000, diskon:2200000 },
+            29:{ dp:5000000, diskon:2200000 },
+            33:{ dp:5000000, diskon:2500000 },
+            35:{ dp:5000000, diskon:2500000 },
+        },
+        diskonCash: 900000
+    },
+
+    "PCX 160 ABS Roadsing": {
+        warna: ["Hitam", "Silver", "Putih"],
+        otr: 42763500,
+        kredit: {
+            11:{ dp:5400000, diskon:2200000 },
+            17:{ dp:5400000, diskon:2200000 },
+            23:{ dp:5400000, diskon:2400000 },
+            27:{ dp:5400000, diskon:2400000 },
+            29:{ dp:5400000, diskon:2400000 },
+            33:{ dp:5400000, diskon:2500000 },
+            35:{ dp:5400000, diskon:2500000 },
+        },
+        diskonCash: 900000
+    },
+
+    "ADV 160 CBS": {
+        warna: ["Hitam", "Silver", "Putih"],
+        otr: 37448000,
+        kredit: {
+            11:{ dp:4700000, diskon:1500000 },
+            17:{ dp:4700000, diskon:1500000 },
+            23:{ dp:4700000, diskon:1600000 },
+            27:{ dp:4700000, diskon:1600000 },
+            29:{ dp:4700000, diskon:1600000 },
+            33:{ dp:4700000, diskon:1700000 },
+            35:{ dp:4700000, diskon:1700000 },
+        },
+        diskonCash: 1110000
+    },
+
+    "ADV 160 ABS": {
+        warna: ["Hitam", "Silver", "Putih"],
+        otr: 41141000,
+        kredit: {
+            11:{ dp:5200000, diskon:1500000 },
+            17:{ dp:5200000, diskon:1500000 },
+            23:{ dp:5200000, diskon:1600000 },
+            27:{ dp:5200000, diskon:1600000 },
+            29:{ dp:5200000, diskon:1600000 },
+            33:{ dp:5200000, diskon:1700000 },
+            35:{ dp:5200000, diskon:1700000 },
+        },
+        diskonCash: 1110000
+    },
+
+    "ADV 160 ABS Roadsing": {
+        warna: ["Hitam", "Silver", "Putih"],
+        otr: 42797000,
+        kredit: {
+            11:{ dp:5400000, diskon:4000000 },
+            17:{ dp:5400000, diskon:3050000 },
+            23:{ dp:5400000, diskon:3000000 },
+            27:{ dp:5400000, diskon:2500000 },
+            29:{ dp:5400000, diskon:2200000 },
+            33:{ dp:5400000, diskon:2000000 },
+            35:{ dp:5400000, diskon:1800000 },
+        },
+        diskonCash: 1000000
+    },
+
+    "Stylo 160 CBS": {
+        warna: ["Hitam", "Silver", "Putih"],
+        otr: 29452000,
+        kredit: {
+            11:{ dp:3700000, diskon:1600000 },
+            17:{ dp:3700000, diskon:1600000 },
+            23:{ dp:3700000, diskon:1700000 },
+            27:{ dp:3700000, diskon:1700000 },
+            29:{ dp:3700000, diskon:1700000 },
+            33:{ dp:3700000, diskon:1900000 },
+            35:{ dp:3700000, diskon:1900000 },
+        },
+        diskonCash: 800000
+    },
+
+    "Stylo 160 ABS": {
+        warna: ["Hitam", "Silver", "Putih"],
+        otr: 33205000,
+        kredit: {
+            11:{ dp:4200000, diskon:1300000 },
+            17:{ dp:4200000, diskon:1300000 },
+            23:{ dp:4200000, diskon:1400000 },
+            27:{ dp:4200000, diskon:1400000 },
+            29:{ dp:4200000, diskon:1400000 },
+            33:{ dp:4200000, diskon:1500000 },
+            35:{ dp:4200000, diskon:1500000 },
+        },
+        diskonCash: 800000
+    }
+
+    
+};
+
+// ===================== LOAD MOTOR =====================
+const motorSelect = document.getElementById("motorSelect");
+for (let m in dataMotor) {
+    let opt = document.createElement("option");
+    opt.value = m;
+    opt.textContent = m;
+    motorSelect.appendChild(opt);
+}
+
+// ===================== UPDATE WARNA ====================
+function updateWarna() {
+    const motor = motorSelect.value;
+    const warnaSelect = document.getElementById("warnaSelect");
+    warnaSelect.innerHTML = "<option value=''>-- Pilih Warna --</option>";
+
+    if (!motor) return;
+
+    dataMotor[motor].warna.forEach(w => {
+        let opt = document.createElement("option");
+        opt.value = w;
+        opt.textContent = w;
+        warnaSelect.appendChild(opt);
+    });
+
+    hitungCash();
+    hitungKredit();
+}
+
+// ===================== CASH / KREDIT ===================
+function toggleCashKredit() {
+    const tipe = document.getElementById("tipeSelect").value;
+
+    document.getElementById("cashBox").style.display = tipe === "cash" ? "block" : "none";
+    document.getElementById("kreditBox").style.display = tipe === "kredit" ? "block" : "none";
+
+    hitungCash();
+    hitungKredit();
+}
+
+// ===================== HITUNG CASH =====================
+function hitungCash() {
+    if (document.getElementById("tipeSelect").value !== "cash") return;
+
+    const motor = motorSelect.value;
+    if (!motor) return;
+
+    let otr = dataMotor[motor].otr;
+    let diskon = dataMotor[motor].diskonCash;
+    let max = otr - diskon;
+
+    document.getElementById("otrDisp").textContent = "Rp " + otr.toLocaleString();
+    document.getElementById("diskonCashDisp").textContent = "Rp " + diskon.toLocaleString();
+    document.getElementById("maxBayarDisp").textContent = "Rp " + max.toLocaleString();
+}
+
+// ===================== HITUNG KREDIT =====================
+function hitungKredit() {
+    if (document.getElementById("tipeSelect").value !== "kredit") return;
+
+    const motor = motorSelect.value;
+    const tenor = document.getElementById("tenorSelect").value;
+    const dpBayar = Number(document.getElementById("dpBayar").value || 0);
+
+    if (!motor || !tenor) return;
+
+    let dpSystem = dataMotor[motor].kredit[tenor].dp;
+    let diskon = dataMotor[motor].kredit[tenor].diskon;
+    let totalDP = dpBayar + diskon;
+
+    document.getElementById("dpSystemDisp").textContent = "Rp " + dpSystem.toLocaleString();
+    document.getElementById("diskonKreditDisp").textContent = "Rp " + diskon.toLocaleString();
+    document.getElementById("totalDPDisp").textContent = "Rp " + totalDP.toLocaleString();
+
+    // STATUS
+// STATUS BARU
+let totalSetelahDiskon = dpBayar + diskon;
+
+if (totalSetelahDiskon > dpSystem) {
+    let lebih = totalSetelahDiskon - dpSystem;
+    document.getElementById("statusKredit").textContent =
+        "DP melebihi ✔ | Kelebihan: Rp " + lebih.toLocaleString();
+} 
+else if (totalSetelahDiskon < dpSystem) {
+    let kurang = dpSystem - totalSetelahDiskon;
+    document.getElementById("statusKredit").textContent =
+        "DP kurang ❌ | Kurang: Rp " + kurang.toLocaleString();
+} 
+else {
+    document.getElementById("statusKredit").textContent = 
+        "DP PAS ✔";
+}
+}
+</script>
+
+</body>
+</html>
