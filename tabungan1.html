@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tabungan - Simulasi & Tracker</title>
+  <style>
+    :root{--bg:#f6f7fb;--card:#fff;--accent:#4f46e5;--muted:#6b7280}
+    body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);margin:0;padding:24px;}
+    .container{max-width:900px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;font-size:20px}
+    .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-top:18px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=text],input[type=number],select,input[type=date]{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;font-size:15px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .inline{display:flex;gap:8px;align-items:center}
+    button{background:var(--accent);color:white;border:0;padding:10px 12px;border-radius:8px;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px}
+    .results{display:flex;gap:12px;margin-top:12px}
+    .result{flex:1;background:#f8f9ff;padding:12px;border-radius:8px}
+    .big{font-size:18px;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+    .progress{height:18px;background:#e9eefc;border-radius:18px;overflow:hidden}
+    .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#7c3aed);width:0}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    td,th{padding:8px;border-bottom:1px solid #eef2ff;text-align:left}
+    .tx-list{max-height:220px;overflow:auto}
+    .right{text-align:right}
+    .controls{display:flex;gap:8px;align-items:center}
+    .note{font-size:13px;color:var(--muted);margin-top:6px}
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+    @media(max-width:700px){.row{grid-template-columns:1fr}.results{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Tabungan — Target & Tracker</h1>
+    </header>
+
+    <section class="card" id="setupCard">
+      <div class="row">
+        <div>
+          <label>Target Jumlah (Rp)</label>
+          <input id="targetAmount" type="number" min="0" placeholder="contoh: 16000000" />
+        </div>
+        <div>
+          <label>Durasi (bulan)</label>
+          <input id="durationMonths" type="number" min="1" value="12" />
+        </div>
+      </div>
+
+      <div style="margin-top:10px" class="row">
+        <div>
+          <label>Tanggal Mulai</label>
+          <input id="startDate" type="date" />
+        </div>
+        <div>
+          <label>Tentukan opsi</label>
+          <select id="calcMode">
+            <option value="month">Hitung per bulan</option>
+            <option value="day">Hitung per hari</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+        <button id="btnCalculate">Hitung & Simpan Target</button>
+        <button id="btnReset" style="background:#ef4444">Reset Semua</button>
+        <div class="note">Target akan disimpan di browser (localStorage).</div>
+      </div>
+    </section>
+
+    <section class="card" id="summaryCard" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="small">Target</div>
+          <div class="big" id="showTarget">Rp 0</div>
+          <div class="muted" id="showRange">—</div>
+        </div>
+        <div style="width:60%">
+          <div class="small">Progress</div>
+          <div class="progress" style="margin-top:8px"><span id="progressBar"></span></div>
+          <div class="muted" style="margin-top:6px">Terkumpul: <strong id="collectedLabel">Rp 0</strong> / <span id="targetLabel">Rp 0</span></div>
+        </div>
+      </div>
+
+      <div class="results">
+        <div class="result">
+          <div class="small">Per Bulan</div>
+          <div class="big" id="perMonth">Rp 0</div>
+        </div>
+        <div class="result">
+          <div class="small">Per Hari (rata-rata)</div>
+          <div class="big" id="perDay">Rp 0</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="card">
+        <h3 style="margin:0 0 8px 0">Tambah Pemasukan / Tabungan</h3>
+        <div class="row">
+          <div>
+            <label>Jumlah (Rp)</label>
+            <input id="txAmount" type="number" min="0" placeholder="50000" />
+          </div>
+          <div>
+            <label>Keterangan</label>
+            <input id="txNote" type="text" placeholder="misal: nabung mingguan" />
+          </div>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="btnAddTx">Tambah</button>
+          <button id="btnImportSample" style="background:#10b981">Import contoh: 1 bulan dari target</button>
+          <div class="muted" style="margin-left:auto">Jumlah catatan: <span id="txCount">0</span></div>
+        </div>
+
+        <div class="tx-list">
+          <table id="txTable"><thead><tr><th>Tanggal</th><th>Catatan</th><th class="right">Jumlah</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+
+    </section>
+
+    <footer class="muted">Website tabungan sederhana — dibuat cepat. Data tersimpan di browser.</footer>
+  </div>
+
+  <script>
+    // util
+    const fmt = v => new Intl.NumberFormat('id-ID').format(Math.round(v || 0));
+
+    // state
+    const storeKey = 'tabungan_tracker_v1';
+    const defaultState = { target:0, months:12, start:null, tx:[] };
+
+    function loadState(){
+      try{ const raw = localStorage.getItem(storeKey); return raw?JSON.parse(raw):defaultState; }catch(e){return defaultState}
+    }
+    function saveState(s){ localStorage.setItem(storeKey, JSON.stringify(s)); }
+
+    // dom
+    const targetAmount = document.getElementById('targetAmount');
+    const durationMonths = document.getElementById('durationMonths');
+    const startDate = document.getElementById('startDate');
+    const calcMode = document.getElementById('calcMode');
+    const btnCalculate = document.getElementById('btnCalculate');
+    const btnReset = document.getElementById('btnReset');
+
+    const summaryCard = document.getElementById('summaryCard');
+    const showTarget = document.getElementById('showTarget');
+    const showRange = document.getElementById('showRange');
+    const perMonth = document.getElementById('perMonth');
+    const perDay = document.getElementById('perDay');
+    const progressBar = document.getElementById('progressBar');
+    const collectedLabel = document.getElementById('collectedLabel');
+    const targetLabel = document.getElementById('targetLabel');
+
+    const txAmount = document.getElementById('txAmount');
+    const txNote = document.getElementById('txNote');
+    const btnAddTx = document.getElementById('btnAddTx');
+    const txTableBody = document.querySelector('#txTable tbody');
+    const txCount = document.getElementById('txCount');
+    const btnImportSample = document.getElementById('btnImportSample');
+
+    let state = loadState();
+    // init UI
+    function render() {
+      if(state.target && state.target>0) summaryCard.style.display='block';
+      else summaryCard.style.display='none';
+
+      targetAmount.value = state.target||'';
+      durationMonths.value = state.months||12;
+      startDate.value = state.start||'';
+
+      showTarget.textContent = 'Rp ' + fmt(state.target);
+
+      // compute totals
+      const totalCollected = state.tx.reduce((s,t)=>s+t.amount,0);
+      const target = state.target || 0;
+      collectedLabel.textContent = 'Rp ' + fmt(totalCollected);
+      targetLabel.textContent = 'Rp ' + fmt(target);
+
+      const progress = target>0?Math.min(100, (totalCollected/target)*100):0;
+      progressBar.style.width = progress + '%';
+
+      // per month/day
+      const months = parseInt(state.months) || 1;
+      const perM = target / months || 0;
+      perMonth.textContent = 'Rp ' + fmt(perM);
+
+      // days: estimate length from start
+      const start = state.start? new Date(state.start) : new Date();
+      const end = new Date(start);
+      end.setMonth(end.getMonth() + months);
+      const days = Math.max(1, Math.ceil((end - start) / (1000*60*60*24)));
+      const perD = target / days || 0;
+      perDay.textContent = 'Rp ' + fmt(perD);
+
+      // range text
+      showRange.textContent = (state.start? new Date(state.start).toLocaleDateString() : 'hari ini') + ' → ' + end.toLocaleDateString();
+
+      // tx list
+      txTableBody.innerHTML = '';
+      state.tx.slice().reverse().forEach(t=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${new Date(t.when).toLocaleString()}</td><td>${escapeHtml(t.note)}</td><td class="right">Rp ${fmt(t.amount)}</td>`;
+        txTableBody.appendChild(tr);
+      });
+      txCount.textContent = state.tx.length;
+    }
+
+    function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    // actions
+    btnCalculate.addEventListener('click', ()=>{
+      const t = Number(targetAmount.value) || 0;
+      const m = Math.max(1, Number(durationMonths.value) || 1);
+      const sd = startDate.value || new Date().toISOString().slice(0,10);
+      state.target = t;
+      state.months = m;
+      state.start = sd;
+      saveState(state);
+      render();
+    });
+
+    btnReset.addEventListener('click', ()=>{
+      if(!confirm('Reset semua data tabungan?')) return;
+      state = { target:0, months:12, start:null, tx:[] };
+      saveState(state);
+      render();
+    });
+
+    btnAddTx.addEventListener('click', ()=>{
+      const a = Math.round(Number(txAmount.value)||0);
+      if(!a || a<=0){ alert('Masukkan jumlah yang valid'); return; }
+      const note = txNote.value || 'Tabungan manual';
+      state.tx.push({ amount:a, note:note, when: new Date().toISOString() });
+      txAmount.value=''; txNote.value='';
+      saveState(state); render();
+    });
+
+    btnImportSample.addEventListener('click', ()=>{
+      if(!state.target || state.target<=0){ alert('Tentukan target dulu.'); return; }
+      // import one month worth as sample deposit
+      const months = Math.max(1, Number(state.months)||1);
+      const oneMonth = Math.round(state.target / months);
+      state.tx.push({ amount: oneMonth, note: 'Contoh: 1 bulan target', when: new Date().toISOString() });
+      saveState(state); render();
+    });
+
+    // load previously
+    render();
+
+    // keyboard: enter to add tx when focused
+    txAmount.addEventListener('keyup', e=>{ if(e.key==='Enter') btnAddTx.click(); });
+  </script>
+</body>
+</html>
