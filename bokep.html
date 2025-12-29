@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>B0K3P1N 4J4</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .fade {
+      animation: fadeIn .5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+      #rainCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+      body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  backdrop-filter: blur(1px);
+  pointer-events:none;
+}
+      #notifBar{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(.9);
+  width: 320px;                /* BAR DIPERBESAR */
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0,0,0,.35);
+  text-align: center;
+  padding: 28px 20px;
+  z-index: 9999;
+  opacity: 0;
+  transition: all .35s ease;
+  pointer-events: none;
+}
+
+#notifBar.show{
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* GIF DI TENGAH */
+#notifBar img{
+  display: block;
+  margin: 0 auto 14px;
+  width: 120px;               /* GIF DIPERBESAR */
+}
+
+/* TEKS */
+#notifBar p{
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+      #adsTimer{
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,.6);
+  color:#fff;
+  padding:6px 10px;
+  border-radius:8px;
+  font-size:12px;
+  z-index:9999;
+}
+
+  </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 flex items-center justify-center p-4">
+
+<canvas id="rainCanvas"></canvas>
+    
+<div class="bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-xl p-6 text-center text-white relative z-10">
+    
+  <h1 class="text-3xl font-bold mb-2">B0K3P1N 4J4</h1>
+  <p class="text-sm mb-6 opacity-80">Silahkan pilih judul bokep</p>
+
+  <!-- BUTTON GRID -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+    <button onclick="startRandom('ngewe')" class="btn">Ngewe</button>
+    <button onclick="startRandom('colmek')" class="btn">Colmek</button>
+    <button onclick="startRandom('squirt')" class="btn">Squirt</button>
+    <button onclick="startRandom('bocil')" class="btn">Bocil</button>
+    <button onclick="startRandom('vcs')" class="btn">VCS</button>
+      <button onclick="startRandom('lesbi')" class="btn">Lesbi</button>
+    <button onclick="startRandom('paptt')" class="btn col-span-2 sm:col-span-3">Pap TT / Memek</button>
+  </div>
+
+  <!-- MEDIA -->
+  <div id="mediaContainer" class="hidden fade mb-4"></div>
+
+  <!-- ACTION -->
+  <div id="actionButtons" class="hidden flex gap-4 justify-center">
+    <button onclick="nextMedia()" class="px-4 py-2 bg-yellow-400 text-black rounded-lg font-semibold hover:scale-105 transition">
+      Lanjutkan
+    </button>
+    <button onclick="downloadMedia()" class="px-4 py-2 bg-green-500 rounded-lg font-semibold hover:scale-105 transition">
+      Unduh
+    </button>
+  </div>
+<a href="https://www.instagram.com/asmarabot"><marquee>dosa tanggung sendiri ya kontol - Jangan lupa follow ya ig @asmarabot</marquee></a>
+</div>
+<div id="notifBar">
+  <img src="https://media.tenor.com/DgD9C9MGlsQAAAAi/peachugomu-gif.gif" alt="warning">
+  <p>🚫 ngapain? udah lanjut sana coli/colmeknya</p>
+</div>
+    <div id="adsTimer"></div><!--buat iklan-->
+<script>
+/* ===============================
+   DATABASE PER KATEGORI
+================================ */
+const mediaDB = {
+  ngewe: [
+"https://g.top4top.io/m_3649g3zrb0.mp4",
+"https://h.top4top.io/m_3649u1g9p1.mp4",
+"https://i.top4top.io/m_3649yuryg2.mp4",
+"https://j.top4top.io/m_3649i3yyf3.mp4",
+"https://k.top4top.io/m_3649ji12c4.mp4",
+"https://l.top4top.io/m_364925qpk5.mp4",
+"https://a.top4top.io/m_3649jboac6.mp4",
+"https://b.top4top.io/m_3649leq5i7.mp4",
+"https://c.top4top.io/m_36491qvxt8.mp4",
+"https://d.top4top.io/m_36499e89w9.mp4",
+"https://c.top4top.io/m_36495lsal0.mp4",
+"https://d.top4top.io/m_3649bc5ow1.mp4",
+"https://e.top4top.io/m_3649d1o3u2.mp4",
+"https://f.top4top.io/m_36498r4vp3.mp4",
+"https://g.top4top.io/m_3649j6wzu4.mp4",
+"https://i.top4top.io/m_3649blzoc6.mp4",
+"https://j.top4top.io/m_36495lwh77.mp4",
+"https://k.top4top.io/m_3649m6ym78.mp4",
+"https://l.top4top.io/m_3649eiwou9.mp4",
+"https://h.top4top.io/m_3649ko24m5.mp4",
+"https://c.top4top.io/m_36490k9k10.mp4",
+"https://d.top4top.io/m_364920zgm1.mp4",
+"https://e.top4top.io/m_3649ea7we2.mp4",
+"https://f.top4top.io/m_3649jfwim3.mp4",
+"https://g.top4top.io/m_3649flw7m4.mp4",
+"https://h.top4top.io/m_3649g2cdh5.mp4",
+      "https://cdn.slicedrive.com/6lxsG2021.mp4"
+  ],
+  colmek: [
+"https://l.top4top.io/m_3649c2w2f0.mp4",
+"https://a.top4top.io/m_3649shpnq1.mp4",
+"https://b.top4top.io/m_3649j6b6v2.mp4",
+"https://c.top4top.io/m_3649aqolp3.mp4",
+"https://d.top4top.io/m_3649ybm044.mp4",
+"https://e.top4top.io/m_36491wudu5.mp4",
+"https://f.top4top.io/m_3649rnyb96.mp4",
+"https://g.top4top.io/m_3649q6dyz7.mp4",
+"https://h.top4top.io/m_3649yyiqf8.mp4",
+"https://i.top4top.io/m_3649obfym9.mp4",
+"https://f.top4top.io/m_36498rphc0.mp4",
+"https://g.top4top.io/m_3649m07d21.mp4",
+"https://h.top4top.io/m_3649sf89y2.mp4",
+"https://i.top4top.io/m_36494qtju3.mp4",
+"https://j.top4top.io/m_3649px6lc4.mp4",
+"https://k.top4top.io/m_3649lzaes5.mp4",
+"https://l.top4top.io/m_3649ac0g46.mp4",
+"https://a.top4top.io/m_3649bxx5u7.mp4",
+"https://b.top4top.io/m_3649u2b7v8.mp4",
+"https://c.top4top.io/m_3649kdqmu9.mp4",
+"https://g.top4top.io/m_364937icg0.mp4",
+"https://h.top4top.io/m_3649s4p7q1.mp4",
+"https://i.top4top.io/m_3649j1om72.mp4",
+"https://j.top4top.io/m_3649duz673.mp4",
+"https://k.top4top.io/m_3649tvaqe4.mp4",
+"https://l.top4top.io/m_3649obvtj5.mp4",
+"https://a.top4top.io/m_3649owx716.mp4",
+"https://b.top4top.io/m_3649vb3ug7.mp4",
+"https://c.top4top.io/m_3649jv4k38.mp4",
+"https://d.top4top.io/m_36495hqaf9.mp4",
+      "https://cdn.slicedrive.com/XmRcWB3g1.mp4",
+"https://cdn.slicedrive.com/zS3oF8og1.mp4",
+      "https://cdn.slicedrive.com/MVH78RxT1.mp4",
+      "https://cdn.slicedrive.com/cKqvsy5P1.mp4"
+  ],
+  bocil: [
+"https://i.top4top.io/m_3649d7lnb0.mp4",
+"https://j.top4top.io/m_3649otnor1.mp4",
+"https://k.top4top.io/m_36491vual2.mp4",
+"https://l.top4top.io/m_3649z3lxe3.mp4",
+"https://a.top4top.io/m_3649y8tcp4.mp4",
+"https://b.top4top.io/m_3649hscq75.mp4",
+"https://c.top4top.io/m_3649h8tm16.mp4",
+"https://d.top4top.io/m_36498xgnc7.mp4",
+"https://e.top4top.io/m_3649ya6k18.mp4",
+"https://f.top4top.io/m_36492ywg29.mp4",
+"https://j.top4top.io/m_3649072zx0.mp4",
+"https://k.top4top.io/m_3649jwwgv1.mp4",
+"https://l.top4top.io/m_3649q9gv42.mp4",
+"https://a.top4top.io/m_3649mv4nz3.mp4",
+"https://b.top4top.io/m_3649x3c3h4.mp4",
+"https://c.top4top.io/m_3649kb3la5.mp4",
+"https://d.top4top.io/m_3649zj8936.mp4",
+"https://e.top4top.io/m_3649zq5a17.mp4",
+"https://f.top4top.io/m_3649qeick8.mp4",
+"https://g.top4top.io/m_36493ztrz9.mp4",
+      "https://cdn.slicedrive.com/XmRcWB3g1.mp4"
+  ],
+  vcs: [
+"https://a.top4top.io/m_3649fakcg0.mp4",
+"https://b.top4top.io/m_3649ir7ut1.mp4",
+"https://c.top4top.io/m_3649yqqmu2.mp4",
+"https://d.top4top.io/m_3649ms3w33.mp4",
+      "https://cdn.slicedrive.com/vmJTmpiA1.mp4"
+  ],
+  paptt: [
+"https://k.top4top.io/p_3649y08gx0.jpg",
+"https://l.top4top.io/p_3649b171q1.jpg",
+"https://a.top4top.io/p_3649q79m12.jpg",
+"https://b.top4top.io/p_364974q803.jpg",
+"https://c.top4top.io/p_3649fv45n4.jpg",
+"https://d.top4top.io/p_3649bdz8k5.jpg",
+"https://e.top4top.io/p_3649l0idd6.jpg",
+"https://f.top4top.io/p_3649idw7x7.jpg",
+"https://g.top4top.io/p_3649qr04b8.jpg",
+"https://h.top4top.io/p_3649sxs3i9.jpg",
+"https://c.top4top.io/p_3649czvcp0.jpg",
+"https://d.top4top.io/p_3649j5x821.jpg",
+"https://e.top4top.io/p_3649uiz9x2.jpg",
+"https://f.top4top.io/p_3649xxnx63.jpg",
+"https://g.top4top.io/p_3649eufek4.jpg",
+"https://h.top4top.io/p_364965eyn5.jpg",
+"https://i.top4top.io/p_36492iyua6.jpg",
+"https://j.top4top.io/p_36493fdw17.jpg",
+"https://k.top4top.io/p_3649ud0iu8.jpg",
+"https://l.top4top.io/p_3649hl9hi9.jpg",
+"https://g.top4top.io/p_36496d57g0.jpg",
+"https://h.top4top.io/p_364918v671.jpg",
+"https://i.top4top.io/p_3649fkpi32.jpg",
+"https://j.top4top.io/p_36493jypf3.jpg",
+"https://k.top4top.io/p_3649y0ylw4.jpg",
+"https://l.top4top.io/p_3649nlcn45.jpg",
+"https://a.top4top.io/p_3649k2wtk6.jpg",
+"https://b.top4top.io/p_3649ds3xo7.jpg",
+"https://c.top4top.io/p_3649jx81r8.jpg"
+  ],
+  squirt: [
+"https://d.top4top.io/m_36498mxwq0.mp4",
+"https://e.top4top.io/m_3649af0wi1.mp4",
+"https://f.top4top.io/m_3649cpu6q2.mp4",
+"https://g.top4top.io/m_3649kxomu3.mp4",
+"https://h.top4top.io/m_3649sikgk4.mp4",
+"https://i.top4top.io/m_3649mfxot5.mp4",
+"https://j.top4top.io/m_3649f4ya16.mp4",
+"https://l.top4top.io/m_3649cn4a37.mp4",
+"https://a.top4top.io/m_3649tggq78.mp4",
+"https://b.top4top.io/m_36493heh99.mp4",
+"https://i.top4top.io/m_36497nyi71.mp4"
+  ],
+    
+  lesbi: [
+"https://a.top4top.io/m_36497njth0.mp4",
+"https://b.top4top.io/m_3649yi9vq1.mp4",
+"https://c.top4top.io/m_3649xolgh2.mp4"
+  ]
+};
+
+let currentCategory = [];
+let currentMedia = "";
+
+/* ===============================
+   LOGIC
+================================ */
+function startRandom(key) {
+  currentCategory = mediaDB[key] || [];
+  if (!currentCategory.length) {
+    alert("Kategori kosong");
+    return;
+  }
+  showRandom();
+}
+
+function showRandom() {
+  const i = Math.floor(Math.random() * currentCategory.length);
+  currentMedia = currentCategory[i];
+
+  const box = document.getElementById("mediaContainer");
+  box.innerHTML = "";
+  box.classList.remove("hidden");
+  box.classList.add("fade");
+
+  if (currentMedia.endsWith(".mp4")) {
+    box.innerHTML = `
+      <video src="${currentMedia}" controls autoplay loop
+        class="rounded-2xl shadow-lg max-h-80 mx-auto"></video>`;
+  } else {
+    box.innerHTML = `
+      <img src="${currentMedia}"
+        class="rounded-2xl shadow-lg max-h-80 mx-auto object-cover">`;
+  }
+
+  document.getElementById("actionButtons").classList.remove("hidden");
+}
+
+function nextMedia() {
+  showRandom();
+}
+
+/* ===============================
+   FORCE DOWNLOAD
+================================ */
+function downloadMedia() {
+  if (!currentMedia) return;
+
+  fetch(currentMedia)
+    .then(r => r.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `media_${Date.now()}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    })
+    .catch(() => alert("Download gagal"));
+}
+</script><script>const canvas = document.getElementById("rainCanvas");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+const rainDrops = [];
+
+for (let i = 0; i < 250; i++) {
+  rainDrops.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    length: Math.random() * 20 + 10,
+    speed: Math.random() * 6 + 4
+  });
+}
+
+function drawRain() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "rgba(255,255,255,0.25)";
+  ctx.lineWidth = 1;
+
+  rainDrops.forEach(drop => {
+    ctx.beginPath();
+    ctx.moveTo(drop.x, drop.y);
+    ctx.lineTo(drop.x, drop.y + drop.length);
+    ctx.stroke();
+
+    drop.y += drop.speed;
+    if (drop.y > canvas.height) {
+      drop.y = -20;
+      drop.x = Math.random() * canvas.width;
+    }
+  });
+
+  requestAnimationFrame(drawRain);
+}
+
+drawRain();</script>
+    <script>
+const notif = document.getElementById("notifBar");
+
+document.addEventListener("contextmenu", function(e){
+  e.preventDefault();
+  showNotif();
+});
+
+function showNotif(){
+  notif.classList.add("show");
+  clearTimeout(notif.timer);
+  notif.timer = setTimeout(() => {
+    notif.classList.remove("show");
+  }, 5000);
+}
+</script>
+    
+<script> // ini buat iklan ya gaes wkwk
+const REDIRECT_URL = "https://www.instagram.com/asmarabot";
+const LIMIT_TIME = 0 * 1 * 1000; // tes menit
+
+let canRedirect = false;
+
+// hitung waktu sejak halaman dibuka
+setTimeout(()=>{
+  alert("Iklan akan muncul setelah ini 🙂");
+}, LIMIT_TIME - 800);
+
+
+// trigger saat klik apapun
+function handleUserClick(e){
+  if(!canRedirect) return;
+
+  e.preventDefault();
+  window.location.href = REDIRECT_URL;
+}
+
+// deteksi semua interaksi
+["click","contextmenu","touchstart"].forEach(evt => {
+  document.addEventListener(evt, handleUserClick, true);
+});
+
+    
+</script>
+
+<style>
+  .btn{
+    padding:.7rem;
+    background:#ec4899;
+    border-radius:.75rem;
+    font-weight:600;
+    transition:.2s;
+  }
+  .btn:hover{ transform:scale(1.05); background:#db2777 }
+</style>
+
+</body>
+</html>
