@@ -394,33 +394,40 @@ function showNotif(){
 }
 </script>
     
-<script> // ini buat iklan ya gaes wkwk
+<script>
 const REDIRECT_URL = "https://www.instagram.com/asmarabot";
-const LIMIT_TIME = 0 * 1 * 1000; // tes menit
+const LIMIT_TIME = 5 * 60 * 1000; // 3 menit
 
 let canRedirect = false;
 
-// hitung waktu sejak halaman dibuka
 setTimeout(()=>{
+  canRedirect = true;
   alert("Iklan akan muncul setelah ini 🙂");
-}, LIMIT_TIME - 800);
+}, LIMIT_TIME);
 
-
-// trigger saat klik apapun
 function handleUserClick(e){
   if(!canRedirect) return;
-
   e.preventDefault();
   window.location.href = REDIRECT_URL;
 }
 
-// deteksi semua interaksi
 ["click","contextmenu","touchstart"].forEach(evt => {
   document.addEventListener(evt, handleUserClick, true);
 });
 
-    
+let s = 300;
+const timer = document.getElementById("adsTimer");
+
+setInterval(()=>{
+  if(s <= 0){
+    timer.innerText = "jangan lupap follow @asmarabot";
+  }else{
+    timer.innerText = "Iklan dalam " + s + "s";
+    s--;
+  }
+},1000);
 </script>
+
 
 <style>
   .btn{
