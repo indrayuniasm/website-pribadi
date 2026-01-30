@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>B0K3P1N 4J4</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Inter;
+  background:#f9f9f9;color:#111;
+  transition:.3s;
+}
+body.dark{
+  background:#0f0f0f;color:#eee;
+}
+
+/* HEADER */
+header{
+  position:fixed;top:0;left:0;right:0;
+  height:60px;background:#fff;
+  display:flex;align-items:center;
+  gap:16px;padding:0 20px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+  z-index:10;
+}
+body.dark header{background:#181818;box-shadow:none}
+
+.logo{font-weight:700;font-size:20px;color:red}
+.search{flex:1}
+.search input{
+  width:100%;padding:10px 14px;
+  border-radius:20px;border:1px solid #ccc;
+}
+body.dark .search input{
+  background:#121212;color:#fff;border:1px solid #333;
+}
+
+#themeToggle{
+  padding:6px 12px;
+  border-radius:20px;
+  border:1px solid #ccc;
+  background:#fff;cursor:pointer;
+}
+body.dark #themeToggle{
+  background:#222;color:#fff;border:1px solid #444;
+}
+
+/* MAIN */
+main{padding:90px 20px}
+.categories{display:flex;gap:10px;margin-bottom:20px}
+.cat{
+  padding:8px 14px;
+  background:#eee;border-radius:20px;
+  cursor:pointer;font-weight:600;
+}
+.cat.active{background:#000;color:#fff}
+body.dark .cat{background:#222;color:#eee}
+body.dark .cat.active{background:#fff;color:#000}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:16px;
+}
+.card{
+  background:#fff;border-radius:12px;
+  overflow:hidden;cursor:pointer;
+  transition:.2s;
+}
+.card:hover{transform:scale(1.03)}
+body.dark .card{background:#181818}
+.card img{
+  width:100%;aspect-ratio:16/9;
+  object-fit:cover;
+}
+.info{padding:10px}
+.info h4{margin:0 0 6px;font-size:14px}
+.tag{font-size:12px;color:#666}
+body.dark .tag{color:#aaa}
+
+/* MODAL */
+.modal,.popup{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;justify-content:center;
+  z-index:20;
+}
+.modal-content{
+  background:#000;
+  width:90%;max-width:800px;
+}
+.modal iframe,.modal img{
+  width:100%;height:450px;
+}
+
+/* POPUP */
+.popup-box{
+  background:#fff;padding:20px;
+  width:90%;max-width:350px;
+  border-radius:12px;
+  text-align:center;
+}
+.popup-box img{width:120px}
+.popup-box input,select{
+  width:100%;margin:8px 0;padding:8px;
+}
+.popup-box button{
+  width:100%;padding:10px;
+  background:#000;color:#fff;
+  border:none;border-radius:6px;
+}
+
+/* FOOTER */
+footer{
+  text-align:center;
+  padding:20px;color:#777;
+}
+body.dark footer{color:#aaa}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">B0K3P1N 4J4</div>
+  <div class="search">
+    <input id="search" placeholder="Cari video atau tag...">
+  </div>
+  <button id="themeToggle">🌙</button>
+</header>
+
+<main>
+  <div class="categories">
+    <div class="cat active" data-cat="all">Semua</div>
+    <div class="cat" data-cat="ngewe">Ngewe</div>
+    <div class="cat" data-cat="colmek">Colmek</div>
+    <div class="cat" data-cat="indonesia">Indonesia</div>
+    <div class="cat" data-cat="jepang">Jepang</div>
+    <div class="cat" data-cat="ngintip">Ngintip</div>
+    <div class="cat" data-cat="nyepong">Nyepong</div>
+    <div class="cat" data-cat="squirt">Colmek Muncrat</div>
+    <div class="cat" data-cat="bocil">Bocil</div>
+    <div class="cat" data-cat="vcs">VCS</div>
+    <div class="cat" data-cat="lesbi">Lesbian</div>
+    <div class="cat" data-cat="papmemek">Pap Memek</div>
+    <div class="cat" data-cat="papspong">Pap nyepong</div>
+    <div class="cat" data-cat="paplesbian">Pap Lesbian</div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>
+  <a href="admin.html">Admin Panel</a>
+</footer>
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+  <div class="popup-box">
+    <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif">
+    <input id="umur" type="number" placeholder="Umur">
+    <input id="kota" placeholder="Asal Kota">
+    <select id="gender">
+      <option value="">Jenis Kelamin</option>
+      <option>Laki-laki</option>
+      <option>Perempuan</option>
+    </select>
+    <label>
+      <input type="checkbox" id="setuju"> Setuju
+    </label>
+    <button onclick="submitUser()">Submit</button>
+  </div>
+</div>
+
+<!-- MODAL PLAYER -->
+<div class="modal" id="modal" onclick="closeModal()">
+  <div class="modal-content" id="modalContent"></div>
+</div>
+
+<script>
+/* DATA VIDEO */
+const videos=[
+{
+ title:"ngewe ketika rumah sepi",
+ category:"ngewe",
+ tags:"#ngewe #ngentot #sange #desah",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/xKMcKMdp1.mp4"
+},
+{
+ title:"ganggu ade pulang sekolah",
+ category:"",
+ tags:"#grepe #sekolah #cosplay",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/yUzrddAL1.mp4"
+},
+{
+ title:"abang ngewe adek di ruang tamu",
+ category:"ngewe",
+ tags:"#ngewe #adek #abang #ruangtamu",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/mubZFat81.mp4"
+},
+{
+ title:"ngewe sampe crottt",
+ category:"ngewe",
+ tags:"#ngewe #ngentot #sange #crottt",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/BiNZjudA1.mp4"
+},
+{
+ title:"hoki ketemu cewe sange di ome",
+ category:"ome",
+ tags:"#ome #hoki #sange #cewesange",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/TXSvsE0K1.mp4"
+},
+{
+ title:"diajarin ngewe sama tante",
+ category:"ngewe",
+ tags:"#ngewe #tante #diajarin #ahhhh",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/6gnHqjU61.mp4"
+},
+{
+ title:"tante colmek di kamar mandi",
+ category:"colmek",
+ tags:"#colmek #clmk #clmek #tante #omek",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/bjSlyzxJ1.mp4"
+},
+{
+ title:"nyepong full percakapan",
+ category:"nyepong",
+ tags:"#nyepong #percakapan #prckpn #spong",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/nx9rNVZA1.mp4"
+},
+{
+ title:"maen ome tv ketemu bocil colmek",
+ category:"ome",
+ tags:"#colmek #ometv #sange #ahhhh",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/HUebthAr1.mp4"
+},
+{
+ title:"colmek make terong enak bangettt",
+ category:"colmek",
+ tags:"#colmek #clmk #terong #sange",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/dCXgrLBj1.mp4"
+},
+{
+ title:"nyepong crot di muka",
+ category:"nyepong",
+ tags:"#nyepong #crot #muka #spong",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/BEckG6E51.mp4"
+},
+{
+ title:"coli crot di mulut",
+ category:"",
+ tags:"#coli #crot #mulut #ahhhh",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/U16OfrTw1.mp4"
+},
+{
+ title:"muasin om di hotel",
+ category:"ngewe",
+ tags:"#ngewe #ngentot #sange #ahhhh",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/l8LPvOou1.mp4"
+},
+{
+ title:"ngentot ketika rumah sepi",
+ category:"ngewe",
+ tags:"#ngewe #ahh #ngentot #crottt",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/6VctzEta1.mp4"
+},
+{
+ title:"ngintip orang ngewe sampe crot di dalem",
+ category:"ngintip",
+ tags:"#ngintip #ngewe #entod #ahhhh",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/uVmlSKBc1.mp4"
+},
+{
+ title:"dogystyle sampe crot",
+ category:"ngewe",
+ tags:"#ngewe #ngentot #doggy #dogystyle",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/B5Ab8yU01.mp4"
+},
+{
+ title:"nyepong berujung di ewe",
+ category:"nyepong",
+ tags:"#ngewe #ngentot #spong #nyepong",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:"https://cdn.slicedrive.com/dtPEGu841.mp4"
+},
+{
+ title:"",
+ category:"ngewe",
+ tags:"#ngewe #ngentot #sange #ahhhh",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:""
+},
+{
+ title:"",
+ category:"ngewe",
+ tags:"#ngewe #ngentot #sange #ahhhh",
+ thumbnail:"https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg",
+ type:"video",
+ url:""
+},
+
+{
+ title:"pap memek 1",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"https://i.ibb.co.com/7NjCZ7xR/1680167540-hot-boombo-biz-p-pornstar-solo-dildo-erotika-instagram-1.jpg",
+ type:"image",
+ url:"https://i.ibb.co.com/7NjCZ7xR/1680167540-hot-boombo-biz-p-pornstar-solo-dildo-erotika-instagram-1.jpg"
+},
+    {
+ title:"pap memek 2",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"https://i.ibb.co.com/hR9hPNCC/1678898436-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-57.jpg",
+ type:"image",
+ url:"https://i.ibb.co.com/hR9hPNCC/1678898436-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-57.jpg"
+},
+    {
+ title:"pap memek 3",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"https://i.ibb.co.com/MqLKzsR/1678898472-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-53.jpg",
+ type:"image",
+ url:"https://i.ibb.co.com/MqLKzsR/1678898472-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-53.jpg"
+},
+    {
+ title:"pap memek 4",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"https://i.ibb.co.com/zVvfDTv6/1678898483-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-43.jpg",
+ type:"image",
+ url:"https://i.ibb.co.com/zVvfDTv6/1678898483-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-43.jpg"
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"https://i.ibb.co.com/0R0V0xNX/1678898464-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-42.jpg",
+ type:"image",
+ url:"https://i.ibb.co.com/0R0V0xNX/1678898464-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-42.jpg"
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"https://i.ibb.co.com/pv2DvHpQ/1678898451-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-38.jpg",
+ type:"image",
+ url:"https://i.ibb.co.com/pv2DvHpQ/1678898451-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-38.jpg"
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"https://i.ibb.co.com/LdLJjc4J/1678898505-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-27.jpg",
+ type:"image",
+ url:"https://i.ibb.co.com/LdLJjc4J/1678898505-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-27.jpg"
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"https://i.ibb.co.com/xKh8mjX8/1678898420-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-25.jpg",
+ type:"image",
+ url:"https://i.ibb.co.com/xKh8mjX8/1678898420-hot-boombo-biz-p-puffy-pussy-up-close-chastnaya-erotika-25.jpg"
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    {
+ title:"pap memek ",
+ category:"papmemek",
+ tags:"#papmemek #memek #pap",
+ thumbnail:"",
+ type:"image",
+ url:""
+},
+    
+];
+
+const grid=document.getElementById("grid");
+function render(list){
+ grid.innerHTML="";
+ list.forEach(v=>{
+  grid.innerHTML+=`
+   <div class="card" onclick="openMedia('${v.type}','${v.url}')">
+    <img src="${v.thumbnail}">
+    <div class="info">
+     <h4>${v.title}</h4>
+     <div class="tag">${v.tags}</div>
+    </div>
+   </div>`;
+ });
+}
+render(videos);
+
+/* SEARCH */
+search.oninput=e=>{
+ const q=e.target.value.toLowerCase();
+ render(videos.filter(v=>
+  v.title.toLowerCase().includes(q) ||
+  v.tags.toLowerCase().includes(q)
+ ));
+};
+
+/* CATEGORY */
+document.querySelectorAll(".cat").forEach(c=>{
+ c.onclick=()=>{
+  document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
+  c.classList.add("active");
+  const cat=c.dataset.cat;
+  render(cat==="all"?videos:videos.filter(v=>v.category===cat));
+ };
+});
+
+/* PLAYER */
+function openMedia(type,url){
+ modalContent.innerHTML=
+  type==="video"
+  ? `<iframe src="${url}" allowfullscreen></iframe>`
+  : `<img src="${url}">`;
+ modal.style.display="flex";
+}
+function closeModal(){
+ modal.style.display="none";
+ modalContent.innerHTML="";
+}
+
+/* POPUP USER */
+if(!localStorage.getItem("submitted")){
+ popup.style.display="flex";
+}
+function submitUser(){
+ if(!setuju.checked) return alert("Harus setuju");
+ const users=JSON.parse(localStorage.getItem("users")||"[]");
+ users.push({
+  umur:umur.value,
+  kota:kota.value,
+  gender:gender.value,
+  waktu:new Date().toLocaleString()
+ });
+ localStorage.setItem("users",JSON.stringify(users));
+ localStorage.setItem("submitted","yes");
+ popup.style.display="none";
+}
+
+/* DARK MODE */
+if(localStorage.getItem("theme")==="dark"){
+ document.body.classList.add("dark");
+ themeToggle.textContent="☀️";
+}
+themeToggle.onclick=()=>{
+ document.body.classList.toggle("dark");
+ const d=document.body.classList.contains("dark");
+ themeToggle.textContent=d?"☀️":"🌙";
+ localStorage.setItem("theme",d?"dark":"light");
+};
+</script>
+
+</body>
+</html>
