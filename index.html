@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Indra Yunias'Mara</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /*=============== VARIABLES CSS ===============*/
+        :root {
+            --header-height: 3.5rem;
+            --bg: #f4f6fb;
+            --text: #0f172a;
+            --card: #ffffff;
+            --accent: #6366f1;
+            --muted: #64748b;
+            --shadow: 0 20px 40px rgba(0,0,0,.08);
+            --white-color: #fff;
+            --black-color: #121833;
+            --black-color-light: #1d254b;
+            --black-color-lighten: #262f5a;
+            --z-fixed: 100;
+        }
+
+        body.dark {
+            --bg: #0b1020;
+            --text: #e5e7eb;
+            --card: #121833;
+            --muted: #94a3b8;
+            --shadow: 0 30px 60px rgba(0,0,0,.5);
+        }
+
+        /*=============== BASE ===============*/
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: .4s;
+            padding-top: var(--header-height);
+            line-height: 1.6;
+        }
+
+        ul { list-style: none; }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; height: auto; }
+
+        /*=============== HEADER & NAV ===============*/
+        .header {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            background-color: var(--black-color);
+            box-shadow: 0 2px 16px hsla(220, 32%, 8%, .3);
+            z-index: var(--z-fixed);
+        }
+
+        .nav {
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1120px;
+            margin-inline: 1.5rem;
+        }
+
+        .nav__data {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .nav__logo {
+            color: var(--white-color);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-size: 2.25rem;
+        }
+
+        .nav__toggle {
+            position: relative;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            color: var(--white-color);
+        }
+
+        .nav__burger, .nav__close {
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            font-size: 1.5rem;
+            transition: .4s;
+        }
+        
+        .nav__close { opacity: 0; }
+
+        /*=============== NAVIGATION MOBILE ===============*/
+        @media screen and (max-width: 1118px) {
+            .nav__menu {
+                position: absolute;
+                left: 0; 
+                top: -1000px;
+                width: 100%;
+                background-color: var(--black-color);
+                max-height: calc(100vh - var(--header-height));
+                overflow-y: auto;
+                transition: .4s;
+                opacity: 0;
+            }
+            .show-menu { top: var(--header-height); opacity: 1; }
+            
+            .dropdown__menu, .dropdown__submenu {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height .4s ease-out;
+                background-color: var(--black-color-light);
+            }
+
+            .dropdown__item.show-dropdown > .dropdown__menu,
+            .dropdown__subitem.show-dropdown > .dropdown__submenu {
+                max-height: 1000px;
+                transition: max-height .4s ease-in;
+            }
+            
+            .dropdown__item.show-dropdown > .nav__link .dropdown__arrow {
+                transform: rotate(180deg);
+            }
+        }
+
+        .nav__list { display: flex; flex-direction: column; }
+        .nav__link, .dropdown__link, .dropdown__sublink {
+            color: var(--white-color);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            column-gap: .5rem;
+            font-weight: 600;
+            transition: .3s;
+        }
+
+        .dropdown__link { background-color: var(--black-color-light); }
+        .dropdown__sublink { background-color: var(--black-color-lighten); padding-left: 2.5rem; }
+        .dropdown__arrow, .dropdown__add { margin-left: auto; transition: .4s; }
+
+        /*=============== DESKTOP NAV ===============*/
+        @media screen and (min-width: 1118px) {
+            .nav { height: calc(var(--header-height) + 1.5rem); margin-inline: auto; }
+            .nav__data { width: auto; }
+            .nav__toggle { display: none; }
+            .nav__list { flex-direction: row; column-gap: 2.5rem; align-items: center; }
+            .nav__link { padding: 0; }
+            .nav__link:hover { color: var(--accent); }
+            
+            .dropdown__item, .dropdown__subitem { position: relative; }
+
+            .dropdown__menu, .dropdown__submenu {
+                position: absolute;
+                background-color: var(--black-color);
+                min-width: 200px;
+                opacity: 0;
+                pointer-events: none;
+                transition: .3s;
+                top: 5rem;
+                box-shadow: 0 8px 24px rgba(0,0,0,.2);
+            }
+            .dropdown__submenu { left: 100%; top: 0; }
+            .dropdown__item:hover > .dropdown__menu { opacity: 1; top: 100%; pointer-events: initial; }
+            .dropdown__subitem:hover > .dropdown__submenu { opacity: 1; top: 0; pointer-events: initial; }
+            .dropdown__link, .dropdown__sublink { padding: 1rem 1.5rem; }
+            .dropdown__item:hover > .nav__link .dropdown__arrow { transform: rotate(180deg); }
+        }
+
+        /*=============== THEME TOGGLE ===============*/
+        .theme-toggle { 
+            color: var(--white-color); 
+            cursor: pointer; 
+            font-size: 1.25rem; 
+            padding: 1.25rem 1.5rem; 
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-weight: 600;
+        }
+        @media screen and (min-width: 1118px) { 
+            .theme-toggle { padding: 0; font-size: 1.4rem; } 
+            .theme-toggle span { display: none; }
+        }
+
+        /*=============== MAIN CONTENT ===============*/
+        section { max-width: 1000px; margin: auto; padding: 60px 20px; }
+        .card { background: var(--card); border-radius: 20px; padding: 25px; box-shadow: var(--shadow); color: var(--text); transition: .4s; }
+        
+        .hero { text-align: center; padding-top: 100px; }
+        .hero img { width: 140px; height: 140px; border-radius: 50%; margin-bottom: 20px; border: 4px solid var(--accent); padding: 5px; }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .hero p { color: var(--muted); font-size: 1.1rem; }
+
+        .section__title { margin-bottom: 2rem; font-size: 1.75rem; display: flex; align-items: center; gap: .75rem; }
+        .section__title i { color: var(--accent); }
+
+        .timeline { border-left: 3px solid var(--accent); padding-left: 30px; margin-left: 10px; }
+        .exp { position: relative; margin-bottom: 30px; }
+        .exp::before { content: ''; position: absolute; left: -38px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 4px solid var(--bg); }
+
+        .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .project-card { position: relative; border-radius: 15px; overflow: hidden; height: 220px; box-shadow: var(--shadow); }
+        .project-card img { width: 100%; height: 100%; object-fit: cover; transition: .5s; }
+        .project-overlay { 
+            position: absolute; inset: 0; 
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); 
+            color: #fff; display: flex; flex-direction: column; 
+            justify-content: flex-end; padding: 20px; opacity: 0; transition: .4s; 
+        }
+        .project-card:hover .project-overlay { opacity: 1; }
+        .project-card:hover img { transform: scale(1.1); }
+
+        .feedback input, .feedback textarea { 
+            width: 100%; padding: 15px; border-radius: 12px; 
+            border: 1px solid #ddd; margin-bottom: 15px; 
+            background: transparent; color: var(--text); font-family: inherit; 
+        }
+        .feedback button { 
+            width: 100%; padding: 16px; border: none; border-radius: 12px; 
+            background: var(--accent); color: white; font-weight: 700; 
+            cursor: pointer; transition: .3s; font-size: 1rem;
+        }
+        .feedback button:hover { background: #4f46e5; transform: translateY(-2px); }
+
+        /*=============== UTILS ===============*/
+        .show-icon .nav__burger { opacity: 0; transform: rotate(90deg); }
+        .show-icon .nav__close { opacity: 1; transform: rotate(90deg); }
+
+
+/* =============== NIGHT MODE EFFECT =============== */
+/* =============== NIGHT MODE EFFECT =============== */
+.floating-elements {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+body.dark .floating-elements {
+    opacity: 1;
+}
+
+/* Background Langit Malam */
+body.dark {
+    background: radial-gradient(circle at top right, #1e293b 0%, #020617 100%) !important;
+}
+
+/* Bulan Sabit */
+.moon {
+    position: absolute;
+    top: 10%;
+    right: 15%;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    /* Teknik membuat sabit dengan box-shadow */
+    box-shadow: 20px 10px 0 0 #f1f5f9; 
+    transform: rotate(-15deg);
+    filter: drop-shadow(0 0 15px rgba(241, 245, 249, 0.5));
+}
+
+/* Bintang */
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.5;
+    animation: twinkle var(--duration) infinite ease-in-out;
+}
+
+/* Meteor / Shooting Star */
+.shooting-star {
+    position: absolute;
+    top: -10px;
+    width: 2px;
+    height: 150px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.8));
+    transform: rotate(45deg);
+    opacity: 0;
+    animation: shoot 10s infinite ease-in;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes shoot {
+    0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+    5% { opacity: 1; }
+    15% { transform: translateX(500px) translateY(500px) rotate(45deg); opacity: 0; }
+    100% { transform: translateX(500px) translateY(500px) rotate(45deg); opacity: 0; }
+}
+
+
+        #antiKlik{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.8);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  opacity:0;
+  pointer-events:none;
+  transition:0.3s;
+}
+
+#antiKlik.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.anti-box{
+  background:white;
+  padding:30px;
+  border-radius:15px;
+  text-align:center;
+  animation:pop 0.3s ease;
+}
+
+.anti-box img{
+  width:150px;
+  margin-bottom:15px;
+}
+
+.anti-box p{
+  font-size:18px;
+  font-weight:bold;
+color:#111;
+  margin-top:10px;
+  letter-spacing:0.5px;
+}
+
+@keyframes pop{
+  from{transform:scale(0.8);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+    </style>
+</head>
+<body>
+    <!-- NOTIF ANTI KLIK KANAN -->
+<div id="antiKlik">
+  <div class="anti-box">
+    <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="Warning Gif">
+    <p>Upsss... Klik kanan tidak diizinkan 😎</p>
+  </div>
+</div>
+<div class="floating-elements" id="night-assets">
+    <div class="moon"></div>
+    <div class="shooting-star" style="left: 30%; animation-delay: 2s;"></div>
+    <div class="shooting-star" style="left: 70%; animation-delay: 7s;"></div>
+    </div>
+    <header class="header">
+        <nav class="nav container">
+            <div class="nav__data">
+                <a href="#" class="nav__logo">
+                    <i class="ri-skull-2-line"></i> Indra Yunias'Mara
+                </a>
+                
+                <div class="nav__toggle" id="nav-toggle">
+                    <i class="ri-menu-line nav__burger"></i>
+                    <i class="ri-close-line nav__close"></i>
+                </div>
+            </div>
+
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li><a href="#" class="nav__link"><i class="ri-home-2-line"></i>Home</a></li>
+                    <li><a href="kerjaan/jualan.html" class="nav__link"><i class="ri-motorbike-line"></i>Beli Motor</a></li>
+                    <li class="dropdown__item">
+                        <div class="nav__link"><i class="ri-bar-chart-line"></i>
+                            Lainnya <i class="ri-arrow-down-s-line dropdown__arrow"></i>
+                        </div>
+                        <ul class="dropdown__menu">
+                            <li><a href="#" class="dropdown__link"><i class="ri-pie-chart-line"></i>CV</a></li>
+                            
+                            <li class="dropdown__subitem">
+                                <div class="dropdown__link">
+                                    <i class="ri-gamepad-line"></i> Game <i class="ri-add-line dropdown__add"></i>
+                                </div>
+                                <ul class="dropdown__submenu">
+                                    <li><a href="game/catur.html" class="dropdown__sublink"><i class="ri-gamepad-line"></i>Catur</a></li>
+                                    <li><a href="game/cacing.html" class="dropdown__sublink"><i class="ri-gamepad-line"></i>Cacing</a></li>
+                                    <li><a href="game/tebak-gambar.html" class="dropdown__sublink"><i class="ri-gamepad-line"></i>Tebak Gambar</a></li>
+                                    <li><a href="game/tebak-kata.html" class="dropdown__sublink"><i class="ri-gamepad-line"></i>Tebak Kata</a></li>
+                                    
+                                    
+                                </ul>
+                            </li>
+                            
+                        </ul>
+                    </li>
+                                        <li class="dropdown__item">
+                        <div class="nav__link"><i class="ri-vidicon-2-line"></i>
+                            Sosmed <i class="ri-arrow-down-s-line dropdown__arrow"></i>
+                        </div>
+                        <ul class="dropdown__menu">
+                            <li><a href="https://instagram.com/asmarabot" class="dropdown__link"><i class="ri-instagram-line"></i> Instagram</a></li>
+                            <li><a href="https://instagram.com/indra_desain" class="dropdown__link"><i class="ri-instagram-fill"></i> Portofolio</a></li>
+                            <li><a href="https://tiktok.com/apaan_oy" class="dropdown__link"><i class="ri-tiktok-line"></i> Tiktok</a></li>
+                            <li><a href="https://wa.me/6283849997221" class="dropdown__link"><i class="ri-whatsapp-line"></i> WhatsApp</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="theme-toggle" onclick="toggleTheme()">
+                        <i class="ri-moon-line" id="theme-icon"></i>
+                        <span>Ganti Tema</span>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <img src="foto/gw.jpg" alt="Profile">
+        <h1>Indra Yunias'Mara</h1>
+        <p>saya adalah anak pertama dari dua bersaudara dan memiliki adik perempuan. Saya merupakan lulusan SMK Sejahtera, jurusan Multimedia, angkatan 2024. Saya memiliki minat dalam pengembangan website, modifikasi serta penambahan fitur pada bot WhatsApp, desain grafis, dan bidang kreatif lainnya.</p>
+    </section>
+
+    <section id="about">
+        <h2 class="section__title"><i class="ri-user-smile-line"></i> Tentang Saya</h2>
+        <div class="card">
+           Saya adalah pribadi yang mudah beradaptasi dan dapat berbaur dengan orang baru, tergantung pada situasi dan karakter lawan bicara. Saya mampu bekerja secara individu maupun dalam tim, serta siap bekerja di bawah tekanan. Meski saya memiliki kelemahan berupa mudah lupa, saya mengatasinya dengan membiasakan diri mencatat setiap tugas dan hal penting yang harus saya kerjakan.
+        </div>
+    </section>
+
+    <section id="experience">
+        <h2 class="section__title"><i class="ri-briefcase-line"></i> Pengalaman Kerja</h2>
+        <div class="timeline">
+            <div class="exp card">
+                <h3>KEMENTERIAN AGAMA JAKARTA UTARA</h3>
+                <span style="color: var(--accent); font-weight: 600;">Praktik Kerja Lapangan • Maret 2023 - Mei 2023</span>
+                <p style="margin-top: 10px;">Bertanggung jawab membantu staf admin terhadap segala dokumen, data serta segala
+hal administratif yang berkepentingan dengan perusahaan.</p>
+            </div>
+            <div class="exp card">
+                <h3>PT. Finflet Teknologi Indonesia</h3>
+                <span style="color: var(--accent); font-weight: 600;">Team Sortir • Mei 2024 - Juni 2024</span>
+                <p style="margin-top: 10px;">Bertanggung jawab untuk memilih atau sortir paket sesuai dengan tujuan nya</p>
+            </div>
+            <div class="exp card">
+                <h3>PT. Wahanaartha Ritelindo</h3>
+                <span style="color: var(--accent); font-weight: 600;">Marketing Office • Juni 2024 - Februari 2026</span>
+                <p style="margin-top: 10px;">Bertanggung jawab untuk mencari konsumen dan membantu meningkatkan penjualan
+perusahaan, menginput data konsumen ke system, melayani konsumen dengan ramah,
+Mengikuti Event Nasional di PRJ 2024 dan PRJ 2025</p>
+            </div>
+            <div class="exp card">
+                <h3>Mixue</h3>
+                <span style="color: var(--accent); font-weight: 600;">Crew Store • September 2024 - Oktober 2024</span>
+                <p style="margin-top: 10px;">Bertanggung jawab untuk meningkatkan penjualan perusahaan, Melayani konsumen, Membuat menu untuk
+konsumen</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="experience">
+        <h2 class="section__title"><i class="ri-school-line"></i> Pengalaman Sekolah</h2>
+        <div class="timeline">
+            <div class="exp card">
+                <h3>SMK Sejahtera</h3>
+                <span style="color: var(--accent); font-weight: 600;">Multimedia • 2021 - 2024</span>
+                <p style="margin-top: 10px;">jurusan ini mempersiapkan pemahaman yang kuat dalam desain grafis, pembuatan
+konten multimedia, serta pengolahan audio dan video</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects">
+        <h2 class="section__title"><i class="ri-code-s-slash-line"></i> Proyek Terbaru</h2>
+        <!--<div class="projects">
+            <div class="project-card">
+                <img src="https://picsum.photos/600/400?random=1" alt="Project 1">
+                <div class="project-overlay">
+                    <h4>E-Commerce Website</h4>
+                    <p>React.js & Tailwind CSS</p>
+                </div>
+            </div>
+            <div class="project-card">
+                <img src="https://picsum.photos/600/400?random=2" alt="Project 2">
+                <div class="project-overlay">
+                    <h4>WA Bot Management</h4>
+                    <p>Node.js & Baileys API</p>
+                </div>
+            </div>-->
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2 class="section__title"><i class="ri-chat-3-line"></i> Hubungi Saya</h2>
+        <div class="card feedback">
+            <input type="text" id="nama" placeholder="Nama Anda" required>
+            <textarea id="pesan" rows="5" placeholder="Tulis pesan atau kritik dan saran..." required></textarea>
+            <button onclick="sendWA()"><i class="ri-whatsapp-line"></i> Kirim ke WhatsApp</button>
+        </div>
+    </section>
+
+    <script>
+        /*=============== MOBILE MENU TOGGLE ===============*/
+        const navMenu = document.getElementById('nav-menu'),
+              navToggle = document.getElementById('nav-toggle');
+
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('show-menu');
+            navToggle.classList.toggle('show-icon');
+        });
+
+        /*=============== DROPDOWN MOBILE LOGIC ===============*/
+        const dropdownItems = document.querySelectorAll('.dropdown__item');
+
+        dropdownItems.forEach((item) => {
+            const dropdownLink = item.querySelector('.nav__link');
+
+            dropdownLink.addEventListener('click', (e) => {
+                if(window.innerWidth < 1118) {
+                    e.preventDefault();
+                    const isOpen = item.classList.contains('show-dropdown');
+
+                    // Tutup dropdown lain yang sedang terbuka
+                    dropdownItems.forEach((otherItem) => {
+                        otherItem.classList.remove('show-dropdown');
+                    });
+
+                    // Jika klik pada yang tertutup, maka buka
+                    if(!isOpen) {
+                        item.classList.add('show-dropdown');
+                    }
+                }
+            });
+        });
+
+        /*=============== SUBMENU MOBILE LOGIC ===============*/
+        const subItems = document.querySelectorAll('.dropdown__subitem');
+
+        subItems.forEach((item) => {
+            const subLink = item.querySelector('.dropdown__link');
+
+            subLink.addEventListener('click', (e) => {
+                if(window.innerWidth < 1118) {
+                    e.stopPropagation(); // Biar menu utamanya gak ikut ketutup
+                    item.classList.toggle('show-dropdown');
+                }
+            });
+        });
+
+        /*=============== DARK/LIGHT MODE ===============*/
+        function toggleTheme() {
+            document.body.classList.toggle("dark");
+            const icon = document.getElementById('theme-icon');
+            
+            if(document.body.classList.contains("dark")) {
+                icon.classList.replace("ri-moon-line", "ri-sun-line");
+                localStorage.setItem("theme", "dark");
+            } else {
+                icon.classList.replace("ri-sun-line", "ri-moon-line");
+                localStorage.setItem("theme", "light");
+            }
+        }
+
+        // Cek localStorage pas reload
+        if(localStorage.getItem("theme") === "dark") {
+            document.body.classList.add("dark");
+            document.getElementById('theme-icon').classList.replace("ri-moon-line", "ri-sun-line");
+        }
+
+        /*=============== Buat ngirim ke wa ===============*/
+        function sendWA() {
+            const n = document.getElementById("nama").value;
+            const p = document.getElementById("pesan").value;
+            const phone = "6283849997221";
+
+            if(!n || !p) {
+                alert("pastikan sudah terisi semua yaaaaa");
+                return;
+            }
+
+            const url = `https://wa.me/${phone}?text=haiiii, aku dapat nomor kamu dari websitemu.%0A%0A*Nama saya:* ${n}%0A%0A*Pesan saya:*%0A${p}%0A%0Asaya tunggu respon darimu yaaa, terimakasih`;
+window.open(url, '_blank');
+
+        }
+    </script>
+
+
+    <script>
+        /*=============== GENERATE RANDOM STARS ===============*/
+function createStars() {
+    const container = document.getElementById('night-assets');
+    const starCount = 50; // Jumlah bintang
+
+    for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        
+        // Ukuran random
+        const size = Math.random() * 3 + 'px';
+        star.style.width = size;
+        star.style.height = size;
+        
+        // Posisi random
+        star.style.top = Math.random() * 100 + '%';
+        star.style.left = Math.random() * 100 + '%';
+        
+        // Durasi animasi random agar tidak kedap-kedip barengan
+        star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+        star.style.animationDelay = Math.random() * 5 + 's';
+        
+        container.appendChild(star);
+    }
+}
+
+// Jalankan fungsi saat web dimuat
+window.addEventListener('DOMContentLoaded', createStars);
+    </script>
+    <script>
+document.addEventListener("contextmenu", function(e){
+  e.preventDefault();
+
+  const notif = document.getElementById("antiKlik");
+  notif.classList.add("show");
+
+  setTimeout(() => {
+    notif.classList.remove("show");
+  }, 2000);
+});
+
+
+    document.onkeydown = function(e) {
+  if (e.keyCode == 123) return false;
+  if (e.ctrlKey && e.shiftKey && e.keyCode == 73) return false;
+  if (e.ctrlKey && e.shiftKey && e.keyCode == 74) return false;
+  if (e.ctrlKey && e.keyCode == 85) return false;
+};
+    </script>
+</body>
+</html>
