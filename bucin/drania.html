@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drania</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #fff5f7;
+            --text-color: #4a4a4a;
+            --accent-color: #ff85a2;
+        }
+
+        .dark-mode {
+            --bg-color: #1a1a2e;
+            --text-color: #e0e0e0;
+            --accent-color: #ff4d7d;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.5s ease;
+            overflow-x: hidden;
+        }
+
+        .font-romantis { font-family: 'Dancing Script', cursive; }
+        .font-elegant { font-family: 'Playfair Display', serif; }
+
+        .dark-mode #particles-js {
+    background: linear-gradient(
+        135deg,
+        rgba(20,20,40,0.8) 0%,
+        rgba(10,10,30,0.8) 100%
+    );
+}
+
+        /* Background Particles */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: linear-gradient(135deg, rgba(255,192,203,0.2) 0%, rgba(230,230,250,0.2) 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+        }
+
+        /* Timeline Connector */
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background: var(--accent-color);
+            transform: translateX(-50%);
+            opacity: 0.3;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .float-anim { animation: floating 4s ease-in-out infinite; }
+
+        .typing-text::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /*buat doraemon*/
+    #doraemonFace { width: 180px; height: 180px; margin: 0 auto 2rem auto; }
+    .eye { fill: white; stroke: #004a7c; stroke-width: 2; transition: all 0.3s ease; transform-origin: center; }
+    .pupil { fill: black; transition: all 0.3s ease; }
+    .eye.closed { ry: 2 !important; fill: #004a7c !important; stroke-width: 0 !important; }
+    .pupil.closed { opacity: 0 !important; }
+    #nose { fill: #e60012; transition: transform 0.3s ease; transform-origin: center; }
+    .wiggle { animation: wiggle 0.4s ease-in-out 3; }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(15deg); }
+      50% { transform: rotate(-15deg); }
+      75% { transform: rotate(15deg); }
+    }
+
+      .font-pacifico {
+      font-family: 'Pacifico', cursive;
+    }
+      .highlight {
+      color: #e91e63;
+      font-weight: bold;
+    }
+
+        /*buat notif bar*/
+              #notifBar{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(.9);
+  width: 320px;                /* BAR DIPERBESAR */
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0,0,0,.35);
+  text-align: center;
+  padding: 28px 20px;
+  z-index: 9999;
+  opacity: 0;
+  transition: all .35s ease;
+  pointer-events: none;
+}
+
+#notifBar.show{
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* GIF DI TENGAH */
+#notifBar img{
+  display: block;
+  margin: 0 auto 14px;
+  width: 120px;               /* GIF DIPERBESAR */
+}
+
+/* TEKS */
+#notifBar p{
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+}
+    </style>
+</head>
+<body class="min-h-screen">
+
+<!-- === LOGIN SECTION === -->
+<section id="authPage" class="flex items-center justify-center py-10 px-4">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-5xl w-full p-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
+    <!-- Doraemon Face -->
+    <div class="lg:col-span-1 flex flex-col items-center">
+      <div id="doraemonFace">
+        <svg width="180" height="180" viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="85" fill="#00a0de" stroke="#004a7c" stroke-width="4"/>
+          <circle cx="90" cy="110" r="65" fill="white"/>
+          <circle id="nose" cx="90" cy="85" r="12"/>
+          <ellipse id="leftEye" class="eye" cx="60" cy="70" rx="18" ry="25"/>
+          <ellipse id="rightEye" class="eye" cx="120" cy="70" rx="18" ry="25"/>
+          <circle id="leftPupil" class="pupil" cx="60" cy="80" r="9"/>
+          <circle id="rightPupil" class="pupil" cx="120" cy="80" r="9"/>
+          <path id="mouth" d="M50 120 Q90 130 130 120" stroke="#a3000a" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="mt-4 text-center text-indigo-800 font-semibold">Login dulu ya, Ayang~</p>
+    </div>
+
+    <!-- Login Form -->
+    <div class="lg:col-span-1 bg-indigo-50 rounded-2xl p-6">
+      <h2 class="text-2xl text-center font-semibold text-indigo-700 mb-6">Login</h2>
+      <form id="loginForm" class="space-y-4">
+        <input type="email" id="loginEmail" placeholder="Email" required class="w-full px-4 py-2 border rounded-lg" />
+        <input type="password" id="loginPassword" placeholder="Password" required class="w-full px-4 py-2 border rounded-lg" />
+        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700">Login</button>
+        <p id="loginErrorMsg" class="text-red-600 text-center hidden">Email atau password salah</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- === MAIN CONTENT (WEBSITE BUCIN) === -->
+<section id="mainPage" class="hidden">
+  <!-- INI ADALAH HALAMAN WEBSITE BUCIN ASLI KAMU -->
+ <!-- Navbar -->
+
+    <div id="particles-js"></div>
+
+    <div class="fixed top-5 right-5 z-50 flex gap-3">
+        <button onclick="toggleDarkMode()" class="p-3 bg-white/50 rounded-full shadow-lg hover:scale-110 transition">
+            <span id="dark-icon">🌙</span>
+        </button>
+        <button onclick="toggleMusic()" class="p-3 bg-white/50 rounded-full shadow-lg hover:scale-110 transition">
+            <span id="music-icon">🎵</span>
+        </button>
+    </div>
+
+    <section class="h-screen flex flex-col items-center justify-center text-center px-4">
+        <div data-aos="zoom-in" data-aos-duration="2000">
+            <h1 class="font-romantis text-6xl md:text-8xl text-pink-500 mb-4">DRANIA</h1>
+            <p class="font-elegant italic text-xl md:text-2xl opacity-80 mb-8">
+                “Dua hati yang dipertemukan waktu dan dipersatukan oleh rasa.”
+            </p>
+            <a href="#timeline" class="bg-pink-400 text-white px-8 py-3 rounded-full shadow-lg hover:bg-pink-500 transition-all transform hover:scale-105">
+                tentang kita 💌
+            </a>
+        </div>
+        <div class="absolute bottom-10 animate-bounce text-pink-400">
+            ↓ scroll pelan-pelan ya sayang
+        </div>
+    </section>
+
+    <section class="py-20 px-4 bg-gray-200/30 backdrop-blur-sm">
+        <div class="max-w-4xl mx-auto text-center" data-aos="fade-up">
+            <h2 class="font-elegant text-3xl mb-10">waktu yang udah kita lewati</h2>
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+    <div class="glass-card p-6">
+        <span id="years" class="text-4xl font-bold text-500">0</span>
+        <p class="text-sm uppercase tracking-widest">Tahun</p>
+    </div>
+    <div class="glass-card p-6">
+        <span id="months" class="text-4xl font-bold text-500">0</span>
+        <p class="text-sm uppercase tracking-widest">Bulan</p>
+    </div>
+    <div class="glass-card p-6">
+        <span id="days" class="text-4xl font-bold text-500">0</span>
+        <p class="text-sm uppercase tracking-widest">Hari</p>
+    </div>
+    <div class="glass-card p-6">
+        <span id="hours" class="text-4xl font-bold text-500">0</span>
+        <p class="text-sm uppercase tracking-widest">Jam</p>
+    </div>
+    <div class="glass-card p-6">
+        <span id="minutes" class="text-4xl font-bold text-500">0</span>
+        <p class="text-sm uppercase tracking-widest">Menit</p>
+    </div>
+    <div class="glass-card p-6">
+        <span id="seconds" class="text-4xl font-bold text-500">0</span>
+        <p class="text-sm uppercase tracking-widest">Detik</p>
+    </div>
+</div>
+            <p class="ont-elegant italic text-xl md:text-2xl opacity-80">“Kita sudah bersama selama ini, aku harap kita bersama selamanya”</p>
+        </div>
+    </section>
+
+    <section id="timeline" class="py-20 px-4 relative">
+        <h2 class="text-center font-elegant text-4xl mb-16" data-aos="fade-down">Perjalanan Rasa</h2>
+        <div class="max-w-5xl mx-auto relative timeline-line">
+            
+            <div class="mb-16 flex justify-between items-center w-full right-timeline" data-aos="fade-right">
+                <div class="order-1 w-5/12 hidden md:block"></div>
+                <div class="z-20 flex items-center order-1 bg-pink-400 shadow-xl w-8 h-8 rounded-full">
+                    <h1 class="mx-auto font-semibold text-lg text-white">✨</h1>
+                </div>
+                <div class="order-1 glass-card w-full md:w-5/12 px-6 py-4 shadow-xl">
+                    <h3 class="mb-1 font-bold text-xl">Perkenalan</h3>
+                    <p class="text-sm italic mb-2">"Satu sapaan yang mengubah segalanya"</p>
+                    <p class="text-sm leading-snug tracking-wide opacity-80">Berawal dari sapaan dan perkenalan membuat kita saling jatuh cinta</p>
+                </div>
+            </div>
+
+            <div class="mb-16 flex justify-between flex-row-reverse items-center w-full left-timeline" data-aos="fade-left">
+                <div class="order-1 w-5/12 hidden md:block"></div>
+                <div class="z-20 flex items-center order-1 bg-pink-400 shadow-xl w-8 h-8 rounded-full">
+                    <h1 class="mx-auto font-semibold text-lg text-white">💬</h1>
+                </div>
+                <div class="order-1 glass-card w-full md:w-5/12 px-6 py-4 shadow-xl">
+                    <h3 class="mb-1 font-bold text-xl">Chatan</h3>
+                    <p class="text-sm italic mb-2">"Chatan yang saling mengungkapan rasa"</p>
+                    <p class="text-sm leading-snug tracking-wide opacity-80">Beiring waktu chatan dan pada akhirnya kita saling mengungkapan perasaan</p>
+                </div>
+            </div>
+
+            <div class="mb-16 flex justify-between items-center w-full" data-aos="fade-right">
+                <div class="order-1 w-5/12 hidden md:block"></div>
+                <div class="z-20 flex items-center order-1 bg-pink-400 shadow-xl w-8 h-8 rounded-full">
+                    <h1 class="mx-auto font-semibold text-lg text-white">🫰</h1>
+                </div>
+                <div class="order-1 glass-card w-full md:w-5/12 px-6 py-4 shadow-xl">
+                    <h3 class="mb-1 font-bold text-xl">Ujian yang dilewati</h3>
+                    <p class="text-sm italic mb-2">"Permasalah yang hadir membuat kita yakin bisa melewati"</p>
+                    <p class="text-sm leading-snug tracking-wide opacity-80">Tidak ada hubungan tanpa permasalahan, semua itu tergantung dari diri kita dan pasangan apakah bisa melewati permasalahan tersebut atau memilih udahan</p>
+                </div>
+            </div>
+
+            <div class="mb-16 flex justify-between flex-row-reverse items-center w-full left-timeline" data-aos="fade-left">
+                <div class="order-1 w-5/12 hidden md:block"></div>
+                <div class="z-20 flex items-center order-1 bg-pink-400 shadow-xl w-8 h-8 rounded-full">
+                    <h1 class="mx-auto font-semibold text-lg text-white">👩🏻‍❤️‍👨🏻</h1>
+                </div>
+                <div class="order-1 glass-card w-full md:w-5/12 px-6 py-4 shadow-xl">
+                    <h3 class="mb-1 font-bold text-xl">Memperbaiki</h3>
+                    <p class="text-sm italic mb-2">"Cara kita memperbaiki hubungan"</p>
+                    <p class="text-sm leading-snug tracking-wide opacity-80">Permintaan maaf bukanlah dari seseorang yang salah, melainkan dari orang yang takut kehilangan.</p>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <section class="py-20 px-4 bg-white/20">
+        <h2 class="text-center font-elegant text-4xl mb-12">Galeri Kenangan</h2>
+        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="overflow-hidden rounded-lg shadow-lg group cursor-pointer" data-aos="zoom-in">
+                <img src="foto/1.jpeg" class="w-full h-80 object-cover">
+                <div class="p-4 bg-white">
+                    <p class="text-xs italic text-gray-500">Tawa pertama kita di bawah senja.</p>
+                </div>
+            </div>
+            <div class="overflow-hidden rounded-lg shadow-lg group cursor-pointer" data-aos="zoom-in" data-aos-delay="100">
+                <img src="foto/5.jpg" class="w-full h-80 object-cover">
+                <div class="p-4 bg-white">
+                    <p class="text-xs italic text-gray-500">Momen kecil yang terasa besar bagiku.</p>
+                </div>
+            </div>
+            <div class="overflow-hidden rounded-lg shadow-lg group cursor-pointer" data-aos="zoom-in" data-aos-delay="200">
+                <img src="foto/3.jpeg" class="w-full h-80 object-cover">
+                <div class="p-4 bg-white">
+                    <p class="text-xs italic text-gray-500">Selamanya adalah tujuan kita.</p>
+                </div>
+            </div>
+            
+            <div class="overflow-hidden rounded-lg shadow-lg group cursor-pointer" data-aos="zoom-in" data-aos-delay="200">
+                <img src="foto/6.jpg" class="w-full h-80 object-cover">
+                <div class="p-4 bg-white">
+                    <p class="text-xs italic text-gray-500">Selamanya adalah tujuan kita.</p>
+                </div>
+            </div>
+
+                
+            <div class="overflow-hidden rounded-lg shadow-lg group cursor-pointer" data-aos="zoom-in" data-aos-delay="200">
+                <img src="foto/7.jpg" class="w-full h-80 object-cover">
+                <div class="p-4 bg-white">
+                    <p class="text-xs italic text-gray-500">Selamanya adalah tujuan kita.</p>
+                </div>
+            </div>
+
+                
+            <div class="overflow-hidden rounded-lg shadow-lg group cursor-pointer" data-aos="zoom-in" data-aos-delay="200">
+                <img src="foto/8.jpg" class="w-full h-80 object-cover">
+                <div class="p-4 bg-white">
+                    <p class="text-xs italic text-gray-500">Selamanya adalah tujuan kita.</p>
+                </div>
+            </div>
+
+                
+            <div class="overflow-hidden rounded-lg shadow-lg group cursor-pointer" data-aos="zoom-in" data-aos-delay="200">
+                <img src="foto/9.jpg" class="w-full h-80 object-cover">
+                <div class="p-4 bg-white">
+                    <p class="text-xs italic text-gray-500">Selamanya adalah tujuan kita.</p>
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 px-4">
+        <div class="max-w-3xl mx-auto glass-card p-10 md:p-20 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-2 h-full bg-pink-400"></div>
+            <h2 class="font-elegant italic text-4xl text-pink-500 mb-6">Dibaca ini ya sayang</h2>
+            <div id="love-letter" class="leading-relaxed text-lg font-elegant italic opacity-90">
+                </div>
+        </div>
+    </section>
+
+    <audio id="bgMusic" loop>
+        <source src="https://entitled-moccasin-dx4bpvp4bq.edgeone.app/Denny%20Caknan%20Feat%20Bella%20Bonita%20-%20SINARENGAN%20Official%20Music%20Video.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="notifBar">
+  <img src="https://media.tenor.com/DgD9C9MGlsQAAAAi/peachugomu-gif.gif" alt="warning">
+  <p>🚫 maaf fitur klik kanan telah di nonaktifkan oleh indra</p>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Init AOS
+        AOS.init();
+
+        // mode dark
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const icon = document.getElementById('dark-icon');
+
+    const isDark = document.body.classList.contains('dark-mode');
+
+    icon.innerText = isDark ? '☀️' : '🌙';
+
+    particlesJS('particles-js', {
+        particles: {
+            number: { value: 50 },
+            color: { value: isDark ? "#ff4d7d" : "#ffb6c1" },
+            shape: { type: "circle" },
+            opacity: { value: 0.3 },
+            size: { value: 5 },
+            move: { enable: true, speed: 1, direction: "top" }
+        }
+    });
+}
+
+        // musik
+        const music = document.getElementById('bgMusic');
+        function toggleMusic() {
+            const icon = document.getElementById('music-icon');
+            if (music.paused) {
+                music.play();
+                icon.innerText = '⏸️';
+            } else {
+                music.pause();
+                icon.innerText = '🎵';
+            }
+        }
+
+        // hitungan hari
+const startDate = new Date(2025, 6, 1, 0, 0, 0); 
+//bulan 1 juli
+
+function updateLoveCounter() {
+    const now = new Date();
+
+    let years = now.getFullYear() - startDate.getFullYear();
+    let months = now.getMonth() - startDate.getMonth();
+    let days = now.getDate() - startDate.getDate();
+
+    if (days < 0) {
+        months--;
+        const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+        days += prevMonth.getDate();
+    }
+
+    if (months < 0) {
+        years--;
+        months += 12;
+    }
+
+    const diffTime = now - new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        startDate.getHours(),
+        startDate.getMinutes(),
+        startDate.getSeconds()
+    );
+
+    const hours = Math.floor((diffTime / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diffTime / (1000 * 60)) % 60);
+    const seconds = Math.floor((diffTime / 1000) % 60);
+
+    document.getElementById("years").innerText = years;
+    document.getElementById("months").innerText = months;
+    document.getElementById("days").innerText = days;
+    document.getElementById("hours").innerText = hours;
+    document.getElementById("minutes").innerText = minutes;
+    document.getElementById("seconds").innerText = seconds;
+}
+
+setInterval(updateLoveCounter, 1000);
+updateLoveCounter();
+
+        // teks effect
+        const text = "haiii sayang, terimakasih sudah mau membuka website kita ya. aku mau ngomong sesuatu yang selama ini aku pendam ay, jujur aku sedikit bingung dengan hubungan ini dan dengan sikap kamu yang masih bingung dengan perasaan dirimu sendiri. kamu sering bilang sayang aku tapi kamu sendiri pun pernah bilang lebih memilih mantan suamimu daripada aku karna dia berduit dan aku perhatiin selama dia hadir kembali kenapa sikap kamu berbeda ay. apakah kamu bingung ay? kadang kalo baca chat setiap kamu bela dia itu nyesek ay, kek gada guna nya ya cowo tanpa duit. aku tetap sayang kamu kok, love u sayanggg dan maaf ya kalo kamu kesal membaca nya, tapi ini isi hati aku yang ku pendam";
+        let index = 0;
+
+        function typeWriter() {
+            if (index < text.length) {
+                document.getElementById("love-letter").innerHTML += text.charAt(index);
+                index++;
+                setTimeout(typeWriter, 50);
+            }
+        }
+
+        // Trigger typing when section in view
+        const observer = new IntersectionObserver((entries) => {
+            if(entries[0].isIntersecting) {
+                typeWriter();
+                observer.disconnect();
+            }
+        });
+        observer.observe(document.getElementById("love-letter"));
+
+        // Particles Background
+        particlesJS('particles-js', {
+            "particles": {
+                "number": { "value": 50 },
+                "color": { "value": "#ffb6c1" },
+                "shape": { "type": "heart" },
+                "opacity": { "value": 0.3 },
+                "size": { "value": 5 },
+                "move": { "enable": true, "speed": 1, "direction": "top" }
+            }
+        });
+    </script>
+    <!-- === SCRIPT LOGIN === -->
+<script>
+  const passwordInput = document.getElementById('loginPassword');
+  const leftEye = document.getElementById('leftEye');
+  const rightEye = document.getElementById('rightEye');
+  const leftPupil = document.getElementById('leftPupil');
+  const rightPupil = document.getElementById('rightPupil');
+
+  // Doraemon eye animation
+  passwordInput.addEventListener('focus', () => {
+    leftEye.classList.add('closed');
+    rightEye.classList.add('closed');
+    leftPupil.classList.add('closed');
+    rightPupil.classList.add('closed');
+  });
+
+  passwordInput.addEventListener('blur', () => {
+    leftEye.classList.remove('closed');
+    rightEye.classList.remove('closed');
+    leftPupil.classList.remove('closed');
+    rightPupil.classList.remove('closed');
+  });
+
+  const loginForm = document.getElementById('loginForm');
+  const loginError = document.getElementById('loginErrorMsg');
+
+  // Static login data
+  const validEmail = "drania@gmail.com";
+  const validPassword = "drania";
+
+  // Login validation
+  loginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    if (email === validEmail && password === validPassword) {
+      document.getElementById('authPage').classList.add('hidden');
+      document.getElementById('mainPage').classList.remove('hidden');
+    } else {
+      loginError.classList.remove('hidden');
+    }
+  });
+    
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Form submission handling
+    const form = document.getElementById('loveMessageForm');
+    const thankYouMessage = document.getElementById('thankYouMessage');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      form.reset();
+      thankYouMessage.classList.remove('hidden');
+      setTimeout(() => {
+        thankYouMessage.classList.add('hidden');
+      }, 5000);
+    });
+</script>
+    <script>
+const notif = document.getElementById("notifBar");
+
+document.addEventListener("contextmenu", function(e){
+  e.preventDefault();
+  showNotif();
+});
+
+function showNotif(){
+  notif.classList.add("show");
+  clearTimeout(notif.timer);
+  notif.timer = setTimeout(() => {
+    notif.classList.remove("show");
+  }, 5000);
+}
+</script>
+</body>
+</html>
