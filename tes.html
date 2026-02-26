@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternal Diary - 3D Experience</title>
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --paper: #fdfaf0;
+            --cover: #3d1414;
+            --gold: #d4af37;
+            --text: #2c2c2c;
+            --font-serif: 'Playfair Display', serif;
+            --font-script: 'Dancing Script', cursive;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at center, #1a1515 0%, #050505 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            perspective: 2000px;
+        }
+
+        /* Ambient Lighting */
+        body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 10% 10%, rgba(255,240,200,0.05) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        /* --- BOOK STRUCTURE --- */
+        .book {
+            position: relative;
+            width: 380px; /* Base Portrait Width */
+            height: 550px;
+            transform-style: preserve-3d;
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+        }
+
+        /* Desktop: Geser ke kanan saat buka agar simetris */
+        .book.open {
+            transform: translateX(190px);
+        }
+
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transform-origin: left;
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .page-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            padding: 40px;
+            background: var(--paper);
+            background-image: url('https://www.transparenttextures.com/patterns/parchment.png');
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Front Page & Back Page Faces */
+        .front { z-index: 2; }
+        .back { transform: rotateY(180deg); z-index: 1; }
+
+        /* Shadows on Crease */
+        .front::after {
+            content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 40px;
+            background: linear-gradient(to right, rgba(0,0,0,0.15), transparent);
+        }
+        .back::after {
+            content: ''; position: absolute; right: 0; top: 0; height: 100%; width: 40px;
+            background: linear-gradient(to left, rgba(0,0,0,0.15), transparent);
+        }
+
+        /* Cover Styles */
+        .cover-front {
+            background: var(--cover);
+            color: var(--gold);
+            border-left: 12px solid #2a0e0e;
+            border-radius: 4px 10px 10px 4px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .cover-front h1 { font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 10px; }
+        .cover-front p { font-family: var(--font-serif); font-style: italic; opacity: 0.7; }
+
+        .cover-back { background: var(--cover); border-radius: 10px 4px 4px 10px; }
+
+        /* Content Styles */
+        .content h2 { 
+            font-family: var(--font-serif); 
+            font-size: 1.6rem; 
+            margin-bottom: 20px; 
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .content p { 
+            font-family: var(--font-script); 
+            font-size: 1.4rem; 
+            color: var(--text); 
+            line-height: 1.6;
+        }
+
+        /* Animation Class */
+        .page.flipped { transform: rotateY(-180deg); }
+
+        /* --- MOBILE ADAPTATION (LANDSCAPE) --- */
+        @media (max-width: 900px) {
+            .book {
+                width: 45vw; /* Lebih lebar di landscape mobile */
+                height: 80vh;
+            }
+            .book.open {
+                transform: translateX(22vw);
+            }
+            .content p { font-size: 1.1rem; }
+            .page-face { padding: 25px; }
+        }
+
+        /* Portrait Mobile fallback */
+        @media (max-width: 500px) and (orientation: portrait) {
+            .book { width: 80vw; height: 60vh; }
+            .book.open { transform: translateX(5vw); }
+        }
+
+        /* Controls */
+        .hint {
+            position: fixed;
+            bottom: 30px;
+            color: white;
+            font-family: sans-serif;
+            opacity: 0.5;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="book" id="book">
+    <div class="page" style="z-index: 10;">
+        <div class="page-face front cover-front">
+            <h1>Our Love Story</h1>
+            <p>Sebuah Jurnal Kenangan</p>
+            <small style="margin-top: 40px; opacity: 0.5;">Klik untuk membaca</small>
+        </div>
+        <div class="page-face back">
+            <div class="content">
+                <h2>Pertemuan Pertama</h2>
+                <p>Semuanya dimulai di sore yang tenang. Kamu datang dengan senyuman yang membuat waktu seakan berhenti sejenak...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="page" style="z-index: 9;">
+        <div class="page-face front">
+            <div class="content">
+                <p>Aku ingat betul aroma kopi dan suara hujan di luar sana. Namun yang paling kuingat adalah bagaimana matamu menatapku.</p>
+            </div>
+        </div>
+        <div class="page-face back">
+            <div class="content">
+                <h2>Tentang Rasa</h2>
+                <p>Jatuh cinta padamu adalah hal paling alami yang pernah kulakukan. Seperti bernapas, seperti pulang ke rumah.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="page" style="z-index: 8;">
+        <div class="page-face front">
+            <div class="content">
+                <p>Setiap tawa yang kita bagi adalah melodi terindah. Aku ingin menulis ribuan halaman lagi hanya untuk menceritakan betapa beruntungnya aku.</p>
+            </div>
+        </div>
+        <div class="page-face back">
+            <div class="content">
+                <h2>Janji Suci</h2>
+                <p>Mari menua bersama. Melampaui batas waktu, hingga hanya kenangan manis yang tersisa di antara kita.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="page" style="z-index: 7;">
+        <div class="page-face front">
+            <div class="content">
+                <p>Terima kasih telah menjadi bab terbaik dalam hidupku. <br><br> Selamanya, <br> Aku.</p>
+            </div>
+        </div>
+        <div class="page-face back cover-back"></div>
+    </div>
+</div>
+
+<div class="hint">TAP UNTUK MEMBALIK HALAMAN</div>
+
+<script>
+    const book = document.getElementById('book');
+    const pages = document.querySelectorAll('.page');
+    let currentPage = 0;
+
+    pages.forEach((page, index) => {
+        page.addEventListener('click', () => {
+            if (index === currentPage) {
+                // MEMBUKA HALAMAN
+                page.classList.add('flipped');
+                currentPage++;
+                
+                if (index === 0) {
+                    book.classList.add('open');
+                }
+                
+                // Atur z-index agar tidak menumpuk aneh saat terbuka
+                setTimeout(() => {
+                    page.style.zIndex = index + 1;
+                }, 600);
+            } else if (index === currentPage - 1) {
+                // MENUTUP HALAMAN
+                page.classList.remove('flipped');
+                currentPage--;
+                
+                if (index === 0) {
+                    book.classList.remove('open');
+                }
+                
+                // Kembalikan z-index semula
+                setTimeout(() => {
+                    page.style.zIndex = 10 - index;
+                }, 600);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
