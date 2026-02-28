@@ -3,254 +3,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eternal Diary - 3D Experience</title>
+    <title>Interactive 3D Novel Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lora:ital@0;1&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0d0d0d;
-            --paper: #fdfaf0;
-            --cover: #3d1414;
-            --gold: #d4af37;
-            --text: #2c2c2c;
-            --font-serif: 'Playfair Display', serif;
-            --font-script: 'Dancing Script', cursive;
+            --bg-color: #1a1a1a;
+            --paper-color: #fdfaf0;
+            --text-color: #2c3e50;
+            --speed: 0.8s;
+            --book-width: 350px;
+            --book-height: 500px;
         }
-
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background-color: var(--bg-color);
-            background-image: radial-gradient(circle at center, #1a1515 0%, #050505 100%);
-            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
             overflow: hidden;
-            perspective: 2000px;
+            perspective: 2000px; /* Kedalaman 3D */
+            font-family: 'Lora', serif;
         }
 
-        /* Ambient Lighting */
-        body::after {
+        /*paksa potrait
+        /* Tambahkan di dalam tag <style> */
+
+@media screen and (orientation: portrait) and (max-width: 900px) {
+    .scene {
+        transform: rotate(90deg);
+        transform-origin: center;
+        width: 100vh;
+        height: 100vw;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        translate: -50% -50%;
+    }
+
+    .controls {
+        transform: rotate(-90deg);
+        bottom: 10px;
+        left: 10px;
+    }
+    
+    body::before {
+        content: "Mohon putar perangkat Anda ke Landscape";
+        position: fixed;
+        top: 10px;
+        width: 100%;
+        text-align: center;
+        color: #d4af37;
+        font-size: 12px;
+        z-index: 9999;
+        font-family: sans-serif;
+    }
+}
+        
+        /* Lingkungan Meja & Lighting */
+        .scene {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #333 0%, #000 100%);
+            animation: cameraEntrance 2.5s ease-out;
+        }
+
+        .scene::after {
             content: '';
             position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 10% 10%, rgba(255,240,200,0.05) 0%, transparent 40%);
+            width: 150%;
+            height: 150%;
+            background: rgba(0,0,0,0.3);
             pointer-events: none;
+            box-shadow: inset 0 0 300px #000;
         }
 
-        /* --- BOOK STRUCTURE --- */
+        @keyframes cameraEntrance {
+            from { transform: scale(0.7) rotateX(20deg); opacity: 0; }
+            to { transform: scale(1) rotateX(0deg); opacity: 1; }
+        }
+
+        /* Struktur Buku */
         .book {
             position: relative;
-            width: 380px; /* Base Portrait Width */
-            height: 550px;
+            width: var(--book-width);
+            height: var(--book-height);
+            transition: transform 1s;
             transform-style: preserve-3d;
-            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
         }
 
-        /* Desktop: Geser ke kanan saat buka agar simetris */
+        /* Saat buku terbuka, geser sedikit ke kanan agar simetris */
         .book.open {
-            transform: translateX(190px);
+            transform: translateX(50%);
         }
 
-        .page {
+        .paper {
             position: absolute;
             width: 100%;
             height: 100%;
             top: 0;
             left: 0;
             transform-origin: left;
+            transition: transform var(--speed) cubic-bezier(0.645, 0.045, 0.355, 1);
             transform-style: preserve-3d;
-            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            user-select: none;
         }
 
-        .page-face {
+        .front, .back {
             position: absolute;
-            inset: 0;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: var(--paper-color);
             backface-visibility: hidden;
             padding: 40px;
-            background: var(--paper);
-            background-image: url('https://www.transparenttextures.com/patterns/parchment.png');
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.1);
+            box-shadow: inset 5px 0 30px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        /* Front Page & Back Page Faces */
-        .front { z-index: 2; }
-        .back { transform: rotateY(180deg); z-index: 1; }
-
-        /* Shadows on Crease */
-        .front::after {
-            content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 40px;
-            background: linear-gradient(to right, rgba(0,0,0,0.15), transparent);
-        }
-        .back::after {
-            content: ''; position: absolute; right: 0; top: 0; height: 100%; width: 40px;
-            background: linear-gradient(to left, rgba(0,0,0,0.15), transparent);
+        .back {
+            transform: rotateY(180deg);
+            background-color: #f5f0e1; /* Sedikit lebih gelap untuk sisi belakang */
         }
 
-        /* Cover Styles */
-        .cover-front {
-            background: var(--cover);
-            color: var(--gold);
-            border-left: 12px solid #2a0e0e;
-            border-radius: 4px 10px 10px 4px;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
+        /* Efek Ketebalan Kertas (Stacked Pages) */
+        .paper {
+            border-left: 1px solid rgba(0,0,0,0.1);
         }
 
-        .cover-front h1 { font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 10px; }
-        .cover-front p { font-family: var(--font-serif); font-style: italic; opacity: 0.7; }
-
-        .cover-back { background: var(--cover); border-radius: 10px 4px 4px 10px; }
-
-        /* Content Styles */
-        .content h2 { 
-            font-family: var(--font-serif); 
-            font-size: 1.6rem; 
-            margin-bottom: 20px; 
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+        /* Cover Front & Back Styling */
+        .cover-front { 
+            background: linear-gradient(45deg, #4a0e0e, #8b0000); 
+            color: #d4af37; 
+            border-radius: 0 5px 5px 0;
         }
-        .content p { 
-            font-family: var(--font-script); 
-            font-size: 1.4rem; 
-            color: var(--text); 
-            line-height: 1.6;
+        .cover-back { 
+            background: linear-gradient(-45deg, #4a0e0e, #8b0000); 
+            border-radius: 5px 0 0 5px;
         }
 
-        /* Animation Class */
-        .page.flipped { transform: rotateY(-180deg); }
-
-        /* --- MOBILE ADAPTATION (LANDSCAPE) --- */
-        @media (max-width: 900px) {
-            .book {
-                width: 45vw; /* Lebih lebar di landscape mobile */
-                height: 80vh;
-            }
-            .book.open {
-                transform: translateX(22vw);
-            }
-            .content p { font-size: 1.1rem; }
-            .page-face { padding: 25px; }
+        /* Animasi Flip */
+        .flipped {
+            transform: rotateY(-180deg);
         }
 
-        /* Portrait Mobile fallback */
-        @media (max-width: 500px) and (orientation: portrait) {
-            .book { width: 80vw; height: 60vh; }
-            .book.open { transform: translateX(5vw); }
+        /* Tipografi */
+        h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 20px; text-align: center; }
+        h2 { font-family: 'Playfair Display', serif; margin-bottom: 15px; color: #4a0e0e; }
+        p { line-height: 1.8; font-size: 0.95rem; color: var(--text-color); text-align: justify; }
+        .page-number { position: absolute; bottom: 20px; width: 100%; left: 0; text-align: center; font-size: 0.8rem; opacity: 0.5; }
+
+        /* Ilustrasi */
+        .illustration {
+            width: 100%;
+            height: 200px;
+            background: #ddd;
+            margin: 20px 0;
+            border-radius: 3px;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        /* Controls */
-        .hint {
+        /* Navigation UI */
+        .controls {
             position: fixed;
             bottom: 30px;
+            z-index: 1000;
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
             color: white;
-            font-family: sans-serif;
-            opacity: 0.5;
-            letter-spacing: 2px;
-            font-size: 0.8rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            border-radius: 5px;
+        }
+        button:hover { background: rgba(255,255,255,0.2); }
+
+        /* Mobile Viewport */
+        @media (max-width: 768px) {
+            :root { --book-width: 280px; --book-height: 420px; }
+            .book.open { transform: translateX(0); }
         }
     </style>
 </head>
 <body>
 
-<div class="book" id="book">
-    <div class="page" style="z-index: 10;">
-        <div class="page-face front cover-front">
-            <h1>Our Love Story</h1>
-            <p>Sebuah Jurnal Kenangan</p>
-            <small style="margin-top: 40px; opacity: 0.5;">Klik untuk membaca</small>
+<div class="scene">
+    <div class="book" id="book">
+        
+        <div class="paper" id="p1" style="z-index: 7;">
+            <div class="front cover-front" onclick="nextPage()">
+                <div style="margin-top: 50px; border: 2px solid #d4af37; padding: 20px; height: 100%;">
+                    <h1>THE ETERNAL GLOW</h1>
+                    <p style="text-align: center; color: #d4af37;">Sebuah Novel Interaktif</p>
+                </div>
+            </div>
+            <div class="back" onclick="prevPage()">
+                </div>
         </div>
-        <div class="page-face back">
-            <div class="content">
-                <h2>Pertemuan Pertama</h2>
-                <p>Semuanya dimulai di sore yang tenang. Kamu datang dengan senyuman yang membuat waktu seakan berhenti sejenak...</p>
+
+        <div class="paper" id="p2" style="z-index: 6;">
+            <div class="front" onclick="nextPage()">
+                <h1 style="margin-top: 100px;">The Eternal Glow</h1>
+                <p style="text-align: center;">Karya Penulis Hebat</p>
+            </div>
+            <div class="back" onclick="prevPage()">
+                <h2>Daftar Isi</h2>
+                <ul style="list-style: none; line-height: 2.5;">
+                    <li>Bab 1: Cahaya Pertama ......... 3</li>
+                    <li>Bab 2: Rahasia Hutan ............ 5</li>
+                    <li>Bab 3: Pertemuan Tak Terduga .. 7</li>
+                </ul>
             </div>
         </div>
+
+        <div class="paper" id="p3" style="z-index: 5;">
+            <div class="front" onclick="nextPage()">
+                <h2>Bab 1: Cahaya Pertama</h2>
+                <img src="https://picsum.photos/seed/novel1/400/300" class="illustration">
+                <p>Senja itu, langit berubah menjadi jingga keunguan. Di balik bukit, sebuah cahaya misterius mulai berpendar...</p>
+                <div class="page-number">3</div>
+            </div>
+            <div class="back" onclick="prevPage()">
+                <p>Lanjutan Bab 1... "Aku tidak pernah melihat yang seperti ini," bisik Elena sambil mendekat ke arah sumber cahaya tersebut.</p>
+                <div class="page-number">4</div>
+            </div>
+        </div>
+
+        <div class="paper" id="p4" style="z-index: 4;">
+            <div class="front" onclick="nextPage()">
+                <h2>Bab 2: Rahasia Hutan</h2>
+                <img src="https://picsum.photos/seed/novel2/400/300" class="illustration">
+                <p>Hutan itu tidak pernah ramah pada orang asing. Akar-akar pohon melilit seperti jari raksasa...</p>
+                <div class="page-number">5</div>
+            </div>
+            <div class="back" onclick="prevPage()">
+                <p>Lanjutan Bab 2... Langkah kaki terdengar di kejauhan. Sesuatu sedang mengintai dari balik kabut tebal.</p>
+                <div class="page-number">6</div>
+            </div>
+        </div>
+
+        <div class="paper" id="p5" style="z-index: 3;">
+            <div class="front" onclick="nextPage()">
+                <p style="margin-top: 50%; font-style: italic; text-align: center;">"Terima kasih telah membaca."</p>
+                <div class="page-number">7</div>
+            </div>
+            <div class="back cover-back" onclick="prevPage()">
+                <div style="height: 100%; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                    <p style="color: #fff; opacity: 0.7;">ISBN 978-123-456-789</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div class="page" style="z-index: 9;">
-        <div class="page-face front">
-            <div class="content">
-                <p>Aku ingat betul aroma kopi dan suara hujan di luar sana. Namun yang paling kuingat adalah bagaimana matamu menatapku.</p>
-            </div>
-        </div>
-        <div class="page-face back">
-            <div class="content">
-                <h2>Tentang Rasa</h2>
-                <p>Jatuh cinta padamu adalah hal paling alami yang pernah kulakukan. Seperti bernapas, seperti pulang ke rumah.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="page" style="z-index: 8;">
-        <div class="page-face front">
-            <div class="content">
-                <p>Setiap tawa yang kita bagi adalah melodi terindah. Aku ingin menulis ribuan halaman lagi hanya untuk menceritakan betapa beruntungnya aku.</p>
-            </div>
-        </div>
-        <div class="page-face back">
-            <div class="content">
-                <h2>Janji Suci</h2>
-                <p>Mari menua bersama. Melampaui batas waktu, hingga hanya kenangan manis yang tersisa di antara kita.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="page" style="z-index: 7;">
-        <div class="page-face front">
-            <div class="content">
-                <p>Terima kasih telah menjadi bab terbaik dalam hidupku. <br><br> Selamanya, <br> Aku.</p>
-            </div>
-        </div>
-        <div class="page-face back cover-back"></div>
+    <div class="controls">
+        <button onclick="prevPage()">Sebelumnya</button>
+        <button onclick="nextPage()">Selanjutnya</button>
     </div>
 </div>
 
-<div class="hint">TAP UNTUK MEMBALIK HALAMAN</div>
+<audio id="flipSound" src="https://www.soundjay.com/misc/sounds/page-flip-01a.mp3"></audio>
 
 <script>
-    const book = document.getElementById('book');
-    const pages = document.querySelectorAll('.page');
-    let currentPage = 0;
+    let currentState = 1;
+    let numOfPapers = 5;
+    let maxState = numOfPapers + 1;
 
-    pages.forEach((page, index) => {
-        page.addEventListener('click', () => {
-            if (index === currentPage) {
-                // MEMBUKA HALAMAN
-                page.classList.add('flipped');
-                currentPage++;
-                
-                if (index === 0) {
-                    book.classList.add('open');
-                }
-                
-                // Atur z-index agar tidak menumpuk aneh saat terbuka
-                setTimeout(() => {
-                    page.style.zIndex = index + 1;
-                }, 600);
-            } else if (index === currentPage - 1) {
-                // MENUTUP HALAMAN
-                page.classList.remove('flipped');
-                currentPage--;
-                
-                if (index === 0) {
-                    book.classList.remove('open');
-                }
-                
-                // Kembalikan z-index semula
-                setTimeout(() => {
-                    page.style.zIndex = 10 - index;
-                }, 600);
-            }
-        });
+    const book = document.querySelector('#book');
+    const papers = [
+        document.querySelector('#p1'),
+        document.querySelector('#p2'),
+        document.querySelector('#p3'),
+        document.querySelector('#p4'),
+        document.querySelector('#p5')
+    ];
+
+    function openBook() {
+        book.classList.add('open');
+    }
+
+    function closeBook(isAtBeginning) {
+        if(isAtBeginning) {
+            book.classList.remove('open');
+        } else {
+            book.classList.remove('open');
+        }
+    }
+
+    function nextPage() {
+        if(currentState < maxState) {
+            const sound = document.getElementById('flipSound');
+            sound.currentTime = 0;
+            sound.play();
+
+            if(currentState === 1) openBook();
+            
+            papers[currentState - 1].classList.add('flipped');
+            papers[currentState - 1].style.zIndex = currentState;
+            
+            currentState++;
+            
+            if(currentState === maxState) closeBook(false);
+        }
+    }
+
+    function prevPage() {
+        if(currentState > 1) {
+            const sound = document.getElementById('flipSound');
+            sound.currentTime = 0;
+            sound.play();
+
+            if(currentState === 2) closeBook(true);
+            if(currentState === maxState) openBook();
+
+            papers[currentState - 2].classList.remove('flipped');
+            // Restore original z-index
+            papers[currentState - 2].style.zIndex = numOfPapers - (currentState - 2);
+            
+            currentState--;
+        }
+    }
+
+    // Support for Keyboard
+    window.addEventListener('keydown', (e) => {
+        if(e.key === "ArrowRight") nextPage();
+        if(e.key === "ArrowLeft") prevPage();
     });
+
+    // paksa layar potrait
+    // Tambahkan di dalam tag <script>
+
+async function lockLandscape() {
+    try {
+        // Meminta izin Fullscreen terlebih dahulu (syarat browser)
+        if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+        }
+        
+        // Mengunci orientasi ke landscape
+        if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock('landscape');
+        }
+    } catch (err) {
+        console.log("Auto-rotate diblokir oleh browser, gunakan rotasi manual CSS.");
+    }
+}
+
+// Pemicu: Saat klik pertama pada buku, coba kunci ke landscape
+document.querySelector('.book').addEventListener('click', () => {
+    if (window.innerWidth < 900) {
+        lockLandscape();
+    }
+}, { once: true });
 </script>
 
 </body>
