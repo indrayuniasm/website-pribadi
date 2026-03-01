@@ -1,0 +1,573 @@
+x<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanpa pertemuan namun ada rasa cinta yang mendalam</title>
+
+<style>
+:root{
+    --bg:#1a1a1a;
+    --paper:#fdfaf0;
+    --cover:#111;
+    --text:#2c3e50;
+    --bg-color: #1a1a1a;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Dancing+Script:wght@500&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+    background: radial-gradient(circle at center, #333 0%, #000 100%);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    perspective:2000px;
+}
+
+    /*buat teks tengah*/
+    .first-paragraph{
+    text-indent: 2em;
+}
+
+.content{
+    max-width: 92%;
+    margin: 0 auto;
+}
+
+.content p{
+    text-align: justify;
+    }
+    
+    .content h3{
+    text-align: center;
+}
+/* ================= BOOK ================= */
+
+.book{
+    position:relative;
+    width:380px;
+    height:550px;
+    transform-style:preserve-3d;
+    transition:1.5s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 50px 100px rgba(0,0,0,.8);
+}
+
+.book.open{
+    transform:translateX(190px);
+}
+.page-number { position: absolute; bottom: 20px; width: 100%; left: 0; text-align: center; font-size: 0.8rem; opacity: 0.5; }
+
+.page{
+    position:absolute;
+    width:100%;
+    height:100%;
+    transform-origin:left;
+    transform-style:preserve-3d;
+    transition:1.2s cubic-bezier(.4,0,.2,1);
+    cursor:pointer;
+}
+
+.page-face{
+    position:absolute;
+    inset:0;
+    backface-visibility:hidden;
+    padding:40px;
+    background:var(--paper);
+    box-shadow:inset 0 0 50px rgba(0,0,0,.1);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    -webkit-backface-visibility:hidden;
+}
+    /* Overlay hitam transparan */
+.page-face::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.06); /* Ubah angka ini untuk tingkat gelap */
+    pointer-events:none;
+}
+    .paper-face::after{
+        content: '';
+            width: 150%;
+            height: 150%;
+            background: rgba(0,0,0,0.3);
+            pointer-events: none;
+            box-shadow: inset 0 0 300px #000;
+}
+
+.front{z-index:2;}
+.back{transform:rotateY(180deg);}
+
+/* Lipatan bayangan */
+.front::after{
+    content:'';
+    position:absolute;
+    left:0;
+    top:0;
+    height:100%;
+    width:40px;
+    background:linear-gradient(to right,rgba(0,0,0,.15),transparent);
+}
+
+.back::after{
+    content:'';
+    position:absolute;
+    right:0;
+    top:0;
+    height:100%;
+    width:40px;
+    background:linear-gradient(to left,rgba(0,0,0,.15),transparent);
+}
+
+/* ================= COVER FOTO ================= */
+
+.cover-front{
+    background-image:url("cover.png");
+    background-size:cover;        /* Foto selalu memenuhi cover */
+    background-position:center;   /* Fokus di tengah */
+    background-repeat:no-repeat;
+    background-attachment:local;
+    padding:0;                    /* Hilangkan padding bawaan */
+}
+
+
+.cover-content{
+    position:relative;
+    z-index:2;
+    margin-top:60px;
+    padding:20px;
+}
+
+.cover-content h1{
+    font-family:'Playfair Display',serif;
+    font-size:1.4rem;
+    letter-spacing:2px;
+}
+
+.cover-content h2{
+    font-family:'Playfair Display',serif;
+    font-size:2.4rem;
+    margin:10px 0;
+}
+
+.cover-content h3{
+    font-family:'Dancing Script',cursive;
+    font-size:1.8rem;
+}
+
+.cover-content small{
+    display:block;
+    margin-top:25px;
+    opacity:.8;
+    letter-spacing:2px;
+}
+    .cover-back{
+    background-image:url("coverb.png"); /* ganti dengan nama foto kamu */
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    padding:0;
+}
+
+/* ================= CONTENT ================= */
+
+.content h1{
+    font-family:'Playfair Display',serif;
+    font-size:1.4rem;
+    margin-bottom:20px;
+    border-bottom:1px solid rgba(0,0,0,.1);
+}
+/* Tipografi */
+       
+        h2 { font-family: 'Playfair Display', serif; margin-bottom: 15px; color: #4a0e0e; }
+        p { line-height: 1.8; font-size: 0.95rem; color: var(--text-color); text-align: justify; }
+.content p{
+    font-family:'Dancing Script',cursive;
+    font-size:1.3rem;
+    line-height:1.6;
+    color:var(--text);
+}
+
+/* Animasi flip */
+.page.flipped{
+    transform:rotateY(-180deg);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:900px){
+    .book{
+        width:45vw;
+        height:80vh;
+    }
+    .book.open{
+        transform:translateX(22vw);
+    }
+}
+
+@media(max-width:500px) and (orientation:portrait){
+    .book{
+        width:80vw;
+        height:60vh;
+    }
+    .book.open{
+        transform:translateX(5vw);
+    }
+}
+
+.hint{
+    position:fixed;
+    bottom:10px;
+    color:white;
+    opacity:.5;
+    font-size:.8rem;
+    letter-spacing:1px;
+}
+    /* Ilustrasi */
+        .illustration {
+            width: 100%;
+            height: 200px;
+            background: #ddd;
+            margin: 20px 0;
+            border-radius: 3px;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Navigation UI */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            z-index: 1000;
+            display: flex;
+            gap: 20px;
+        }
+
+            /*foto*/
+    .indraganteng {
+        width:180px;
+    height:180px;
+    object-fit:cover;
+    border-radius:50%;
+    display:block;
+    margin:0 auto 20px auto;
+    box-shadow:0 8px 20px rgba(0,0,0,0.2);
+        text-align:center;
+        }
+</style>
+</head>
+<body>
+
+<div class="book" id="book">
+    <!-- COVER -->
+    <div class="page" style="z-index:30;">
+        <div class="page-face front cover-front">
+            <div class="cover-content">
+            </div>
+        </div>
+        <div class="page-face back">
+            <div class="content">
+                <h1>Daftar Isi</h1>
+                <ul style="list-style: none; line-height: 2.0;">
+                    <li>Bab 1: ANONYMOUS YANG TAK LAGI ASING ......... 2</li>
+                    <li>Bab 2: RASA YANG TUMBUH DI ANTARA DOA ............ 6</li>
+                    <li>Bab 3: CINTA YANG TAK DIRESTUI .. 10</li>
+                    <li>Bab 4: GAMON BERTAHUN-TAHUN .. 14</li>
+                    <li>Bab 5: DOA YANG TAK PERNAH PADAM .. 18</li>
+                    
+                </ul>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+    </div>
+
+    <!--kata pengantar-->
+    <div class="page" style="z-index:29;">
+        <div class="page-face front">
+            <div class="content">
+                <h1>Kata Pengantar</h1>
+                <p>
+Bismillahirrahmanirrahim.<br><br>
+                    
+Cerita ini tentang dua orang yang dipertemukan tanpa sengaja melalui anonymous chat, lalu tumbuh rasa yang begitu dalam meski tak pernah bertemu. Tentang cinta yang sederhana, tapi penuh makna. Tentang doa yang terus disebut meski jarak dan restu belum berpihak.
+</p>
+            </div>
+            <div class="page-number">I</div>
+        </div>
+        <div class="page-face back">
+            <div class="content">
+                <p>
+Kisah ini bukan tentang pertemuan yang indah, melainkan tentang ketulusan, kesabaran, dan harapan yang disimpan dalam diam. Semoga cerita ini bisa menemani dan menyentuh hati siapa pun yang pernah mencintai dengan cara yang sama.<br><br>
+
+Selamat membaca
+                </p>
+            </div>
+            <div class="page-number">II</div>
+        </div>
+    </div>
+    <!--akhir kata pengantar-->
+    
+    <!-- bab 1 -->
+    <div class="page" style="z-index:28;">
+        <div class="page-face front">
+            <div class="content">
+                <h2>Bab 1: ANONYMOUS YANG TAK LAGI ASING</h2>
+                <img src="https://picsum.photos/seed/novel1/400/300" class="illustration">
+                <p class="first-paragraph">
+    Semua berawal dari sebuah anonymous chat bot, tempat dua orang asing saling berbagi cerita tanpa nama, tanpa wajah, tanpa
+</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+        <div class="page-face back">
+            <div class="content">
+                <p>
+beban identitas. Awalnya hanya candaan ringan, tanya jawab sederhana tentang hari yang melelahkan dan mimpi-mimpi kecil yang terasa jauh. Namun entah sejak kapan, percakapan itu berubah menjadi rutinitas yang ditunggu setiap malam. Ia, seorang santri yang hidupnya dipenuhi aturan pondok dan jadwal yang teratur, menemukan ruang kecil untuk tersenyum di
+                </p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+    </div>
+    
+        <div class="page" style="z-index:27;">
+        <div class="page-face front">
+            <div class="content">
+                <p>
+sela kesibukannya. Sementara aku, yang tak pernah menyangka akan menemukan ketenangan dari seseorang yang bahkan belum pernah kulihat wajahnya, mulai merasa ada yang berbeda. Kami berbagi cerita tentang masa lalu, tentang luka, tentang harapan. Sampai akhirnya rasa penasaran mengalahkan rasa takut. Kami bertukar ID Telegram. Dari anonim </p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+            <div class="page-face back">
+            <div class="content">
+                <p>menjadi nyata. Dari sekadar teks tanpa nama menjadi dua insan dengan suara dan tawa yang saling menguatkan. Tidak ada pertemuan, tidak ada sentuhan, hanya kata-kata yang perlahan berubah menjadi rasa.
+                </p>
+            </div>
+                <div class="page-number">5</div>
+        </div>
+    </div>
+    <!--akhir bab 1-->
+    
+
+    <!-- BAB 2-->
+    <div class="page" style="z-index:26;">
+        <div class="page-face front">
+            <div class="content">
+                <h2>Bab 2: RASA YANG TUMBUH DI ANTARA DOA</h2>
+                <img src="https://picsum.photos/seed/novel1/400/300" class="illustration">
+                <p class="first-paragraph">
+Namun dunia nyata tidak selalu seindah doa yang kita panjatkan. Ketika orang tuanya mengetahui</p>
+            </div>
+            <div class="page-number">6</div>
+        </div>
+        <div class="page-face back">
+            <div class="content">
+                <p>
+tentangku, semuanya berubah. Restu yang kami harapkan tidak pernah datang. Ia adalah anak perempuan yang sangat menjaga kehormatan keluarga, tumbuh dalam lingkungan yang menjunjung tinggi ketaatan. Orang tuanya tidak mengizinkan hubungan jarak jauh tanpa pertemuan, tanpa kepastian masa depan yang jelas. Aku mencoba menguatkannya, 
+                </p>
+            </div>
+            <div class="page-number">7</div>
+        </div>
+    </div>
+    
+        <div class="page" style="z-index:25;">
+        <div class="page-face front">
+            <div class="content">
+                <p>
+mencoba meyakinkannya bahwa aku akan datang dengan cara terhormat suatu hari nanti. Tapi tekanan itu terlalu besar untuknya. Dengan suara bergetar ia mengatakan bahwa mungkin kami harus berhenti. Bukan karena rasa itu hilang, tapi karena ia tidak ingin melukai orang tuanya. Hari itu menjadi hari paling sunyi dalam hidupku. Kami berpisah
+</p>
+            </div>
+            <div class="page-number">8</div>
+        </div>
+            <div class="page-face back">
+            <div class="content">
+                <p>dengan air mata yang tak terlihat, hanya terasa di balik layar. Tidak ada pertengkaran, tidak ada kebencian. Hanya dua orang yang saling mencintai namun tidak diberi jalan.
+                </p>
+            </div>
+                <div class="page-number">9</div>
+        </div>
+    </div>
+    <!--akhir bab 2-->
+
+    <!-- BAB 3-->
+    <div class="page" style="z-index:24;">
+        <div class="page-face front">
+            <div class="content">
+                <h2>Bab 3: CINTA YANG TAK DIRESTUI</h2>
+                <img src="https://picsum.photos/seed/novel1/400/300" class="illustration">
+                <p class="first-paragraph">
+Namun dunia nyata tidak selalu seindah doa yang kita panjatkan. Ketika orang tuanya mengetahui tentangku, semuanya</p>
+            </div>
+            <div class="page-number">10</div>
+        </div>
+        <div class="page-face back">
+            <div class="content">
+                <p>
+berubah. Restu yang kami harapkan tidak pernah datang. Ia adalah anak perempuan yang sangat menjaga kehormatan keluarga, tumbuh dalam lingkungan yang menjunjung tinggi ketaatan. Orang tuanya tidak mengizinkan hubungan jarak jauh tanpa pertemuan, tanpa kepastian masa depan yang jelas. Aku mencoba menguatkannya, mencoba meyakinkannya 
+                </p>
+            </div>
+            <div class="page-number">11</div>
+        </div>
+    </div>
+    
+        <div class="page" style="z-index:23;">
+        <div class="page-face front">
+            <div class="content">
+                <p>
+bahwa aku akan datang dengan cara terhormat suatu hari nanti. Tapi tekanan itu terlalu besar untuknya. Dengan suara bergetar ia mengatakan bahwa mungkin kami harus berhenti. Bukan karena rasa itu hilang, tapi karena ia tidak ingin melukai orang tuanya. Hari itu menjadi hari paling sunyi dalam hidupku. Kami berpisah dengan air mata yang tak
+</p>
+            </div>
+            <div class="page-number">12</div>
+        </div>
+            <div class="page-face back">
+            <div class="content">
+                <p>terlihat, hanya terasa di balik layar. Tidak ada pertengkaran, tidak ada kebencian. Hanya dua orang yang saling mencintai namun tidak diberi jalan.
+                </p>
+            </div>
+                <div class="page-number">13</div>
+        </div>
+    </div>
+    <!--akhir bab 3-->
+
+    <!-- BAB 4-->
+    <div class="page" style="z-index:22;">
+        <div class="page-face front">
+            <div class="content">
+                <h2>Bab 4: GAMON BERTAHUN-TAHUN</h2>
+                <img src="https://picsum.photos/seed/novel1/400/300" class="illustration">
+                <p class="first-paragraph">
+Waktu berjalan, tapi hatinya tidak. Bertahun-tahun ia masih menyimpan namaku dalam doanya. Teman-teman pondoknya</div>
+            <div class="page-number">14</div>
+        </div>
+        <div class="page-face back">
+            <div class="content">
+                <p>
+tau bahwa ia pernah mencintai seseorang yang tak pernah ia temui. Ia sering menceritakan hal-hal baik tentangku kepada mereka, seolah ingin memastikan bahwa kenangan itu tetap hidup. Ia berkata bahwa aku lelaki yang selalu mengingatkannya untuk mendekat pada Tuhan, yang tidak pernah memaksanya melanggar aturan, yang selalu menghormati </p>
+            
+                </p>
+            </div>
+            <div class="page-number">15</div>
+        </div>
+    </div>
+    
+        <div class="page" style="z-index:21;">
+        <div class="page-face front">
+            <div class="content">
+                <p>
+keluarganya meski belum pernah bertemu. Bahkan dalam kesendiriannya, ia menyimpan fotoku kecil di balik ID card pondoknya. Bukan untuk dipamerkan, bukan untuk melawan aturan, tapi sebagai pengingat bahwa pernah ada seseorang yang membuatnya merasa begitu dihargai. Setiap malam setelah sholat, namaku selalu ia sebut dalam doa panjangnya. </p>
+            </div>
+            <div class="page-number">16</div>
+        </div>
+            <div class="page-face back">
+            <div class="content">
+                <p>Ia memohon agar jika memang aku yang terbaik, maka semoga Allah mempertemukan kami kembali dalam keadaan yang lebih baik dan lebih siap. Ia tidak mencari pengganti, tidak membuka hati dengan mudah. Ia bertahan dalam perasaan yang tak pernah benar-benar pergi.
+                </p>
+            </div>
+                <div class="page-number">17</div>
+        </div>
+    </div>
+    <!--akhir bab 4-->
+
+    <!-- BAB 5-->
+    <div class="page" style="z-index:20;">
+        <div class="page-face front">
+            <div class="content">
+                <h2>Bab 5: DOA YANG TAK PERNAH PADAM</h2>
+                <img src="https://picsum.photos/seed/novel1/400/300" class="illustration">
+                <p class="first-paragraph">
+Aku tidak tahu seberapa besar doa bisa mengubah takdir, tapi aku tahu ada seorang perempuan yang dengan tulus menyebut</p>
+            </div>
+            <div class="page-number">18</div>
+        </div>
+        <div class="page-face back">
+            <div class="content">
+                <p>
+ namaku di setiap sujudnya. Ia berdoa agar kami dijodohkan, agar suatu hari restu itu datang dengan sendirinya, agar jarak dan waktu tidak lagi menjadi penghalang. Cinta kami memang tidak memiliki banyak kenangan pertemuan, tidak ada foto bersama, tidak ada jalan berdua di bawah senja. Tapi kami memiliki doa. Dan mungkin itu yang paling kuat. Ia 
+                </p>
+            </div>
+            <div class="page-number">19</div>
+        </div>
+    </div>
+    <!--page 3-->
+        <div class="page" style="z-index:19;">
+        <div class="page-face front">
+            <div class="content">
+                <p>
+percaya bahwa jika cinta ini memang ditakdirkan, maka tidak ada yang benar-benar hilang. Jika tidak, setidaknya ia pernah merasakan cinta yang membuatnya tumbuh menjadi pribadi yang lebih sabar dan lebih dekat pada Tuhannya. Dan di suatu tempat yang hanya Tuhan tahu, dua nama itu masih saling terhubung dalam doa yang sama, berharap pada
+</p>
+            </div>
+            <div class="page-number">20</div>
+        </div>
+            <div class="page-face back">
+            <div class="content">
+                <p>satu kemungkinan dipertemukan kembali bukan sebagai dua orang yang terpisah, tetapi sebagai dua insan yang akhirnya disatukan.
+                </p>
+            </div>
+                <div class="page-number">21</div>
+        </div>
+    </div>
+    <!--akhir bab 5-->
+    
+    <div class="page" style="z-index:18;">
+        <div class="page-face front">
+            <div class="content">
+                <img src="foto/gw.jpg" class="indraganteng">
+                <h3>Tentang Penulis:</h3>
+                <p>Saya cuman manusia biasa yang pernah menjadi orang baru tapi kalah dengan orang lama dan saya pun pernah menjadi orang lama tapi kalah dengan orang baru
+                </p>
+            </div>
+            <div class="page-number">22</div>
+        </div>
+         <div class="page-face back cover-back"></div>
+    </div>
+</div>
+
+<div class="hint">Jika menggunakan HP, gunakan mode landscape agar maksimal</div>
+
+<script>
+const book = document.getElementById('book');
+const pages = document.querySelectorAll('.page');
+let currentPage = 0;
+
+pages.forEach((page, index) => {
+
+    page.addEventListener('click', () => {
+
+        // FLIP MAJU
+        if (index === currentPage) {
+            page.style.zIndex = 100 + index; // naikkan dulu
+            page.classList.add('flipped');
+            currentPage++;
+
+            if (index === 0) {
+                book.classList.add('open');
+            }
+        }
+
+        // FLIP MUNDUR
+        else if (index === currentPage - 1) {
+            currentPage--;
+            page.classList.remove('flipped');
+
+            if (index === 0) {
+                book.classList.remove('open');
+            }
+
+            // Setelah animasi selesai baru turunkan z-index
+            setTimeout(() => {
+                page.style.zIndex = 30 - index;
+            }, 1200); // samakan dengan transition CSS
+        }
+
+    });
+
+});
+</script>
+
+</body>
+</html>
