@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drakidsss</title>
+    <title>Drakidsss - Belajar & Bermain Antariksa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
@@ -41,20 +41,6 @@
             50% { opacity: 1; transform: scale(1.2); }
         }
 
-        .astronaut {
-            position: fixed;
-            width: 80px;
-            z-index: -1;
-            opacity: 0.6;
-            animation: float 20s infinite linear;
-            pointer-events: none;
-        }
-
-        @keyframes float {
-            0% { transform: translate(-100px, 20vh) rotate(0deg); }
-            100% { transform: translate(110vw, 80vh) rotate(360deg); }
-        }
-
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
@@ -73,28 +59,54 @@
 
         .hidden-section { display: none; }
         
-        canvas { border-radius: 20px; cursor: crosshair; }
-        
-        /* PERBAIKAN LAYER MEWARNAI */
-        #img-layer { z-index: 10; background: white; pointer-events: none; } 
-        #paint-layer { z-index: 20; background: transparent; mix-blend-mode: multiply; touch-action: none; }
+        /* ZOOM CONTAINER */
+        .zoom-viewport {
+            position: relative;
+            width: 320px; height: 320px;
+            margin: 0 auto;
+            overflow: auto;
+            border-radius: 20px;
+            border: 4px solid #3b82f6;
+            background: white;
+        }
+        @media (min-width: 640px) { .zoom-viewport { width: 450px; height: 450px; } }
 
-        input[type="range"] {
-            accent-color: #3b82f6;
+        #canvas-wrapper {
+            position: relative;
+            width: 500px; height: 500px;
+            transform-origin: 0 0;
+            transition: transform 0.2s ease-out;
+        }
+        canvas { position: absolute; top: 0; left: 0; }
+        #img-layer { z-index: 10; pointer-events: none; } 
+        #paint-layer { z-index: 20; mix-blend-mode: multiply; touch-action: none; }
+
+        /* BELAJAR MEMBACA STYLES */
+        .reading-card {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+        }
+        .syllable {
+            display: inline-block;
+            background: white;
+            color: #6366f1;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 15px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #cbd5e1;
         }
 
-        .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-        }
+        input[type="range"] { accent-color: #3b82f6; }
 
         .social-icons a {
             font-size: 32px;
             color: white;
             transition: all 0.3s ease;
         }
-
         .social-icons a.wa:hover { color: #25D366; text-shadow: 0 0 15px #25D366; transform: scale(1.2); }
         .social-icons a.ig:hover { color: #E1306C; text-shadow: 0 0 15px #E1306C; transform: scale(1.2); }
         .social-icons a.tt:hover { color: #00f2ea; text-shadow: 0 0 15px #00f2ea; transform: scale(1.2); }
@@ -103,7 +115,6 @@
 <body>
 
     <div class="space-bg" id="star-field"></div>
-    <div class="astronaut">👨‍🚀</div>
 
     <nav class="p-4 bg-black/40 backdrop-blur-lg flex justify-between items-center sticky top-0 z-50 border-b border-white/10">
         <button onclick="showPage('home')" class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent" style="font-family: 'Orbitron'">DRAKIDSSS</button>
@@ -118,21 +129,54 @@
             <p class="text-blue-300">Pilih modul latihanmu, Kapten!</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <button onclick="showPage('belajar-membaca')" class="neo-btn p-8 rounded-[40px] text-white flex flex-col items-center" style="--glow-color: rgba(168,85,247,0.4); background: linear-gradient(135deg, #a855f7, #6b21a8)">
+                <span class="text-6xl mb-4">📖</span>
+                <h2 class="font-bold text-xl uppercase tracking-widest">Belajar Berbicara</h2>
+            </button>
             <button onclick="showPage('mewarnai')" class="neo-btn p-8 rounded-[40px] text-white flex flex-col items-center" style="--glow-color: rgba(236,72,153,0.4); background: linear-gradient(135deg, #ec4899, #9d174d)">
                 <span class="text-6xl mb-4">🎨</span>
-                <h2 class="font-bold text-xl uppercase tracking-widest">Mewarnai</h2>
+                <h2 class="font-bold text-xl uppercase tracking-widest">Belajar Mewarnai</h2>
             </button>
             <button onclick="showPage('kuis-sd')" class="neo-btn p-8 rounded-[40px] text-white flex flex-col items-center" style="--glow-color: rgba(34,197,94,0.4); background: linear-gradient(135deg, #22c55e, #15803d)">
                 <span class="text-6xl mb-4">🏫</span>
                 <h2 class="font-bold text-xl uppercase tracking-widest">Kuis SD</h2>
             </button>
-            <button onclick="showPage('kuis-smp')" class="neo-btn p-8 rounded-[40px] text-white flex flex-col items-center" style="--glow-color: rgba(59,130,246,0.4); background: linear-gradient(135deg, #3b82f6, #1d4ed8)">
-                <span class="text-6xl mb-4">🎒</span>
+            
+            <button onclick="showPage('kuis-smp')" class="neo-btn p-8 rounded-[40px] text-white flex flex-col items-center" style="--glow-color: rgba(249,115,22,0.4); background: linear-gradient(135deg, #f97316, #c2410c)">
+                <span class="text-6xl mb-4">🎓</span>
                 <h2 class="font-bold text-xl uppercase tracking-widest">Kuis SMP</h2>
             </button>
             <button onclick="showPage('kuis-sma')" class="neo-btn p-8 rounded-[40px] text-white flex flex-col items-center" style="--glow-color: rgba(249,115,22,0.4); background: linear-gradient(135deg, #f97316, #c2410c)">
                 <span class="text-6xl mb-4">🎓</span>
                 <h2 class="font-bold text-xl uppercase tracking-widest">Kuis SMA</h2>
+            </button>
+            <button onclick="showPage('home')" class="neo-btn p-8 rounded-[40px] text-white flex flex-col items-center opacity-50" style="--glow-color: rgba(59,130,246,0.4); background: linear-gradient(135deg, #3b82f6, #1d4ed8)">
+                <span class="text-6xl mb-4">🚀</span>
+                <h2 class="font-bold text-xl uppercase tracking-widest">Segera Datang</h2>
+            </button>
+        </div>
+    </section>
+
+    <section id="belajar-membaca" class="hidden-section p-4 animate__animated animate__backInDown">
+        <div class="max-w-xl mx-auto glass-card p-8">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="showPage('home')" class="text-2xl">🏠</button>
+                <h2 class="text-2xl font-bold font-orbitron text-purple-400">KELUARGA</h2>
+                <div class="w-10"></div>
+            </div>
+
+            <div id="reading-area" class="reading-card shadow-2xl">
+                <div id="word-image" class="text-8xl mb-6">👩</div>
+                <div id="word-syllables" class="flex justify-center flex-wrap gap-2"></div>
+                <p id="full-word" class="mt-6 text-2xl font-bold tracking-widest uppercase opacity-80">MAMA</p>
+            </div>
+
+            <div class="mt-8 grid grid-cols-2 gap-4">
+                <button onclick="prevWord()" class="bg-white/10 py-4 rounded-2xl font-bold hover:bg-white/20">⬅️</button>
+                <button onclick="nextWord()" class="bg-blue-500 py-4 rounded-2xl font-bold hover:bg-blue-400">➡️</button>
+            </div>
+            <button onclick="speakWord()" class="w-full mt-4 bg-yellow-500 py-4 rounded-2xl font-bold text-black flex items-center justify-center gap-2">
+                <i class="fa-solid fa-volume-high"></i> DENGARKAN SUARA
             </button>
         </div>
     </section>
@@ -140,27 +184,36 @@
     <section id="mewarnai" class="hidden-section p-4 animate__animated animate__zoomIn">
         <div class="max-w-2xl mx-auto glass-card p-6 border-blue-500/30">
             <div class="flex gap-4 mb-6">
-                <button onclick="showPage('home')" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-xl">🏠</button>
-                <select id="char-select" onchange="loadChar(this.value)" class="flex-1 bg-black/50 border border-white/20 px-4 py-2 rounded-xl font-bold text-blue-300 outline-none">
+                <button onclick="showPage('home')" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl">🏠</button>
+                <select id="char-select" onchange="loadChar(this.value)" class="flex-1 bg-black/50 border border-white/20 px-4 py-2 rounded-xl text-blue-300">
                     <option value="labubu">Labubu 1</option>
                     <option value="labubu2">Labubu 2</option>
                     <option value="spongebob">Spongebob</option>
                     <option value="hellokitty">Hello Kitty</option>
                     <option value="sonic">Sonic</option>
                 </select>
-                <button onclick="downloadImage()" class="bg-blue-500 hover:bg-blue-400 px-6 py-2 rounded-xl font-bold shadow-lg">SIMPAN</button>
+                <button onclick="downloadImage()" class="bg-blue-500 px-6 py-2 rounded-xl font-bold">SIMPAN</button>
             </div>
             
-            <div class="relative w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] mx-auto overflow-hidden rounded-3xl border-4 border-blue-500/50 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-                <canvas id="img-layer" width="500" height="500" class="absolute inset-0 w-full h-full"></canvas>
-                <canvas id="paint-layer" width="500" height="500" class="absolute inset-0 w-full h-full"></canvas>
+            <div class="flex justify-center gap-4 mb-4 bg-black/20 p-2 rounded-full">
+                <button onclick="changeZoom(-0.2)" class="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-500">➖</button>
+                <span id="zoom-text" class="self-center font-bold text-blue-400">100%</span>
+                <button onclick="changeZoom(0.2)" class="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-500">➕</button>
+                <button onclick="resetZoom()" class="px-3 text-xs bg-white/5 rounded-full">RESET</button>
+            </div>
+
+            <div class="zoom-viewport">
+                <div id="canvas-wrapper">
+                    <canvas id="img-layer" width="500" height="500"></canvas>
+                    <canvas id="paint-layer" width="500" height="500"></canvas>
+                </div>
             </div>
 
             <div class="mt-8 flex flex-col gap-6">
                 <div class="flex items-center gap-4 bg-black/30 p-4 rounded-2xl">
                     <span class="text-sm font-bold text-blue-300">KUAS:</span>
-                    <input type="range" id="brush-size" min="5" max="50" value="20" class="flex-1">
-                    <button onclick="toggleEraser()" id="eraser-btn" class="bg-white/10 p-3 rounded-xl border border-transparent hover:border-blue-500 transition">🧽</button>
+                    <input type="range" id="brush-size" min="2" max="50" value="10" class="flex-1">
+                    <button onclick="toggleEraser()" id="eraser-btn" class="bg-white/10 p-3 rounded-xl border border-transparent">🧽</button>
                 </div>
 
                 <div class="flex flex-wrap justify-center gap-3">
@@ -203,121 +256,165 @@
     <!-- HITAM & PUTIH -->
     <button onclick="setColor('#ffffff')" class="w-9 h-9 rounded-full bg-white border border-gray-400"></button>
     <button onclick="setColor('#000000')" class="w-9 h-9 rounded-full bg-black border border-white/30"></button>
-
-                    <button onclick="clearPaint()" class="px-4 py-2 rounded-xl border-2 border-red-500 text-red-400 font-bold hover:bg-red-500/10">RESET</button>
+                    <button onclick="clearPaint()" class="px-4 py-2 rounded-xl border-2 border-red-500 text-red-400 font-bold">HAPUS SEMUA</button>
                 </div>
             </div>
         </div>
     </section>
 
     <section id="quiz-box" class="hidden-section p-6 animate__animated animate__fadeInUp">
-        <div id="quiz-card" class="max-w-2xl mx-auto glass-card p-8 sm:p-12 border-t-[10px] shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+        <div id="quiz-card" class="max-w-2xl mx-auto glass-card p-8 border-t-[10px] border-blue-500">
             <div class="flex justify-between items-center mb-8">
-                <h2 id="quiz-title" class="text-2xl font-bold tracking-tighter" style="font-family: 'Orbitron'">SELAMAT MENGERJAKAN</h2>
-                <div id="timer-text" class="text-xl font-mono text-blue-400">00s</div>
+                <h2 id="quiz-title" class="text-2xl font-bold font-orbitron">KUIS</h2>
+                <div id="timer-text" class="text-xl font-mono text-blue-400">🔥</div>
             </div>
-            <div class="h-2 bg-white/10 rounded-full overflow-hidden mb-10">
-                <div id="timer-bar" class="h-full bg-blue-500 shadow-[0_0_15px_#3b82f6] transition-all duration-1000"></div>
-            </div>
-            <div id="q-text" class="text-2xl font-bold mb-10 text-center leading-relaxed">...</div>
+            <div id="q-text" class="text-2xl font-bold mb-10 text-center">...</div>
             <div id="q-grid" class="grid grid-cols-1 gap-4"></div>
             <div class="mt-12 flex gap-4">
-                <button onclick="nextQuestion()" class="flex-1 bg-white/10 py-4 rounded-2xl font-bold hover:bg-white/20 transition">GANTI SOAL</button>
-                <button onclick="surrender()" class="flex-1 border border-red-500/50 text-red-400 py-4 rounded-2xl font-bold hover:bg-red-500/10 transition">MENYERAH</button>
+                <button onclick="nextQuestion()" class="flex-1 bg-white/10 py-4 rounded-2xl font-bold">GANTI SOAL</button>
+                <button onclick="showPage('home')" class="flex-1 border border-white/20 py-4 rounded-2xl font-bold">KEMBALI</button>
             </div>
         </div>
     </section>
 
     <footer class="border-t border-white/10 py-6 mt-auto text-center">
-        <div class="social-icons mb-4">
+        <div class="social-icons mb-4 flex justify-center gap-6">
             <a href="https://wa.me/6283849997221" target="_blank" class="wa"><i class="fa-brands fa-whatsapp"></i></a>
-            <a href="https://www.instagram.com/asmarabot?igsh=MXNnMno5Njlqbjlneg==" target="_blank" class="ig"><i class="fa-brands fa-instagram"></i></a>
-            <a href="https://www.tiktok.com/@apaan_oy?_r=1&_t=ZS-94M84spItLr" target="_blank" class="tt"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="https://www.instagram.com/asmarabot" target="_blank" class="ig"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@apaan_oy" target="_blank" class="tt"><i class="fa-brands fa-tiktok"></i></a>
         </div>
-        <p class="text-sm text-gray-400">© 2026 - Indra<br>website ini dalam masa pengembangan, apabila ada bug atau error harap hubungi admin saja</p>
+        <p class="text-xs text-gray-500">Website ini dalam pengembangan mohon pengertiannya<br>Request? dm aja</p>
     </footer>
 
     <script>
-        function createStars() {
-            const field = document.getElementById('star-field');
-            for (let i = 0; i < 150; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                const size = Math.random() * 3 + 'px';
-                star.style.width = size; star.style.height = size;
-                star.style.left = Math.random() * 100 + 'vw';
-                star.style.top = Math.random() * 100 + 'vh';
-                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
-                field.appendChild(star);
-            }
-        }
-        createStars();
-
-        const bank = {
-            sd: [
-                { q: "Apa lambang sila ke-3 Pancasila?", a: "Pohon Beringin", opt: ["Bintang", "Rantai", "Pohon Beringin", "Kepala Banteng"] },
-                { q: "5 x 5 berapa...", a: "25", opt: ["15", "25", "34", "20"] },
-                { q: "Planet terdekat dari Matahari?", a: "Merkurius", opt: ["Bumi", "Mars", "Merkurius", "Venus"] }
-            ],
-            smp: [
-                { q: "Rumus luas lingkaran adalah...", a: "π x r²", opt: ["2 x π x r", "π x r²", "p x l", "1/2 x a x t"] },
-                { q: "Zat hijau daun disebut...", a: "Klorofil", opt: ["Enzim", "Klorofil", "Stomata", "Oksigen"] }
-            ],
-            sma: [
-                { q: "Siapa Presiden Indonesia ke-3?", a: "B.J. Habibie", opt: ["Gus Dur", "B.J. Habibie", "Megawati", "Soeharto"] },
-                { q: "Senyawa kimia garam dapur adalah...", a: "NaCl", opt: ["H2O", "CO2", "NaCl", "NaOH"] }
-            ]
+        // --- DATA ---
+        const charImages = {
+            labubu: 'https://i.ibb.co.com/yn07Wdsv/labubu2.jpg',
+            spongebob: 'https://i.ibb.co.com/GQKdPH2F/spongebob.jpg',
+            sonic: 'https://i.ibb.co.com/3yTvL9mY/sonic.jpg',
+            hellokitty: 'https://i.ibb.co.com/wZ8Lb3sx/kitty.jpg',
+            labubu2: 'https://i.ibb.co.com/8D66qfn7/labubu.jpg'
         };
 
-       // 1. UPDATE URL GAMBAR (Gunakan link yang lebih bersahabat dengan canvas)
-const charImages = {
-    labubu: 'https://i.ibb.co.com/yn07Wdsv/labubu2.jpg',
-    spongebob: 'https://i.ibb.co.com/GQKdPH2F/spongebob.jpg',
-    sonic: 'https://i.ibb.co.com/3yTvL9mY/sonic.jpg',
-    hellokitty: 'https://i.ibb.co.com/wZ8Lb3sx/kitty.jpg',
-    labubu2: 'https://i.ibb.co.com/8D66qfn7/labubu.jpg'
+        const readingList = [
+            { word: "MAMA", syllables: ["MA", "MA"], emoji: "👩" },
+            { word: "AYAH", syllables: ["A", "YAH"], emoji: "👨" },
+            { word: "KAKAK", syllables: ["KA", "KAK"], emoji: "🧑" },
+            { word: "ADIK", syllables: ["A", "DIK"], emoji: "👶" },
+            { word: "NENEK", syllables: ["NE", "NEK"], emoji: "👵" },
+            { word: "KAKEK", syllables: ["KA", "KEK"], emoji: "👴" }
+        ];
+
+        const bank = {
+    sd: [
+        { q: "125 + 75 - 50?", a: "150", opt: ["100", "150", "200", "125"] },
+        { q: "Bagian tumbuhan yang menyerap air?", a: "Akar", opt: ["Daun", "Batang", "Akar", "Bunga"] },
+        { q: "Lawan kata (antonim) 'Rajin'?", a: "Malas", opt: ["Pintar", "Malas", "Cerdas", "Giat"] },
+        { q: "8 x 7 = ...", a: "56", opt: ["54", "56", "64", "48"] },
+        { q: "Hewan hidup di darat dan air?", a: "Amfibi", opt: ["Reptil", "Amfibi", "Mamalia", "Ikan"] },
+        { q: "Dasar negara Indonesia?", a: "Pancasila", opt: ["UUD 45", "Pancasila", "Proklamasi", "Garuda"] },
+        { q: "Jumlah sisi pada segitiga?", a: "3", opt: ["2", "3", "4", "5"] },
+        { q: "Masak makanan pada tumbuhan hijau?", a: "Fotosintesis", opt: ["Respirasi", "Fotosintesis", "Oksidasi", "Erosi"] },
+        { q: "Presiden pertama RI?", a: "Ir. Soekarno", opt: ["Moh. Hatta", "Soeharto", "Ir. Soekarno", "Jokowi"] },
+        { q: "Seperempat ditulis pecahan?", a: "1/4", opt: ["1/2", "1/4", "3/4", "1/1"] },
+        { q: "Benda volume & bentuknya tetap?", a: "Padat", opt: ["Cair", "Gas", "Padat", "Plasma"] },
+        { q: "Ibu memasak di dapur. Subjeknya?", a: "Ibu", opt: ["Ibu", "Memasak", "Dapur", "Di"] },
+        { q: "Jarum panjang ke angka 3 (menit)?", a: "15 menit", opt: ["5 menit", "10 menit", "15 menit", "20 menit"] },
+        { q: "Matahari terbit dari arah?", a: "Timur", opt: ["Barat", "Timur", "Utara", "Selatan"] },
+        { q: "Warna bendera Indonesia?", a: "Merah Putih", opt: ["Putih Merah", "Merah Putih", "Merah Kuning", "Biru Putih"] },
+        { q: "100 : 4 = ...", a: "25", opt: ["20", "25", "30", "40"] },
+        { q: "Hewan pemakan daging?", a: "Karnivora", opt: ["Herbivora", "Karnivora", "Omnivora", "Insektivora"] },
+        { q: "Huruf kapital nama kota?", a: "Jakarta", opt: ["jakarta", "JAKARTA", "Jakarta", "jaKarta"] },
+        { q: "Lagu kebangsaan kita?", a: "Indonesia Raya", opt: ["Indonesia Pusaka", "Indonesia Raya", "Merdeka", "Satu Nusa"] },
+        { q: "Bangun ruang dengan 6 sisi persegi?", a: "Kubus", opt: ["Balok", "Limas", "Kubus", "Tabung"] }
+    ],
+    smp: [
+        { q: "Jika 2x + 5 = 15, x adalah?", a: "5", opt: ["10", "5", "7.5", "2"] },
+        { q: "Alat pernapasan manusia?", a: "Paru-paru", opt: ["Insang", "Paru-paru", "Trakea", "Kulit"] },
+        { q: "Satuan gaya (SI)?", a: "Newton", opt: ["Watt", "Joule", "Newton", "Pascal"] },
+        { q: "Tahun Sumpah Pemuda?", a: "1928", opt: ["1908", "1928", "1945", "1998"] },
+        { q: "Planet Merah?", a: "Mars", opt: ["Venus", "Mars", "Jupiter", "Saturnus"] },
+        { q: "Hasil 2^3 + 3^2?", a: "17", opt: ["12", "15", "17", "25"] },
+        { q: "Zat hijau daun?", a: "Klorofil", opt: ["Kloroplas", "Klorofil", "Karoten", "Stomata"] },
+        { q: "Rumus Kecepatan (V)?", a: "s / t", opt: ["s x t", "s / t", "t / s", "v + t"] },
+        { q: "Kegiatan menyalurkan barang?", a: "Distribusi", opt: ["Produksi", "Konsumsi", "Distribusi", "Barter"] },
+        { q: "Besar sudut siku-siku?", a: "90°", opt: ["45°", "90°", "180°", "360°"] },
+        { q: "Rumus kimia garam dapur?", a: "NaCl", opt: ["H2O", "NaCl", "CO2", "HCl"] },
+        { q: "Jepang menyerah tahun?", a: "1945", opt: ["1942", "1944", "1945", "1946"] },
+        { q: "Lapisan udara bumi?", a: "Atmosfer", opt: ["Litosfer", "Atmosfer", "Hidrosfer", "Biosfer"] },
+        { q: "Akar kuadrat dari 144?", a: "12", opt: ["10", "11", "12", "14"] },
+        { q: "Bagian terkecil makhluk hidup?", a: "Sel", opt: ["Jaringan", "Organ", "Sel", "Atom"] },
+        { q: "Energi karena ketinggian?", a: "Energi Potensial", opt: ["Energi Kinetik", "Energi Potensial", "Energi Kalor", "Energi Listrik"] },
+        { q: "Ide pokok paragraf ada di?", a: "Kalimat Utama", opt: ["Kalimat Utama", "Kalimat Penjelas", "Judul", "Kesimpulan"] },
+        { q: "Benua terkecil di dunia?", a: "Australia", opt: ["Asia", "Eropa", "Australia", "Afrika"] },
+        { q: "Ibukota Jawa Barat?", a: "Bandung", opt: ["Jakarta", "Bandung", "Semarang", "Surabaya"] },
+        { q: "Simbiosis saling menguntungkan?", a: "Mutualisme", opt: ["Parasitisme", "Komensalisme", "Mutualisme", "Predasi"] }
+    ],
+    sma: [
+        { q: "Turunan f(x) = 3x^2 + 5x?", a: "6x + 5", opt: ["3x + 5", "6x + 5", "6x", "x^2 + 5"] },
+        { q: "Struktur informasi genetik?", a: "DNA", opt: ["RNA", "DNA", "Protein", "Enzim"] },
+        { q: "Unsur nomor atom 1?", a: "Hidrogen", opt: ["Helium", "Oksigen", "Hidrogen", "Karbon"] },
+        { q: "Hukum F = m . a adalah?", a: "Newton II", opt: ["Newton I", "Newton II", "Newton III", "Pascal"] },
+        { q: "Inflasi karena biaya produksi?", a: "Cost-push inflation", opt: ["Demand-pull", "Cost-push inflation", "Hiperinflasi", "Deflasi"] },
+        { q: "Nilai sin 30°?", a: "1/2", opt: ["0", "1/2", "1", "1/2 √3"] },
+        { q: "Pembelahan sel identik?", a: "Mitosis", opt: ["Meiosis", "Mitosis", "Amitosis", "Oogenesis"] },
+        { q: "Larutan pH 9 bersifat?", a: "Basa", opt: ["Asam", "Netral", "Basa", "Garam"] },
+        { q: "Perang Dunia I berakhir tahun?", a: "1918", opt: ["1914", "1918", "1939", "1945"] },
+        { q: "Cepat rambat cahaya (m/s)?", a: "3 x 10^8", opt: ["3 x 10^5", "3 x 10^6", "3 x 10^7", "3 x 10^8"] },
+        { q: "Integral 2x dx?", a: "x^2 + C", opt: ["2x^2 + C", "x^2 + C", "x + C", "2 + C"] },
+        { q: "Tempat sintesis protein?", a: "Ribosom", opt: ["Ribosom", "Lisosom", "Vakuola", "Nukleus"] },
+        { q: "Ikatan penggunaan elektron bersama?", a: "Kovalen", opt: ["Ion", "Logam", "Kovalen", "Hidrogen"] },
+        { q: "Batuan dari magma dingin?", a: "Beku", opt: ["Sedimen", "Metamorf", "Beku", "Fosil"] },
+        { q: "Pasar hanya satu penjual?", a: "Monopoli", opt: ["Oligopoli", "Monopoli", "Persaingan Sempurna", "Monopsoni"] },
+        { q: "Jika log 100 = x, x adalah?", a: "2", opt: ["1", "2", "10", "100"] },
+        { q: "Satuan hambatan listrik?", a: "Ohm", opt: ["Volt", "Ampere", "Ohm", "Watt"] },
+        { q: "Hormon pengatur gula darah?", a: "Insulin", opt: ["Adrenalin", "Insulin", "Tiroksin", "Estrogen"] },
+        { q: "Nama senyawa CH4?", a: "Metana", opt: ["Etana", "Metana", "Propana", "Butana"] },
+        { q: "Kota pelaksanaan KAA pertama?", a: "Bandung", opt: ["Jakarta", "Bandung", "Bogor", "Surabaya"] }
+    ]
 };
-
-// 2. PERBAIKI FUNGSI LOADCHAR
-function loadChar(key) {
-    const img = new Image();
-    // Tambahkan ini agar gambar diizinkan muncul di canvas
-    img.crossOrigin = "anonymous"; 
-    img.src = charImages[key];
-
-    img.onload = () => {
-        // Bersihkan layer gambar dan layer warna
-        iCtx.clearRect(0, 0, iCanvas.width, iCanvas.height);
-        pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
-
-        // Hitung skala agar gambar pas di kotak (tidak gepeng)
-        const scale = Math.min(iCanvas.width / img.width, iCanvas.height / img.height);
-        const x = (iCanvas.width / 2) - (img.width / 2) * scale;
-        const y = (iCanvas.height / 2) - (img.height / 2) * scale;
-
-        iCtx.drawImage(img, x, y, img.width * scale, img.height * scale);
-    };
-
-    img.onerror = () => {
-        console.error("Gagal memuat gambar: " + img.src);
-        alert("Yah, koneksi internetmu sepertinya lambat atau gambar diblokir. Coba ganti karakter lain!");
-    };
-}
-        let currentLevel = 'sd', qIdx = 0, timerInterval, score = 0;
+        // --- STATE ---
         let pCanvas, pCtx, iCanvas, iCtx, painting = false, currentColor = '#ff0055', isEraser = false;
+        let currentScale = 1, readIdx = 0, score = 0, currentLevel = 'sd', qIdx = 0;
 
+        // --- NAVIGATION ---
         function showPage(id) {
-            clearInterval(timerInterval);
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden-section'));
             if(id.startsWith('kuis-')) {
                 currentLevel = id.replace('kuis-', ''); qIdx = 0;
-                document.getElementById('quiz-box').classList.remove('hidden-section'); setupQuiz();
+                document.getElementById('quiz-box').classList.remove('hidden-section'); 
+                document.getElementById('quiz-title').innerText = "KUIS " + currentLevel.toUpperCase();
+                loadQuiz();
             } else {
                 document.getElementById(id).classList.remove('hidden-section');
                 if(id === 'mewarnai') initMewarnai();
+                if(id === 'belajar-membaca') updateReading();
             }
         }
 
+        // --- READING ---
+        function updateReading() {
+            const item = readingList[readIdx];
+            document.getElementById('word-image').innerText = item.emoji;
+            document.getElementById('full-word').innerText = item.word;
+            const sylArea = document.getElementById('word-syllables');
+            sylArea.innerHTML = '';
+            item.syllables.forEach(s => {
+                const span = document.createElement('span');
+                span.className = 'syllable animate__animated animate__bounceIn';
+                span.innerText = s;
+                sylArea.appendChild(span);
+            });
+        }
+        function nextWord() { readIdx = (readIdx + 1) % readingList.length; updateReading(); }
+        function prevWord() { readIdx = (readIdx - 1 + readingList.length) % readingList.length; updateReading(); }
+        function speakWord() {
+            const utter = new SpeechSynthesisUtterance(readingList[readIdx].word);
+            utter.lang = 'id-ID'; utter.rate = 0.8;
+            window.speechSynthesis.speak(utter);
+        }
+
+        // --- PAINTING & ZOOM ---
         function initMewarnai() {
             pCanvas = document.getElementById('paint-layer'); pCtx = pCanvas.getContext('2d');
             iCanvas = document.getElementById('img-layer'); iCtx = iCanvas.getContext('2d');
@@ -332,112 +429,84 @@ function loadChar(key) {
                     y: (clientY - rect.top) * (pCanvas.height / rect.height)
                 };
             };
-
             const start = (e) => { painting = true; draw(e); };
             const stop = () => { painting = false; pCtx.beginPath(); };
             const draw = (e) => {
                 if(!painting) return;
                 const pos = getPos(e);
                 pCtx.lineWidth = document.getElementById('brush-size').value;
-                pCtx.lineCap = 'round';
+                pCtx.lineCap = 'round'; pCtx.lineJoin = 'round';
                 pCtx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
                 pCtx.strokeStyle = currentColor;
-                pCtx.lineTo(pos.x, pos.y);
-                pCtx.stroke();
-                pCtx.beginPath();
-                pCtx.moveTo(pos.x, pos.y);
+                pCtx.lineTo(pos.x, pos.y); pCtx.stroke();
+                pCtx.beginPath(); pCtx.moveTo(pos.x, pos.y);
             };
-
             pCanvas.onmousedown = start; pCanvas.onmouseup = stop; pCanvas.onmousemove = draw;
             pCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); start(e); }, {passive: false});
             pCanvas.addEventListener('touchend', stop);
             pCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); }, {passive: false});
         }
-
+        function changeZoom(amt) {
+            currentScale = Math.min(Math.max(1, currentScale + amt), 3);
+            document.getElementById('canvas-wrapper').style.transform = `scale(${currentScale})`;
+            document.getElementById('zoom-text').innerText = Math.round(currentScale * 100) + "%";
+        }
+        function resetZoom() { currentScale = 1; changeZoom(0); }
         function loadChar(key) {
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.src = charImages[key];
+            const img = new Image(); img.crossOrigin = "anonymous"; img.src = charImages[key];
             img.onload = () => {
-                iCtx.clearRect(0, 0, 500, 500);
-                pCtx.clearRect(0, 0, 500, 500);
-                iCtx.drawImage(img, 0, 0, 500, 500);
+                iCtx.clearRect(0, 0, 500, 500); pCtx.clearRect(0, 0, 500, 500);
+                iCtx.drawImage(img, 0, 0, 500, 500); resetZoom();
             };
         }
-
         function setColor(c) { isEraser = false; currentColor = c; document.getElementById('eraser-btn').style.borderColor = "transparent"; }
         function toggleEraser() { isEraser = !isEraser; document.getElementById('eraser-btn').style.borderColor = isEraser ? "#3b82f6" : "transparent"; }
-        function clearPaint() { pCtx.clearRect(0, 0, 500, 500); }
-
+        function clearPaint() { if(confirm("Hapus semua warna?")) pCtx.clearRect(0, 0, 500, 500); }
         function downloadImage() {
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = 500; tempCanvas.height = 500;
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.fillStyle = "white";
-            tempCtx.fillRect(0,0,500,500);
-            tempCtx.drawImage(iCanvas, 0, 0);
-            tempCtx.globalCompositeOperation = 'multiply';
-            tempCtx.drawImage(pCanvas, 0, 0);
-            const link = document.createElement('a');
-            link.download = 'ig: asmarabot.png';
-            link.href = tempCanvas.toDataURL();
-            link.click();
+            const temp = document.createElement('canvas'); temp.width = 500; temp.height = 500;
+            const tCtx = temp.getContext('2d');
+            tCtx.fillStyle = "white"; tCtx.fillRect(0,0,500,500);
+            tCtx.drawImage(iCanvas, 0, 0); tCtx.globalCompositeOperation = 'multiply'; tCtx.drawImage(pCanvas, 0, 0);
+            const link = document.createElement('a'); link.download = 'karya_drakidsss.png';
+            link.href = temp.toDataURL(); link.click();
         }
 
-        function setupQuiz() {
-            const card = document.getElementById('quiz-card');
-            const timerWrap = document.getElementById('timer-bar').parentElement;
-            if(currentLevel === 'sd') { card.style.borderColor = "#22c55e"; timerWrap.style.display = "none"; loadQuiz(); }
-            else { 
-                const sec = currentLevel === 'smp' ? 60 : 40; 
-                card.style.borderColor = currentLevel === 'smp' ? "#3b82f6" : "#f97316"; 
-                timerWrap.style.display = "block"; startTimer(sec); 
-            }
-        }
-
-        function startTimer(seconds) {
-            loadQuiz();
-            let timeLeft = seconds;
-            const bar = document.getElementById('timer-bar');
-            const text = document.getElementById('timer-text');
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                text.innerText = timeLeft + "s";
-                bar.style.width = (timeLeft / seconds * 100) + "%";
-                if(timeLeft <= 0) { clearInterval(timerInterval); alert("WAKTU HABIS!"); nextQuestion(); }
-            }, 1000);
-        }
-
+        // --- QUIZ ---
         function loadQuiz() {
             const data = bank[currentLevel][qIdx];
             document.getElementById('q-text').innerText = data.q;
-            const grid = document.getElementById('q-grid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('q-grid'); grid.innerHTML = '';
             data.opt.forEach(o => {
                 const b = document.createElement('button');
-                b.className = "p-5 bg-white/5 border border-white/10 rounded-2xl font-bold hover:bg-blue-500/20 hover:border-blue-500 transition text-left";
+                b.className = "p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-blue-500/20 transition-all";
                 b.innerText = o;
                 b.onclick = () => {
                     if(o === data.a) { 
-                        confetti({ particleCount: 150, spread: 100, colors: ['#3b82f6', '#00ffcc', '#ffffff'] });
+                        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                         score += 10; document.getElementById('global-score').innerText = score; 
                         nextQuestion(); 
-                    } else {
-                        b.classList.add('animate__animated', 'animate__shakeX', 'border-red-500');
-                        setTimeout(() => b.classList.remove('animate__shakeX'), 500);
-                    }
+                    } else { alert("Aduh, kurang tepat! Coba lagi!"); }
                 };
                 grid.appendChild(b);
             });
         }
+        function nextQuestion() { qIdx = (qIdx + 1) % bank[currentLevel].length; loadQuiz(); }
 
-        function nextQuestion() {
-            qIdx = (qIdx + 1) % bank[currentLevel].length;
-            if(currentLevel === 'sd') loadQuiz(); else startTimer(currentLevel === 'smp' ? 60 : 40);
+        // --- STARS ---
+        function createStars() {
+            const field = document.getElementById('star-field');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 3 + 'px';
+                star.style.width = size; star.style.height = size;
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                field.appendChild(star);
+            }
         }
-
-        function surrender() { alert("Kunci jawaban: " + bank[currentLevel][qIdx].a); showPage('home'); }
+        createStars();
     </script>
 </body>
 </html>
