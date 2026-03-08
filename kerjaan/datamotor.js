@@ -349,7 +349,7 @@ function warikga() {
                     pesan = `Halo CS Wahana Honda!\n\nSaya ingin membeli *CASH*:\n*Unit:* ${unit}\n*Warna:* ${warna}\n*Nama:* ${this.namakamu}\n*Harga OTR:* ${otr}\n\nMohon info ketersediaan stok.`;
                 }
 
-                window.open(`https://wa.me/6283849997221?text=${encodeURIComponent(pesan)}`);
+                window.open(`https://wa.me/6281959334206?text=${encodeURIComponent(pesan)}`);
             }
         }
     }
