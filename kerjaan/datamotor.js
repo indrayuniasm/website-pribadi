@@ -3,16 +3,46 @@ function warikga() {
     return {
     mobileMenu: false,
     slidefoto: [
-                "https://www.wahanaritelindo.com/static/uploads/yq1udhome_banner_image_desktopundefined_1753760862658.png",
-                "https://www.wahanaritelindo.com/static/uploads/84nhome_banner_image_desktopundefined_1771095922311.png",
-                "https://i.ibb.co.com/7x3tsrwj/wamo.png",
-                "https://www.wahanaritelindo.com/static/uploads/h3x1yv3home_banner_image_desktopi4g7lef8r3gk_1762833465797.png",
-                "https://www.wahanaritelindo.com/static/uploads/x07j2k38i9nhome_banner_image_desktopundefined_1755690438036.png",
-                "https://www.wahanaritelindo.com/static/uploads/4ut58s4g2home_banner_image_desktopundefined_1756094517064.jpg",
-                "https://www.wahanaritelindo.com/static/uploads/ytf24mthome_banner_image_desktopundefined_1758637464831.jpg",
-                "https://www.wahanaritelindo.com/static/uploads/q71xhome_banner_image_desktopundefined_1756266191973.png",
-                "https://www.wahanaritelindo.com/static/uploads/rubyhome_banner_image_desktopundefined_1756276342893.png",
-                "https://www.wahanaritelindo.com/static/uploads/zsg3hhome_banner_image_desktopf6f1ft497yks_1660279629137.jpg"
+                {
+                img:"https://www.wahanaritelindo.com/static/uploads/yq1udhome_banner_image_desktopundefined_1753760862658.png",
+                link: "https://draweb.netlify.app/kerjaan/warikga"
+                },
+                {
+                img:"https://www.wahanaritelindo.com/static/uploads/84nhome_banner_image_desktopundefined_1771095922311.png",
+                link: "https://draweb.netlify.app/kerjaan/warikga"
+                },
+                {
+                img:"https://i.ibb.co.com/7x3tsrwj/wamo.png",
+                link: "https://play.google.com/store/apps/details?id=com.wahanaritelindo.redrider"
+                },
+                {
+                img:"https://www.wahanaritelindo.com/static/uploads/h3x1yv3home_banner_image_desktopi4g7lef8r3gk_1762833465797.png",
+                link: "https://draweb.netlify.app/kerjaan/warikga"
+                },
+                {
+                img:"https://www.wahanaritelindo.com/static/uploads/x07j2k38i9nhome_banner_image_desktopundefined_1755690438036.png",
+                link: "https://draweb.netlify.app/kerjaan/warikga"
+                },
+                {
+                img:"https://www.wahanaritelindo.com/static/uploads/4ut58s4g2home_banner_image_desktopundefined_1756094517064.jpg",
+                link: "https://draweb.netlify.app/kerjaan/warikga"
+                },
+                {
+                img:"https://www.wahanaritelindo.com/static/uploads/ytf24mthome_banner_image_desktopundefined_1758637464831.jpg",
+                link: "https://draweb.netlify.app/kerjaan/warikga"
+                },
+                {
+                img:"https://www.wahanaritelindo.com/static/uploads/q71xhome_banner_image_desktopundefined_1756266191973.png",
+                link: "https://draweb.netlify.app/kerjaan/warikga"
+                },
+                {
+                img:"https://www.wahanaritelindo.com/static/uploads/rubyhome_banner_image_desktopundefined_1756276342893.png",
+                link: "https://draweb.netlify.app/kerjaan/warikga"
+                },
+                {
+                img:"https://www.wahanaritelindo.com/static/uploads/zsg3hhome_banner_image_desktopf6f1ft497yks_1660279629137.jpg",
+                link: "https://draweb.netlify.app/kerjaan/warikga"
+                }
                 ],
     heroIndex: 0,
 
