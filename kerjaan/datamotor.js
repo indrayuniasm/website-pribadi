@@ -337,7 +337,7 @@ function warikga() {
                 if(!this.namakamu) return alert('Silakan masukkan nama Anda');
                 
                 let unit = this.unit[this.Kategori][this.pilihanUnit].nama;
-                let otr = this.rp(this.pilhanunit[this.Kategori][this.pilihanUnit].otr);
+                let otr = this.rp(this.unit[this.Kategori][this.pilihanUnit].otr);
                 let warna = this.pilihwarna;
                 let pesan = "";
 
