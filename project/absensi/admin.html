@@ -3,155 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Form Admin - By Indra</title>
+    <title>Admin Console - BY Indra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0a0a0c; --accent: #3d5afe; }
+        :root { --bg: #050507; --accent: #3d5afe; --card: #111116; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: #ffffff; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .sharp-card { background: var(--card); border: 1px solid #2d2d35; border-radius: 24px; transition: 0.3s; }
         
-        .sharp-card { background: #16161a; border: 1px solid #2d2d35; border-radius: 20px; }
-
-        .id-badge {
-            background: #252530; color: #ffffff; font-family: 'Courier New', monospace;
-            padding: 6px 14px; border-radius: 10px; border: 2px solid #3d5afe;
-            font-weight: 800; font-size: 1rem; display: inline-block;
+        /* QR Overlay Styling */
+        .qr-wrapper { position: relative; display: inline-block; background: white; padding: 16px; border-radius: 20px; }
+        .qr-logo-overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 55px; height: 55px; background: white; padding: 4px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* Style untuk Foto agar Tajam */
         .img-evidence {
-            width: 60px; height: 60px; border-radius: 12px; object-fit: cover;
-            border: 2px solid #333; transition: transform 0.2s; cursor: pointer;
+            width: 55px; height: 55px; border-radius: 14px; object-fit: cover;
+            border: 2px solid #2d2d35; transition: 0.3s; cursor: zoom-in;
         }
-        .img-evidence:hover { transform: scale(1.1); border-color: #3d5afe; }
+        .img-evidence:hover { border-color: var(--accent); transform: scale(1.1); }
 
-        @media (max-width: 1023px) {
-            .mobile-view { padding-bottom: 110px; padding-top: 20px; }
-            #sidebar { display: none; }
-            .img-evidence { width: 50px; height: 50px; } /* Sedikit lebih kecil di HP tapi tetap jelas */
-        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen overflow-x-hidden">
 
-<section id="authPage" class="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-[#050505]">
-    <div class="sharp-card w-full max-w-[420px] p-10 text-center shadow-2xl">
-        <h1 class="text-3xl font-extrabold mb-8 tracking-tight">Login:<span class="text-blue-500">.</span></h1>
-        <form id="loginForm" class="space-y-5">
-            <input type="email" id="loginEmail" required class="w-full px-6 py-5 bg-[#22222a] border border-[#333] rounded-2xl outline-none text-white" placeholder="Email Admin">
-            <input type="password" id="loginPassword" required class="w-full px-6 py-5 bg-[#22222a] border border-[#333] rounded-2xl outline-none text-white" placeholder="Password">
-            <button type="submit" class="w-full bg-blue-600 text-white font-black py-5 rounded-2xl text-lg uppercase">Masuk</button>
+<section id="authPage" class="fixed inset-0 z-[500] flex items-center justify-center p-6 bg-black">
+    <div class="sharp-card w-full max-w-[400px] p-10 text-center shadow-2xl border-blue-500/10">
+        <div class="w-16 h-16 bg-blue-600/20 rounded-2xl mx-auto mb-6 flex items-center justify-center border border-blue-500/30">
+            <span class="text-2xl text-blue-500">🔐</span>
+        </div>
+        <h1 class="text-2xl font-black mb-8 tracking-tighter uppercase italic">Admin <span class="text-blue-500">Console</span></h1>
+        <form id="loginForm" class="space-y-4">
+            <input type="email" id="loginEmail" required class="w-full px-6 py-4 bg-[#1a1a21] border border-[#333] rounded-xl outline-none text-white focus:border-blue-500" placeholder="Email Admin">
+            <input type="password" id="loginPassword" required class="w-full px-6 py-4 bg-[#1a1a21] border border-[#333] rounded-xl outline-none text-white focus:border-blue-500" placeholder="Password">
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl transition shadow-lg shadow-blue-600/20 uppercase text-sm tracking-widest">Login System</button>
         </form>
     </div>
 </section>
 
 <section id="mainPage" class="hidden min-h-screen flex flex-col lg:flex-row">
     
-    <aside id="sidebar" class="w-[300px] border-r border-[#2d2d35] p-8 flex flex-col sticky top-0 h-screen bg-[#0a0a0c]">
-        <h2 class="text-2xl font-black mb-10 italic">DASHBOARD ADMIN</h2>
-        <nav class="space-y-4 flex-grow">
-            <a href="#" class="flex items-center space-x-4 text-white p-5 sharp-card border-blue-500 bg-blue-600/10">
-                <span class="text-xl">📊</span> <span class="font-bold">Dashboard</span>
-            </a>
-            <a href="tambahkaryawan.html" class="flex items-center space-x-4 text-gray-500 p-5 hover:text-white transition">
-                <span class="text-xl">📷</span> <span class="font-bold">Bikin Barcode</span>
+    <aside class="w-[280px] border-r border-[#222] p-8 hidden lg:flex flex-col sticky top-0 h-screen bg-[#08080a]">
+        <div class="mb-10 flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg shadow-lg shadow-blue-600/40"></div>
+            <h2 class="text-xl font-black italic">Form Admin</h2>
+        </div>
+        <nav class="space-y-3 flex-grow text-sm">
+            <a href="#" class="flex items-center space-x-4 text-white p-4 sharp-card border-blue-600/50 bg-blue-600/5 font-bold">
+                <span>📊</span> <span>Live Monitor</span>
             </a>
         </nav>
-        <div class="mt-auto p-4 sharp-card text-center">
-            <p id="sideAdminName" class="font-bold mb-2">-</p>
-            <button onclick="location.reload()" class="text-red-500 text-xs font-black uppercase tracking-widest">Logout</button>
+        <div class="mt-auto p-4 bg-[#111] rounded-2xl border border-[#222] text-center">
+            <p id="sideAdminName" class="font-black text-[10px] text-gray-500 uppercase tracking-widest mb-2">-</p>
+            <button onclick="location.reload()" class="text-red-500 text-[10px] font-black uppercase tracking-widest hover:underline">Logout</button>
         </div>
     </aside>
 
-    <main class="flex-1 p-5 lg:p-12 mobile-view">
-        <header class="mb-10 lg:flex justify-between items-center">
+    <main class="flex-1 p-6 lg:p-12 pb-32 lg:pb-12">
+        <header class="mb-10 flex justify-between items-end">
             <div>
-                <h2 class="text-4xl font-black text-white">Haiiii <span id="topAdminName" class="text-blue-500 font-extrabold">-</span></h2>
-                <p class="text-gray-400 mt-1 font-semibold">Memantau aktivitas <span id="topAdminName" class="text-blue-500 font-extrabold">-</span></p>
+                <p class="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] mb-2">Command Center</p>
+                <h2 class="text-4xl font-black text-white tracking-tighter italic">DASHBOARD <span id="topAdminName" class="text-blue-500 opacity-50">-</span></h2>
             </div>
-            <div id="clock" class="text-2xl font-mono font-black text-blue-500 hidden lg:block">00:00:00</div>
+            <div id="clock" class="text-2xl font-black text-white mono opacity-20">00:00:00</div>
         </header>
 
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10 text-center">
-            <div class="sharp-card p-6"><p class="text-gray-500 text-[10px] font-black mb-1 uppercase">Staff</p><h3 id="statTotalKaryawan" class="text-3xl font-black">0</h3></div>
-            <div class="sharp-card p-6 border-b-4 border-b-green-500"><p class="text-green-500 text-[10px] font-black mb-1 uppercase">Masuk</p><h3 id="statTotalMasuk" class="text-3xl font-black">0</h3></div>
-            <div class="sharp-card p-6 border-b-4 border-b-amber-500"><p class="text-amber-500 text-[10px] font-black mb-1 uppercase">Pulang</p><h3 id="statTotalPulang" class="text-3xl font-black">0</h3></div>
-            <div class="sharp-card p-6"><p class="text-gray-500 text-[10px] font-black mb-1 uppercase">Total Log</p><h3 id="statTotalAbsen" class="text-3xl font-black">0</h3></div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+            <div class="sharp-card p-6"><p class="text-gray-600 text-[10px] font-black uppercase mb-1">Staff</p><h3 id="statTotalKaryawan" class="text-3xl font-black mono text-white">0</h3></div>
+            <div class="sharp-card p-6 border-l-4 border-l-green-600"><p class="text-green-600 text-[10px] font-black uppercase mb-1">In</p><h3 id="statTotalMasuk" class="text-3xl font-black mono text-green-500">0</h3></div>
+            <div class="sharp-card p-6 border-l-4 border-l-orange-600"><p class="text-orange-600 text-[10px] font-black uppercase mb-1">Out</p><h3 id="statTotalPulang" class="text-3xl font-black mono text-orange-500">0</h3></div>
+            <div class="sharp-card p-6"><p class="text-gray-600 text-[10px] font-black uppercase mb-1">Total Logs</p><h3 id="statTotalAbsen" class="text-3xl font-black mono text-blue-500">0</h3></div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div class="xl:col-span-2">
                 <div class="sharp-card overflow-hidden">
-                    <div class="p-6 border-b border-[#2d2d35] bg-[#1c1c21] flex justify-between">
-                        <h3 class="font-black text-sm uppercase tracking-widest text-blue-500">Live Attendance Log</h3>
+                    <div class="p-6 border-b border-[#222] bg-[#1a1a21]/30 flex justify-between items-center">
+                        <h3 class="font-black text-[10px] uppercase tracking-widest text-gray-400">Activity Stream</h3>
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left min-w-[700px]">
-                            <thead class="bg-[#111] text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-black/50 text-[9px] text-gray-500 font-black uppercase tracking-widest">
                                 <tr>
-                                    <th class="px-6 py-4">FOTO</th> <th class="px-6 py-4 text-center">ID</th>
-                                    <th class="px-6 py-4">NAMA STAFF</th>
-                                    <th class="px-4 py-4 text-center">STATUS</th>
-                                    <th class="px-6 py-4 text-right">WAKTU</th>
-                                    <th class="px-6 py-4 text-right">AKSI</th>
+                                    <th class="px-6 py-4">Evidence</th>
+                                    <th class="px-6 py-4">ID</th>
+                                    <th class="px-6 py-4">Personnel</th>
+                                    <th class="px-4 py-4 text-center">Status</th>
+                                    <th class="px-6 py-4 text-right">Time</th>
+                                    <th class="px-6 py-4 text-right">Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="tabelAbsensi" class="divide-y divide-[#2d2d35]"></tbody>
+                            <tbody id="tabelAbsensi" class="divide-y divide-[#222]"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
             <div class="space-y-6">
-                <div class="sharp-card p-8 border-2 border-blue-600/30">
-                    <h3 class="font-black text-lg text-white mb-6 uppercase">Pendaftaran Baru</h3>
+                <div class="sharp-card p-8 bg-gradient-to-br from-blue-600/[0.03] to-transparent">
+                    <h3 class="font-black text-xs text-white mb-6 uppercase tracking-widest italic">Register Personnel</h3>
                     <div class="space-y-4">
-                        <input type="text" id="addBarcode" placeholder="NOMOR ID / BARCODE" class="w-full p-4 bg-[#22222a] border border-[#333] rounded-2xl outline-none text-blue-400 font-black text-lg">
-                        <input type="text" id="addNama" placeholder="NAMA LENGKAP" class="w-full p-4 bg-[#22222a] border border-[#333] rounded-2xl outline-none text-white font-bold">
-                        <button onclick="simpanKaryawan()" class="w-full bg-white text-black font-black py-4 rounded-2xl uppercase tracking-widest">SIMPAN</button>
+                        <input type="text" id="addBarcode" placeholder="ID / BARCODE" class="w-full p-4 bg-[#0a0a0c] border border-[#333] rounded-2xl outline-none text-blue-400 font-black focus:border-blue-500 transition">
+                        <input type="text" id="addNama" placeholder="FULL NAME" class="w-full p-4 bg-[#0a0a0c] border border-[#333] rounded-2xl outline-none text-white font-bold focus:border-blue-500 transition uppercase">
+                        <button onclick="simpanKaryawan()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs shadow-lg shadow-blue-600/20 hover:bg-blue-500 transition">Execute Register</button>
                     </div>
                 </div>
+
                 <div class="sharp-card p-6">
-                    <h3 class="text-[20px] font-black text-gray-500 uppercase mb-4 tracking-widest italic">Directory List</h3>
-                    <div id="tabelKaryawan" class="space-y-2 max-h-[350px] overflow-y-auto"></div>
+                    <h3 class="text-[9px] font-black text-gray-600 uppercase mb-4 tracking-widest">Personnel Database (Click for detail)</h3>
+                    <div id="tabelKaryawan" class="space-y-3 max-h-[400px] overflow-y-auto pr-2"></div>
                 </div>
             </div>
         </div>
     </main>
-
-    <nav class="lg:hidden fixed bottom-0 left-0 right-0 h-24 bg-[#16161a] border-t border-[#333] flex items-center justify-around z-[200]">
-        <button class="flex flex-col items-center text-blue-500"><span class="text-2xl">📊</span><span class="text-[10px] font-black mt-1 uppercase">Data</span></button>
-        <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-500"><span class="text-2xl">📷</span><span class="text-[10px] font-black mt-1 uppercase">Scan</span></button>
-        <button onclick="location.reload()" class="flex flex-col items-center text-red-500"><span class="text-2xl">🚪</span><span class="text-[10px] font-black mt-1 uppercase">Out</span></button>
-    </nav>
 </section>
+
+<div id="qrcode-container" class="hidden"><div id="qrcode"></div></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getFirestore, collection, doc, setDoc, onSnapshot, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, onSnapshot, query, where, getDocs, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyB-GSKbvVTc2e_6sGnL2WSPNU19wUd6BYQ",
         authDomain: "bukber-9d73f.firebaseapp.com",
         projectId: "bukber-9d73f",
         storageBucket: "bukber-9d73f.firebasestorage.app",
-        messagingSenderId: "86991458584",
         appId: "1:86991458584:web:6ce66640bcb7fe45ba8e6d"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const admins = [
-        { name: "Indra", email: "indra2005@gmail.com", pass: "indra2005" },
-        { name: "Andi", email: "andi@gmail.com", pass: "admin123" }
-    ];
+    const admins = [{ name: "Indra", email: "indra2005@gmail.com", pass: "indra2005" }];
 
+    // CLOCK
     setInterval(() => {
         document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour12: false});
     }, 1000);
 
+    // LOGIN LOGIC
     document.getElementById('loginForm').addEventListener('submit', (e) => {
         e.preventDefault();
         const found = admins.find(a => a.email === document.getElementById('loginEmail').value && a.pass === document.getElementById('loginPassword').value);
@@ -159,62 +158,141 @@
             document.getElementById('authPage').classList.add('hidden');
             document.getElementById('mainPage').classList.remove('hidden');
             document.getElementById('sideAdminName').innerText = found.name;
-            document.getElementById('topAdminName').innerText = found.name;
+            document.getElementById('topAdminName').innerText = found.name.toUpperCase();
+        } else {
+            Swal.fire({ icon: 'error', title: 'Unauthorized', background: '#111', color: '#fff' });
         }
     });
+
+    // GENERATE QR WITH LOGO OVERLAY
+    window.generateSingleQR = (barcode, nama) => {
+        const qrDiv = document.getElementById("qrcode");
+        qrDiv.innerHTML = "";
+        
+        new QRCode(qrDiv, {
+            text: "SECURE-ID-" + barcode,
+            width: 400, height: 400,
+            colorDark : "#000000", colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+
+        setTimeout(() => {
+            const qrCanvas = qrDiv.querySelector('canvas');
+            const qrImage = qrCanvas ? qrCanvas.toDataURL() : qrDiv.querySelector('img').src;
+
+            Swal.fire({
+                title: `<span class="text-xs font-black text-blue-500 tracking-[0.3em] uppercase">Security Key Card</span>`,
+                html: `
+                    <div class="p-4">
+                        <div class="qr-wrapper shadow-2xl">
+                            <img src="${qrImage}" class="w-64 h-64">
+                            <div class="qr-logo-overlay">
+                                <img src="icon.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/709/709699.png'" class="w-full h-full object-contain">
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <p class="text-white font-black text-xl tracking-tighter">${nama.toUpperCase()}</p>
+                            <p class="text-gray-500 font-mono text-[10px] tracking-[0.3em] mt-1">${barcode}</p>
+                        </div>
+                    </div>
+                `,
+                background: '#0a0a0c', color: '#fff',
+                confirmButtonText: 'CLOSE',
+                confirmButtonColor: '#3d5afe'
+            });
+        }, 400);
+    };
+
+    // DETAIL AKTIVITAS KARYAWAN
+    window.viewDetailKaryawan = async (barcode, nama) => {
+        const q = query(collection(db, "attendance"), where("barcode", "==", barcode), orderBy("timestamp", "desc"));
+        const snap = await getDocs(q);
+        
+        let htmlContent = `<div class="text-left overflow-y-auto max-h-[400px] pr-2">`;
+        if (snap.empty) {
+            htmlContent += `<p class="text-center text-gray-500 py-10">Belum ada aktivitas.</p>`;
+        } else {
+            snap.forEach(doc => {
+                const data = doc.data();
+                const isM = data.status === "MASUK";
+                htmlContent += `
+                    <div class="flex items-center gap-4 p-3 mb-2 bg-white/5 rounded-xl border border-white/5">
+                        <img src="${data.photo}" class="w-12 h-12 rounded-lg object-cover">
+                        <div class="flex-1">
+                            <div class="flex justify-between">
+                                <span class="text-[9px] font-black ${isM ? 'text-green-500' : 'text-orange-500'}">${data.status}</span>
+                                <span class="text-[10px] text-gray-500 font-mono">${data.time}</span>
+                            </div>
+                            <p class="text-[10px] text-gray-400 mt-1 uppercase font-bold">${data.date}</p>
+                        </div>
+                    </div>`;
+            });
+        }
+        htmlContent += `</div>`;
+
+        Swal.fire({
+            title: `<span class="text-white font-black italic uppercase text-lg">${nama}</span>`,
+            html: htmlContent,
+            background: '#0a0a0c', color: '#fff', showConfirmButton: false, showCloseButton: true
+        });
+    };
 
     window.simpanKaryawan = async () => {
         const n = document.getElementById('addNama').value, b = document.getElementById('addBarcode').value;
         if(n && b) {
             await setDoc(doc(db, "employees", b), { name: n, barcode: b });
             document.getElementById('addNama').value = ""; document.getElementById('addBarcode').value = "";
-            Swal.fire({title: 'Tersimpan', icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000});
+            window.generateSingleQR(b, n);
         }
     };
 
-    window.hapusKaryawan = async (id) => { if(confirm('Hapus Karyawan?')) await deleteDoc(doc(db, "employees", id)); };
-    window.hapusAbsensi = async (id) => { if(confirm('Hapus Log?')) await deleteDoc(doc(db, "attendance", id)); };
+    window.hapusKaryawan = async (id) => { if(confirm('Erase Staff?')) await deleteDoc(doc(db, "employees", id)); };
+    window.hapusAbsensi = async (id) => { if(confirm('Delete Log?')) await deleteDoc(doc(db, "attendance", id)); };
 
+    // REALTIME: PERSONNEL DATABASE
     onSnapshot(collection(db, "employees"), (s) => {
         document.getElementById('statTotalKaryawan').innerText = s.size;
         const list = document.getElementById('tabelKaryawan');
         list.innerHTML = "";
         s.forEach(d => {
-            list.innerHTML += `<div class="p-5 bg-[#1c1c21] rounded-xl flex justify-between items-center border border-[#333]">
-                <div><p class="font-bold text-white text-xs">${d.data().name}</p><p class="text-blue-500 font-mono text-[20px]">${d.data().barcode}</p></div>
-                <button onclick="hapusKaryawan('${d.id}')" class="text-red-500 font-black">×</button>
-            </div>`;
+            const data = d.data();
+            list.innerHTML += `
+                <div onclick="viewDetailKaryawan('${data.barcode}', '${data.name}')" class="p-4 bg-[#111116] rounded-2xl flex justify-between items-center border border-[#222] group hover:border-blue-500/30 transition cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <button onclick="event.stopPropagation(); generateSingleQR('${data.barcode}', '${data.name}')" class="w-10 h-10 bg-blue-600/10 text-blue-500 rounded-xl flex items-center justify-center border border-blue-500/10 hover:bg-blue-600 hover:text-white transition">
+                            <span class="text-[9px] font-black">QR</span>
+                        </button>
+                        <div>
+                            <p class="font-bold text-white text-[11px] leading-tight">${data.name.toUpperCase()}</p>
+                            <p class="text-gray-600 font-mono text-[9px] tracking-widest mt-0.5">${data.barcode}</p>
+                        </div>
+                    </div>
+                    <button onclick="event.stopPropagation(); hapusKaryawan('${d.id}')" class="text-gray-700 hover:text-red-500 transition font-black text-lg px-2">✕</button>
+                </div>`;
         });
     });
 
-    onSnapshot(query(collection(db, "attendance"), orderBy("time", "desc")), (snap) => {
+    // REALTIME: ACTIVITY STREAM
+    onSnapshot(query(collection(db, "attendance"), orderBy("timestamp", "desc")), (snap) => {
         const list = document.getElementById('tabelAbsensi');
-        const userTracker = {};
-        const logs = [];
-        snap.forEach(d => logs.push({id: d.id, ...d.data()}));
-        const proc = [...logs].reverse().map(l => {
-            if(!userTracker[l.barcode]) { userTracker[l.barcode] = 1; l.status = "MASUK"; }
-            else { l.status = "PULANG"; }
-            return l;
-        });
-
         list.innerHTML = "";
         let inC = 0, outC = 0;
-        proc.reverse().forEach(d => {
-            const isM = d.status === "MASUK";
+        snap.forEach(d => {
+            const data = d.data();
+            const isM = data.status === "MASUK";
             if(isM) inC++; else outC++;
             list.innerHTML += `
-                <tr class="hover:bg-white/5 transition">
-                    <td class="px-6 py-5">
-                        <img src="${d.photo}" class="img-evidence" onclick="Swal.fire({imageUrl: '${d.photo}', background: '#111', showConfirmButton: false})">
+                <tr class="hover:bg-white/[0.02] transition border-b border-white/[0.03]">
+                    <td class="px-6 py-4">
+                        <img src="${data.photo}" class="img-evidence" onclick="Swal.fire({imageUrl: '${data.photo}', background: '#000', showConfirmButton: false})">
                     </td>
-                    <td class="px-6 py-5 text-center"><span class="id-badge">${d.barcode}</span></td>
-                    <td class="px-6 py-5"><div class="font-extrabold text-white text-lg">${d.name}</div></td>
-                    <td class="px-4 py-5 text-center">
-                        <span class="px-3 py-2 rounded-lg text-[10px] font-black ${isM ? 'bg-green-600' : 'bg-amber-600'}">${d.status}</span>
+                    <td class="px-6 py-4"><span class="px-2 py-1 bg-[#1a1a21] text-blue-400 font-mono text-[10px] border border-white/10 rounded-md">${data.barcode}</span></td>
+                    <td class="px-6 py-4"><div class="font-black text-white text-[11px] tracking-tight uppercase">${data.name}</div></td>
+                    <td class="px-4 py-4 text-center">
+                        <span class="px-3 py-1 rounded-full text-[9px] font-black tracking-widest ${isM ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500'}">${data.status}</span>
                     </td>
-                    <td class="px-6 py-5 text-right font-mono text-sm text-gray-400">${d.time}</td>
-                    <td class="px-6 py-5 text-right"><button onclick="hapusAbsensi('${d.id}')" class="text-gray-600 hover:text-red-500">Hapus</button></td>
+                    <td class="px-6 py-4 text-right mono text-[11px] text-gray-500">${data.time}</td>
+                    <td class="px-6 py-4 text-right"><button onclick="hapusAbsensi('${d.id}')" class="text-gray-800 hover:text-red-500 font-black text-[10px]">DELETE</button></td>
                 </tr>`;
         });
         document.getElementById('statTotalAbsen').innerText = snap.size;
