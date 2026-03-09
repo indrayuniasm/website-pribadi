@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Via Barcode</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body class="bg-gray-900 min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden p-8">
+        <div class="text-center mb-8">
+            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-3xl">🛡️</span>
+            </div>
+            <h1 class="text-2xl font-black text-gray-800 tracking-tight">ABSENSI VIA BARCODE</h1>
+            <p class="text-gray-500 text-sm">Arahkan Barcode ke Kamera</p>
+        </div>
+
+        <div id="wrapper-scan" class="relative group">
+            <div id="reader" class="rounded-3xl overflow-hidden border-4 border-gray-100 shadow-inner bg-black aspect-square"></div>
+            <div id="scan-line" class="absolute top-0 left-0 w-full h-1 bg-blue-500 shadow-[0_0_15px_#3b82f6] animate-bounce opacity-50"></div>
+        </div>
+
+        <div id="wrapper-selfie" class="hidden text-center">
+            <div class="rounded-3xl overflow-hidden border-4 border-green-100 shadow-lg bg-black aspect-square mb-6">
+                <video id="webcam" autoplay playsinline class="w-full h-full object-cover"></video>
+            </div>
+            <canvas id="canvas" class="hidden"></canvas>
+            <button onclick="prosesAbsenFinal()" class="w-full bg-green-600 hover:bg-green-700 text-white font-extrabold py-4 rounded-2xl shadow-xl transition-all active:scale-95">
+                AMBIL FOTO & SELESAI
+            </button>
+            <p class="mt-4 text-xs text-gray-400">Pastikan wajah terlihat jelas</p>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center text-xs font-bold text-gray-400 uppercase tracking-widest">
+            <span>Server: Online</span>
+            <span id="live-clock">00:00:00</span>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+        // CONFIG FIREBASE MILIKMU
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-GSKbvVTc2e_6sGnL2WSPNU19wUd6BYQ",
+            authDomain: "bukber-9d73f.firebaseapp.com",
+            projectId: "bukber-9d73f",
+            storageBucket: "bukber-9d73f.firebasestorage.app",
+            messagingSenderId: "86991458584",
+            appId: "1:86991458584:web:6ce66640bcb7fe45ba8e6d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        let currentBarcode = "";
+        const Toast = Swal.mixin({
+            toast: true, position: 'top', showConfirmButton: false, timer: 3000, timerProgressBar: true
+        });
+
+        // 1. Jalankan Jam Realtime
+        setInterval(() => {
+            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+
+        // 2. Inisialisasi Scanner
+        const html5QrCode = new Html5Qrcode("reader");
+        const startScanner = () => {
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                onScanSuccess
+            );
+        };
+        startScanner();
+
+        // 3. Logika ketika Barcode Terdeteksi
+        async function onScanSuccess(decodedText) {
+            currentBarcode = decodedText;
+
+            try {
+                // Cek ke Database apakah ID ada
+                const q = query(collection(db, "employees"), where("barcode", "==", currentBarcode));
+                const snap = await getDocs(q);
+
+                if (snap.empty) {
+                    Toast.fire({ icon: 'error', title: 'GAGAL: ID ' + currentBarcode + ' Tidak Dikenal!' });
+                    return; 
+                }
+
+                // Jika Berhasil
+                Toast.fire({ icon: 'success', title: 'BERHASIL: ID Ditemukan!' });
+                
+                // Matikan Scanner, Pindah ke Kamera Selfie
+                await html5QrCode.stop();
+                document.getElementById('wrapper-scan').classList.add('hidden');
+                document.getElementById('wrapper-selfie').classList.remove('hidden');
+                bukaKameraSelfie();
+
+            } catch (err) {
+                console.error(err);
+                Toast.fire({ icon: 'error', title: 'Gangguan Koneksi' });
+            }
+        }
+
+        // 4. Logika Kamera Selfie
+        async function bukaKameraSelfie() {
+            const video = document.getElementById('webcam');
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+        }
+
+        // 5. Simpan Absen ke Firebase
+        window.prosesAbsenFinal = async function() {
+            const video = document.getElementById('webcam');
+            const canvas = document.getElementById('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            // Ubah foto jadi teks (Base64)
+            const fotoBase64 = canvas.toDataURL('image/jpeg', 0.6);
+
+            Swal.fire({ title: 'Mengunci Absen...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            try {
+                // Ambil info nama dari database
+                const q = query(collection(db, "employees"), where("barcode", "==", currentBarcode));
+                const snap = await getDocs(q);
+                const dataKaryawan = snap.docs[0].data();
+
+                // Simpan ke koleksi 'attendance'
+                await addDoc(collection(db, "attendance"), {
+                    name: dataKaryawan.name,
+                    barcode: currentBarcode,
+                    time: new Date().toLocaleTimeString('id-ID'),
+                    date: new Date().toLocaleDateString('id-ID'),
+                    photo: fotoBase64,
+                    timestamp: new Date()
+                });
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ABSEN BERHASIL!',
+                    text: 'Terima kasih ' + dataKaryawan.name + ', data sudah tersimpan.',
+                    confirmButtonText: 'OKE'
+                }).then(() => location.reload());
+
+            } catch (err) {
+                Swal.fire('Gagal', 'Terjadi kesalahan saat menyimpan', 'error');
+            }
+        };
+
+        // BLOK TOMBOL
+document.addEventListener("keydown", function(e) {
+
+    // F12
+    if (e.key === "F12") {
+        e.preventDefault();
+        location.reload();
+    }
+
+    // CTRL+U
+    if (e.ctrlKey && e.key.toLowerCase() === "u") {
+        e.preventDefault();
+    }
+
+    // CTRL+S
+    if (e.ctrlKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+    }
+
+    // CTRL+SHIFT+I / CTRL+SHIFT+C / CTRL+SHIFT+J
+    if (e.ctrlKey && e.shiftKey && ["I","C","J"].includes(e.key)) {
+        e.preventDefault();
+        location.reload();
+    }
+});
+
+
+// BLOK KLIK KANAN
+document.addEventListener("contextmenu", function(e){
+    e.preventDefault();
+});
+    </script>
+</body>
+</html>
