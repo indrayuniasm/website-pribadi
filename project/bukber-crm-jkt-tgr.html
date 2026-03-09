@@ -791,40 +791,35 @@ stars.material.opacity =
             }
         }
 // Guestbook Form Handling dengan Status
-// Ganti logika submit form yang lama dengan ini
 document.getElementById('rsvp-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // 1. Ambil data dari input
-    const name = document.getElementById('form-name').value;
-    const status = document.getElementById('form-status').value;
-    const message = document.getElementById('form-message').value;
-    const reason = document.getElementById('form-reason').value;
-    
-    // 2. Format pesan untuk WhatsApp
-    const phone = "6281294591903";
-    
-    let text = `*Konfirmasi Kehadiran Buka Bersama*%0A` +
-           `----------------------------------%0A` +
-           `*Nama:* ${name}%0A` +
-           `*Status:* ${status}%0A`;
+e.preventDefault();
+
+const name = document.getElementById('form-name').value;
+const status = document.getElementById('form-status').value;
+const message = document.getElementById('form-message').value;
+const reason = document.getElementById('form-reason').value;
+
+const phone = "6281294591903";
+
+let text = `
+Konfirmasi Kehadiran Buka Bersama
+----------------------------------
+Nama: ${name}
+Status: ${status}
+`;
 
 if(status === "Tidak Hadir"){
-    text += `*Alasan:* ${reason}%0A`;
+text += `Alasan: ${reason}\n`;
 }
 
-text += `*Pesan:* ${message}`;
+text += `Pesan: ${message}`;
 
-    // 3. Tambahkan ke tampilan Buku Tamu (DOM) agar terlihat di web
-    addMessageToDOM(name, status, message);
+text = encodeURIComponent(text);
 
-    // 4. Redirect ke WhatsApp
-    const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${text}`;
-    window.open(waUrl, '_blank');
+const waUrl = `https://wa.me/${phone}?text=${text}`;
 
-    // 5. Reset form
-    document.getElementById('form-status').value = "";
-    document.getElementById('form-message').value = "";
+window.open(waUrl, '_blank');
+
 });
         const statusSelect = document.getElementById("form-status");
 const reasonGroup = document.getElementById("reason-group");
