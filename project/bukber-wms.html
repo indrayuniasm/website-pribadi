@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undangan Digital Bukber - BY Indra</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&family=Amiri:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://i.ibb.co.com/gb0cPPQd/76d7ade4-a1ed-43fe-b266-b72c0640acc6.png" sizes="1040x1040" type="image/png">
+     <meta name="description" content="Undangan acara buka puasa bersama komunitas orang WMS. Bergabung dalam momen kebersamaan penuh berkah dengan informasi waktu, lokasi, dan konfirmasi kehadiran secara online." />
+        <meta itemprop="name" content="Undangan Digital Bukber">
+        <meta itemprop="description" content="Undangan acara buka puasa bersama komunitas orang WMS. Bergabung dalam momen kebersamaan penuh berkah dengan informasi waktu, lokasi, dan konfirmasi kehadiran secara online.">
+        <meta name="twitter:title" content="DUndangan Digital Bukber">
+        <meta name="twitter:description" content="Undangan acara buka puasa bersama komunitas orang WMS. Bergabung dalam momen kebersamaan penuh berkah dengan informasi waktu, lokasi, dan konfirmasi kehadiran secara online.">
+        <meta property="og:title" content="Undangan Digital Bukber ">
+        <meta property="og:type" content="article" />
+        <meta property="og:description" content="Undangan acara buka puasa bersama komunitas orang WMS. Bergabung dalam momen kebersamaan penuh berkah dengan informasi waktu, lokasi, dan konfirmasi kehadiran secara online.">
+    <meta property="og:image" content="https://i.ibb.co.com/gb0cPPQd/76d7ade4-a1ed-43fe-b266-b72c0640acc6.pngs">
+    <meta property="og:image:width" content="500">
+    <meta property="og:image:height" content="500">
+    <meta property="og:image:type" content="image/png">
+    <link rel="canonical" href="https://draweb.netlify.app/" />
+
+    <style>
+        /* === CORE STYLES === */
+        :root {
+            --gold-primary: #d4af37;
+            --gold-light: #f6e090;
+            --dark-bg: #010a01; /* Hitam dengan sedikit nuansa hijau sangat gelap */
+            --emerald-regal: #0a4d34;
+            --glass: rgba(255, 255, 255, 0.05);
+            --font-main: 'Montserrat', sans-serif;
+            --font-heading: 'Cinzel', serif;
+            --font-deco: 'Cinzel Decorative', serif;
+            --font-arabic: 'Amiri', serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        
+        html { scroll-behavior: initial; /* Controlled by Lenis */ }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: #fff;
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* === PRELOADER & MUSIK === */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            transition: opacity 1s ease, visibility 1s;
+        }
+        .loader-icon {
+            width: 100px; height: 100px;
+            border: 3px solid var(--glass);
+            border-top: 3px solid var(--gold-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* === 3D CINEMATIC OPENING (Three.js Container) === */
+        #three-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 100; /* Di atas segalanya saat opening */
+            background: radial-gradient(circle at center, #021a11 0%, #000000 100%);
+        }
+
+        #opening-ui {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 101; /* Di atas canvas 3D */
+            display: flex; justify-content: center; align-items: center;
+            flex-direction: column; text-align: center;
+            background: transparent;
+            pointer-events: none; /* Biar bisa klik tombol di bawahnya */
+        }
+
+        .opening-text-group { pointer-events: auto; } /* Aktifkan klik kembali untuk area tombol */
+
+        .kepada-yth {
+            font-size: 1.1rem; letter-spacing: 5px; text-transform: uppercase;
+            color: rgba(255,255,255,0.7); margin-bottom: 15px;
+            opacity: 0; /* Animated by GSAP */
+        }
+
+        .nama-tamu {
+            font-family: var(--font-deco); font-size: 3.5rem; color: var(--gold-light);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5); margin-bottom: 40px;
+            opacity: 0; /* Animated by GSAP */
+        }
+
+        .btn-buka {
+            padding: 18px 45px; background: transparent;
+            border: 2px solid var(--gold-primary); color: var(--gold-primary);
+            font-family: var(--font-heading); font-weight: 700; font-size: 1.1rem;
+            letter-spacing: 3px; cursor: pointer;
+            position: relative; overflow: hidden;
+            transition: all 0.5s ease;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            opacity: 0; /* Animated by GSAP */
+        }
+
+        .btn-buka:hover {
+            background: var(--gold-primary); color: var(--dark-bg);
+            box-shadow: 0 0 30px var(--gold-primary);
+        }
+
+        /* === MAIN CONTENT (Mereset overflow biar bisa scroll) === */
+        #main-content {
+            position: relative; z-index: 10;
+            display: none; /* Tersembunyi sampai gerbang terbuka */
+            width: 100%;
+        }
+
+        /* === PARTICLES BACKGROUND === */
+        #particles-js {
+            position: fixed; width: 100%; height: 100%;
+            top: 0; left: 0; z-index: 1; pointer-events: none;
+        }
+
+        /* === REUSABLE UI ELEMENTS === */
+        .section {
+            min-height: 100vh; width: 100%;
+            display: flex; justify-content: center; align-items: center;
+            position: relative; z-index: 2; padding: 100px 20px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 15px; padding: 60px;
+            max-width: 900px; width: 100%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            text-align: center;
+            position: relative; overflow: hidden;
+        }
+        
+        /* Glow Effect on Card */
+        .glass-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, rgba(0,0,0,0) 70%);
+            pointer-events: none;
+        }
+
+        .arabic-text {
+            font-family: var(--font-arabic); font-size: 3rem;
+            color: var(--gold-light); margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--gold-primary);
+        }
+
+        .main-title {
+            font-family: var(--font-deco); font-size: 3.8rem;
+            color: #fff; margin-bottom: 10px; line-height: 1.2;
+        }
+
+        .gold-subtitle {
+            font-family: var(--font-heading); font-size: 1.5rem;
+            color: var(--gold-primary); letter-spacing: 5px;
+            text-transform: uppercase; margin-bottom: 40px;
+        }
+
+        /* === HERO SECTION === */
+        #hero .glass-card { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        /* === INFO SECTION === */
+        .info-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 20px;
+margin: 40px 0;
+}
+        .info-item {
+            padding: 20px; background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 10px;
+        }
+        .info-icon { font-size: 2rem; color: var(--gold-primary); margin-bottom: 10px; }
+        .info-label { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.7); }
+        .info-value { font-family: var(--font-heading); font-size: 1.2rem; color: #fff; font-weight: 700; }
+
+        .btn-maps {
+            padding: 12px 30px; background: var(--gold-primary);
+            color: var(--dark-bg); border: none; font-family: var(--font-heading);
+            font-weight: 700; cursor: pointer; border-radius: 5px;
+            transition: 0.3s;
+        }
+        .btn-maps:hover { background: var(--gold-light); transform: scale(1.05); }
+
+        /* === COUNTDOWN SECTION === */
+        #countdown-timer { display: flex; gap: 20px; justify-content: center; margin-top: 40px; }
+        .time-box {
+            background: var(--glass); border: 1px solid var(--gold-primary);
+            padding: 20px; border-radius: 10px; min-width: 100px;
+            position: relative; overflow: hidden;
+        }
+        .time-box::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
+            background: rgba(255,255,255,0.05);
+        }
+        .time-num {
+            font-family: var(--font-deco); font-size: 3rem;
+            color: var(--gold-light); display: block;
+            text-shadow: 0 0 15px var(--gold-primary);
+        }
+        .time-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
+
+        
+        /* === GUESTBOOK SECTION === */
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-input {
+            width: 100%; padding: 15px; background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 5px;
+            color: #fff; font-family: var(--font-main);
+        }
+        .form-input:focus { border-color: var(--gold-primary); box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+        
+        #guestbook-messages {
+            margin-top: 40px; max-height: 300px; overflow-y: auto;
+            padding-right: 10px;
+        }
+        #guestbook-messages::-webkit-scrollbar { width: 5px; }
+        #guestbook-messages::-webkit-scrollbar-thumb { background: var(--gold-primary); border-radius: 5px; }
+        
+        .msg-bubble {
+            background: rgba(255,255,255,0.05); padding: 15px;
+            border-radius: 10px; margin-bottom: 15px; text-align: left;
+            border-left: 3px solid var(--emerald-regal);
+            opacity: 0; transform: translateY(20px); animation: msgIn 0.5s forwards;
+        }
+        @keyframes msgIn { to { opacity: 1; transform: translateY(0); } }
+        .msg-name { font-weight: 600; color: var(--gold-light); margin-bottom: 5px; }
+        .msg-text { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+
+        /* === AUDIO CONTROL === */
+        #audio-control {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 50px; height: 50px;
+            background: rgba(0,0,0,0.5); border: 2px solid var(--gold-primary);
+            border-radius: 50%; color: var(--gold-primary);
+            display: none; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 200;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+            transition: 0.3s;
+        }
+        #audio-control:hover { transform: scale(1.1); background: rgba(212, 175, 55, 0.1); }
+        .music-anim {
+            width: 20px; height: 20px; display: flex; justify-content: space-between; align-items: flex-end;
+        }
+        .music-bar { width: 3px; background: var(--gold-primary); animation: quiet 0.5s infinite alternate; }
+        .music-bar:nth-child(2) { animation-delay: 0.2s; height: 100%; }
+        .music-bar:nth-child(3) { animation-delay: 0.4s; height: 100%; }
+        @keyframes quiet { 0% { height: 20%; } 100% { height: 100%; } }
+        #audio-control.paused .music-bar { animation-play-state: paused; height: 20% !important; }
+
+        .status-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    font-size: 0.7rem;
+    border-radius: 20px;
+    margin-left: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+.status-hadir {
+    background: rgba(212, 175, 55, 0.2);
+    color: var(--gold-light);
+    border: 1px solid var(--gold-primary);
+}
+.status-absen {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+        
+        /* === RESPONSIVENESS === */
+        @media (max-width: 768px) {
+            .main-title { font-size: 2.5rem; }
+            .nama-tamu { font-size: 2.2rem; }
+            .glass-card { padding: 30px; }
+            .info-grid { grid-template-columns: 1fr; }
+            .arabic-text { font-size: 2rem; }
+            #countdown-timer { flex-wrap: wrap; gap: 10px; }
+            .time-box { min-width: 70px; padding: 10px; }
+            .time-num { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="loader-icon"></div>
+        <p style="color:var(--gold-primary); letter-spacing:3px;">Loading...</p>
+    </div>
+
+    <div id="three-container"></div>
+    
+    <div id="opening-ui">
+        <div class="opening-text-group">
+            <p class="kepada-yth">Kepada Yth.</p>
+            <h1 class="nama-tamu" id="guest-name">Team WMS</h1>
+            <button class="btn-buka" id="btn-buka-id" onclick="openGateAnimation()">Buka Undangan</button>
+        </div>
+    </div>
+
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/audio/2023/10/05/audio_5174070a93.mp3" type="audio/mpeg">
+    </audio>
+    <div id="audio-control" onclick="toggleMusic()">
+        <div class="music-anim">
+            <div class="music-bar"></div><div class="music-bar"></div><div class="music-bar"></div>
+        </div>
+    </div>
+
+    <main id="main-content">
+        
+        <div id="particles-js"></div>
+
+        <section class="section" id="hero">
+            <div class="glass-card" data-aos="zoom-in" data-aos-duration="1500">
+                <p class="arabic-text">بسم الله الرحمن الرحيم</p>
+                <p class="kepada-yth" style="color:var(--gold-primary);">Undangan Exclusive</p>
+                <h1 class="main-title">IFTAR GATHERING</h1>
+                <p class="gold-subtitle">CRM WARI JKT-TGR</p>
+                <p class="info-text">"BUKBER TO REMEMBER"</p>
+            </div>
+        </section>
+
+        <section class="section" id="info">
+            <div class="glass-card" data-aos="fade-up">
+                <div class="card-ornament top-left"></div>
+                <h2 class="main-title" style="font-size:2.5rem;">Waktu & Lokasi</h2>
+                
+                <div class="info-grid">
+                    <div class="info-item" data-aos="flip-left" data-aos-delay="200">
+                        <div class="info-icon">📅</div>
+                        <p class="info-label">Tanggal</p>
+                        <p class="info-value">Kamis, 12 Maret 2026</p>
+                    </div>
+                    <div class="info-item" data-aos="flip-left" data-aos-delay="400">
+                        <div class="info-icon">🕕</div>
+                        <p class="info-label">Waktu</p>
+                        <p class="info-value">17:00 WIB - Selesai</p>
+                    </div>
+                    <div class="info-item" data-aos="flip-left" data-aos-delay="600">
+                        <div class="info-icon">📍</div>
+                        <p class="info-label">Lokasi</p>
+                        <p class="info-value">Hotel Sotis Falatehan Blok M</p>
+                    </div>
+                    <div class="info-item" data-aos="flip-left" data-aos-delay="600">
+                        <div class="info-icon">📍</div>
+                        <p class="info-label">DRESSCODE</p>
+                        <p class="info-value">ARABIAN NIGHT</p>
+                    </div>
+                </div>
+
+                <button class="btn-maps" onclick="window.open('https://maps.app.goo.gl/DeeXPMzmfiPNmYtV9')">Buka Google Maps</button>
+            </div>
+        </section>
+
+        <section class="section" id="countdown">
+            <div class="glass-card" data-aos="zoom-out">
+                <h2 class="main-title" style="font-size:2.5rem;">Menuju Waktu Bahagia</h2>
+                <p class="info-text">Insya Allah acara akan dimulai dalam:</p>
+                
+                <div id="countdown-timer">
+                    <div class="time-box"><span class="time-num" id="days">00</span><span class="time-label">Hari</span></div>
+                    <div class="time-box"><span class="time-num" id="hours">00</span><span class="time-label">Jam</span></div>
+                    <div class="time-box"><span class="time-num" id="minutes">00</span><span class="time-label">Menit</span></div>
+                    <div class="time-box"><span class="time-num" id="seconds">00</span><span class="time-label">Menit</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="guestbook">
+    <div class="glass-card" data-aos="flip-left">
+        <h1 class="main-title" style="font-size:2.5rem;">Form Kehadiran</h1>
+        <p class="info-text">Konfirmasikan kehadiran Anda dan berikan pesan hangat.</p>
+        
+        <form id="rsvp-form" style="margin-top:30px;">
+            <div class="form-group">
+                <input type="text" id="form-name" class="form-input" placeholder="Nama Lengkap Kamu" required>
+            </div>
+            
+            <div class="form-group">
+                <select id="form-status" class="form-input" required style="cursor: pointer; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23d4af37%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto;">
+                    <option value="" disabled selected>— Konfirmasi Kehadiran —</option>
+                    <option value="Hadir">Insya Allah, Saya Hadir</option>
+                    <option value="Tidak Hadir">Mohon Maaf, Berhalangan Hadir</option>
+                </select>
+            </div>
+
+            <textarea id="form-message" class="form-input" placeholder="Pesan, Doa, atau Ucapan" rows="4"></textarea>
+
+<div class="form-group" id="reason-group" style="display:none;">
+<textarea id="form-reason" class="form-input" placeholder="Alasan tidak dapat hadir..." rows="3"></textarea>
+</div>
+            <button type="submit" class="btn-buka" style="opacity:1; pointer-events:auto; width:100%;">Kirim Konfirmasi</button>
+        </form>
+
+        <div id="guestbook-messages">
+            </div>
+    </div>
+</section>
+
+        <footer style="padding: 40px; text-align: center; color: rgba(255,255,255,0.5); font-size: 0.8rem; position:relative; z-index:2;">
+            <p>Undangan Exclusive Buka Bersama Ramadhan 1447H</p>
+            <a href="https://wa.me/6283849997221?text=assalamualaikum%20admin">
+                <p>© 2026 Indra Yunias'Mara.</p>
+                </a>
+        </footer>
+
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.0.28/dist/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <script>
+        // === 1. GLOBAL SETUP & PARAMETERS ===
+        
+        // Get Guest Name from URL (?kepada=NamaTamu)
+        const urlParams = new URLSearchParams(window.location.search);
+        const guestName = urlParams.get('kepada') || "Team WMS";
+        document.getElementById('guest-name').innerText = guestName;
+        // Juga set di form name
+        document.getElementById('form-name').value = guestName === "Team WMS" ? "" : guestName;
+
+        // AOS Initialization
+        AOS.init({ duration: 1000, once: false });
+
+        // Preloader Closer
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            preloader.style.opacity = '0';
+            setTimeout(() => preloader.style.visibility = 'hidden', 1000);
+            init3DOpening(); // Start loading 3D scene after preloader
+        });
+
+
+        // === 2. THREE.JS 3D OPENING SCENE (GERBANG MASJID) ===
+        let scene, camera, renderer, gateLeft, gateRight, lanternGroup, stars;
+        let isOpeningActive = true;
+
+        function init3DOpening() {
+            const container = document.getElementById('three-container');
+            
+            // Scene & Camera Setup
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x021a11, 0.07); // Kabut hijau zamrud sinematik
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 1.5, 12); // Posisi awal kamera jauh
+
+            // Renderer Setup
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            // 💡 LIGHTING (Sangat Penting untuk Mewah)
+            scene.add(new THREE.AmbientLight(0x404040, 0.5)); // Ambient soft
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 10, 7);
+            scene.add(directionalLight);
+
+            // Cahaya emas dari dalam masjid (Point Light)
+            const gateLight = new THREE.PointLight(0xd4af37, 3, 20);
+            gateLight.position.set(0, 2, 2); // Di belakang gerbang sedikit
+            scene.add(gateLight);
+
+            // --- 3D OBJECTS CREATION ---
+
+            // 1. Stars (Partikel Langit Malam)
+            const starGeo = new THREE.BufferGeometry();
+const starCount = 8000;
+
+const positions = [];
+const sizes = [];
+
+for (let i = 0; i < starCount; i++) {
+
+    const radius = 80;
+
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos((Math.random() * 2) - 1);
+
+    const x = radius * Math.sin(phi) * Math.cos(theta);
+    const y = radius * Math.sin(phi) * Math.sin(theta);
+    const z = radius * Math.cos(phi);
+
+    positions.push(x, y, z);
+
+    sizes.push(Math.random() * 1.5);
+}
+
+            const colors = [];
+
+for (let i = 0; i < starCount; i++) {
+
+const color = new THREE.Color();
+
+const mix = Math.random();
+
+if(mix < 0.7){
+color.set("#ffffff");
+}else if(mix < 0.9){
+color.set("#ffe9c4");
+}else{
+color.set("#cfe9ff");
+}
+
+colors.push(color.r, color.g, color.b);
+}
+            
+starGeo.setAttribute(
+'color',
+new THREE.Float32BufferAttribute(colors,3)
+);
+
+starGeo.setAttribute(
+'size',
+new THREE.Float32BufferAttribute(sizes, 1)
+);
+
+const starMat = new THREE.PointsMaterial({
+vertexColors: true,
+size: 0.15,
+transparent: true,
+opacity: 0.9
+});
+
+stars = new THREE.Points(starGeo, starMat);
+scene.add(stars);
+
+            // 2. Gerbang Masjid (Placeholder 3D Mewah)
+            // Kita buat gerbang sederhana pakai BoxGeometry, tapi dikasih tekstur warna emas/hijau
+            
+            const gateMatHj = new THREE.MeshPhongMaterial({ color: 0x062c1e, shininess: 100, side: THREE.DoubleSide }); // Hijau Tua Regal
+            const gateMatGold = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.1 }); // Emas Berlian
+
+            // Pembuatan Pillar/Bingkai Gerbang
+            const pillarGeo = new THREE.CylinderGeometry(0.3, 0.3, 7, 16);
+            const pillarL = new THREE.Mesh(pillarGeo, gateMatGold);
+            pillarL.position.set(-2.8, 0, 4);
+            scene.add(pillarL);
+            const pillarR = pillarL.clone();
+            pillarR.position.set(2.8, 0, 4);
+            scene.add(pillarR);
+
+            // Kubah Atas Gerbang (Sederhana)
+            const domeGeo = new THREE.SphereGeometry(2.8, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+            const dome = new THREE.Mesh(domeGeo, gateMatHj);
+            dome.position.set(0, 3.5, 4);
+            scene.add(dome);
+            const domeFrame = new THREE.Mesh(new THREE.TorusGeometry(2.8, 0.1, 8, 50), gateMatGold);
+            domeFrame.position.set(0, 3.5, 4); domeFrame.rotation.x = Math.PI/2;
+            scene.add(domeFrame);
+
+            // PINTU GERBANG (Yang akan dibuka)
+            const doorGeo = new THREE.BoxGeometry(2.5, 6, 0.2);
+            
+            // Pintu Kiri
+            gateLeft = new THREE.Group(); // Pake group biar pivot pointnya di pinggir
+            const doorLMesh = new THREE.Mesh(doorGeo, gateMatHj);
+            doorLMesh.position.x = 1.25; // Geser mesh biar pivot di kiri group
+            gateLeft.add(doorLMesh);
+            // Tambah ornamen emas di pintu
+            const ornL = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.05, 8, 50), gateMatGold);
+            ornL.position.set(1.25, 0, 0.15); doorLMesh.add(ornL);
+            
+            gateLeft.position.set(-2.5, 0, 4.2); // Posisi group
+            scene.add(gateLeft);
+
+            // Pintu Kanan
+            gateRight = new THREE.Group();
+            const doorRMesh = new THREE.Mesh(doorGeo, gateMatHj);
+            doorRMesh.position.x = -1.25; // Geser mesh biar pivot di kanan group
+            gateRight.add(doorRMesh);
+            // Tambah ornamen emas di pintu
+            const ornR = ornL.clone();
+            ornR.position.set(-1.25, 0, 0.15); doorRMesh.add(ornR);
+
+            gateRight.position.set(2.5, 0, 4.2); // Posisi group
+            scene.add(gateRight);
+
+
+            // 3. Floating Lanterns (Lentera Melayang)
+            lanternGroup = new THREE.Group();
+            for(let i=0; i<15; i++) {
+                const latGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.3, 8);
+                const latMat = new THREE.MeshPhongMaterial({ color: 0xd4af37, emissive: 0xd4af37, emissiveIntensity: 2 });
+                const lat = new THREE.Mesh(latGeo, latMat);
+                lat.position.set((Math.random() - 0.5) * 15, (Math.random() * 5), (Math.random() - 0.5) * 10);
+                lat.userData.speed = Math.random() * 0.01 + 0.005;
+                lanternGroup.add(lat);
+            }
+            scene.add(lanternGroup);
+
+            // Intro Animation (Camera Zoom In)
+            gsap.from(camera.position, { z: 20, duration: 3, ease: "power2.out", delay: 1 });
+            // Text UI Animation
+            gsap.to(".kepada-yth", { opacity: 1, y: -20, duration: 1, delay: 2 });
+            gsap.to(".nama-tamu", { opacity: 1, y: -20, duration: 1, delay: 2.5 });
+            gsap.to(".btn-buka", { opacity: 1, y: -20, duration: 1, delay: 3 });
+
+            animate3D();
+        }
+
+        function animate3D() {
+            if (!isOpeningActive) return;
+            requestAnimationFrame(animate3D);
+
+            // Rotasi Bintang pelan
+            stars.rotation.y += 0.00015;
+
+stars.material.opacity =
+0.8 + Math.sin(Date.now() * 0.002) * 0.1;
+
+            // Lentera Melayang bergoyang
+            lanternGroup.children.forEach(lat => {
+                lat.position.y += Math.sin(Date.now() * lat.userData.speed) * 0.005;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        // === 3. CORE INTERACTION: BUKA UNDANGAN (Cinematic Transition) ===
+        function openGateAnimation() {
+            isOpeningActive = true; // Pastikan loop render jalan
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    // Setelah animasi selesai, sembunyikan 3D scene dan tampilkan content
+                    document.getElementById('three-container').style.display = 'none';
+                    document.getElementById('opening-ui').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block';
+                    document.getElementById('audio-control').style.display = 'flex';
+                    isOpeningActive = false; // Matikan loop Three.js biar hemat batre
+                    
+                    // Inisialisasi feature content setelah muncul
+                    initSmoothScroll();
+                    initParticles();
+                    initSwiper();
+                    AOS.refresh(); // Refresh AOS biar deteksi elemen baru
+                }
+            });
+
+            // 1. Hide UI Opening
+            tl.to(".opening-text-group", { opacity: 0, scale: 0.8, duration: 1, ease: "power2.inOut" });
+
+            // 2. Cinematic Camera Zoom ke Gerbang
+            tl.to(camera.position, { z: 6, duration: 2.5, ease: "power2.inOut" }, "-=0.5");
+            tl.to(camera.position, { y: 2, duration: 2, ease: "power2.inOut" }, "-=2.5");
+
+            // 3. GERBANG TERBUKA (Rotating Left & Right) 
+            // Kita putar groupnya berdasarkan pivot yang sudah di-set
+            tl.to(gateLeft.rotation, { y: -Math.PI / 1.5, duration: 3, ease: "power3.inOut" }, "-=1");
+            tl.to(gateRight.rotation, { y: Math.PI / 1.5, duration: 3, ease: "power3.inOut" }, "-=3");
+
+            // 4. Kamera Masuk Melewati Gerbang (Terbang ke dalam masjid)
+            tl.to(camera.position, { z: 1, duration: 2.5, ease: "power3.in" }, "-=1.5");
+            
+            // 5. Fade out 3D Scene (Cahaya keluar)
+            tl.to("#three-container", { opacity: 0, duration: 1.5 }, "-=1");
+
+            // Play Music
+            playMusic();
+        }
+
+        // Window Resize Handler for Three.js
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            if(camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        }
+
+
+        // === 4. MAIN CONTENT FEATURES ===
+
+        // Smooth Scroll (Lenis)
+        function initSmoothScroll() {
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                mouseMultiplier: 1,
+                smoothTouch: false,
+                touchMultiplier: 2,
+                infinite: false,
+            });
+
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+
+            // Integrate Lenis with GSAP ScrollTrigger
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add((time) => {
+                lenis.raf(time * 1000);
+            });
+            gsap.ticker.lagSmoothing(0);
+        }
+
+        // Particles.js Background
+        function initParticles() {
+            particlesJS('particles-js', {
+                "particles": {
+                    "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+                    "color": { "value": "#d4af37" }, // Gold particles
+                    "shape": { "type": "circle" },
+                    "opacity": { "value": 0.5, "random": true, "anim": { "enable": true, "speed": 1, "opacity_min": 0.1, "sync": false } },
+                    "size": { "value": 3, "random": true, "anim": { "enable": false, "speed": 40, "size_min": 0.1, "sync": false } },
+                    "line_linked": { "enable": false },
+                    "move": { "enable": true, "speed": 1, "direction": "top", "random": true, "straight": false, "out_mode": "out", "bounce": false, }
+                },
+                "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": false }, "onclick": { "enable": false }, "resize": true } },
+                "retina_detect": true
+            });
+        }
+
+        // Countdown Timer
+        const targetDate = new Date("March 21, 2026 17:00:00").getTime();
+        const countdownInterval = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("countdown-timer").innerHTML = "ACARA SUDAH DIMULAI";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+            document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+            document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+        }, 1000);
+
+
+        // === 5. AUDIO & GUESTBOOK LOGIC ===
+
+        const audio = document.getElementById('bg-music');
+        const audioCtrl = document.getElementById('audio-control');
+        let isSeeking = false;
+
+        function playMusic() {
+            audio.play().then(() => {
+                audioCtrl.classList.remove('paused');
+            }).catch(error => {
+                console.log("Autoplay prevented by browser. User must interact first.");
+                audioCtrl.classList.add('paused');
+            });
+        }
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                audioCtrl.classList.remove('paused');
+            } else {
+                audio.pause();
+                audioCtrl.classList.add('paused');
+            }
+        }
+// Guestbook Form Handling dengan Status
+// Ganti logika submit form yang lama dengan ini
+document.getElementById('rsvp-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // 1. Ambil data dari input
+    const name = document.getElementById('form-name').value;
+    const status = document.getElementById('form-status').value;
+    const message = document.getElementById('form-message').value;
+    const reason = document.getElementById('form-reason').value;
+    
+    // 2. Format pesan untuk WhatsApp
+    const phone = "6281294591903";
+    
+    let text = `*Konfirmasi Kehadiran Buka Bersama*%0A` +
+           `----------------------------------%0A` +
+           `*Nama:* ${name}%0A` +
+           `*Status:* ${status}%0A`;
+
+if(status === "Tidak Hadir"){
+    text += `*Alasan:* ${reason}%0A`;
+}
+
+text += `*Pesan:* ${message}`;
+
+    // 3. Tambahkan ke tampilan Buku Tamu (DOM) agar terlihat di web
+    addMessageToDOM(name, status, message);
+
+    // 4. Redirect ke WhatsApp
+    const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${text}`;
+    window.open(waUrl, '_blank');
+
+    // 5. Reset form
+    document.getElementById('form-status').value = "";
+    document.getElementById('form-message').value = "";
+});
+        const statusSelect = document.getElementById("form-status");
+const reasonGroup = document.getElementById("reason-group");
+
+statusSelect.addEventListener("change", function () {
+    if (this.value === "Tidak Hadir") {
+        reasonGroup.style.display = "block";
+    } else {
+        reasonGroup.style.display = "none";
+    }
+});
+        // BLOK TOMBOL
+document.addEventListener("keydown", function(e) {
+
+    // F12
+    if (e.key === "F12") {
+        e.preventDefault();
+        location.reload();
+    }
+
+    // CTRL+U
+    if (e.ctrlKey && e.key.toLowerCase() === "u") {
+        e.preventDefault();
+    }
+
+    // CTRL+S
+    if (e.ctrlKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+    }
+
+    // CTRL+SHIFT+I / CTRL+SHIFT+C / CTRL+SHIFT+J
+    if (e.ctrlKey && e.shiftKey && ["I","C","J"].includes(e.key)) {
+        e.preventDefault();
+        location.reload();
+    }
+});
+
+
+// BLOK KLIK KANAN
+document.addEventListener("contextmenu", function(e){
+    e.preventDefault();
+});
+
+
+// DETEKSI DEVTOOLS (reload kalau dibuka)
+setInterval(function() {
+
+    const threshold = 160;
+
+    if (
+        window.outerWidth - window.innerWidth > threshold ||
+        window.outerHeight - window.innerHeight > threshold
+    ) {
+        location.reload();
+    }
+
+}, 1000);
+    </script>
+</body>
+</html>
