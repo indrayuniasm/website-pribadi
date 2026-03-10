@@ -149,7 +149,7 @@
         }
 
         async function saveFinal() {
-            Swal.fire({ title: 'MEMPROSES...', text: 'Mengambil Lokasi & Foto', allowOutsideClick: false, background: '#050505', color: '#fff', didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'MEMPROSES...', text: 'mohon tunggu sedang proses absen', allowOutsideClick: false, background: '#050505', color: '#fff', didOpen: () => Swal.showLoading() });
             
             navigator.geolocation.getCurrentPosition(async (p) => {
                 const vid = document.getElementById('webcam');
