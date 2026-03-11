@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tebak kata</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --card: rgba(20, 20, 25, 0.85);
+            --primary: #8257e5;
+            --accent: #ff4757;
+            --success: #00d2d3;
+            --text: #f5f5f7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(130, 87, 229, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(60px);
+            animation: move 15s infinite alternate;
+        }
+
+        @keyframes move {
+            0% { transform: translate(-40%, -40%); }
+            100% { transform: translate(40%, 40%); }
+        }
+
+        .canvas-bg { position: fixed; top: 0; left: 0; z-index: -2; opacity: 0.6; }
+
+        .glass-panel {
+            background: var(--card);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 40px;
+            width: 92%;
+            max-width: 500px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .hidden { display: none !important; opacity: 0; }
+
+        h1 { font-weight: 800; font-size: 2.8rem; margin-bottom: 5px; letter-spacing: -2px; }
+        
+        .highscore-tag {
+            background: rgba(0, 210, 211, 0.1);
+            color: var(--success);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 210, 211, 0.2);
+        }
+
+        .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .cat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 25px 15px;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .cat-card:hover { background: var(--primary); transform: translateY(-8px); box-shadow: 0 10px 20px rgba(130, 87, 229, 0.3); }
+        .cat-card span { font-size: 1.8rem; display: block; margin-bottom: 10px; }
+
+        #word-slot { font-size: 2.4rem; font-weight: 800; letter-spacing: 12px; margin: 35px 0; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        .hint-text { color: #94a3b8; line-height: 1.6; font-size: 0.95rem; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 16px; margin: 20px 0; border-left: 4px solid var(--primary); }
+        
+        .timer-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; margin: 15px 0; overflow: hidden; }
+        .timer-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--success)); width: 100%; transition: 1s linear; }
+
+        .kb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(42px, 1fr)); gap: 8px; }
+        .k-btn {
+            aspect-ratio: 1/1; border: none; border-radius: 12px; background: #e2e8f0; color: #0f172a;
+            font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: 0.2s;
+        }
+        .k-btn:hover { transform: translateY(-3px); background: var(--primary); color: #fff; }
+        .k-btn:disabled { background: #1e293b; color: #475569; transform: none; cursor: default; }
+
+        .btn-ui { width: 100%; padding: 16px; border-radius: 18px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+        .btn-quit { background: transparent; color: var(--accent); border: 1px solid var(--accent); margin-top: 25px; }
+        .btn-quit:hover { background: var(--accent); color: #fff; }
+
+        .shake { animation: shake 0.4s; }
+        @keyframes shake { 0%, 100% {transform:translateX(0)} 25% {transform:translateX(-10px)} 75% {transform:translateX(10px)} }
+    </style>
+</head>
+<body>
+
+    <canvas id="partikel" class="canvas-bg"></canvas>
+    <div class="orb"></div>
+
+    <div id="scr-menu" class="glass-panel">
+        <div class="highscore-tag">🏆 Rekor: <span id="val-best">0</span></div>
+        <h1>NEBAK.</h1>
+        <p style="opacity: 0.5; margin-bottom: 25px;">Uji kosakata bahasa indonesiamu</p>
+        
+        <div class="cat-grid">
+            <div class="cat-card" onclick="initGame('anak')"><span>🧸</span>Junior</div>
+            <div class="cat-card" onclick="initGame('teknologi')"><span>💻</span>Tech</div>
+            <div class="cat-card" onclick="checkAge()"><span>🔞</span>Adult</div>
+            <div class="cat-card" onclick="initGame('random')"><span>🌀</span>Mix</div>
+        </div>
+    </div>
+
+    <div id="scr-age" class="glass-panel hidden">
+        <h2 style="color: var(--accent); font-size: 2.2rem; margin-bottom: 15px;">18+ Only</h2>
+        <p style="margin-bottom: 30px; opacity: 0.7; line-height: 1.6;">Konten ini mengandung istilah finansial, politik, dan karir. Kamu harus berusia di atas 18 tahun.</p>
+        <button class="btn-ui" style="background: var(--success); color: #000;" onclick="initGame('dewasa')">SAYA SUDAH DEWASA</button>
+        <button class="btn-ui" style="background: transparent; color: #fff; margin-top: 15px;" onclick="toMenu()">BATAL</button>
+    </div>
+
+    <div id="scr-play" class="glass-panel hidden">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div style="text-align: left;">
+                <span style="font-size: 0.7rem; opacity: 0.6; display: block;">SKOR SAAT INI</span>
+                <span id="val-score" style="font-weight: 800; font-size: 1.4rem; color: var(--success);">0</span>
+            </div>
+            <span id="val-timer" style="font-family: monospace; font-size: 1.2rem; font-weight: 700;">60s</span>
+        </div>
+        <div class="timer-bar"><div id="t-fill" class="timer-fill"></div></div>
+
+        <div class="hint-text" id="val-hint"></div>
+
+        <div id="word-slot">_ _ _ _</div>
+        
+        <div class="kb-grid" id="kb-root"></div>
+
+        <button class="btn-ui btn-quit" onclick="toMenu()">NYERAH</button>
+    </div>
+
+<script>
+    const db = {
+    anak: [
+        { w: "GAJAH", c: "Hewan darat paling besar dengan hidung panjang." },
+        { w: "TOMAT", c: "Sering disebut buah, sering disebut sayur, warnanya merah." },
+        { w: "MATAHARI", c: "Bintang terdekat yang menyinari bumi di siang hari." },
+        { w: "SEPEDA", c: "Kendaraan roda dua yang bergerak dengan cara dikayuh." },
+        { w: "KUCING", c: "Hewan peliharaan yang suka mengeong." },
+        { w: "ANJING", c: "Hewan peliharaan yang menggonggong." },
+        { w: "PISANG", c: "Buah kuning yang disukai monyet." },
+        { w: "APEL", c: "Buah merah atau hijau yang renyah." },
+        { w: "BUKU", c: "Tempat membaca cerita atau pelajaran." },
+        { w: "PENSIL", c: "Alat tulis yang bisa dihapus." },
+        { w: "PELABUHAN", c: "Tempat kapal bersandar." },
+        { w: "PANTAI", c: "Tempat bermain pasir di tepi laut." },
+        { w: "HUJAN", c: "Air yang turun dari langit." },
+        { w: "AWAN", c: "Gumpalan putih di langit." },
+        { w: "BOLA", c: "Benda bulat untuk bermain sepak." },
+        { w: "RUMAH", c: "Tempat tinggal bersama keluarga." },
+        { w: "SEKOLAH", c: "Tempat belajar bersama guru." },
+        { w: "GURU", c: "Orang yang mengajar di sekolah." },
+        { w: "AYAM", c: "Hewan yang bertelur dan berkokok." },
+        { w: "IKAN", c: "Hewan yang hidup di air." },
+        { w: "KAPAL", c: "Kendaraan besar di laut." },
+        { w: "KERETA", c: "Kendaraan panjang berjalan di rel." },
+        { w: "PESAWAT", c: "Kendaraan yang terbang di udara." },
+        { w: "BUNGA", c: "Tanaman yang indah dan harum." },
+        { w: "GUNUNG", c: "Tanah tinggi menjulang." },
+        { w: "SINGA", c: "Raja hutan." },
+        { w: "HARIMAU", c: "Hewan loreng yang buas." },
+        { w: "LEBAH", c: "Serangga penghasil madu." },
+        { w: "MADU", c: "Cairan manis dari lebah." },
+        { w: "PELAGI", c: "Warna-warni setelah hujan." }
+    ],
+
+    teknologi: [
+        { w: "BROWSER", c: "Aplikasi yang kamu gunakan untuk membuka website ini." },
+        { w: "KEYBOARD", c: "Papan yang berisi banyak tombol huruf dan angka." },
+        { w: "INTERNET", c: "Jaringan luas yang menghubungkan seluruh dunia." },
+        { w: "BATERAI", c: "Benda yang menyimpan daya listrik untuk HP kamu." },
+        { w: "SERVER", c: "Komputer penyedia layanan jaringan." },
+        { w: "CLIENT", c: "Pengguna layanan dari server." },
+        { w: "DATABASE", c: "Tempat penyimpanan data digital." },
+        { w: "CODING", c: "Proses menulis bahasa pemrograman." },
+        { w: "DEBUG", c: "Mencari dan memperbaiki error." },
+        { w: "JAVASCRIPT", c: "Bahasa pemrograman untuk website interaktif." },
+        { w: "PYTHON", c: "Bahasa pemrograman populer yang mudah dipelajari." },
+        { w: "HTML", c: "Struktur dasar halaman web." },
+        { w: "CSS", c: "Mengatur tampilan website." },
+        { w: "API", c: "Penghubung antar sistem." },
+        { w: "GITHUB", c: "Tempat menyimpan kode secara online." },
+        { w: "ROUTER", c: "Alat pembagi jaringan internet." },
+        { w: "MODEM", c: "Alat penghubung internet ke rumah." },
+        { w: "LAPTOP", c: "Komputer yang bisa dibawa." },
+        { w: "MONITOR", c: "Layar komputer." },
+        { w: "MOUSE", c: "Alat penunjuk di komputer." },
+        { w: "PRINTER", c: "Alat untuk mencetak." },
+        { w: "SCANNER", c: "Alat memindai dokumen." },
+        { w: "CLOUD", c: "Penyimpanan online." },
+        { w: "DOMAIN", c: "Alamat website." },
+        { w: "HOSTING", c: "Tempat file website disimpan." },
+        { w: "FRAMEWORK", c: "Kerangka kerja dalam coding." },
+        { w: "REACT", c: "Library JavaScript untuk UI." },
+        { w: "NODEJS", c: "Runtime JavaScript untuk backend." },
+        { w: "ANDROID", c: "Sistem operasi smartphone." },
+        { w: "WINDOWS", c: "Sistem operasi komputer populer." }
+    ],
+
+    dewasa: [
+        { w: "INFLASI", c: "Kondisi dimana harga barang terus naik." },
+        { w: "DEPOSITO", c: "Simpanan bank berjangka." },
+        { w: "INVESTASI", c: "Menanam modal untuk keuntungan masa depan." },
+        { w: "ASURANSI", c: "Perlindungan finansial dari risiko." },
+        { w: "PAJAK", c: "Kewajiban warga negara kepada pemerintah." },
+        { w: "HIPOTEK", c: "Pinjaman untuk membeli rumah." },
+        { w: "KREDIT", c: "Pinjaman yang harus dikembalikan." },
+        { w: "SAHAM", c: "Surat kepemilikan perusahaan." },
+        { w: "OBLIGASI", c: "Surat utang jangka panjang." },
+        { w: "NERACA", c: "Laporan posisi keuangan." },
+        { w: "REPRODUKSI", c: "Proses berkembang biak makhluk hidup." },
+        { w: "OVULASI", c: "Proses pelepasan sel telur pada wanita." },
+        { w: "SPERMA", c: "Sel reproduksi pria." },
+        { w: "EMBRIO", c: "Tahap awal perkembangan janin." },
+        { w: "JANIN", c: "Calon bayi dalam kandungan." },
+        { w: "KEHAMILAN", c: "Proses mengandung bayi." },
+        { w: "KONTRASEPSI", c: "Metode pencegah kehamilan." },
+        { w: "HORMON", c: "Zat kimia pengatur fungsi tubuh." },
+        { w: "PUBERTAS", c: "Masa perubahan fisik menuju dewasa." },
+        { w: "LIBIDO", c: "Dorongan atau hasrat seksual." },
+        { w: "ROMANTIS", c: "Berkaitan dengan perasaan cinta." },
+        { w: "KOMITMEN", c: "Janji untuk menjaga hubungan." },
+        { w: "PERNIKAHAN", c: "Ikatan resmi antara dua orang." },
+        { w: "INTIM", c: "Hubungan dekat secara emosional." },
+        { w: "KESETIAAN", c: "Sikap tidak mengkhianati pasangan." },
+        { w: "KOMUNIKASI", c: "Kunci utama dalam hubungan." },
+        { w: "EMPATI", c: "Kemampuan memahami perasaan orang lain." },
+        { w: "PSIKOLOGI", c: "Ilmu tentang perilaku manusia." },
+        { w: "DEWASA", c: "Tahap kehidupan setelah remaja." },
+        { w: "TANGGUNGJAWAB", c: "Kewajiban yang harus dipenuhi." }
+    ]
+};
+    let word = "", hint = "", guessed = [], lives = 6, time = 60, score = 0, cat = "", clock;
+    const bestKey = "_neb_highscore";
+
+    // Update Highscore real-time di UI Menu
+    function refreshBest() {
+        const b = localStorage.getItem(bestKey) || 0;
+        document.getElementById('val-best').innerText = b;
+    }
+    refreshBest();
+
+    function toMenu() {
+        clearInterval(clock);
+        score = 0;
+        show("scr-menu");
+        refreshBest();
+    }
+
+    function checkAge() { show("scr-age"); }
+
+    function show(id) {
+        document.querySelectorAll('.glass-panel').forEach(p => p.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function initGame(c) {
+        cat = c;
+        score = 0;
+        nextWord();
+        show("scr-play");
+    }
+
+    function nextWord() {
+        guessed = [];
+        lives = 6;
+        time = 60;
+        
+        let pool = cat === 'random' ? [...db.anak, ...db.teknologi, ...db.dewasa] : db[cat];
+        let pick = pool[Math.floor(Math.random() * pool.length)];
+        word = pick.w;
+        hint = pick.c;
+
+        render();
+        startTimer();
+    }
+
+    function render() {
+        const display = word.split('').map(l => guessed.includes(l) ? l : "_").join(" ");
+        document.getElementById('word-slot').innerText = display;
+        document.getElementById('val-hint').innerText = hint;
+        document.getElementById('val-score').innerText = score;
+        
+        drawKB();
+
+        if(!display.includes("_")) {
+            score += (lives * 20) + time;
+            checkNewRecord(); // Cek rekor setiap kali tebakan benar
+            confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+            clearInterval(clock);
+            setTimeout(nextWord, 1500);
+        }
+
+        if(lives <= 0) {
+            alert("KESEMPATAN HABIS! Jawabannya adalah: " + word);
+            toMenu();
+        }
+    }
+
+    function checkNewRecord() {
+        let currentBest = parseInt(localStorage.getItem(bestKey)) || 0;
+        if(score > currentBest) {
+            localStorage.setItem(bestKey, score);
+        }
+    }
+
+    function drawKB() {
+        const root = document.getElementById('kb-root');
+        root.innerHTML = "";
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+            const b = document.createElement('button');
+            b.innerText = l;
+            b.className = 'k-btn';
+            if(guessed.includes(l)) b.disabled = true;
+            b.onclick = () => {
+                guessed.push(l);
+                if(!word.includes(l)) {
+                    lives--;
+                    document.getElementById('scr-play').classList.add('shake');
+                    setTimeout(() => document.getElementById('scr-play').classList.remove('shake'), 400);
+                }
+                render();
+            };
+            root.appendChild(b);
+        });
+    }
+
+    function startTimer() {
+        clearInterval(clock);
+        clock = setInterval(() => {
+            time--;
+            document.getElementById('val-timer').innerText = time + "s";
+            document.getElementById('t-fill').style.width = (time/60*100) + "%";
+            if(time <= 0) {
+                alert("WAKTU HABIS! Jawabannya adalah: " + word);
+                toMenu();
+            }
+        }, 1000);
+    }
+
+    // Background Canvas Effect
+    const canvas = document.getElementById('partikel');
+    const ctx = canvas.getContext('2d');
+    let pts = [];
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.onresize = resize;
+    resize();
+
+    class Pt {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.v = Math.random() * 0.4 + 0.1;
+            this.r = Math.random() * 1.5;
+        }
+        draw() {
+            this.y -= this.v;
+            if(this.y < 0) this.y = canvas.height;
+            ctx.fillStyle = "rgba(130, 87, 229, 0.4)";
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+            ctx.fill();
+        }
+    }
+
+    for(let i=0; i<100; i++) pts.push(new Pt());
+
+    function anim() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        pts.forEach(p => p.draw());
+        requestAnimationFrame(anim);
+    }
+    anim();
+
+    window.onkeydown = (e) => {
+        const k = e.key.toUpperCase();
+        if(/^[A-Z]$/.test(k) && !document.getElementById('scr-play').classList.contains('hidden')) {
+            const btns = document.querySelectorAll('.k-btn');
+            btns.forEach(b => { if(b.innerText === k && !b.disabled) b.click(); });
+        }
+    };
+</script>
+</body>
+</html>
