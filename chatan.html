@@ -3,181 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ConnectPro Ultra Premium</title>
+    <title>ConnectPro - Next Gen Chat</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         :root {
-            --primary: #6366f1;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --border: rgba(255, 255, 255, 0.1);
-            --glass: blur(15px) saturate(160%);
-            --theme-bg: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?q=80&w=1920');
+            --accent: #8b5cf6;
+            --accent-glow: rgba(139, 92, 246, 0.5);
+            --bg-dark: #09090b;
+            --glass: rgba(24, 24, 27, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #fafafa;
+            --text-muted: #a1a1aa;
         }
 
-        /* KRUSIAL: Layer Background & Efek tidak boleh menghalangi klik */
-        #mainBgLayer { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background-image: var(--theme-bg); background-size: cover; background-position: center; 
-            z-index: -2; pointer-events: none; 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg-dark); color: var(--text); height: 100vh; overflow: hidden; }
+
+        /* Background Visual */
+        .bg-gradient {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% -20%, #2e1065, transparent),
+                        radial-gradient(circle at 0% 100%, #020617, transparent);
+            z-index: -2;
         }
-        #effectLayer { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            z-index: -1; pointer-events: none; opacity: 0.5;
-        }
 
-        @keyframes starsAnim { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
-        @keyframes pulseRec { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        #mainBgLayer { position: fixed; inset: 0; background-size: cover; background-position: center; z-index: -1; opacity: 0.4; transition: 0.5s; pointer-events: none; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: #020617; color: var(--text-main); height: 100vh; overflow: hidden; }
+        /* Desktop Layout */
+        .app-container { display: none; height: 100vh; grid-template-columns: 280px 1fr 320px; position: relative; }
 
-        /* Auth UI */
-        .auth-screen { width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; z-index: 10; padding: 20px; }
-        .glass-card { background: var(--card-bg); backdrop-filter: var(--glass); border: 1px solid var(--border); border-radius: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-        .auth-box { width: 100%; max-width: 400px; padding: 40px; }
+        /* SIDEBAR (Desktop Only) */
+        .sidebar { background: var(--glass); backdrop-filter: blur(20px); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 24px; font-weight: 700; font-size: 1.25rem; letter-spacing: -0.5px; border-bottom: 1px solid var(--border); }
         
-        input, select { 
-            width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; 
-            border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: white; outline: none; 
+        .contact-list { flex: 1; overflow-y: auto; padding: 12px; }
+        .contact-card {
+            display: flex; align-items: center; gap: 12px; padding: 12px;
+            border-radius: 12px; cursor: pointer; transition: 0.2s; margin-bottom: 4px;
         }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        .contact-card:hover { background: rgba(255, 255, 255, 0.05); }
+        .contact-card.active { background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.2); }
+        .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #27272a; }
+
+        /* CHAT AREA */
+        .chat-area { display: flex; flex-direction: column; position: relative; background: rgba(0,0,0,0.2); }
+        .chat-header { 
+            padding: 16px 24px; background: var(--glass); backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;
+        }
         
-        .btn { 
-            width: 100%; padding: 14px; background: var(--primary); border: none; color: white; 
-            font-weight: 700; border-radius: 12px; cursor: pointer; transition: 0.3s; 
+        .msg-container { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+        .bubble { 
+            max-width: 70%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.5;
+            position: relative; animation: fadeIn 0.3s ease;
         }
-        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
-
-        /* App Main UI */
-        #appUI { display: none; width: 100%; height: 100vh; grid-template-columns: 320px 1fr 300px; position: relative; z-index: 10; }
-
-        /* Sidebar */
-        .sidebar { background: rgba(0,0,0,0.3); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .contact-item { 
-            padding: 15px; display: flex; align-items: center; gap: 12px; cursor: pointer; 
-            border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s;
-        }
-        .contact-item:hover { background: rgba(255,255,255,0.1); }
-        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #1e293b; }
-
-        /* Chat Area */
-        .chat-main { display: flex; flex-direction: column; background: rgba(0,0,0,0.1); }
-        .chat-header { padding: 20px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); font-weight: 700; }
-        .msg-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .bubble { padding: 12px 16px; border-radius: 18px; max-width: 75%; font-size: 0.95rem; line-height: 1.4; }
-        .sent { align-self: flex-end; background: var(--primary); box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); border-bottom-right-radius: 4px; }
-        .received { align-self: flex-start; background: rgba(255,255,255,0.1); border-bottom-left-radius: 4px; }
+        .sent { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px var(--accent-glow); }
+        .received { align-self: flex-start; background: #27272a; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
 
-        .input-bar { padding: 20px; display: flex; gap: 10px; background: rgba(0,0,0,0.3); border-top: 1px solid var(--border); }
+        /* INPUT BAR */
+        .input-wrapper { padding: 20px 24px; background: var(--glass); border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; }
+        .input-box { flex: 1; background: #18181b; border: 1px solid var(--border); padding: 12px 20px; border-radius: 24px; color: white; outline: none; transition: 0.2s; }
+        .input-box:focus { border-color: var(--accent); background: #09090b; }
         
-        /* VN Button */
-        .vn-btn { 
-            width: 50px; height: 50px; border-radius: 50%; background: #ef4444; border: none; 
-            color: white; cursor: pointer; font-size: 1.2rem; flex-shrink: 0;
-        }
-        .recording { animation: pulseRec 1.5s infinite; background: #ff0000; transform: scale(1.1); }
+        .action-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-send { background: var(--accent); color: white; }
+        .btn-vn { background: #3f3f46; color: white; }
+        .btn-vn.recording { background: #ef4444; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { transform: scale(1); } }
 
-        /* Right Panel */
-        .theme-panel { background: rgba(0,0,0,0.4); padding: 20px; display: flex; flex-direction: column; gap: 15px; border-left: 1px solid var(--border); }
-        .theme-opt { 
-            height: 50px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; 
-            justify-content: center; font-weight: bold; background-size: cover; border: 2px solid transparent; 
+        /* RIGHT PANEL */
+        .right-panel { background: var(--glass); border-left: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+        .theme-section { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 16px; border: 1px solid var(--border); }
+        .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+        .theme-dot { height: 40px; border-radius: 8px; cursor: pointer; background-size: cover; border: 2px solid transparent; }
+        .theme-dot.active { border-color: var(--accent); }
+
+        /* MOBILE NAVIGATION */
+        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--glass); backdrop-filter: blur(20px); border-top: 1px solid var(--border); padding: 12px 24px; justify-content: space-around; z-index: 100; }
+        .nav-link { color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
+        .nav-link.active { color: var(--accent); }
+
+        /* AUTH SCREEN */
+        .auth-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
+        .auth-card { width: 100%; max-width: 380px; padding: 40px; border-radius: 28px; text-align: center; }
+
+        /* RESPONSIVE LOGIC */
+        @media (max-width: 850px) {
+            .app-container { grid-template-columns: 1fr; }
+            .sidebar, .right-panel { display: none; } /* Mobile hanya lihat chat */
+            .mobile-nav { display: flex; }
+            .chat-area { height: 100vh; padding-bottom: 70px; }
+            .sidebar.active-mobile { display: flex; position: fixed; inset: 0; z-index: 150; width: 100%; }
         }
-        .theme-opt.active { border-color: var(--primary); }
 
         .hidden { display: none !important; }
-
-        @media (max-width: 850px) {
-            #appUI { grid-template-columns: 1fr; }
-            .sidebar, .theme-panel { display: none; }
-        }
+        audio { filter: invert(1) hue-rotate(180deg); height: 35px; width: 200px; }
     </style>
 </head>
 <body>
 
+    <div class="bg-gradient"></div>
     <div id="mainBgLayer"></div>
-    <div id="effectLayer"></div>
 
     <div id="authUI" class="auth-screen">
-        <div class="auth-box glass-card">
-            <h1 align="center" style="margin-bottom: 20px; letter-spacing: -1px;">ConnectPro<span style="color:var(--primary)">.</span></h1>
+        <div class="auth-card glass-card">
+            <h1 style="font-size: 1.75rem; margin-bottom: 8px;">ConnectPro</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 32px;">The future of private messaging.</p>
             
             <div id="loginForm">
-                <input type="text" id="lID" placeholder="ID Username">
-                <input type="password" id="lPW" placeholder="Password">
-                <button class="btn" onclick="handleAuth('login')">MASUK SEKARANG</button>
-                <p align="center" style="margin-top:20px; font-size:0.85rem; color:var(--text-dim);">
-                    Belum punya akun? <span style="color:var(--primary); cursor:pointer;" onclick="toggleAuth()">Daftar Disini</span>
-                </p>
+                <input type="text" id="lID" class="input-box" style="margin-bottom:12px; width:100%;" placeholder="Username">
+                <input type="password" id="lPW" class="input-box" style="margin-bottom:24px; width:100%;" placeholder="Password">
+                <button class="btn-send action-btn" style="width:100%; border-radius:12px;" onclick="handleAuth('login')">Login</button>
+                <p style="margin-top:16px; font-size:0.85rem; color:var(--text-muted)">Belum ada akun? <span onclick="toggleAuth()" style="color:var(--accent); cursor:pointer;">Daftar</span></p>
             </div>
 
             <div id="regForm" class="hidden">
-                <input type="text" id="rNama" placeholder="Nama Lengkap">
-                <input type="text" id="rID" placeholder="Buat ID (Huruf kecil)">
-                <input type="password" id="rPW" placeholder="Password">
-                <select id="rGender">
+                <input type="text" id="rNama" class="input-box" style="margin-bottom:12px; width:100%;" placeholder="Nama Lengkap">
+                <input type="text" id="rID" class="input-box" style="margin-bottom:12px; width:100%;" placeholder="ID User">
+                <input type="password" id="rPW" class="input-box" style="margin-bottom:12px; width:100%;" placeholder="Password">
+                <select id="rGender" class="input-box" style="margin-bottom:24px; width:100%;">
                     <option value="Laki-laki">Laki-laki</option>
                     <option value="Perempuan">Perempuan</option>
                 </select>
-                <button class="btn" onclick="handleAuth('reg')">BUAT AKUN</button>
-                <p align="center" style="margin-top:20px; font-size:0.85rem; color:var(--text-dim);">
-                    Sudah punya akun? <span style="color:var(--primary); cursor:pointer;" onclick="toggleAuth()">Login</span>
-                </p>
+                <button class="btn-send action-btn" style="width:100%; border-radius:12px;" onclick="handleAuth('reg')">Daftar</button>
+                <p style="margin-top:16px; font-size:0.85rem; color:var(--text-muted)">Sudah punya akun? <span onclick="toggleAuth()" style="color:var(--accent); cursor:pointer;">Login</span></p>
             </div>
         </div>
     </div>
 
-    <div id="appUI">
-        <div class="sidebar">
-            <div style="padding:25px; font-weight:800; font-size:1.2rem; border-bottom:1px solid var(--border);">CHATS</div>
-            <div id="contactList" style="flex:1; overflow-y:auto;"></div>
+    <div id="appUI" class="app-container">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">Messages</div>
+            <div class="contact-list" id="contactList"></div>
         </div>
 
-        <div class="chat-main">
-            <div class="chat-header" id="chatHeader">Pilih teman untuk memulai...</div>
-            <div class="msg-area" id="msgBox"></div>
-            <div class="input-bar">
-                <input type="text" id="msgInput" placeholder="Tulis pesan..." style="margin:0; flex:1;">
-                <button id="vnBtn" class="vn-btn" 
-                    onmousedown="startVN()" onmouseup="stopVN()" 
-                    ontouchstart="startVN()" ontouchend="stopVN()">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button class="btn" onclick="sendText()" style="width:70px; margin:0;"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-
-        <div class="theme-panel">
-            <div class="glass-card" style="padding:20px; text-align:center;">
-                <img id="myPfp" src="https://via.placeholder.com/150" class="avatar" style="width:70px; height:70px; border:2px solid var(--primary); margin-bottom:10px;">
-                <h3 id="myNama">User</h3>
-                <p id="myIDDisplay" style="color:var(--text-dim); font-size:0.8rem;">@id</p>
-            </div>
-
-            <div class="glass-card" style="padding:20px;">
-                <h4 style="margin-bottom:15px; font-size:0.9rem;">TEMA VISUAL</h4>
-                <div class="theme-opt active" id="th_malam" style="background-image:url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?q=80&w=200');" onclick="changeTheme('malam')">Malam</div>
-                <div class="theme-opt" id="th_romantis" style="background-image:url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=200');" onclick="changeTheme('romantis')">Romantis</div>
-                <div class="theme-opt" id="th_galau" style="background-image:url('https://images.unsplash.com/photo-1499341030469-9595b204c146?q=80&w=200');" onclick="changeTheme('galau')">Galau</div>
-                <p style="font-size:0.7rem; color:var(--text-dim); margin-top:15px;">Custom Gallery:</p>
-                <input type="file" id="bgInput" accept="image/*" style="font-size:0.7rem; padding:5px; background:none; border:none;">
+        <div class="chat-area">
+            <div class="chat-header">
+                <div id="activeUser" style="display:flex; align-items:center; gap:10px;">Pilih Pesan</div>
+                <i class="fa-solid fa-ellipsis-vertical" style="color:var(--text-muted); cursor:pointer;"></i>
             </div>
             
-            <button onclick="location.reload()" style="background:none; border:1px solid #ef4444; color:#ef4444; padding:10px; border-radius:10px; cursor:pointer;">Keluar Akun</button>
+            <div class="msg-container" id="msgBox"></div>
+
+            <div class="input-wrapper">
+                <button id="vnBtn" class="action-btn btn-vn" onmousedown="startVN()" onmouseup="stopVN()" ontouchstart="startVN()" ontouchend="stopVN()">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                <input type="text" id="msgInput" class="input-box" placeholder="Ketik pesan...">
+                <button class="action-btn btn-send" onclick="sendText()">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
         </div>
+
+        <div class="right-panel">
+            <div class="theme-section" align="center">
+                <img id="myPfp" src="" class="avatar" style="width:80px; height:80px; border:3px solid var(--accent);">
+                <h3 id="myNama" style="margin-top:12px;">Username</h3>
+                <p id="myIDDisplay" style="color:var(--text-muted); font-size:0.8rem;">@iduser</p>
+            </div>
+
+            <div class="theme-section">
+                <h4 style="font-size:0.9rem;">Appearance</h4>
+                <div class="theme-grid">
+                    <div class="theme-dot active" id="th_malam" style="background-image:url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?q=80&w=100');" onclick="changeTheme('malam')"></div>
+                    <div class="theme-dot" id="th_romantis" style="background-image:url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=100');" onclick="changeTheme('romantis')"></div>
+                    <div class="theme-dot" id="th_galau" style="background-image:url('https://images.unsplash.com/photo-1499341030469-9595b204c146?q=80&w=100');" onclick="changeTheme('galau')"></div>
+                </div>
+                <div style="margin-top:12px;">
+                    <label style="font-size:0.75rem; color:var(--text-muted);">Custom BG:</label>
+                    <input type="file" id="bgInput" accept="image/*" style="width:100%; margin-top:5px; font-size:0.7rem;">
+                </div>
+            </div>
+            <button onclick="location.reload()" style="background:none; border:1px solid #ef4444; color:#ef4444; padding:10px; border-radius:12px; cursor:pointer; font-size:0.85rem;">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="mobile-nav" id="mobileNav">
+        <div class="nav-link active" onclick="showSection('chat')"><i class="fa-solid fa-message"></i></div>
+        <div class="nav-link" onclick="showSection('contacts')"><i class="fa-solid fa-users"></i></div>
+        <div class="nav-link" onclick="showSection('settings')"><i class="fa-solid fa-gear"></i></div>
     </div>
 
 <script>
-    // --- FIREBASE CONFIG (Tetap Gunakan Yang Sudah Ada) ---
+    // --- FIREBASE CONFIG ---
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         authDomain: "fotobooth-e36ab.firebaseapp.com",
@@ -193,40 +209,56 @@
 
     let myID = "", partnerID = "", mediaRec, chunks = [];
 
-    // --- AUTH LOGIC ---
+    // --- NAVIGATION LOGIC ---
     function toggleAuth() {
         document.getElementById('loginForm').classList.toggle('hidden');
         document.getElementById('regForm').classList.toggle('hidden');
     }
 
+    function showSection(section) {
+        // Mobile Navigation Switcher
+        const sidebar = document.getElementById('sidebar');
+        const links = document.querySelectorAll('.nav-link');
+        links.forEach(l => l.classList.remove('active'));
+
+        if(section === 'contacts') {
+            sidebar.classList.add('active-mobile');
+            links[1].classList.add('active');
+        } else if (section === 'chat') {
+            sidebar.classList.remove('active-mobile');
+            links[0].classList.add('active');
+        } else {
+            alert("Settings Mode: Kamu bisa ganti tema di panel kanan (Desktop)!");
+        }
+    }
+
+    // --- AUTH ---
     function handleAuth(type) {
         if(type === 'reg') {
             const id = document.getElementById('rID').value.trim().toLowerCase();
             const pw = document.getElementById('rPW').value;
             const nama = document.getElementById('rNama').value;
             const gender = document.getElementById('rGender').value;
-            if(!id || !pw) return alert("Isi data lengkap!");
-            
-            db.ref('users/' + id).set({ nama, pw, gender, pfp: '' })
-            .then(() => { alert("Berhasil Terdaftar!"); toggleAuth(); });
+            if(!id || !pw) return alert("Isi semua bidang.");
+            db.ref('users/' + id).set({ nama, pw, gender, pfp: '' }).then(() => { alert("Sukses!"); toggleAuth(); });
         } else {
             const id = document.getElementById('lID').value.trim().toLowerCase();
             const pw = document.getElementById('lPW').value;
             db.ref('users/' + id).once('value', snap => {
                 if(snap.exists() && snap.val().pw === pw) {
                     myID = id;
-                    document.getElementById('authUI').style.display = 'none';
+                    document.getElementById('authUI').classList.add('hidden');
                     document.getElementById('appUI').style.display = 'grid';
                     document.getElementById('myNama').innerText = snap.val().nama;
                     document.getElementById('myIDDisplay').innerText = '@' + id;
                     document.getElementById('myPfp').src = snap.val().pfp || 'https://via.placeholder.com/150';
                     loadContacts();
-                } else alert("ID atau Password salah!");
+                } else alert("Invalid credentials.");
             });
         }
     }
 
-    // --- CONTACTS ---
+    // --- CORE FEATURES ---
     function loadContacts() {
         db.ref('users').on('value', snap => {
             const list = document.getElementById('contactList');
@@ -234,25 +266,26 @@
             snap.forEach(u => {
                 if(u.key !== myID) {
                     list.innerHTML += `
-                        <div class="contact-item" onclick="openChat('${u.key}', '${u.val().nama}', '${u.val().pfp}')">
+                        <div class="contact-card" onclick="openChat('${u.key}', '${u.val().nama}', '${u.val().pfp}')">
                             <img src="${u.val().pfp || 'https://via.placeholder.com/150'}" class="avatar">
-                            <div style="flex:1"><b>${u.val().nama}</b><br><small style="color:var(--text-dim)">${u.val().gender}</small></div>
-                            <i class="fas fa-chevron-right" style="color:rgba(255,255,255,0.1)"></i>
+                            <div style="flex:1">
+                                <div style="font-weight:600; font-size:0.95rem;">${u.val().nama}</div>
+                                <div style="color:var(--text-muted); font-size:0.75rem;">${u.val().gender}</div>
+                            </div>
                         </div>`;
                 }
             });
         });
     }
 
-    // --- CHAT SYSTEM ---
     function openChat(id, nama, pfp) {
         partnerID = id;
-        document.getElementById('chatHeader').innerHTML = `
-            <div style="display:flex; align-items:center; gap:10px;">
-                <img src="${pfp || 'https://via.placeholder.com/150'}" style="width:35px; height:35px; border-radius:50%;">
-                ${nama}
-            </div>`;
+        document.getElementById('activeUser').innerHTML = `<img src="${pfp || 'https://via.placeholder.com/150'}" style="width:32px; height:32px; border-radius:50%;"> ${nama}`;
         
+        // Mobile auto-close sidebar
+        document.getElementById('sidebar').classList.remove('active-mobile');
+        document.querySelectorAll('.nav-link')[0].classList.add('active');
+
         const room = [myID, partnerID].sort().join("_");
         db.ref('messages/' + room).on('value', snap => {
             const box = document.getElementById('msgBox');
@@ -278,9 +311,9 @@
         document.getElementById('msgInput').value = "";
     }
 
-    // --- VOICE NOTE (Sangat Krusial) ---
+    // --- VOICE NOTE LOGIC ---
     async function startVN() {
-        if(!partnerID) return alert("Pilih teman dulu!");
+        if(!partnerID) return;
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRec = new MediaRecorder(stream);
@@ -288,7 +321,7 @@
             chunks = [];
             document.getElementById('vnBtn').classList.add('recording');
             mediaRec.ondataavailable = e => chunks.push(e.data);
-        } catch (e) { alert("Mic diblokir browser!"); }
+        } catch (e) { console.error(e); }
     }
 
     function stopVN() {
@@ -298,8 +331,7 @@
         mediaRec.onstop = async () => {
             const blob = new Blob(chunks, { type: 'audio/webm' });
             const room = [myID, partnerID].sort().join("_");
-            const ref = storage.ref(`vns/${room}/${Date.now()}.webm`);
-            
+            const ref = storage.ref(`vns/${Date.now()}.webm`);
             await ref.put(blob);
             const url = await ref.getDownloadURL();
             db.ref('messages/' + room).push({ sender: myID, url, type: 'vn' });
@@ -308,38 +340,29 @@
 
     // --- THEME ENGINE ---
     function changeTheme(theme) {
-        document.querySelectorAll('.theme-opt').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
         document.getElementById('th_'+theme).classList.add('active');
-        const eff = document.getElementById('effectLayer');
-        const root = document.querySelector(':root');
-        
-        eff.innerHTML = ""; eff.style.animation = "none"; eff.style.background = "none";
+        const bg = document.getElementById('mainBgLayer');
 
         if(theme === 'malam') {
-            root.style.setProperty('--theme-bg', "url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?q=80&w=1920')");
-            root.style.setProperty('--primary', '#6366f1');
-            eff.style.background = "url('https://www.transparenttextures.com/patterns/stardust.png') repeat";
-            eff.style.animation = "starsAnim 80s linear infinite";
+            bg.style.backgroundImage = "url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?q=80&w=1920')";
+            document.documentElement.style.setProperty('--accent', '#8b5cf6');
         } else if(theme === 'romantis') {
-            root.style.setProperty('--theme-bg', "url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=1920')");
-            root.style.setProperty('--primary', '#f472b6');
+            bg.style.backgroundImage = "url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=1920')";
+            document.documentElement.style.setProperty('--accent', '#ec4899');
         } else if(theme === 'galau') {
-            root.style.setProperty('--theme-bg', "url('https://images.unsplash.com/photo-1499341030469-9595b204c146?q=80&w=1920')");
-            root.style.setProperty('--primary', '#60a5fa');
-            eff.style.background = "rgba(15, 23, 42, 0.4)";
+            bg.style.backgroundImage = "url('https://images.unsplash.com/photo-1499341030469-9595b204c146?q=80&w=1920')";
+            document.documentElement.style.setProperty('--accent', '#3b82f6');
         }
     }
 
     document.getElementById('bgInput').onchange = function(e) {
         const reader = new FileReader();
-        reader.onload = (ev) => {
-            document.querySelector(':root').style.setProperty('--theme-bg', `url('${ev.target.result}')`);
-        }
+        reader.onload = (ev) => document.getElementById('mainBgLayer').style.backgroundImage = `url('${ev.target.result}')`;
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    // Jalankan tema awal
     changeTheme('malam');
 </script>
 </body>
-                    </html>
+</html>
