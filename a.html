@@ -2,39 +2,118 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard & CS</title>
+    <title>Admin - Database & CS</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
-        body { font-family: sans-serif; background: #f0f0f0; display: flex; height: 100vh; margin:0; }
-        .sidebar { width: 250px; background: #2c3e50; color: white; overflow-y: auto; padding: 10px; }
-        .main { flex: 1; padding: 20px; overflow-y: auto; }
-        .user-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #444; }
-        .user-item:hover { background: #34495e; }
-        .card { background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        #chatDisplay { height: 250px; overflow-y: auto; background: #eee; padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; flex-direction: column; }
-        .m-user { align-self: flex-start; background: white; padding: 5px; margin: 2px; border-radius: 5px; }
-        .m-admin { align-self: flex-end; background: #3498db; color: white; padding: 5px; margin: 2px; border-radius: 5px; }
-        table { width: 100%; border-collapse: collapse; }
+        body { font-family: sans-serif; display: flex; margin: 0; background: #f4f4f4; }
+        .sidebar { width: 250px; background: #2c3e50; color: white; height: 100vh; padding: 10px; }
+        .content { flex: 1; padding: 20px; overflow-y: auto; }
+        .card { background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .chat-item { padding: 10px; border-bottom: 1px solid #444; cursor: pointer; }
+        #chatArea { height: 200px; overflow-y: auto; background: #eee; padding: 10px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <h3>DAFTAR USER CHAT</h3>
-    <div id="userChatList"></div>
+    <h3>CS - USER CHAT</h3>
+    <div id="chatUserList"></div>
 </div>
 
-<div class="main">
-    <h1>ADMIN CONTROL PANEL</h1>
-
-    <div class="card" id="chatWindow" style="display:none;">
-        <h3 id="chatWith">Pilih User di Sidebar</h3>
-        <div id="chatDisplay"></div>
-        <input type="text" id="adminReply" style="width:70%; padding:10px;">
-        <button onclick="sendReply()" style="padding:10px;">Balas</button>
+<div class="content">
+    <div class="card" id="chatPanel" style="display:none;">
+        <h4 id="chatTitle">Chat</h4>
+        <div id="chatArea"></div>
+        <input type="text" id="replyInput" style="width:70%;">
+        <button onclick="sendReply()">Balas</button>
     </div>
+
+    <div class="card">
+        <h3>DATABASE USER (DATA LENGKAP)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Password</th>
+                    <th>Nama Lengkap</th>
+                    <th>No. WA</th>
+                    <th>Bank/Rekening</th>
+                    <th>Saldo</th>
+                </tr>
+            </thead>
+            <tbody id="userTable"></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>TRANSAKSI PENDING</h3>
+        <table id="txTable">
+            <thead><tr><th>User</th><th>Tipe</th><th>Jumlah</th><th>Aksi</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = { /* SAMA DENGAN USER */ };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let currentChatID = null;
+
+    // Load Database User
+    db.ref('users').on('value', snap => {
+        const tbody = document.getElementById('userTable');
+        tbody.innerHTML = "";
+        snap.forEach(c => {
+            const u = c.val();
+            tbody.innerHTML += `<tr>
+                <td><b>${c.key}</b></td>
+                <td>${u.pw}</td>
+                <td>${u.nama}</td>
+                <td>${u.wa}</td>
+                <td>${u.bank} / ${u.rek}</td>
+                <td>Rp ${u.balance.toLocaleString()}</td>
+            </tr>`;
+        });
+    });
+
+    // Load Chat Sidebar
+    db.ref('chats').on('value', snap => {
+        const list = document.getElementById('chatUserList');
+        list.innerHTML = "";
+        snap.forEach(c => {
+            list.innerHTML += `<div class="chat-item" onclick="openChat('${c.key}')">${c.key}</div>`;
+        });
+    });
+
+    function openChat(id) {
+        currentChatID = id;
+        document.getElementById('chatPanel').style.display = 'block';
+        document.getElementById('chatTitle').innerText = "Chat dengan: " + id;
+        db.ref('chats/' + id).on('value', snap => {
+            const area = document.getElementById('chatArea');
+            area.innerHTML = "";
+            snap.forEach(m => {
+                const data = m.val();
+                area.innerHTML += `<div><b>${data.sender}:</b> ${data.text}</div>`;
+            });
+            area.scrollTop = area.scrollHeight;
+        });
+    }
+
+    function sendReply() {
+        const txt = document.getElementById('replyInput').value;
+        if(txt && currentChatID) {
+            db.ref('chats/' + currentChatID).push({ sender: 'admin', text: txt });
+            document.getElementById('replyInput').value = "";
+        }
+    }
+</script>
+</body>
+</html>    </div>
 
     <div class="card">
         <h3>LIST USER (ID & PASSWORD)</h3>
