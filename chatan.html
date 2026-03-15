@@ -9,17 +9,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; touch-action: manipulation; }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); }
         #main-app { height: 100dvh; }
         .page-content { display: none; height: 100%; overflow-y: auto; padding-bottom: 120px; }
         .page-content.active { display: block; }
-        .nav-active { color: #2563eb !important; transform: scale(1.1); }
         .story-ring { padding: 2px; border: 2px solid #3b82f6; border-radius: 20px; }
         .chat-bubble-me { border-radius: 20px 20px 4px 20px; background: #2563eb; color: white; }
         .chat-bubble-them { border-radius: 20px 20px 20px 4px; background: white; color: #1e293b; border: 1px solid #e2e8f0; }
         em-emoji-picker { height: 35vh; min-height: 300px; width: 100%; max-width: 400px; }
+        .recording-pulse { background: #ef4444 !important; color: white !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body class="bg-slate-100">
@@ -32,42 +33,28 @@
                 <div class="space-y-4">
                     <input type="text" id="login-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm">
                     <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm">
-                    <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-extrabold py-4 rounded-2xl shadow-lg active:scale-95 transition uppercase tracking-widest text-xs">Masuk Sekarang</button>
+                    <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition">MASUK</button>
                 </div>
                 <p class="text-center mt-8 text-slate-500 text-sm font-bold">Belum punya akun? <a href="#" onclick="toggleAuth(true)" class="text-blue-600 font-black">Daftar</a></p>
             </div>
-
             <div id="register-container" class="hidden">
-                <h2 class="text-3xl font-black mb-6 text-emerald-500 tracking-tighter text-center italic">Bergabung Gratis</h2>
-                <div class="space-y-3 overflow-y-auto max-h-[50vh] pr-2 hide-scroll">
-                    <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-sm">
-                    <input type="text" id="reg-id" placeholder="ID User (unik)" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-sm">
-                    <input type="number" id="reg-phone" placeholder="Nomor HP" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-sm">
-                    <select id="reg-gender" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-sm text-slate-500">
-                        <option value="">Pilih Gender</option>
-                        <option value="Laki-laki">Laki-laki</option>
-                        <option value="Perempuan">Perempuan</option>
-                    </select>
-                    <input type="password" id="reg-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-sm">
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                        <div class="flex justify-between items-center mb-2 px-2">
-                            <span class="text-[10px] font-black uppercase text-slate-400">Keamanan</span>
-                            <span id="captcha-code" class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg font-black tracking-widest italic select-none"></span>
-                        </div>
-                        <input type="text" id="reg-captcha-input" placeholder="Ketik kode di atas" class="w-full p-3 bg-white rounded-xl outline-none border border-slate-200 text-center font-bold">
-                    </div>
+                <h2 class="text-3xl font-black mb-6 text-emerald-500 tracking-tighter text-center">Buat Akun</h2>
+                <div class="space-y-3 overflow-y-auto max-h-[50vh] hide-scroll">
+                    <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
+                    <input type="text" id="reg-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
+                    <input type="password" id="reg-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
                 </div>
-                <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-black py-4 rounded-2xl shadow-lg mt-6 active:scale-95 transition uppercase tracking-widest text-xs">Daftar Akun</button>
-                <p class="text-center mt-4 text-sm font-bold text-slate-500">Sudah ada akun? <a href="#" onclick="toggleAuth(false)" class="text-blue-600 font-black">Login</a></p>
+                <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-black py-4 rounded-2xl shadow-lg mt-6 active:scale-95 transition">DAFTAR</button>
+                <p class="text-center mt-4 text-sm font-bold text-slate-500"><a href="#" onclick="toggleAuth(false)" class="text-blue-600 font-black">Kembali Login</a></p>
             </div>
         </div>
     </div>
 
     <div id="main-app" class="hidden flex flex-col max-w-lg mx-auto bg-white shadow-2xl relative overflow-hidden">
         <header class="p-6 flex justify-between items-center border-b bg-white z-20">
-            <h1 id="page-title" class="text-2xl font-black text-blue-600 tracking-tighter">ConnectPro</h1>
+            <h1 id="page-title" class="text-2xl font-black text-blue-600 tracking-tighter italic">ConnectPro</h1>
             <div class="flex items-center gap-3">
-                <img id="header-photo" src="" class="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover bg-slate-200">
+                <img id="header-photo" src="" class="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover">
                 <button onclick="logout()" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-power-off"></i></button>
             </div>
         </header>
@@ -76,57 +63,39 @@
             <div id="page-home" class="page-content active">
                 <div class="p-4 flex gap-4 overflow-x-auto hide-scroll border-b bg-white">
                     <div onclick="openStoryModal()" class="flex flex-col items-center gap-1 min-w-[70px] cursor-pointer">
-                        <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 border-2 border-dashed border-blue-200 transition active:scale-90">
-                            <i class="fa-solid fa-plus text-xl"></i>
-                        </div>
-                        <span class="text-[10px] font-bold text-slate-500 uppercase mt-1">Status Saya</span>
+                        <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 border-2 border-dashed border-blue-200"><i class="fa-solid fa-plus text-xl"></i></div>
+                        <span class="text-[9px] font-black text-slate-400 uppercase mt-1">Status</span>
                     </div>
                     <div id="online-list" class="flex gap-4"></div>
                 </div>
                 <div class="p-4">
-                    <h3 class="font-black text-slate-800 text-sm mb-4 uppercase tracking-widest opacity-40">Chat Terkini</h3>
+                    <h3 class="font-black text-slate-800 text-xs mb-4 uppercase tracking-widest opacity-40 italic">Percakapan</h3>
                     <div id="chat-list" class="space-y-3"></div>
                 </div>
             </div>
 
             <div id="page-search" class="page-content p-4">
-                <div class="relative mb-6">
-                    <input type="text" id="search-input" oninput="searchUser()" placeholder="Cari teman..." class="w-full p-4 pl-12 bg-white rounded-[24px] shadow-sm border border-slate-100 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm">
-                    <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                </div>
-                <div id="search-result" class="space-y-3"></div>
+                <input type="text" id="search-input" oninput="searchUser()" placeholder="Cari ID Teman..." class="w-full p-4 bg-white rounded-3xl shadow-sm outline-none font-bold text-sm border border-slate-100">
+                <div id="search-result" class="mt-6 space-y-3"></div>
             </div>
 
             <div id="page-history" class="page-content p-4">
-                <h3 class="font-black text-slate-800 text-sm mb-4 uppercase tracking-widest opacity-40">Panggilan</h3>
+                <h3 class="font-black text-slate-800 text-xs mb-4 uppercase tracking-widest opacity-40 italic">Log Panggilan</h3>
                 <div id="history-list" class="space-y-3"></div>
             </div>
 
-            <div id="page-profile" class="page-content p-6">
-                <div class="bg-white rounded-[40px] p-8 shadow-sm border border-slate-50 text-center">
-                    <div class="relative w-32 h-32 mx-auto mb-6">
-                        <img id="profile-preview" src="" class="w-full h-full rounded-[40px] object-cover border-4 border-slate-50 shadow-lg">
-                        <label class="absolute -bottom-2 -right-2 bg-blue-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center cursor-pointer shadow-lg border-4 border-white transition active:scale-90">
-                            <i class="fa-solid fa-camera"></i>
-                            <input type="file" id="input-profile-pic" accept="image/*" class="hidden" onchange="previewProfilePic(this)">
-                        </label>
-                    </div>
-                    <div class="space-y-4 text-left font-bold">
-                        <div>
-                            <label class="text-[10px] text-slate-400 uppercase ml-2 tracking-widest">Nama Profil</label>
-                            <input type="text" id="edit-nama" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-100 outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                        </div>
-                        <button onclick="updateProfile()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-xl active:scale-95 transition mt-4 uppercase text-xs tracking-widest">Update Data</button>
-                    </div>
-                </div>
+            <div id="page-profile" class="page-content p-6 text-center">
+                <img id="profile-preview" src="" class="w-32 h-32 rounded-[40px] mx-auto border-4 border-white shadow-xl object-cover mb-4">
+                <h2 id="profile-name" class="text-xl font-black text-slate-800"></h2>
+                <button onclick="logout()" class="mt-10 bg-red-50 text-red-500 font-black px-8 py-3 rounded-2xl">Keluar Akun</button>
             </div>
         </div>
 
         <nav class="fixed bottom-0 left-0 right-0 max-w-lg mx-auto glass border-t flex justify-around items-center h-20 bg-white/95 z-50">
             <button onclick="navigate('home', 'ConnectPro', this)" class="nav-item text-blue-600 flex flex-col items-center"><i class="fa-solid fa-house-chimney text-xl"></i></button>
-            <button onclick="navigate('search', 'Temukan', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-compass text-xl"></i></button>
-            <button onclick="navigate('history', 'Riwayat', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-clock-rotate-left text-xl"></i></button>
-            <button onclick="navigate('profile', 'Pengaturan', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-user-gear text-xl"></i></button>
+            <button onclick="navigate('search', 'Cari', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
+            <button onclick="navigate('history', 'Riwayat', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-phone-volume text-xl"></i></button>
+            <button onclick="navigate('profile', 'Profil', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-circle-user text-xl"></i></button>
         </nav>
     </div>
 
@@ -134,34 +103,45 @@
         <header class="p-5 flex items-center justify-between bg-white border-b shadow-sm">
             <div class="flex items-center gap-4">
                 <button onclick="closeChat()" class="text-slate-400 p-2"><i class="fa-solid fa-arrow-left text-xl"></i></button>
-                <img id="chat-avatar" class="w-10 h-10 rounded-full object-cover bg-slate-100 border">
+                <img id="chat-avatar" class="w-10 h-10 rounded-full object-cover">
                 <div>
                     <h4 id="chat-name" class="font-bold text-slate-800 leading-tight"></h4>
-                    <span class="text-[10px] text-blue-500 font-black uppercase tracking-widest italic">Live Now</span>
+                    <span class="text-[10px] text-blue-500 font-black uppercase">Online</span>
                 </div>
             </div>
-            <div class="flex items-center gap-4 pr-2">
-                <button onclick="startCall('voice')" class="text-slate-300 hover:text-blue-600 transition"><i class="fa-solid fa-phone text-lg"></i></button>
-                <button onclick="startCall('video')" class="text-slate-300 hover:text-blue-600 transition"><i class="fa-solid fa-video text-lg"></i></button>
+            <div class="flex items-center gap-4">
+                <button onclick="startCall('voice')" class="text-slate-300 hover:text-blue-600 p-2"><i class="fa-solid fa-phone"></i></button>
+                <button onclick="startCall('video')" class="text-slate-300 hover:text-blue-600 p-2"><i class="fa-solid fa-video"></i></button>
             </div>
         </header>
 
-        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 hide-scroll bg-slate-50"></div>
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 hide-scroll"></div>
 
-        <div id="emoji-container" class="hidden absolute bottom-24 left-4 z-[110] shadow-2xl rounded-3xl overflow-hidden border border-slate-100"></div>
+        <div id="emoji-container" class="hidden absolute bottom-24 left-4 z-[110] shadow-2xl rounded-3xl overflow-hidden border"></div>
 
         <div class="p-4 bg-white border-t flex items-center gap-2">
             <button id="emoji-btn" class="text-slate-400 p-2"><i class="fa-solid fa-face-smile text-2xl"></i></button>
-            <input type="text" id="chat-input" placeholder="Apa kabar?..." class="flex-1 p-3 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
+            <input type="text" id="chat-input" placeholder="Tulis sesuatu..." class="flex-1 p-3 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
             
-            <button id="vn-btn" onmousedown="startRecording()" onmouseup="stopRecording()" onmouseleave="stopRecording()"
-                class="bg-slate-100 text-slate-500 w-12 h-12 rounded-2xl flex items-center justify-center transition active:scale-90">
+            <button id="vn-btn" 
+                onmousedown="startRecording(event)" onmouseup="stopRecording(event)"
+                ontouchstart="startRecording(event)" ontouchend="stopRecording(event)"
+                class="bg-slate-100 text-slate-500 w-12 h-12 rounded-2xl flex items-center justify-center transition">
                 <i class="fa-solid fa-microphone text-lg"></i>
             </button>
 
             <button onclick="sendMessage()" class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition">
                 <i class="fa-solid fa-paper-plane"></i>
             </button>
+        </div>
+    </div>
+
+    <div id="story-modal" class="hidden fixed inset-0 z-[150] bg-black/70 flex items-end justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-[35px] p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-6"><h3 class="text-xl font-black uppercase italic">Status Baru</h3><button onclick="closeStoryModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button></div>
+            <input type="file" id="story-file" accept="image/*,video/*" class="w-full mb-4">
+            <textarea id="story-caption" placeholder="Caption..." class="w-full p-4 bg-slate-100 rounded-2xl outline-none min-h-[100px] font-bold text-sm"></textarea>
+            <button id="btn-upload" onclick="uploadStory()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl mt-4 shadow-xl">PUBLISH</button>
         </div>
     </div>
 
@@ -175,35 +155,21 @@
                 </div>
                 <button onclick="closeStoryViewer()" class="text-white p-2"><i class="fa-solid fa-xmark text-3xl"></i></button>
             </div>
-            <div class="absolute inset-0 flex z-[105]"><div class="w-1/3 h-full" onclick="prevSlide()"></div><div class="w-2/3 h-full" onclick="nextSlide()"></div></div>
-            <div class="h-full flex items-center justify-center bg-zinc-900">
+            <div class="h-full flex items-center justify-center">
                 <img id="view-img" class="hidden max-w-full max-h-full object-contain">
                 <video id="view-vid" class="hidden max-w-full max-h-full" playsinline></video>
-                <div id="view-text" class="hidden text-white text-3xl font-black text-center px-10 italic"></div>
             </div>
             <div class="absolute bottom-12 left-0 right-0 px-6 text-center z-[110]"><p id="view-caption" class="text-white text-sm bg-black/40 backdrop-blur-md p-4 rounded-3xl inline-block max-w-[85%] font-bold"></p></div>
         </div>
     </div>
 
-    <div id="story-modal" class="hidden fixed inset-0 z-[150] bg-black/70 flex items-end justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-[35px] p-6 shadow-2xl">
-            <div class="flex justify-between items-center mb-6"><h3 class="text-xl font-black uppercase tracking-tighter italic">Buat Cerita</h3><button onclick="closeStoryModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button></div>
-            <label class="w-full flex flex-col items-center justify-center py-10 border-2 border-dashed border-slate-200 rounded-3xl cursor-pointer hover:bg-slate-50 transition">
-                <i class="fa-solid fa-cloud-arrow-up text-4xl text-blue-500 mb-2"></i>
-                <p id="preview-text" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Klik untuk pilih media</p>
-                <input type="file" id="story-file" accept="image/*,video/*" class="hidden" onchange="handleFilePreview(this)">
-            </label>
-            <textarea id="story-caption" placeholder="Katakan sesuatu..." class="w-full p-4 bg-slate-100 rounded-2xl outline-none min-h-[100px] mt-4 font-bold text-sm"></textarea>
-            <button id="btn-upload" onclick="uploadStory()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl mt-4 shadow-xl active:scale-95 transition uppercase text-xs tracking-widest">Publikasikan Cerita</button>
-        </div>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile as updateAuthProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy, where, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
+        // CONFIG FIREBASE (Gunakan punya Anda sendiri)
         const firebaseConfig = {
             apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
             authDomain: "fotobooth-e36ab.firebaseapp.com",
@@ -219,39 +185,32 @@
         const storage = getStorage(app);
 
         let myData = null, targetUser = null, mediaRecorder = null, audioChunks = [];
-        let storyGroups = [], currentGroupIdx = 0, currentStoryIdx = 0, storyTimer = null;
+        let storyGroups = [], currentStoryIdx = 0, storyTimer = null;
 
-        // --- AUTH & SECURITY ---
-        window.toggleAuth = (is) => { document.getElementById('register-container').classList.toggle('hidden', !is); document.getElementById('login-container').classList.toggle('hidden', is); if(is) generateCaptcha(); };
-        function generateCaptcha() { const c = Math.random().toString(36).substring(2, 8).toUpperCase(); document.getElementById('captcha-code').innerText = c; }
-
+        // --- AUTH ---
+        window.toggleAuth = (is) => { document.getElementById('register-container').classList.toggle('hidden', !is); document.getElementById('login-container').classList.toggle('hidden', is); };
         window.handleLogin = async () => {
             const id = document.getElementById('login-id').value + "@app.com";
             const ps = document.getElementById('login-pass').value;
-            try { await signInWithEmailAndPassword(auth, id, ps); } catch (e) { alert("ID atau Password salah!"); }
+            try { await signInWithEmailAndPassword(auth, id, ps); } catch (e) { alert("Gagal Login!"); }
         };
 
         window.handleRegister = async () => {
             const n = document.getElementById('reg-nama').value;
             const id = document.getElementById('reg-id').value;
-            const p = document.getElementById('reg-phone').value;
-            const g = document.getElementById('reg-gender').value;
             const ps = document.getElementById('reg-pass').value;
-            const cp = document.getElementById('reg-captcha-input').value;
-            if(cp !== document.getElementById('captcha-code').innerText) return alert("Captcha salah!");
-            if(!n || !id || !p || !g || !ps) return alert("Lengkapi data!");
-
+            if(!n || !id || !ps) return alert("Isi lengkap!");
             try {
                 const cred = await createUserWithEmailAndPassword(auth, id + "@app.com", ps);
                 const photo = `https://ui-avatars.com/api/?name=${n}&background=random&size=256`;
-                await setDoc(doc(db, "users", cred.user.uid), { uid: cred.user.uid, nama: n, user_id: id, phone: p, gender: g, photo });
+                await setDoc(doc(db, "users", cred.user.uid), { uid: cred.user.uid, nama: n, user_id: id, photo });
                 location.reload();
-            } catch (e) { alert("Gagal daftar: " + e.message); }
+            } catch (e) { alert("Gagal Daftar!"); }
         };
 
         window.logout = () => signOut(auth);
 
-        // --- NAVIGATION & UI ---
+        // --- NAVIGATION ---
         window.navigate = (p, t, el) => {
             document.querySelectorAll('.page-content').forEach(pc => pc.classList.remove('active'));
             document.getElementById('page-' + p).classList.add('active');
@@ -260,32 +219,7 @@
             el.classList.replace('text-slate-300', 'text-blue-600');
         };
 
-        // --- SEARCH & PROFILE ---
-        window.searchUser = () => {
-            const val = document.getElementById('search-input').value.toLowerCase();
-            if(!val) return document.getElementById('search-result').innerHTML = "";
-            onSnapshot(query(collection(db, "users")), (snap) => {
-                const res = document.getElementById('search-result'); res.innerHTML = "";
-                snap.forEach(d => {
-                    const u = d.data();
-                    if(u.user_id.toLowerCase().includes(val) && u.uid !== auth.currentUser.uid) {
-                        const dv = document.createElement('div');
-                        dv.className = "bg-white p-4 rounded-[28px] flex items-center justify-between shadow-sm border border-slate-50";
-                        dv.innerHTML = `<div class="flex items-center gap-4"><img src="${u.photo}" class="w-12 h-12 rounded-2xl object-cover"><div><h4 class="font-bold text-slate-800">${u.nama}</h4><p class="text-[10px] text-slate-400 font-bold uppercase">@${u.user_id}</p></div></div><button onclick="openChat('${u.uid}', '${u.nama}', '${u.photo}')" class="bg-blue-50 text-blue-600 p-3 rounded-2xl active:scale-90 transition"><i class="fa-solid fa-message"></i></button>`;
-                        res.appendChild(dv);
-                    }
-                });
-            });
-        };
-
-        window.updateProfile = async () => {
-            const n = document.getElementById('edit-nama').value;
-            if(!n) return;
-            await updateDoc(doc(db, "users", auth.currentUser.uid), { nama: n });
-            alert("Profil diperbarui!");
-        };
-
-        // --- CHAT SYSTEM (LOAD, SEND, VN) ---
+        // --- CHAT SYSTEM ---
         window.openChat = (uid, nama, photo) => {
             targetUser = { uid, nama, photo };
             document.getElementById('chat-screen').classList.remove('hidden');
@@ -297,20 +231,16 @@
         window.closeChat = () => document.getElementById('chat-screen').classList.add('hidden');
 
         function loadMessages() {
-            if (!targetUser) return;
+            if(!targetUser) return;
             const roomId = [auth.currentUser.uid, targetUser.uid].sort().join("_");
             const q = query(collection(db, "chats"), where("room", "==", roomId), orderBy("time", "asc"));
-
             onSnapshot(q, (snap) => {
                 const box = document.getElementById('chat-messages'); box.innerHTML = "";
                 snap.forEach(d => {
                     const m = d.data(); const isMe = m.sender === auth.currentUser.uid;
                     const div = document.createElement('div');
                     div.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
-                    
-                    let content = m.text;
-                    if(m.type === 'vn') content = `<audio src="${m.fileUrl}" controls class="w-48"></audio>`;
-                    
+                    const content = m.type === 'vn' ? `<audio src="${m.fileUrl}" controls class="w-48"></audio>` : m.text;
                     div.innerHTML = `<div class="max-w-[80%] p-4 text-sm font-bold shadow-sm ${isMe ? 'chat-bubble-me' : 'chat-bubble-them'}">${content}</div>`;
                     box.appendChild(div);
                 });
@@ -324,21 +254,19 @@
             if(!val || !targetUser) return;
             await addDoc(collection(db, "chats"), {
                 room: [auth.currentUser.uid, targetUser.uid].sort().join("_"),
-                sender: auth.currentUser.uid,
-                text: val,
-                type: 'text',
-                time: serverTimestamp()
+                sender: auth.currentUser.uid, text: val, type: 'text', time: serverTimestamp()
             });
             inp.value = "";
         };
 
-        // --- VN LOGIC ---
-        window.startRecording = async () => {
+        // --- VN LOGIC (MOBILE READY) ---
+        window.startRecording = async (e) => {
+            if(e) e.preventDefault();
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
-                mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+                mediaRecorder.ondataavailable = (event) => audioChunks.push(event.data);
                 mediaRecorder.onstop = async () => {
                     const blob = new Blob(audioChunks, { type: 'audio/webm' });
                     const r = ref(storage, `vn/${Date.now()}.webm`);
@@ -346,25 +274,31 @@
                     const url = await getDownloadURL(r);
                     await addDoc(collection(db, "chats"), {
                         room: [auth.currentUser.uid, targetUser.uid].sort().join("_"),
-                        sender: auth.currentUser.uid,
-                        text: "Voice Note",
-                        type: "vn",
-                        fileUrl: url,
-                        time: serverTimestamp()
+                        sender: auth.currentUser.uid, text: "VN", fileUrl: url, type: "vn", time: serverTimestamp()
                     });
                 };
                 mediaRecorder.start();
-                document.getElementById('vn-btn').classList.replace('bg-slate-100', 'bg-red-500');
-                document.getElementById('vn-btn').classList.replace('text-slate-500', 'text-white');
-            } catch (e) { alert("Mic Error!"); }
+                document.getElementById('vn-btn').classList.add('recording-pulse');
+            } catch (err) { alert("Aktifkan Izin Mic!"); }
         };
 
-        window.stopRecording = () => {
+        window.stopRecording = (e) => {
+            if(e) e.preventDefault();
             if(mediaRecorder && mediaRecorder.state === "recording") {
                 mediaRecorder.stop();
-                document.getElementById('vn-btn').classList.replace('bg-red-500', 'bg-slate-100');
-                document.getElementById('vn-btn').classList.replace('text-white', 'text-slate-500');
+                document.getElementById('vn-btn').classList.remove('recording-pulse');
             }
+        };
+
+        // --- CALL & VC (TRIGGER LOG) ---
+        window.startCall = async (type) => {
+            if(!targetUser) return;
+            alert(`Memanggil ${targetUser.nama} via ${type}...`);
+            await addDoc(collection(db, "history"), {
+                uid: auth.currentUser.uid, to: targetUser.nama,
+                type: type === 'video' ? 'Video Call' : 'Voice Call',
+                time: serverTimestamp()
+            });
         };
 
         // --- EMOJI APPLE ---
@@ -372,167 +306,98 @@
             data: async () => { const r = await fetch('https://cdn.jsdelivr.net/npm/@emoji-mart/data'); return r.json(); },
             set: 'apple',
             onEmojiSelect: (emoji) => { document.getElementById('chat-input').value += emoji.native; },
-            theme: 'light',
-            previewPosition: 'none'
+            theme: 'light', previewPosition: 'none'
         });
         document.getElementById('emoji-container').appendChild(picker);
-        document.getElementById('emoji-btn').onclick = (e) => {
-            e.stopPropagation();
-            document.getElementById('emoji-container').classList.toggle('hidden');
-        };
+        document.getElementById('emoji-btn').onclick = (e) => { e.stopPropagation(); document.getElementById('emoji-container').classList.toggle('hidden'); };
 
-        // --- CALLS ---
-        window.startCall = async (type) => {
-            if(!targetUser) return;
-            alert(`Memanggil ${targetUser.nama} via ${type}...`);
-            await addDoc(collection(db, "history"), {
-                uid: auth.currentUser.uid,
-                to: targetUser.nama,
-                type: type === 'video' ? 'Video Call' : 'Voice Call',
-                time: serverTimestamp()
-            });
-        };
-
-        // --- STORY SYSTEM (UPLOAD & VIEW) ---
+        // --- STORY SYSTEM ---
         window.openStoryModal = () => document.getElementById('story-modal').classList.remove('hidden');
         window.closeStoryModal = () => document.getElementById('story-modal').classList.add('hidden');
-        window.handleFilePreview = (input) => { if(input.files[0]) document.getElementById('preview-text').innerText = "File Terpilih: " + input.files[0].name; };
-
         window.uploadStory = async () => {
             const file = document.getElementById('story-file').files[0];
             const caption = document.getElementById('story-caption').value;
-            const btn = document.getElementById('btn-upload');
             if(!file) return alert("Pilih media!");
-            btn.disabled = true; btn.innerText = "MENGUNGGAH...";
-
-            const r = ref(storage, `stories/${Date.now()}_${file.name}`);
+            const r = ref(storage, `stories/${Date.now()}`);
             await uploadBytes(r, file);
             const url = await getDownloadURL(r);
             await addDoc(collection(db, "stories"), {
-                uid: auth.currentUser.uid,
-                nama: myData.nama,
-                photo: myData.photo,
-                mediaUrl: url,
-                type: file.type.includes('video') ? 'video' : 'image',
-                caption,
-                createdAt: serverTimestamp()
+                uid: auth.currentUser.uid, nama: myData.nama, photo: myData.photo,
+                mediaUrl: url, type: file.type.includes('video') ? 'video' : 'image',
+                caption, createdAt: serverTimestamp()
             });
             closeStoryModal();
-            btn.disabled = false; btn.innerText = "UPLOAD";
-            alert("Story berhasil diposting!");
         };
 
-        window.openStoryGroup = (gs) => {
-            storyGroups = gs; currentStoryIdx = 0;
-            document.getElementById('story-view-screen').classList.remove('hidden');
-            showStory();
-        };
-
+        window.openStoryGroup = (gs) => { storyGroups = gs; currentStoryIdx = 0; document.getElementById('story-view-screen').classList.remove('hidden'); showStory(); };
         function showStory() {
-            clearTimeout(storyTimer);
-            const s = storyGroups[currentStoryIdx];
-            const img = document.getElementById('view-img');
-            const vid = document.getElementById('view-vid');
-            const cap = document.getElementById('view-caption');
-            
+            clearTimeout(storyTimer); const s = storyGroups[currentStoryIdx];
             document.getElementById('viewer-avatar').src = s.photo;
             document.getElementById('viewer-name').innerText = s.nama;
-            cap.innerText = s.caption || "";
-
+            document.getElementById('view-caption').innerText = s.caption;
+            const img = document.getElementById('view-img'); const vid = document.getElementById('view-vid');
             img.classList.add('hidden'); vid.classList.add('hidden');
-            if(s.type === 'image') {
-                img.src = s.mediaUrl; img.classList.remove('hidden');
-                storyTimer = setTimeout(nextSlide, 5000);
-            } else {
-                vid.src = s.mediaUrl; vid.classList.remove('hidden'); vid.play();
-                vid.onended = nextSlide;
-            }
-            renderProgress();
+            if(s.type === 'image') { img.src = s.mediaUrl; img.classList.remove('hidden'); storyTimer = setTimeout(nextSlide, 5000); }
+            else { vid.src = s.mediaUrl; vid.classList.remove('hidden'); vid.play(); vid.onended = nextSlide; }
         }
-
-        function renderProgress() {
-            const cont = document.getElementById('progress-container'); cont.innerHTML = "";
-            storyGroups.forEach((_, i) => {
-                const dv = document.createElement('div');
-                dv.className = `h-1 flex-1 rounded-full ${i <= currentStoryIdx ? 'bg-white' : 'bg-white/30'}`;
-                cont.appendChild(dv);
-            });
-        }
-
         window.nextSlide = () => { if(currentStoryIdx < storyGroups.length - 1) { currentStoryIdx++; showStory(); } else { closeStoryViewer(); } };
-        window.prevSlide = () => { if(currentStoryIdx > 0) { currentStoryIdx--; showStory(); } };
-        window.closeStoryViewer = () => { clearTimeout(storyTimer); document.getElementById('story-view-screen').classList.add('hidden'); document.getElementById('view-vid').pause(); };
+        window.closeStoryViewer = () => { document.getElementById('story-view-screen').classList.add('hidden'); document.getElementById('view-vid').pause(); };
 
-        // --- LOAD CHAT LIST (HOME) ---
-        function loadChatList() {
-            const q = query(collection(db, "chats"), orderBy("time", "desc"));
-            onSnapshot(q, async (snap) => {
-                const list = document.getElementById('chat-list');
-                const unique = new Set(); const messages = [];
-                snap.forEach(d => {
-                    const data = d.data();
-                    if(data.room && data.room.includes(auth.currentUser.uid)) {
-                        const otherUid = data.room.split("_").find(id => id !== auth.currentUser.uid);
-                        if(otherUid && !unique.has(otherUid)) {
-                            unique.add(otherUid);
-                            messages.push({ uid: otherUid, text: data.text, time: data.time?.toDate() });
-                        }
-                    }
-                });
-                list.innerHTML = messages.length ? "" : "<p class='text-center text-slate-300 py-10 font-bold'>Belum ada pesan</p>";
-                for(const m of messages) {
-                    const u = await getDoc(doc(db, "users", m.uid));
-                    if(u.exists()) {
-                        const ud = u.data();
-                        const dv = document.createElement('div');
-                        dv.className = "bg-white p-4 rounded-[28px] flex items-center gap-4 shadow-sm border border-slate-50 transition active:scale-95 cursor-pointer";
-                        dv.onclick = () => openChat(ud.uid, ud.nama, ud.photo);
-                        dv.innerHTML = `<img src="${ud.photo}" class="w-14 h-14 rounded-2xl object-cover"><div class="flex-1"><h4 class="font-bold text-slate-800">${ud.nama}</h4><p class="text-xs text-slate-400 truncate w-32 font-bold">${m.text}</p></div><div class="text-[10px] font-black text-blue-500">${m.time ? m.time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ''}</div>`;
-                        list.appendChild(dv);
-                    }
-                }
-            });
-        }
-
-        // --- GLOBAL SESSION ---
+        // --- SESSION ---
         onAuthStateChanged(auth, async (u) => {
             if(u) {
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
-                const s = await getDoc(doc(db, "users", u.uid));
-                myData = s.data();
+                const s = await getDoc(doc(db, "users", u.uid)); myData = s.data();
                 document.getElementById('header-photo').src = myData.photo;
                 document.getElementById('profile-preview').src = myData.photo;
-                document.getElementById('edit-nama').value = myData.nama;
-                
-                // Story Listener
+                document.getElementById('profile-name').innerText = myData.nama;
+
+                // Load Chat List
+                onSnapshot(query(collection(db, "chats"), orderBy("time", "desc")), async (snap) => {
+                    const list = document.getElementById('chat-list'); list.innerHTML = "";
+                    const unique = new Set();
+                    for(const d of snap.docs) {
+                        const m = d.data();
+                        if(m.room && m.room.includes(u.uid)) {
+                            const other = m.room.split("_").find(id => id !== u.uid);
+                            if(other && !unique.has(other)) {
+                                unique.add(other);
+                                const ud = (await getDoc(doc(db, "users", other))).data();
+                                const dv = document.createElement('div');
+                                dv.className = "bg-white p-4 rounded-[28px] flex items-center gap-4 shadow-sm active:scale-95 transition cursor-pointer";
+                                dv.onclick = () => openChat(ud.uid, ud.nama, ud.photo);
+                                dv.innerHTML = `<img src="${ud.photo}" class="w-14 h-14 rounded-2xl object-cover"><div class="flex-1"><h4 class="font-bold text-slate-800">${ud.nama}</h4><p class="text-xs text-slate-400 truncate w-32 font-bold">${m.text}</p></div>`;
+                                list.appendChild(dv);
+                            }
+                        }
+                    }
+                });
+
+                // Load Stories
                 onSnapshot(query(collection(db, "stories"), orderBy("createdAt", "asc")), (snap) => {
                     const g = {}; snap.forEach(d => { const dt = d.data(); if(!g[dt.uid]) g[dt.uid] = []; g[dt.uid].push(dt); });
                     const l = document.getElementById('online-list'); l.innerHTML = "";
                     Object.values(g).forEach(gs => {
-                        const last = gs[gs.length - 1]; const dv = document.createElement('div');
-                        dv.className = "flex flex-col items-center gap-1 min-w-[70px] cursor-pointer";
-                        dv.innerHTML = `<img src="${last.photo}" class="w-14 h-14 story-ring object-cover"><span class="text-[9px] font-black text-slate-400 uppercase mt-1">${last.nama.split(' ')[0]}</span>`;
+                        const dv = document.createElement('div'); dv.className = "min-w-[70px] flex flex-col items-center";
+                        dv.innerHTML = `<img src="${gs[0].photo}" class="w-14 h-14 story-ring object-cover">`;
                         dv.onclick = () => openStoryGroup(gs); l.appendChild(dv);
                     });
                 });
 
-                // History Listener
-                onSnapshot(query(collection(db, "history"), where("uid", "==", u.uid), orderBy("time", "desc")), (snap) => {
+                // Load History
+                onSnapshot(query(collection(db, "history"), where("uid", "==", u.uid)), (snap) => {
                     const h = document.getElementById('history-list'); h.innerHTML = "";
                     snap.forEach(d => {
                         const dt = d.data(); const dv = document.createElement('div');
-                        dv.className = "bg-white p-4 rounded-3xl flex justify-between items-center shadow-sm";
-                        dv.innerHTML = `<div><h4 class="font-bold text-slate-800">${dt.to}</h4><p class="text-[10px] text-slate-400 font-bold uppercase">${dt.type}</p></div><i class="fa-solid ${dt.type.includes('Video') ? 'fa-video' : 'fa-phone'} text-blue-500"></i>`;
+                        dv.className = "bg-white p-4 rounded-3xl flex justify-between items-center";
+                        dv.innerHTML = `<div><h4 class="font-bold">${dt.to}</h4><p class="text-[10px] uppercase font-black text-blue-500">${dt.type}</p></div><i class="fa-solid fa-phone-slash opacity-20"></i>`;
                         h.appendChild(dv);
                     });
                 });
-
-                loadChatList();
             } else {
                 document.getElementById('auth-screen').classList.remove('hidden');
                 document.getElementById('main-app').classList.add('hidden');
-                generateCaptcha();
             }
         });
     </script>
