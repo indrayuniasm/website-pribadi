@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ConnectPro Super App</title>
+    <title>ConnectPro Ultimate</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
         .hide-scroll::-webkit-scrollbar { display: none; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); }
         #main-app { height: 100dvh; }
-        .page-content { display: none; height: 100%; overflow-y: auto; padding-bottom: 100px; }
+        .page-content { display: none; height: 100%; overflow-y: auto; padding-bottom: 120px; }
         .page-content.active { display: block; }
         .nav-active { color: #2563eb !important; transform: scale(1.1); }
         .story-ring { padding: 2px; border: 2px solid #3b82f6; border-radius: 18px; cursor: pointer; }
@@ -29,29 +29,43 @@
         <div class="bg-white w-full max-w-md rounded-[40px] shadow-2xl p-8 border border-white">
             <div id="login-container">
                 <h2 class="text-3xl font-black mb-2 text-slate-800 tracking-tighter">ConnectPro 👋</h2>
-                <p class="text-slate-500 mb-8 text-sm font-bold">Akses ID teman dan update terbaru.</p>
+                <p class="text-slate-500 mb-8 text-sm font-bold">Masuk untuk terhubung kembali.</p>
                 <div class="space-y-4">
-                    <input type="text" id="login-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
-                    <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="login-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                    <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 font-bold">
                     <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-extrabold py-4 rounded-2xl shadow-lg active:scale-95 transition">Masuk</button>
                 </div>
                 <p class="text-center mt-8 text-slate-500 text-sm">Belum punya akun? <a href="#" onclick="toggleAuth(true)" class="text-blue-600 font-bold">Daftar</a></p>
             </div>
+
             <div id="register-container" class="hidden">
                 <h2 class="text-3xl font-black mb-6 text-emerald-500 tracking-tighter text-center">Buat Akun</h2>
-                <div class="space-y-3">
-                    <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500">
-                    <input type="text" id="reg-id" placeholder="ID User (unik)" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500">
-                    <input type="password" id="reg-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500">
-                    <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg mt-4 active:scale-95 transition">Daftar</button>
+                <div class="space-y-3 overflow-y-auto max-h-[50vh] pr-2 hide-scroll">
+                    <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
+                    <input type="text" id="reg-id" placeholder="ID User (unik)" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
+                    <input type="number" id="reg-phone" placeholder="Nomor HP (0812...)" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
+                    <select id="reg-gender" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-slate-500">
+                        <option value="">Jenis Kelamin</option>
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                    </select>
+                    <input type="password" id="reg-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
+                    
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                        <div class="flex justify-between items-center mb-2 px-2">
+                            <span class="text-[10px] font-black uppercase text-slate-400">Keamanan</span>
+                            <span id="captcha-code" class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg font-black tracking-widest italic select-none"></span>
+                        </div>
+                        <input type="text" id="reg-captcha-input" placeholder="Ketik kode di atas" class="w-full p-3 bg-white rounded-xl outline-none border border-slate-200 text-center font-bold">
+                    </div>
                 </div>
-                <p class="text-center mt-6 text-sm"><a href="#" onclick="toggleAuth(false)" class="text-blue-600 font-bold">Kembali ke Login</a></p>
+                <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg mt-6 active:scale-95 transition">Daftar Sekarang</button>
+                <p class="text-center mt-4 text-sm"><a href="#" onclick="toggleAuth(false)" class="text-blue-600 font-bold">Kembali ke Login</a></p>
             </div>
         </div>
     </div>
 
     <div id="main-app" class="hidden flex flex-col max-w-lg mx-auto bg-white shadow-2xl relative overflow-hidden">
-        
         <header class="p-6 flex justify-between items-center border-b bg-white z-20">
             <h1 id="page-title" class="text-2xl font-black text-blue-600 tracking-tighter">ConnectPro</h1>
             <div class="flex items-center gap-3">
@@ -71,9 +85,9 @@
                     </div>
                     <div id="online-list" class="flex gap-4"></div>
                 </div>
-                <div class="p-10 text-center text-slate-300 mt-20">
-                    <i class="fa-solid fa-house-chimney text-6xl mb-4 opacity-10"></i>
-                    <p class="text-sm font-bold opacity-40 italic">Beranda anda siap.</p>
+                <div class="p-10 text-center text-slate-300 mt-20 opacity-20">
+                    <i class="fa-solid fa-house-chimney text-6xl mb-4"></i>
+                    <p class="text-sm font-bold uppercase tracking-widest">Beranda Kosong</p>
                 </div>
             </div>
 
@@ -87,7 +101,7 @@
             </div>
 
             <div id="page-history" class="page-content p-4">
-                <h3 class="font-black text-slate-800 text-lg mb-4 uppercase">Riwayat Panggilan</h3>
+                <h3 class="font-black text-slate-800 text-lg mb-4 uppercase">Panggilan Terakhir</h3>
                 <div id="history-list" class="space-y-3"></div>
             </div>
 
@@ -100,40 +114,26 @@
                             <input type="file" id="input-profile-pic" accept="image/*" class="hidden" onchange="previewProfilePic(this)">
                         </label>
                     </div>
-                    <div class="space-y-4 text-left">
+                    <div class="space-y-4 text-left font-bold">
                         <div>
-                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Nama Lengkap</label>
-                            <input type="text" id="edit-nama" class="w-full p-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                            <label class="text-[10px] text-slate-400 uppercase ml-2">Nama Lengkap</label>
+                            <input type="text" id="edit-nama" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-100 outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">ID User</label>
-                            <input type="text" id="edit-id" disabled class="w-full p-4 bg-slate-100 rounded-2xl text-slate-400 font-bold cursor-not-allowed">
+                            <label class="text-[10px] text-slate-400 uppercase ml-2">ID User</label>
+                            <input type="text" id="edit-id" disabled class="w-full p-4 bg-slate-100 rounded-2xl text-slate-400 cursor-not-allowed">
                         </div>
-                        <button id="btn-save-profile" onclick="updateProfile()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-xl active:scale-95 transition">
-                            SIMPAN PERUBAHAN
-                        </button>
+                        <button onclick="updateProfile()" id="btn-save-profile" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-xl active:scale-95 transition mt-4">SIMPAN PROFIL</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <nav class="fixed bottom-0 left-0 right-0 max-w-lg mx-auto glass border-t flex justify-around items-center p-3 h-16 md:h-20 bg-white/95 z-50">
-            <button onclick="navigate('home', 'ConnectPro', this)" class="nav-item nav-active flex flex-col items-center justify-center">
-                <i class="fa-solid fa-house text-xl"></i>
-                <span class="text-[8px] font-bold uppercase mt-1">Beranda</span>
-            </button>
-            <button onclick="navigate('search', 'Cari Teman', this)" class="nav-item text-slate-400 flex flex-col items-center justify-center">
-                <i class="fa-solid fa-magnifying-glass text-xl"></i>
-                <span class="text-[8px] font-bold uppercase mt-1">Search</span>
-            </button>
-            <button onclick="navigate('history', 'History', this)" class="nav-item text-slate-400 flex flex-col items-center justify-center">
-                <i class="fa-solid fa-clock-rotate-left text-xl"></i>
-                <span class="text-[8px] font-bold uppercase mt-1">History</span>
-            </button>
-            <button onclick="navigate('profile', 'Edit Profil', this)" class="nav-item text-slate-400 flex flex-col items-center justify-center">
-                <i class="fa-solid fa-circle-user text-xl"></i>
-                <span class="text-[8px] font-bold uppercase mt-1">Profil</span>
-            </button>
+        <nav class="fixed bottom-0 left-0 right-0 max-w-lg mx-auto glass border-t flex justify-around items-center h-20 bg-white/95 z-50">
+            <button onclick="navigate('home', 'ConnectPro', this)" class="nav-item nav-active flex flex-col items-center"><i class="fa-solid fa-house text-xl"></i></button>
+            <button onclick="navigate('search', 'Cari', this)" class="nav-item text-slate-400 flex flex-col items-center"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
+            <button onclick="navigate('history', 'History', this)" class="nav-item text-slate-400 flex flex-col items-center"><i class="fa-solid fa-clock-rotate-left text-xl"></i></button>
+            <button onclick="navigate('profile', 'Profil', this)" class="nav-item text-slate-400 flex flex-col items-center"><i class="fa-solid fa-circle-user text-xl"></i></button>
         </nav>
     </div>
 
@@ -141,11 +141,11 @@
         <header class="p-5 flex items-center gap-4 bg-white border-b shadow-sm">
             <button onclick="closeChat()" class="text-slate-400"><i class="fa-solid fa-chevron-left text-xl"></i></button>
             <img id="chat-avatar" class="w-10 h-10 rounded-full object-cover">
-            <div class="flex-1"><h4 id="chat-name" class="font-bold text-slate-800 leading-none"></h4><p class="text-[10px] text-blue-500 font-bold uppercase">Chat Room</p></div>
+            <div class="flex-1"><h4 id="chat-name" class="font-bold text-slate-800 leading-none"></h4><p class="text-[10px] text-blue-500 font-bold uppercase">Online</p></div>
         </header>
         <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
         <div class="p-4 bg-white border-t flex gap-3">
-            <input type="text" id="chat-input" placeholder="Tulis pesan..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none">
+            <input type="text" id="chat-input" placeholder="Tulis pesan..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none font-bold">
             <button onclick="sendMessage()" class="bg-blue-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
@@ -163,34 +163,26 @@
                     <button onclick="closeStoryViewer()" class="text-white p-2"><i class="fa-solid fa-xmark text-3xl"></i></button>
                 </div>
             </div>
-            <div class="absolute inset-0 flex z-[105]">
-                <div class="w-1/3 h-full" onclick="prevSlide()"></div>
-                <div class="w-2/3 h-full" onclick="nextSlide()"></div>
-            </div>
+            <div class="absolute inset-0 flex z-[105]"><div class="w-1/3 h-full" onclick="prevSlide()"></div><div class="w-2/3 h-full" onclick="nextSlide()"></div></div>
             <div class="h-full flex items-center justify-center bg-zinc-900">
                 <img id="view-img" class="hidden max-w-full max-h-full object-contain">
                 <video id="view-vid" class="hidden max-w-full max-h-full" playsinline></video>
                 <div id="view-text" class="hidden text-white text-3xl font-black text-center px-10"></div>
             </div>
-            <div class="absolute bottom-12 left-0 right-0 px-6 text-center z-[110]">
-                <p id="view-caption" class="text-white text-sm bg-black/50 p-4 rounded-3xl inline-block max-w-[80%]"></p>
-            </div>
+            <div class="absolute bottom-12 left-0 right-0 px-6 text-center z-[110]"><p id="view-caption" class="text-white text-sm bg-black/50 p-4 rounded-3xl inline-block max-w-[80%]"></p></div>
         </div>
     </div>
 
     <div id="story-modal" class="hidden fixed inset-0 z-[150] bg-black/70 flex items-end justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-[35px] p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-black uppercase tracking-tighter">Post Story</h3>
-                <button onclick="closeStoryModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
+            <div class="flex justify-between items-center mb-6"><h3 class="text-xl font-black uppercase tracking-tighter">Post Story</h3><button onclick="closeStoryModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button></div>
             <label class="w-full flex flex-col items-center justify-center py-10 border-2 border-dashed border-slate-200 rounded-3xl cursor-pointer">
                 <i class="fa-solid fa-cloud-arrow-up text-4xl text-blue-500 mb-2"></i>
                 <p id="preview-text" class="text-xs font-bold text-slate-500 uppercase">Pilih Media</p>
                 <input type="file" id="story-file" accept="image/*,video/*" class="hidden" onchange="handleFilePreview(this)">
             </label>
-            <textarea id="story-caption" placeholder="Tulis sesuatu..." class="w-full p-4 bg-slate-100 rounded-2xl outline-none min-h-[100px] mt-4 text-sm font-bold"></textarea>
-            <button id="btn-upload" onclick="uploadStory()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl mt-4 shadow-lg active:scale-95 transition">Post Sekarang</button>
+            <textarea id="story-caption" placeholder="Ketik sesuatu..." class="w-full p-4 bg-slate-100 rounded-2xl outline-none min-h-[100px] mt-4 font-bold text-sm"></textarea>
+            <button id="btn-upload" onclick="uploadStory()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl mt-4 shadow-lg active:scale-95 transition">UPLOAD</button>
         </div>
     </div>
 
@@ -214,48 +206,78 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        let myData = null, selectedFile = null, profileFile = null, targetUser = null, storyTimer = null;
+        let myData = null, selectedFile = null, profileFile = null, targetUser = null, storyTimer = null, generatedCaptcha = "";
         let activeSlides = [], currentSlideIndex = 0;
 
-        // --- AUTH & NAV ---
-        window.toggleAuth = (is) => { document.getElementById('register-container').classList.toggle('hidden', !is); document.getElementById('login-container').classList.toggle('hidden', is); };
+        // --- AUTH & CAPTCHA ---
+        function generateCaptcha() {
+            const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            generatedCaptcha = Array.from({length: 5}, () => c[Math.floor(Math.random()*c.length)]).join('');
+            document.getElementById('captcha-code').innerText = generatedCaptcha;
+        }
+
+        window.toggleAuth = (is) => {
+            document.getElementById('register-container').classList.toggle('hidden', !is);
+            document.getElementById('login-container').classList.toggle('hidden', is);
+            if(is) generateCaptcha();
+        };
+
+        window.handleRegister = async () => {
+            const n = document.getElementById('reg-nama').value, id = document.getElementById('reg-id').value.trim().toLowerCase();
+            const ph = document.getElementById('reg-phone').value, g = document.getElementById('reg-gender').value;
+            const p = document.getElementById('reg-pass').value, ci = document.getElementById('reg-captcha-input').value.toUpperCase();
+
+            if(!n || !id || !ph || !g || !p) return alert("Isi semua data!");
+            if(ci !== generatedCaptcha) { alert("Captcha Salah!"); return generateCaptcha(); }
+
+            try {
+                const c = await createUserWithEmailAndPassword(auth, id + "@chat.com", p);
+                await setDoc(doc(db, "users", c.user.uid), { nama: n, id, phone: ph, gender: g, uid: c.user.uid, photo: `https://ui-avatars.com/api/?name=${n}&bg=3b82f6&color=fff` });
+            } catch (e) { alert(e.message); generateCaptcha(); }
+        };
+
+        window.handleLogin = async () => {
+            const id = document.getElementById('login-id').value.trim().toLowerCase(), p = document.getElementById('login-pass').value;
+            try { await signInWithEmailAndPassword(auth, id + "@chat.com", p); } catch (e) { alert("ID/Password Salah!"); }
+        };
+
         window.logout = () => signOut(auth);
+
+        // --- NAVIGATION & PROFILE ---
         window.navigate = (page, title, el) => {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.getElementById('page-' + page).classList.add('active');
             document.getElementById('page-title').innerText = title;
-            document.querySelectorAll('.nav-item').forEach(i => { i.classList.remove('nav-active'); i.classList.add('text-slate-400'); });
-            el.classList.add('nav-active');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.replace('text-blue-600', 'text-slate-400'));
+            el.classList.replace('text-slate-400', 'text-blue-600');
             if(page === 'profile') { document.getElementById('edit-nama').value = myData.nama; document.getElementById('edit-id').value = "@"+myData.id; document.getElementById('profile-preview').src = myData.photo; }
             if(page === 'history') loadHistory();
         };
 
-        // --- PROFILE LOGIC ---
-        window.previewProfilePic = (input) => { profileFile = input.files[0]; if (profileFile) { const reader = new FileReader(); reader.onload = (e) => document.getElementById('profile-preview').src = e.target.result; reader.readAsDataURL(profileFile); } };
+        window.previewProfilePic = (i) => { profileFile = i.files[0]; if(profileFile) { const r = new FileReader(); r.onload = (e) => document.getElementById('profile-preview').src = e.target.result; r.readAsDataURL(profileFile); } };
         window.updateProfile = async () => {
-            const btn = document.getElementById('btn-save-profile'); btn.disabled = true; btn.innerText = "Saving...";
+            const b = document.getElementById('btn-save-profile'); b.innerText = "Saving...";
             try {
-                let pUrl = myData.photo;
-                if(profileFile) { const r = ref(storage, `profiles/${auth.currentUser.uid}`); await uploadBytes(r, profileFile); pUrl = await getDownloadURL(r); }
-                await updateDoc(doc(db, "users", auth.currentUser.uid), { nama: document.getElementById('edit-nama').value, photo: pUrl });
-                alert("Profile Updated!"); location.reload();
+                let url = myData.photo;
+                if(profileFile) { const r = ref(storage, `profiles/${auth.currentUser.uid}`); await uploadBytes(r, profileFile); url = await getDownloadURL(r); }
+                await updateDoc(doc(db, "users", auth.currentUser.uid), { nama: document.getElementById('edit-nama').value, photo: url });
+                location.reload();
             } catch (e) { alert(e.message); }
-            btn.disabled = false;
         };
 
-        // --- STORY LOGIC ---
+        // --- STORY SYSTEM ---
         window.openStoryModal = () => document.getElementById('story-modal').classList.remove('hidden');
         window.closeStoryModal = () => document.getElementById('story-modal').classList.add('hidden');
-        window.handleFilePreview = (i) => { selectedFile = i.files[0]; if(selectedFile) document.getElementById('preview-text').innerText = "✅ " + selectedFile.name; };
+        window.handleFilePreview = (i) => { selectedFile = i.files[0]; if(selectedFile) document.getElementById('preview-text').innerText = "✅ Selected"; };
         window.uploadStory = async () => {
-            const btn = document.getElementById('btn-upload'); btn.disabled = true;
+            const b = document.getElementById('btn-upload'); b.innerText = "Uploading...";
             try {
                 let url = "", type = "text";
                 if(selectedFile) { const r = ref(storage, `stories/${Date.now()}`); await uploadBytes(r, selectedFile); url = await getDownloadURL(r); type = selectedFile.type.split('/')[0]; }
                 await addDoc(collection(db, "stories"), { uid: auth.currentUser.uid, nama: myData.nama, photo: myData.photo, caption: document.getElementById('story-caption').value, url, type, createdAt: serverTimestamp() });
                 closeStoryModal();
             } catch (e) { alert(e.message); }
-            btn.disabled = false;
+            b.innerText = "UPLOAD";
         };
 
         window.openStoryGroup = (gs) => { activeSlides = gs; currentSlideIndex = 0; document.getElementById('story-view-screen').classList.remove('hidden'); renderSlide(); };
@@ -278,7 +300,7 @@
         window.closeStoryViewer = () => { document.getElementById('story-view-screen').classList.add('hidden'); document.getElementById('view-vid').pause(); clearTimeout(storyTimer); };
         window.deleteCurrentStory = async () => { if(confirm("Hapus?")) { await deleteDoc(doc(db, "stories", activeSlides[currentSlideIndex].id)); closeStoryViewer(); } };
 
-        // --- SEARCH & CHAT ---
+        // --- SEARCH, CHAT & HISTORY ---
         window.searchUser = () => {
             const id = document.getElementById('search-input').value.trim().toLowerCase();
             const res = document.getElementById('search-result');
@@ -306,24 +328,17 @@
         }
         window.sendMessage = async () => { const i = document.getElementById('chat-input'); if(!i.value.trim()) return; const r = [auth.currentUser.uid, targetUser.uid].sort().join("_"); await addDoc(collection(db, "chats"), { room: r, sender: auth.currentUser.uid, text: i.value, time: serverTimestamp() }); i.value = ""; };
 
-        // --- HISTORY ---
         function loadHistory() {
             onSnapshot(query(collection(db, "call_history"), where("uid", "==", auth.currentUser.uid), orderBy("timestamp", "desc")), (snap) => {
-                const list = document.getElementById('history-list'); list.innerHTML = snap.empty ? `<p class="text-center py-20 opacity-20 font-bold">No History</p>` : "";
-                snap.forEach(d => {
-                    const h = d.data(), dt = h.timestamp?.toDate() || new Date();
-                    list.innerHTML += `<div class="bg-white p-4 rounded-[28px] flex items-center justify-between shadow-sm border border-slate-50"><div class="flex items-center gap-4"><div class="w-12 h-12 ${h.type === 'missed' ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-500'} rounded-2xl flex items-center justify-center text-lg"><i class="fa-solid ${h.type === 'missed' ? 'fa-phone-slash' : 'fa-phone-flip'}"></i></div><div><h4 class="font-bold text-sm">${h.callerName}</h4><p class="text-[9px] font-black uppercase text-slate-400">${h.status}</p></div></div><div class="text-right font-black text-slate-800"><p class="text-[11px]">${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</p></div></div>`;
-                });
+                const list = document.getElementById('history-list'); list.innerHTML = "";
+                snap.forEach(d => { const h = d.data(), dt = h.timestamp?.toDate() || new Date(); list.innerHTML += `<div class="bg-white p-4 rounded-3xl flex items-center justify-between border border-slate-50"><div class="flex items-center gap-3"><i class="fa-solid fa-phone text-blue-500"></i><div><h4 class="font-bold text-sm">${h.callerName}</h4><p class="text-[8px] uppercase font-black text-slate-400">${h.status}</p></div></div><span class="text-[10px] font-bold text-slate-400">${dt.getHours()}:${dt.getMinutes()}</span></div>`; });
             });
         }
 
-        // --- AUTH BOILERPLATE ---
         onAuthStateChanged(auth, async (u) => {
             if(u) {
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('main-app').classList.remove('hidden');
-                const s = await getDoc(doc(db, "users", u.uid)); myData = s.data();
-                document.getElementById('header-photo').src = myData.photo;
+                document.getElementById('auth-screen').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden');
+                const s = await getDoc(doc(db, "users", u.uid)); myData = s.data(); document.getElementById('header-photo').src = myData.photo;
                 onSnapshot(query(collection(db, "stories"), orderBy("createdAt", "asc")), (snap) => {
                     const g = {}; snap.forEach(d => { const dt = d.data(); dt.id = d.id; if(!g[dt.uid]) g[dt.uid] = []; g[dt.uid].push(dt); });
                     const l = document.getElementById('online-list'); l.innerHTML = "";
@@ -331,9 +346,6 @@
                 });
             } else { document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('main-app').classList.add('hidden'); }
         });
-
-        window.handleLogin = async () => { const id = document.getElementById('login-id').value.trim().toLowerCase(), p = document.getElementById('login-pass').value; try { await signInWithEmailAndPassword(auth, id + "@chat.com", p); } catch (e) { alert("Error!"); } };
-        window.handleRegister = async () => { const n = document.getElementById('reg-nama').value, id = document.getElementById('reg-id').value.trim().toLowerCase(), p = document.getElementById('reg-pass').value; try { const c = await createUserWithEmailAndPassword(auth, id + "@chat.com", p); await setDoc(doc(db, "users", c.user.uid), { nama: n, id: id, uid: c.user.uid, photo: `https://ui-avatars.com/api/?name=${n}&bg=3b82f6&color=fff` }); } catch (e) { alert(e.message); } };
-    </script>
+        </script>
 </body>
 </html>
