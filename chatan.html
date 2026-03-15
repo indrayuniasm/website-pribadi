@@ -3,187 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Pro Mobile Fixed</title>
+    <title>WhatsApp Clone 2026</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
         :root {
-            --wa-bg: #0b141a;
-            --wa-surface: #121b22;
+            --bg-main: #0b141a;
+            --bg-surface: #121b22;
             --wa-green: #25d366;
-            --wa-text: #e9edef;
-            --wa-muted: #8696a0;
-            --wa-search: #202c33;
-            --wa-active-pill: #113f31;
+            --text-primary: #e9edef;
+            --text-secondary: #8696a0;
+            --accent-blue: #34b7f1;
+            --pill-active: #113f31;
+            --search-bg: #202c33;
         }
 
-        /* Perbaikan Height Mobile */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        html, body { 
-            background: var(--wa-bg); 
-            color: var(--wa-text); 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body, html { 
+            background: var(--bg-main); 
+            color: var(--text-primary); 
             height: 100%; 
-            width: 100%; 
             overflow: hidden; 
-            position: fixed; /* Mencegah scroll body yang merusak layout */
+            position: fixed; 
+            width: 100%; 
         }
 
-        .app-container { 
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh; /* Mengikuti tinggi layar HP */
-            max-width: 500px; 
-            margin: 0 auto; 
-            position: relative; 
-            background: var(--wa-bg);
+        .main-app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
         }
 
         /* --- HEADER --- */
-        header { 
-            padding: 15px 20px 10px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-shrink: 0; /* Header tidak boleh mengecil */
+        header {
+            padding: 15px 20px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-main);
+            z-index: 10;
         }
         header h1 { font-size: 1.5rem; font-weight: 500; color: #fff; }
-        .head-icons { display: flex; gap: 20px; font-size: 1.2rem; }
+        .header-actions { display: flex; gap: 22px; font-size: 1.2rem; cursor: pointer; }
 
-        .dropdown { 
-            position: absolute; top: 55px; right: 15px; 
-            background: var(--wa-surface); border-radius: 12px; 
-            padding: 10px 0; width: 190px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); 
-            z-index: 5000; display: none; 
+        /* --- DROPDOWN MENU --- */
+        .menu-dropdown {
+            position: absolute; top: 55px; right: 15px;
+            background: var(--bg-surface); border-radius: 12px;
+            padding: 10px 0; width: 190px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            display: none; z-index: 100;
         }
-        .dropdown.active { display: block; }
-        .menu-item { padding: 12px 20px; font-size: 0.95rem; cursor: pointer; }
+        .menu-dropdown.active { display: block; }
+        .menu-item { padding: 12px 20px; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
+        .menu-item:hover { background: rgba(255,255,255,0.05); }
 
-        /* --- CONTENT AREA (SCROLLABLE) --- */
-        .content-area { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding-bottom: 20px; /* Jarak aman sebelum footer */
+        /* --- CONTENT SCROLLABLE --- */
+        .scroll-content {
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: none;
         }
+        .scroll-content::-webkit-scrollbar { display: none; }
+
         .screen { display: none; }
         .screen.active { display: block; }
 
-        /* Row Styling */
-        .row-item { display: flex; padding: 14px 16px; gap: 15px; align-items: center; border-bottom: 0.1px solid rgba(255,255,255,0.05); }
-        .pfp-thumb { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #3b4a54; }
-        .pfp-status { border: 2px solid var(--wa-green); padding: 2px; }
-        .row-info { flex: 1; min-width: 0; }
-        .row-info b { display: block; margin-bottom: 3px; font-size: 1.05rem; }
-        .row-info p { font-size: 0.9rem; color: var(--wa-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* --- FOOTER FIXED (PASTI MUNCUL) --- */
-        footer.nav-bar { 
-            background: var(--wa-surface); 
-            display: flex; 
-            height: 75px; 
-            justify-content: space-around; 
-            align-items: center; 
-            border-top: 1px solid rgba(255,255,255,0.1); 
-            flex-shrink: 0; /* Footer dilarang mengecil atau hilang */
-            z-index: 1000;
+        /* List Rows (Chat, Story, Call) */
+        .list-row {
+            display: flex;
+            padding: 14px 16px;
+            gap: 15px;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 0.1px solid rgba(255,255,255,0.05);
         }
-        .nav-item { text-align: center; color: var(--wa-muted); cursor: pointer; flex: 1; }
-        .nav-item.active { color: white; }
-        .nav-item i { 
-            font-size: 1.2rem; 
-            padding: 6px 20px; 
-            border-radius: 20px; 
-            display: block; 
-            margin: 0 auto 4px;
+        .avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: #3b4a54; flex-shrink: 0; }
+        .avatar-story { border: 2.5px solid var(--wa-green); padding: 2px; }
+        .row-text { flex: 1; min-width: 0; }
+        .row-text b { display: block; margin-bottom: 3px; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .row-text p { font-size: 0.92rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .unread-dot { background: var(--wa-green); width: 10px; height: 10px; border-radius: 50%; }
+
+        /* --- FOOTER NAV --- */
+        footer {
+            background: var(--bg-surface);
+            height: 80px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-btn { text-align: center; color: var(--text-secondary); cursor: pointer; flex: 1; }
+        .nav-btn.active { color: #fff; }
+        .nav-btn i {
+            font-size: 1.2rem;
+            padding: 6px 22px;
+            border-radius: 20px;
+            display: block;
+            margin: 0 auto 5px;
             width: fit-content;
         }
-        .nav-item.active i { background: var(--wa-active-pill); }
-        .nav-item span { font-size: 0.75rem; font-weight: 500; }
+        .nav-btn.active i { background: var(--pill-active); }
+        .nav-btn span { font-size: 0.78rem; font-weight: 500; }
 
-        /* --- PROFILE PAGE --- */
-        .profile-page { 
-            position: fixed; inset: 0; background: var(--wa-bg); z-index: 6000; 
-            transform: translateY(100%); transition: 0.3s ease; display: flex; flex-direction: column; 
+        /* --- SETTINGS SCREEN --- */
+        .full-screen {
+            position: fixed; inset: 0; background: var(--bg-main); z-index: 200;
+            transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column;
         }
-        .profile-page.active { transform: translateY(0); }
+        .full-screen.active { transform: translateY(0); }
+        .header-back { padding: 18px 20px; display: flex; align-items: center; gap: 25px; font-size: 1.15rem; font-weight: 500; }
+
+        .profile-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+        .pfp-container { position: relative; margin-bottom: 30px; }
+        .pfp-large { width: 165px; height: 165px; border-radius: 50%; border: 3px solid var(--wa-green); padding: 5px; object-fit: cover; }
+        .cam-overlay {
+            position: absolute; bottom: 8px; right: 8px;
+            background: var(--wa-green); color: #000;
+            width: 48px; height: 48px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 4px solid var(--bg-main); cursor: pointer;
+        }
+
+        .wa-input { width: 100%; background: var(--search-bg); border: none; padding: 16px; color: #fff; border-radius: 12px; margin-bottom: 15px; outline: none; font-size: 1rem; }
+        .wa-btn { width: 100%; background: var(--wa-green); color: #000; border: none; padding: 16px; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="loginScreen" style="position:fixed; inset:0; background:var(--wa-bg); z-index:9999; display:flex; align-items:center; justify-content:center; padding:30px;">
-        <div style="width:100%; max-width:350px; text-align:center;">
-            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:5rem; margin-bottom:30px;"></i>
-            <input type="text" id="myIDInp" style="width:100%; padding:15px; background:var(--wa-search); border:none; color:white; border-radius:12px; margin-bottom:15px;" placeholder="Masukkan ID">
-            <button onclick="handleLogin()" style="width:100%; padding:15px; background:var(--wa-green); border:none; border-radius:30px; font-weight:bold; cursor:pointer;">MASUK</button>
+    <div id="loginPage" style="position:fixed; inset:0; background:var(--bg-main); z-index:999; display:flex; align-items:center; justify-content:center; padding:30px;">
+        <div style="width:100%; max-width:320px; text-align:center;">
+            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:4.5rem; margin-bottom:30px;"></i>
+            <input type="text" id="idUser" class="wa-input" placeholder="Masukkan ID Kamu">
+            <button onclick="login()" class="wa-btn">MASUK</button>
         </div>
     </div>
 
-    <div id="app" class="app-container hidden">
+    <div id="app" class="main-app hidden">
         <header>
             <h1>WhatsApp</h1>
-            <div class="head-icons">
+            <div class="header-actions">
                 <i class="fa-solid fa-camera"></i>
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <i class="fa-solid fa-ellipsis-vertical" onclick="toggleDropdown()"></i>
+                <i class="fa-solid fa-ellipsis-vertical" onclick="toggleMenu()"></i>
             </div>
-            <div id="mainDropdown" class="dropdown">
-                <div class="menu-item" onclick="readAllChat()">Baca semua</div>
-                <div class="menu-item" onclick="openProfile()">Pengaturan</div>
+            <div id="dropdownMenu" class="menu-dropdown">
+                <div class="menu-item" onclick="readAll()">Baca semua</div>
+                <div class="menu-item" onclick="openSettings()">Pengaturan</div>
             </div>
         </header>
 
-        <div class="content-area">
-            <div id="screen-chat" class="screen active">
+        <div class="scroll-content">
+            <div id="chat-screen" class="screen active">
                 <div id="chat-list"></div>
             </div>
 
-            <div id="screen-status" class="screen">
+            <div id="story-screen" class="screen">
                 <div style="padding: 15px 16px 5px; font-weight: 600;">Status</div>
-                <div id="my-status"></div>
-                <div style="color: var(--wa-muted); font-size: 0.8rem; padding: 15px 16px 5px;">Pembaruan terkini</div>
-                <div id="other-status"></div>
+                <div id="my-status-area"></div>
+                <div style="color: var(--text-secondary); font-size: 0.8rem; padding: 15px 16px 5px;">Pembaruan terkini</div>
+                <div id="others-status-area"></div>
             </div>
 
-            <div id="screen-call" class="screen">
-                <div style="padding: 15px 16px 5px; color: var(--wa-muted); font-size: 0.8rem;">Terbaru</div>
-                <div id="call-list"></div>
+            <div id="call-screen" class="screen">
+                <div style="color: var(--text-secondary); font-size: 0.8rem; padding: 15px 16px 5px;">Terbaru</div>
+                <div id="call-list-area"></div>
             </div>
         </div>
 
-        <footer class="nav-bar">
-            <div class="nav-item active" onclick="changeTab('chat', this)">
-                <i class="fa-solid fa-message"></i><span>Chat</span>
-            </div>
-            <div class="nav-item" onclick="changeTab('status', this)">
-                <i class="fa-solid fa-circle-notch"></i><span>Status</span>
-            </div>
-            <div class="nav-item" onclick="changeTab('call', this)">
-                <i class="fa-solid fa-phone"></i><span>Panggilan</span>
-            </div>
+        <footer>
+            <div class="nav-btn active" onclick="switchTab('chat', this)"><i class="fa-solid fa-message"></i><span>Chat</span></div>
+            <div class="nav-btn" onclick="switchTab('story', this)"><i class="fa-solid fa-circle-notch"></i><span>Status</span></div>
+            <div class="nav-btn" onclick="switchTab('call', this)"><i class="fa-solid fa-phone"></i><span>Panggilan</span></div>
         </footer>
     </div>
 
-    <div id="profilePage" class="profile-page">
-        <div style="padding:20px; display:flex; align-items:center; gap:20px;">
-            <i class="fa-solid fa-arrow-left" onclick="closeProfile()"></i>
-            <b>Pengaturan</b>
+    <div id="settingsPage" class="full-screen">
+        <div class="header-back">
+            <i class="fa-solid fa-arrow-left" onclick="closeSettings()"></i>
+            <span>Pengaturan</span>
         </div>
-        <div style="flex:1; display:flex; flex-direction:column; align-items:center; padding:40px 20px;">
-            <img id="pfp-prev" style="width:150px; height:150px; border-radius:50%; border:3px solid var(--wa-green); padding:5px; object-fit:cover;" src="https://ui-avatars.com/api/?name=User">
-            <h2 id="p-name" style="margin-top:20px;">Nama User</h2>
-            <p id="p-id" style="color:var(--wa-muted); margin-bottom:30px;">@id</p>
-            <input type="text" id="new-name" style="width:100%; padding:15px; background:var(--wa-search); border:none; color:white; border-radius:12px; margin-bottom:15px;" placeholder="Nama Baru">
-            <button onclick="saveProfile()" style="width:100%; padding:15px; background:var(--wa-green); border:none; border-radius:30px; font-weight:bold;">Simpan</button>
+        <div class="profile-body">
+            <div class="pfp-container">
+                <img id="pfp-main" class="pfp-large" src="https://ui-avatars.com/api/?name=User">
+                <label for="filePfp" class="cam-overlay"><i class="fa-solid fa-camera"></i></label>
+                <input type="file" id="filePfp" class="hidden" accept="image/*" onchange="previewImg(this)">
+            </div>
+            <h2 id="disp-name">Nama User</h2>
+            <p id="disp-id" style="color:var(--text-secondary); margin-bottom:30px;">@username</p>
+            <input type="text" id="inp-name" class="wa-input" placeholder="Edit Nama">
+            <button class="wa-btn" onclick="saveData()">Simpan Perubahan</button>
         </div>
     </div>
 
 <script>
+    // Konfigurasi Firebase Anda
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
@@ -193,59 +220,93 @@
 
     let myID = "";
 
-    function handleLogin() {
-        myID = document.getElementById('myIDInp').value.trim().toLowerCase();
-        if(!myID) return;
-        document.getElementById('loginScreen').classList.add('hidden');
+    function login() {
+        const input = document.getElementById('idUser').value.trim().toLowerCase();
+        if(!input) return;
+        myID = input;
+        document.getElementById('loginPage').classList.add('hidden');
         document.getElementById('app').classList.remove('hidden');
-        syncData();
+        initSync();
     }
 
-    function toggleDropdown() { document.getElementById('mainDropdown').classList.toggle('active'); }
+    function toggleMenu() { document.getElementById('dropdownMenu').classList.toggle('active'); }
 
-    function changeTab(tab, el) {
+    function switchTab(tab, el) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('screen-' + tab).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+        document.getElementById(tab + '-screen').classList.add('active');
         el.classList.add('active');
     }
 
-    function syncData() {
-        // Sync Profil
-        db.ref('users/'+myID).on('value', s => {
-            const d = s.val() || {nama: myID};
-            document.getElementById('p-name').innerText = d.nama;
-            document.getElementById('p-id').innerText = '@' + myID;
-            document.getElementById('pfp-prev').src = d.pfp || `https://ui-avatars.com/api/?name=${d.nama}`;
+    function initSync() {
+        // Sync User Data
+        db.ref('users/' + myID).on('value', snap => {
+            const data = snap.val() || { nama: myID, pfp: '' };
+            document.getElementById('disp-name').innerText = data.nama;
+            document.getElementById('disp-id').innerText = '@' + myID;
+            document.getElementById('inp-name').value = data.nama;
+            if(data.pfp) document.getElementById('pfp-main').src = data.pfp;
         });
 
-        // Chat History
+        // Chat List Sync
         db.ref('messages').on('value', async snap => {
-            const container = document.getElementById('chat-list');
-            container.innerHTML = "";
+            const list = document.getElementById('chat-list');
+            list.innerHTML = "";
             snap.forEach(room => {
                 if(room.key.includes(myID)) {
                     const other = room.key.split("_").find(i => i!==myID);
-                    const last = Object.values(room.val()).pop();
-                    container.innerHTML += `<div class="row-item"><img src="https://ui-avatars.com/api/?name=${other}" class="pfp-thumb"><div class="row-info"><b>${other}</b><p>${last.text}</p></div></div>`;
+                    const lastMsg = Object.values(room.val()).pop();
+                    list.innerHTML += `
+                        <div class="list-row">
+                            <img src="https://ui-avatars.com/api/?name=${other}" class="avatar">
+                            <div class="row-text"><b>${other}</b><p>${lastMsg.text}</p></div>
+                            <div class="unread-dot"></div>
+                        </div>`;
                 }
             });
         });
 
-        // Status Saya
-        document.getElementById('my-status').innerHTML = `<div class="row-item" onclick="alert('Dilihat oleh 10 orang')"><img src="https://ui-avatars.com/api/?name=${myID}" class="pfp-thumb pfp-status"><div class="row-info"><b>Status saya</b><p>Ketuk untuk melihat penonton</p></div></div>`;
+        // Story (Simulasi)
+        document.getElementById('my-status-area').innerHTML = `
+            <div class="list-row" onclick="alert('Penonton: Budi, Andi, dan 15 lainnya')">
+                <img src="${document.getElementById('pfp-main').src}" class="avatar avatar-story">
+                <div class="row-text"><b>Status saya</b><p>Ketuk untuk melihat penonton</p></div>
+            </div>`;
 
-        // Panggilan
-        document.getElementById('call-list').innerHTML = `<div class="row-item"><img src="https://ui-avatars.com/api/?name=Budi" class="pfp-thumb"><div class="row-info"><b>Budi</b><p>Kemarin, 20.15</p></div><i class="fa-solid fa-phone" style="color:var(--wa-green)"></i></div>`;
+        // Call (Simulasi)
+        document.getElementById('call-list-area').innerHTML = `
+            <div class="list-row">
+                <img src="https://ui-avatars.com/api/?name=Andi" class="avatar">
+                <div class="row-text"><b>Andi</b><p><i class="fa-solid fa-arrow-up-right" style="color:var(--wa-green)"></i> 15 Maret, 10:20</p></div>
+                <i class="fa-solid fa-phone" style="color:var(--wa-green)"></i>
+            </div>`;
     }
 
-    function openProfile() { document.getElementById('profilePage').classList.add('active'); toggleDropdown(); }
-    function closeProfile() { document.getElementById('profilePage').classList.remove('active'); }
-    function saveProfile() {
-        const n = document.getElementById('new-name').value;
-        db.ref('users/'+myID).update({nama: n}).then(() => closeProfile());
+    function openSettings() { document.getElementById('settingsPage').classList.add('active'); toggleMenu(); }
+    function closeSettings() { document.getElementById('settingsPage').classList.remove('active'); }
+
+    function previewImg(input) {
+        const file = input.files[0];
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = e => document.getElementById('pfp-main').src = e.target.result;
+            reader.readAsDataURL(file);
+        }
     }
-    function readAllChat() { alert("Semua chat dibaca"); toggleDropdown(); }
+
+    function saveData() {
+        const newName = document.getElementById('inp-name').value;
+        const newPfp = document.getElementById('pfp-main').src;
+        db.ref('users/'+myID).update({ nama: newName, pfp: newPfp }).then(() => {
+            alert("Berhasil!");
+            closeSettings();
+        });
+    }
+
+    function readAll() {
+        document.querySelectorAll('.unread-dot').forEach(d => d.style.display = 'none');
+        toggleMenu();
+    }
 </script>
 </body>
-</html>
+                    </html>
