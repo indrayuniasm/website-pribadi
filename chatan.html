@@ -318,31 +318,39 @@
         };
         window.openChat = (uid, nama, photo) => { targetUser = { uid, nama, photo }; document.getElementById('chat-screen').classList.remove('hidden'); document.getElementById('chat-name').innerText = nama; document.getElementById('chat-avatar').src = photo; loadMessages(); };
         window.closeChat = () => document.getElementById('chat-screen').classList.add('hidden');
-        // Fungsi untuk memuat pesan secara real-time
+// --- FUNGSI LOAD CHAT DEBUG MODE ---
 function loadMessages() {
     if (!targetUser) return;
     
-    // Pastikan ID Room konsisten (A_B akan selalu sama dengan B_A)
+    // Kita buat Room ID yang konsisten
     const roomId = [auth.currentUser.uid, targetUser.uid].sort().join("_");
+    console.log("Membuka Room ID:", roomId); // Debug: Cek di F12
+
     const chatBox = document.getElementById('chat-messages');
     
-    // Query ke koleksi 'chats' berdasarkan room ID tersebut
+    // Sederhanakan query: Hapus orderBy dulu untuk tes awal
+    // Karena orderBy sering bikin chat macet kalau Index belum dibuat
     const q = query(
         collection(db, "chats"), 
-        where("room", "==", roomId), 
-        orderBy("time", "asc")
+        where("room", "==", roomId)
     );
 
     onSnapshot(q, (snap) => {
+        console.log("Data diterima! Jumlah pesan:", snap.size); // Debug: Cek jumlah data
         chatBox.innerHTML = "";
-        if (snap.empty) {
-            chatBox.innerHTML = `<p class="text-center text-slate-300 text-xs mt-10">Belum ada pesan. Say hello! 👋</p>`;
-        }
         
-        snap.forEach(doc => {
-            const m = doc.data();
+        if (snap.empty) {
+            chatBox.innerHTML = `<div class="text-center mt-10 text-slate-400 text-xs font-bold uppercase tracking-widest opacity-50">Belum ada pesan</div>`;
+            return;
+        }
+
+        // Urutkan manual di sisi client agar tidak butuh Index Firebase sementara
+        const docs = [];
+        snap.forEach(d => docs.push(d.data()));
+        docs.sort((a, b) => (a.time?.seconds || 0) - (b.time?.seconds || 0));
+
+        docs.forEach(m => {
             const isMe = m.sender === auth.currentUser.uid;
-            
             const div = document.createElement('div');
             div.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
             div.innerHTML = `
@@ -352,33 +360,33 @@ function loadMessages() {
             `;
             chatBox.appendChild(div);
         });
-        // Scroll ke paling bawah setiap ada pesan baru
         chatBox.scrollTop = chatBox.scrollHeight;
     }, (error) => {
-        console.error("Error loading messages: ", error);
+        console.error("FIREBASE ERROR:", error.message);
+        alert("Terjadi masalah koneksi database!");
     });
 }
 
-// Fungsi mengirim pesan
+// --- FUNGSI SEND CHAT DEBUG MODE ---
 window.sendMessage = async () => {
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
-    
     if(!text || !targetUser) return;
-    
+
     const roomId = [auth.currentUser.uid, targetUser.uid].sort().join("_");
-    
+
     try {
+        console.log("Mengirim pesan ke:", roomId);
         await addDoc(collection(db, "chats"), {
             room: roomId,
             sender: auth.currentUser.uid,
-            receiver: targetUser.uid, // Tambahan untuk mempermudah tracking
             text: text,
             time: serverTimestamp()
         });
         input.value = "";
     } catch (e) {
-        alert("Gagal mengirim pesan: " + e.message);
+        console.error("GAGAL KIRIM:", e);
+        alert("Gagal kirim pesan: " + e.message);
     }
 };
         function loadHistory() {
