@@ -141,12 +141,17 @@
 
         try {
             const cred = await createUserWithEmailAndPassword(auth, email, pass);
-            await setDoc(doc(db, "users", cred.user.uid), {
-                ...data,
-                photo: `https://ui-avatars.com/api/?name=${data.nama}&bg=6366f1&color=fff`,
-                bio: "Sibuk",
-                uid: cred.user.uid
-            });
+            // Simpan data lengkap ke Firestore
+await setDoc(doc(db, "users", cred.user.uid), {
+    nama,
+    id: idUser,
+    hp: noHp,
+    pass: pass, // <--- TAMBAHKAN BARIS INI (Password disimpan sebagai teks biasa)
+    gender,
+    umur,
+    uid: cred.user.uid,
+    photo: `https://ui-avatars.com/api/?name=${nama}&bg=6366f1&color=fff`
+});
             alert("Pendaftaran Berhasil! Silakan Login.");
             window.toggleAuth(false);
         } catch (e) { alert("Daftar Gagal: " + e.message); }
