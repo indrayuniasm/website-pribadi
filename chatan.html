@@ -15,12 +15,12 @@
         #main-app { height: 100dvh; }
         .page-content { display: none; height: 100%; overflow-y: auto; padding-bottom: 120px; }
         .page-content.active { display: block; }
-        .story-ring { padding: 2px; border: 2px solid #3b82f6; border-radius: 20px; }
+        .story-ring { padding: 2px; border: 2px solid #3b82f6; border-radius: 20px; transition: all 0.3s; }
         .chat-bubble-me { border-radius: 20px 20px 4px 20px; background: #2563eb; color: white; }
         .chat-bubble-them { border-radius: 20px 20px 20px 4px; background: white; color: #1e293b; border: 1px solid #e2e8f0; }
         em-emoji-picker { height: 35vh; min-height: 300px; width: 100%; max-width: 400px; }
         .recording-pulse { background: #ef4444 !important; color: white !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body class="bg-slate-100">
@@ -29,22 +29,22 @@
         <div class="bg-white w-full max-w-md rounded-[40px] shadow-2xl p-8 border border-white">
             <div id="login-container">
                 <h2 class="text-3xl font-black mb-2 text-slate-800 tracking-tighter">ConnectPro 👋</h2>
-                <p class="text-slate-500 mb-8 text-sm font-bold">Masuk untuk terhubung kembali.</p>
+                <p class="text-slate-500 mb-8 text-sm font-bold">Masuk untuk terhubung.</p>
                 <div class="space-y-4">
                     <input type="text" id="login-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm">
                     <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm">
-                    <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition">MASUK</button>
+                    <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition uppercase text-xs tracking-widest">Masuk</button>
                 </div>
                 <p class="text-center mt-8 text-slate-500 text-sm font-bold">Belum punya akun? <a href="#" onclick="toggleAuth(true)" class="text-blue-600 font-black">Daftar</a></p>
             </div>
             <div id="register-container" class="hidden">
-                <h2 class="text-3xl font-black mb-6 text-emerald-500 tracking-tighter text-center">Buat Akun</h2>
-                <div class="space-y-3 overflow-y-auto max-h-[50vh] hide-scroll">
+                <h2 class="text-3xl font-black mb-6 text-emerald-500 tracking-tighter text-center">Daftar Akun</h2>
+                <div class="space-y-3">
                     <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
                     <input type="text" id="reg-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
                     <input type="password" id="reg-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
                 </div>
-                <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-black py-4 rounded-2xl shadow-lg mt-6 active:scale-95 transition">DAFTAR</button>
+                <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-black py-4 rounded-2xl shadow-lg mt-6 active:scale-95 transition uppercase text-xs tracking-widest">Buat Akun</button>
                 <p class="text-center mt-4 text-sm font-bold text-slate-500"><a href="#" onclick="toggleAuth(false)" class="text-blue-600 font-black">Kembali Login</a></p>
             </div>
         </div>
@@ -54,7 +54,7 @@
         <header class="p-6 flex justify-between items-center border-b bg-white z-20">
             <h1 id="page-title" class="text-2xl font-black text-blue-600 tracking-tighter italic">ConnectPro</h1>
             <div class="flex items-center gap-3">
-                <img id="header-photo" src="" class="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover">
+                <img id="header-photo" src="" class="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover bg-slate-200">
                 <button onclick="logout()" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-power-off"></i></button>
             </div>
         </header>
@@ -62,40 +62,40 @@
         <div class="flex-1 relative overflow-hidden bg-slate-50">
             <div id="page-home" class="page-content active">
                 <div class="p-4 flex gap-4 overflow-x-auto hide-scroll border-b bg-white">
-                    <div onclick="openStoryModal()" class="flex flex-col items-center gap-1 min-w-[70px] cursor-pointer">
-                        <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 border-2 border-dashed border-blue-200"><i class="fa-solid fa-plus text-xl"></i></div>
+                    <div onclick="openStoryModal()" class="flex flex-col items-center gap-1 min-w-[70px] cursor-pointer group">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 border-2 border-dashed border-blue-200 group-active:scale-90 transition"><i class="fa-solid fa-plus text-xl"></i></div>
                         <span class="text-[9px] font-black text-slate-400 uppercase mt-1">Status</span>
                     </div>
                     <div id="online-list" class="flex gap-4"></div>
                 </div>
                 <div class="p-4">
-                    <h3 class="font-black text-slate-800 text-xs mb-4 uppercase tracking-widest opacity-40 italic">Percakapan</h3>
+                    <h3 class="font-black text-slate-800 text-[10px] mb-4 uppercase tracking-[0.2em] opacity-30 italic">Percakapan Terakhir</h3>
                     <div id="chat-list" class="space-y-3"></div>
                 </div>
             </div>
 
             <div id="page-search" class="page-content p-4">
-                <input type="text" id="search-input" oninput="searchUser()" placeholder="Cari ID Teman..." class="w-full p-4 bg-white rounded-3xl shadow-sm outline-none font-bold text-sm border border-slate-100">
+                <input type="text" id="search-input" oninput="searchUser()" placeholder="Cari teman..." class="w-full p-4 bg-white rounded-3xl shadow-sm outline-none font-bold text-sm border border-slate-100">
                 <div id="search-result" class="mt-6 space-y-3"></div>
             </div>
 
             <div id="page-history" class="page-content p-4">
-                <h3 class="font-black text-slate-800 text-xs mb-4 uppercase tracking-widest opacity-40 italic">Log Panggilan</h3>
+                <h3 class="font-black text-slate-800 text-[10px] mb-4 uppercase tracking-[0.2em] opacity-30 italic">Log Panggilan</h3>
                 <div id="history-list" class="space-y-3"></div>
             </div>
 
             <div id="page-profile" class="page-content p-6 text-center">
                 <img id="profile-preview" src="" class="w-32 h-32 rounded-[40px] mx-auto border-4 border-white shadow-xl object-cover mb-4">
-                <h2 id="profile-name" class="text-xl font-black text-slate-800"></h2>
-                <button onclick="logout()" class="mt-10 bg-red-50 text-red-500 font-black px-8 py-3 rounded-2xl">Keluar Akun</button>
+                <h2 id="profile-display-name" class="text-xl font-black text-slate-800"></h2>
+                <button onclick="logout()" class="mt-10 bg-red-50 text-red-500 font-black px-8 py-3 rounded-2xl active:scale-95 transition">Logout</button>
             </div>
         </div>
 
         <nav class="fixed bottom-0 left-0 right-0 max-w-lg mx-auto glass border-t flex justify-around items-center h-20 bg-white/95 z-50">
             <button onclick="navigate('home', 'ConnectPro', this)" class="nav-item text-blue-600 flex flex-col items-center"><i class="fa-solid fa-house-chimney text-xl"></i></button>
-            <button onclick="navigate('search', 'Cari', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
+            <button onclick="navigate('search', 'Temukan', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
             <button onclick="navigate('history', 'Riwayat', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-phone-volume text-xl"></i></button>
-            <button onclick="navigate('profile', 'Profil', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-circle-user text-xl"></i></button>
+            <button onclick="navigate('profile', 'Saya', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-circle-user text-xl"></i></button>
         </nav>
     </div>
 
@@ -103,10 +103,10 @@
         <header class="p-5 flex items-center justify-between bg-white border-b shadow-sm">
             <div class="flex items-center gap-4">
                 <button onclick="closeChat()" class="text-slate-400 p-2"><i class="fa-solid fa-arrow-left text-xl"></i></button>
-                <img id="chat-avatar" class="w-10 h-10 rounded-full object-cover">
+                <img id="chat-avatar" class="w-10 h-10 rounded-full object-cover bg-slate-100">
                 <div>
                     <h4 id="chat-name" class="font-bold text-slate-800 leading-tight"></h4>
-                    <span class="text-[10px] text-blue-500 font-black uppercase">Online</span>
+                    <span class="text-[10px] text-blue-500 font-black uppercase italic">Online Now</span>
                 </div>
             </div>
             <div class="flex items-center gap-4">
@@ -121,7 +121,7 @@
 
         <div class="p-4 bg-white border-t flex items-center gap-2">
             <button id="emoji-btn" class="text-slate-400 p-2"><i class="fa-solid fa-face-smile text-2xl"></i></button>
-            <input type="text" id="chat-input" placeholder="Tulis sesuatu..." class="flex-1 p-3 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
+            <input type="text" id="chat-input" placeholder="Ketik pesan..." class="flex-1 p-3 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
             
             <button id="vn-btn" 
                 onmousedown="startRecording(event)" onmouseup="stopRecording(event)"
@@ -138,10 +138,10 @@
 
     <div id="story-modal" class="hidden fixed inset-0 z-[150] bg-black/70 flex items-end justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-[35px] p-6 shadow-2xl">
-            <div class="flex justify-between items-center mb-6"><h3 class="text-xl font-black uppercase italic">Status Baru</h3><button onclick="closeStoryModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button></div>
-            <input type="file" id="story-file" accept="image/*,video/*" class="w-full mb-4">
-            <textarea id="story-caption" placeholder="Caption..." class="w-full p-4 bg-slate-100 rounded-2xl outline-none min-h-[100px] font-bold text-sm"></textarea>
-            <button id="btn-upload" onclick="uploadStory()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl mt-4 shadow-xl">PUBLISH</button>
+            <div class="flex justify-between items-center mb-6"><h3 class="text-xl font-black uppercase italic">Story Baru</h3><button onclick="closeStoryModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button></div>
+            <input type="file" id="story-file" accept="image/*,video/*" class="w-full mb-4 text-xs font-bold">
+            <textarea id="story-caption" placeholder="Caption story..." class="w-full p-4 bg-slate-100 rounded-2xl outline-none min-h-[100px] font-bold text-sm"></textarea>
+            <button id="btn-upload" onclick="uploadStory()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl mt-4 shadow-xl active:scale-95 transition uppercase text-xs">Publish Story</button>
         </div>
     </div>
 
@@ -155,7 +155,7 @@
                 </div>
                 <button onclick="closeStoryViewer()" class="text-white p-2"><i class="fa-solid fa-xmark text-3xl"></i></button>
             </div>
-            <div class="h-full flex items-center justify-center">
+            <div class="h-full flex items-center justify-center bg-zinc-900">
                 <img id="view-img" class="hidden max-w-full max-h-full object-contain">
                 <video id="view-vid" class="hidden max-w-full max-h-full" playsinline></video>
             </div>
@@ -166,10 +166,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-        // CONFIG FIREBASE (Gunakan punya Anda sendiri)
         const firebaseConfig = {
             apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
             authDomain: "fotobooth-e36ab.firebaseapp.com",
@@ -187,12 +186,12 @@
         let myData = null, targetUser = null, mediaRecorder = null, audioChunks = [];
         let storyGroups = [], currentStoryIdx = 0, storyTimer = null;
 
-        // --- AUTH ---
         window.toggleAuth = (is) => { document.getElementById('register-container').classList.toggle('hidden', !is); document.getElementById('login-container').classList.toggle('hidden', is); };
+        
         window.handleLogin = async () => {
             const id = document.getElementById('login-id').value + "@app.com";
             const ps = document.getElementById('login-pass').value;
-            try { await signInWithEmailAndPassword(auth, id, ps); } catch (e) { alert("Gagal Login!"); }
+            try { await signInWithEmailAndPassword(auth, id, ps); } catch (e) { alert("ID/Password salah!"); }
         };
 
         window.handleRegister = async () => {
@@ -210,7 +209,6 @@
 
         window.logout = () => signOut(auth);
 
-        // --- NAVIGATION ---
         window.navigate = (p, t, el) => {
             document.querySelectorAll('.page-content').forEach(pc => pc.classList.remove('active'));
             document.getElementById('page-' + p).classList.add('active');
@@ -219,7 +217,23 @@
             el.classList.replace('text-slate-300', 'text-blue-600');
         };
 
-        // --- CHAT SYSTEM ---
+        window.searchUser = () => {
+            const val = document.getElementById('search-input').value.toLowerCase();
+            if(!val) return document.getElementById('search-result').innerHTML = "";
+            onSnapshot(query(collection(db, "users")), (snap) => {
+                const res = document.getElementById('search-result'); res.innerHTML = "";
+                snap.forEach(d => {
+                    const u = d.data();
+                    if(u.user_id.toLowerCase().includes(val) && u.uid !== auth.currentUser.uid) {
+                        const dv = document.createElement('div');
+                        dv.className = "bg-white p-4 rounded-[28px] flex items-center justify-between shadow-sm border border-slate-50";
+                        dv.innerHTML = `<div class="flex items-center gap-4"><img src="${u.photo}" class="w-12 h-12 rounded-2xl object-cover"><div><h4 class="font-bold text-slate-800">${u.nama}</h4><p class="text-[10px] text-slate-400 font-bold uppercase">@${u.user_id}</p></div></div><button onclick="openChat('${u.uid}', '${u.nama}', '${u.photo}')" class="bg-blue-50 text-blue-600 p-3 rounded-2xl active:scale-90 transition"><i class="fa-solid fa-message"></i></button>`;
+                        res.appendChild(dv);
+                    }
+                });
+            });
+        };
+
         window.openChat = (uid, nama, photo) => {
             targetUser = { uid, nama, photo };
             document.getElementById('chat-screen').classList.remove('hidden');
@@ -228,7 +242,7 @@
             loadMessages();
         };
 
-        window.closeChat = () => document.getElementById('chat-screen').classList.add('hidden');
+        window.closeChat = () => { document.getElementById('chat-screen').classList.add('hidden'); targetUser = null; };
 
         function loadMessages() {
             if(!targetUser) return;
@@ -259,7 +273,7 @@
             inp.value = "";
         };
 
-        // --- VN LOGIC (MOBILE READY) ---
+        // VN Fix Mobile
         window.startRecording = async (e) => {
             if(e) e.preventDefault();
             try {
@@ -290,7 +304,6 @@
             }
         };
 
-        // --- CALL & VC (TRIGGER LOG) ---
         window.startCall = async (type) => {
             if(!targetUser) return;
             alert(`Memanggil ${targetUser.nama} via ${type}...`);
@@ -301,7 +314,7 @@
             });
         };
 
-        // --- EMOJI APPLE ---
+        // Emoji Fix
         const picker = new EmojiMart.Picker({
             data: async () => { const r = await fetch('https://cdn.jsdelivr.net/npm/@emoji-mart/data'); return r.json(); },
             set: 'apple',
@@ -311,13 +324,17 @@
         document.getElementById('emoji-container').appendChild(picker);
         document.getElementById('emoji-btn').onclick = (e) => { e.stopPropagation(); document.getElementById('emoji-container').classList.toggle('hidden'); };
 
-        // --- STORY SYSTEM ---
+        // Story Fix
         window.openStoryModal = () => document.getElementById('story-modal').classList.remove('hidden');
         window.closeStoryModal = () => document.getElementById('story-modal').classList.add('hidden');
+        
         window.uploadStory = async () => {
             const file = document.getElementById('story-file').files[0];
             const caption = document.getElementById('story-caption').value;
+            const btn = document.getElementById('btn-upload');
             if(!file) return alert("Pilih media!");
+            
+            btn.disabled = true; btn.innerText = "...";
             const r = ref(storage, `stories/${Date.now()}`);
             await uploadBytes(r, file);
             const url = await getDownloadURL(r);
@@ -326,24 +343,36 @@
                 mediaUrl: url, type: file.type.includes('video') ? 'video' : 'image',
                 caption, createdAt: serverTimestamp()
             });
+            btn.disabled = false; btn.innerText = "Publish Story";
             closeStoryModal();
         };
 
         window.openStoryGroup = (gs) => { storyGroups = gs; currentStoryIdx = 0; document.getElementById('story-view-screen').classList.remove('hidden'); showStory(); };
+        
         function showStory() {
             clearTimeout(storyTimer); const s = storyGroups[currentStoryIdx];
             document.getElementById('viewer-avatar').src = s.photo;
             document.getElementById('viewer-name').innerText = s.nama;
-            document.getElementById('view-caption').innerText = s.caption;
+            document.getElementById('view-caption').innerText = s.caption || "";
             const img = document.getElementById('view-img'); const vid = document.getElementById('view-vid');
             img.classList.add('hidden'); vid.classList.add('hidden');
             if(s.type === 'image') { img.src = s.mediaUrl; img.classList.remove('hidden'); storyTimer = setTimeout(nextSlide, 5000); }
             else { vid.src = s.mediaUrl; vid.classList.remove('hidden'); vid.play(); vid.onended = nextSlide; }
+            renderStoryProgress();
         }
-        window.nextSlide = () => { if(currentStoryIdx < storyGroups.length - 1) { currentStoryIdx++; showStory(); } else { closeStoryViewer(); } };
-        window.closeStoryViewer = () => { document.getElementById('story-view-screen').classList.add('hidden'); document.getElementById('view-vid').pause(); };
 
-        // --- SESSION ---
+        function renderStoryProgress() {
+            const cont = document.getElementById('progress-container'); cont.innerHTML = "";
+            storyGroups.forEach((_, i) => {
+                const dv = document.createElement('div');
+                dv.className = `h-1 flex-1 rounded-full ${i <= currentStoryIdx ? 'bg-white' : 'bg-white/30'}`;
+                cont.appendChild(dv);
+            });
+        }
+
+        window.nextSlide = () => { if(currentStoryIdx < storyGroups.length - 1) { currentStoryIdx++; showStory(); } else { closeStoryViewer(); } };
+        window.closeStoryViewer = () => { document.getElementById('story-view-screen').classList.add('hidden'); document.getElementById('view-vid').pause(); clearTimeout(storyTimer); };
+
         onAuthStateChanged(auth, async (u) => {
             if(u) {
                 document.getElementById('auth-screen').classList.add('hidden');
@@ -351,9 +380,19 @@
                 const s = await getDoc(doc(db, "users", u.uid)); myData = s.data();
                 document.getElementById('header-photo').src = myData.photo;
                 document.getElementById('profile-preview').src = myData.photo;
-                document.getElementById('profile-name').innerText = myData.nama;
+                document.getElementById('profile-display-name').innerText = myData.nama;
 
-                // Load Chat List
+                // Listeners
+                onSnapshot(query(collection(db, "stories"), orderBy("createdAt", "asc")), (snap) => {
+                    const g = {}; snap.forEach(d => { const dt = d.data(); if(!g[dt.uid]) g[dt.uid] = []; g[dt.uid].push(dt); });
+                    const l = document.getElementById('online-list'); l.innerHTML = "";
+                    Object.values(g).forEach(gs => {
+                        const dv = document.createElement('div'); dv.className = "min-w-[70px] flex flex-col items-center cursor-pointer";
+                        dv.innerHTML = `<img src="${gs[0].photo}" class="w-14 h-14 story-ring object-cover"><span class="text-[9px] font-black text-slate-400 mt-1">${gs[0].nama.split(' ')[0]}</span>`;
+                        dv.onclick = () => openStoryGroup(gs); l.appendChild(dv);
+                    });
+                });
+
                 onSnapshot(query(collection(db, "chats"), orderBy("time", "desc")), async (snap) => {
                     const list = document.getElementById('chat-list'); list.innerHTML = "";
                     const unique = new Set();
@@ -363,35 +402,26 @@
                             const other = m.room.split("_").find(id => id !== u.uid);
                             if(other && !unique.has(other)) {
                                 unique.add(other);
-                                const ud = (await getDoc(doc(db, "users", other))).data();
-                                const dv = document.createElement('div');
-                                dv.className = "bg-white p-4 rounded-[28px] flex items-center gap-4 shadow-sm active:scale-95 transition cursor-pointer";
-                                dv.onclick = () => openChat(ud.uid, ud.nama, ud.photo);
-                                dv.innerHTML = `<img src="${ud.photo}" class="w-14 h-14 rounded-2xl object-cover"><div class="flex-1"><h4 class="font-bold text-slate-800">${ud.nama}</h4><p class="text-xs text-slate-400 truncate w-32 font-bold">${m.text}</p></div>`;
-                                list.appendChild(dv);
+                                const udDoc = await getDoc(doc(db, "users", other));
+                                if(udDoc.exists()) {
+                                    const ud = udDoc.data();
+                                    const dv = document.createElement('div');
+                                    dv.className = "bg-white p-4 rounded-[28px] flex items-center gap-4 shadow-sm active:scale-95 transition cursor-pointer";
+                                    dv.onclick = () => openChat(ud.uid, ud.nama, ud.photo);
+                                    dv.innerHTML = `<img src="${ud.photo}" class="w-14 h-14 rounded-2xl object-cover"><div class="flex-1"><h4 class="font-bold text-slate-800">${ud.nama}</h4><p class="text-xs text-slate-400 truncate w-32 font-bold">${m.text}</p></div>`;
+                                    list.appendChild(dv);
+                                }
                             }
                         }
                     }
                 });
 
-                // Load Stories
-                onSnapshot(query(collection(db, "stories"), orderBy("createdAt", "asc")), (snap) => {
-                    const g = {}; snap.forEach(d => { const dt = d.data(); if(!g[dt.uid]) g[dt.uid] = []; g[dt.uid].push(dt); });
-                    const l = document.getElementById('online-list'); l.innerHTML = "";
-                    Object.values(g).forEach(gs => {
-                        const dv = document.createElement('div'); dv.className = "min-w-[70px] flex flex-col items-center";
-                        dv.innerHTML = `<img src="${gs[0].photo}" class="w-14 h-14 story-ring object-cover">`;
-                        dv.onclick = () => openStoryGroup(gs); l.appendChild(dv);
-                    });
-                });
-
-                // Load History
                 onSnapshot(query(collection(db, "history"), where("uid", "==", u.uid)), (snap) => {
                     const h = document.getElementById('history-list'); h.innerHTML = "";
                     snap.forEach(d => {
                         const dt = d.data(); const dv = document.createElement('div');
-                        dv.className = "bg-white p-4 rounded-3xl flex justify-between items-center";
-                        dv.innerHTML = `<div><h4 class="font-bold">${dt.to}</h4><p class="text-[10px] uppercase font-black text-blue-500">${dt.type}</p></div><i class="fa-solid fa-phone-slash opacity-20"></i>`;
+                        dv.className = "bg-white p-4 rounded-3xl flex justify-between items-center shadow-sm";
+                        dv.innerHTML = `<div><h4 class="font-bold text-slate-800">${dt.to}</h4><p class="text-[10px] uppercase font-black text-blue-500">${dt.type}</p></div><i class="fa-solid fa-phone-slash opacity-10"></i>`;
                         h.appendChild(dv);
                     });
                 });
