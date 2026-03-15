@@ -9,18 +9,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; touch-action: manipulation; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); }
         #main-app { height: 100dvh; }
         .page-content { display: none; height: 100%; overflow-y: auto; padding-bottom: 120px; }
         .page-content.active { display: block; }
-        .story-ring { padding: 2px; border: 2px solid #3b82f6; border-radius: 20px; transition: all 0.3s; }
+        .nav-active { color: #2563eb !important; transform: scale(1.1); }
+        .story-ring { padding: 2px; border: 2px solid #3b82f6; border-radius: 18px; cursor: pointer; }
+        .progress-container { display: flex; gap: 4px; position: absolute; top: 12px; left: 10px; right: 10px; z-index: 100; }
+        .progress-track { height: 2px; background: rgba(255,255,255,0.3); flex: 1; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #fff; width: 0%; transition: width linear; }
         .chat-bubble-me { border-radius: 20px 20px 4px 20px; background: #2563eb; color: white; }
         .chat-bubble-them { border-radius: 20px 20px 20px 4px; background: white; color: #1e293b; border: 1px solid #e2e8f0; }
-        em-emoji-picker { height: 35vh; min-height: 300px; width: 100%; max-width: 400px; }
-        .recording-pulse { background: #ef4444 !important; color: white !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body class="bg-slate-100">
@@ -29,30 +30,45 @@
         <div class="bg-white w-full max-w-md rounded-[40px] shadow-2xl p-8 border border-white">
             <div id="login-container">
                 <h2 class="text-3xl font-black mb-2 text-slate-800 tracking-tighter">ConnectPro 👋</h2>
-                <p class="text-slate-500 mb-8 text-sm font-bold">Masuk untuk terhubung.</p>
+                <p class="text-slate-500 mb-8 text-sm font-bold">Masuk untuk terhubung kembali.</p>
                 <div class="space-y-4">
-                    <input type="text" id="login-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm">
-                    <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm">
-                    <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition uppercase text-xs tracking-widest">Masuk</button>
+                    <input type="text" id="login-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                    <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                    <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-extrabold py-4 rounded-2xl shadow-lg active:scale-95 transition">Masuk</button>
                 </div>
-                <p class="text-center mt-8 text-slate-500 text-sm font-bold">Belum punya akun? <a href="#" onclick="toggleAuth(true)" class="text-blue-600 font-black">Daftar</a></p>
+                <p class="text-center mt-8 text-slate-500 text-sm">Belum punya akun? <a href="#" onclick="toggleAuth(true)" class="text-blue-600 font-bold">Daftar</a></p>
             </div>
+
             <div id="register-container" class="hidden">
-                <h2 class="text-3xl font-black mb-6 text-emerald-500 tracking-tighter text-center">Daftar Akun</h2>
-                <div class="space-y-3">
-                    <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
-                    <input type="text" id="reg-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
-                    <input type="password" id="reg-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
+                <h2 class="text-3xl font-black mb-6 text-emerald-500 tracking-tighter text-center">Buat Akun</h2>
+                <div class="space-y-3 overflow-y-auto max-h-[50vh] pr-2 hide-scroll">
+                    <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
+                    <input type="text" id="reg-id" placeholder="ID User (unik)" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
+                    <input type="number" id="reg-phone" placeholder="Nomor HP (0812...)" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
+                    <select id="reg-gender" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-slate-500">
+                        <option value="">Jenis Kelamin</option>
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                    </select>
+                    <input type="password" id="reg-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
+                    
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                        <div class="flex justify-between items-center mb-2 px-2">
+                            <span class="text-[10px] font-black uppercase text-slate-400">Keamanan</span>
+                            <span id="captcha-code" class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg font-black tracking-widest italic select-none"></span>
+                        </div>
+                        <input type="text" id="reg-captcha-input" placeholder="Ketik kode di atas" class="w-full p-3 bg-white rounded-xl outline-none border border-slate-200 text-center font-bold">
+                    </div>
                 </div>
-                <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-black py-4 rounded-2xl shadow-lg mt-6 active:scale-95 transition uppercase text-xs tracking-widest">Buat Akun</button>
-                <p class="text-center mt-4 text-sm font-bold text-slate-500"><a href="#" onclick="toggleAuth(false)" class="text-blue-600 font-black">Kembali Login</a></p>
+                <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg mt-6 active:scale-95 transition">Daftar Sekarang</button>
+                <p class="text-center mt-4 text-sm"><a href="#" onclick="toggleAuth(false)" class="text-blue-600 font-bold">Kembali ke Login</a></p>
             </div>
         </div>
     </div>
 
     <div id="main-app" class="hidden flex flex-col max-w-lg mx-auto bg-white shadow-2xl relative overflow-hidden">
         <header class="p-6 flex justify-between items-center border-b bg-white z-20">
-            <h1 id="page-title" class="text-2xl font-black text-blue-600 tracking-tighter italic">ConnectPro</h1>
+            <h1 id="page-title" class="text-2xl font-black text-blue-600 tracking-tighter">ConnectPro</h1>
             <div class="flex items-center gap-3">
                 <img id="header-photo" src="" class="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover bg-slate-200">
                 <button onclick="logout()" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-power-off"></i></button>
@@ -61,112 +77,142 @@
 
         <div class="flex-1 relative overflow-hidden bg-slate-50">
             <div id="page-home" class="page-content active">
-                <div class="p-4 flex gap-4 overflow-x-auto hide-scroll border-b bg-white">
-                    <div onclick="openStoryModal()" class="flex flex-col items-center gap-1 min-w-[70px] cursor-pointer group">
-                        <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 border-2 border-dashed border-blue-200 group-active:scale-90 transition"><i class="fa-solid fa-plus text-xl"></i></div>
-                        <span class="text-[9px] font-black text-slate-400 uppercase mt-1">Status</span>
-                    </div>
-                    <div id="online-list" class="flex gap-4"></div>
-                </div>
-                <div class="p-4">
-                    <h3 class="font-black text-slate-800 text-[10px] mb-4 uppercase tracking-[0.2em] opacity-30 italic">Percakapan Terakhir</h3>
-                    <div id="chat-list" class="space-y-3"></div>
-                </div>
+    <div class="p-4 flex gap-4 overflow-x-auto hide-scroll border-b bg-white">
+        <div onclick="openStoryModal()" class="flex flex-col items-center gap-1 min-w-[70px] cursor-pointer">
+            <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 border-2 border-dashed border-blue-200">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <span class="text-[10px] font-bold text-slate-500 uppercase">Story</span>
+        </div>
+        <div id="online-list" class="flex gap-4"></div>
+    </div>
+
+    <div class="p-4">
+        <h3 class="font-black text-slate-800 text-lg mb-4 uppercase tracking-tight">Pesan Masuk</h3>
+        <div id="chat-list" class="space-y-3">
+            <div class="text-center py-20 opacity-20">
+                <i class="fa-solid fa-message text-6xl mb-4"></i>
+                <p class="text-sm font-bold uppercase">Belum ada obrolan</p>
+            </div>
+        </div>
+    </div>
             </div>
 
+            
             <div id="page-search" class="page-content p-4">
-                <input type="text" id="search-input" oninput="searchUser()" placeholder="Cari teman..." class="w-full p-4 bg-white rounded-3xl shadow-sm outline-none font-bold text-sm border border-slate-100">
-                <div id="search-result" class="mt-6 space-y-3"></div>
+                <div class="relative mb-6">
+                    <input type="text" id="search-input" oninput="searchUser()" placeholder="Ketik ID Teman..." 
+                        class="w-full p-4 pl-12 bg-white rounded-[24px] shadow-sm border border-slate-100 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                    <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                </div>
+                <div id="search-result" class="space-y-3"></div>
             </div>
 
             <div id="page-history" class="page-content p-4">
-                <h3 class="font-black text-slate-800 text-[10px] mb-4 uppercase tracking-[0.2em] opacity-30 italic">Log Panggilan</h3>
+                <h3 class="font-black text-slate-800 text-lg mb-4 uppercase">Panggilan Terakhir</h3>
                 <div id="history-list" class="space-y-3"></div>
             </div>
 
-            <div id="page-profile" class="page-content p-6 text-center">
-                <img id="profile-preview" src="" class="w-32 h-32 rounded-[40px] mx-auto border-4 border-white shadow-xl object-cover mb-4">
-                <h2 id="profile-display-name" class="text-xl font-black text-slate-800"></h2>
-                <button onclick="logout()" class="mt-10 bg-red-50 text-red-500 font-black px-8 py-3 rounded-2xl active:scale-95 transition">Logout</button>
+            <div id="page-profile" class="page-content p-6">
+                <div class="bg-white rounded-[40px] p-8 shadow-sm border border-slate-50 text-center">
+                    <div class="relative w-32 h-32 mx-auto mb-6">
+                        <img id="profile-preview" src="" class="w-full h-full rounded-[40px] object-cover border-4 border-slate-50 shadow-lg">
+                        <label class="absolute -bottom-2 -right-2 bg-blue-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center cursor-pointer shadow-lg border-4 border-white">
+                            <i class="fa-solid fa-camera"></i>
+                            <input type="file" id="input-profile-pic" accept="image/*" class="hidden" onchange="previewProfilePic(this)">
+                        </label>
+                    </div>
+                    <div class="space-y-4 text-left font-bold">
+                        <div>
+                            <label class="text-[10px] text-slate-400 uppercase ml-2">Nama Lengkap</label>
+                            <input type="text" id="edit-nama" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-100 outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 uppercase ml-2">ID User</label>
+                            <input type="text" id="edit-id" disabled class="w-full p-4 bg-slate-100 rounded-2xl text-slate-400 cursor-not-allowed">
+                        </div>
+                        <button onclick="updateProfile()" id="btn-save-profile" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-xl active:scale-95 transition mt-4">SIMPAN PROFIL</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <nav class="fixed bottom-0 left-0 right-0 max-w-lg mx-auto glass border-t flex justify-around items-center h-20 bg-white/95 z-50">
-            <button onclick="navigate('home', 'ConnectPro', this)" class="nav-item text-blue-600 flex flex-col items-center"><i class="fa-solid fa-house-chimney text-xl"></i></button>
-            <button onclick="navigate('search', 'Temukan', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
-            <button onclick="navigate('history', 'Riwayat', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-phone-volume text-xl"></i></button>
-            <button onclick="navigate('profile', 'Saya', this)" class="nav-item text-slate-300 flex flex-col items-center"><i class="fa-solid fa-circle-user text-xl"></i></button>
+            <button onclick="navigate('home', 'ConnectPro', this)" class="nav-item nav-active flex flex-col items-center"><i class="fa-solid fa-house text-xl"></i></button>
+            <button onclick="navigate('search', 'Cari', this)" class="nav-item text-slate-400 flex flex-col items-center"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
+            <button onclick="navigate('history', 'History', this)" class="nav-item text-slate-400 flex flex-col items-center"><i class="fa-solid fa-clock-rotate-left text-xl"></i></button>
+            <button onclick="navigate('profile', 'Profil', this)" class="nav-item text-slate-400 flex flex-col items-center"><i class="fa-solid fa-circle-user text-xl"></i></button>
         </nav>
     </div>
 
     <div id="chat-screen" class="hidden fixed inset-0 z-[100] bg-slate-50 flex flex-col max-w-lg mx-auto">
-        <header class="p-5 flex items-center justify-between bg-white border-b shadow-sm">
-            <div class="flex items-center gap-4">
-                <button onclick="closeChat()" class="text-slate-400 p-2"><i class="fa-solid fa-arrow-left text-xl"></i></button>
-                <img id="chat-avatar" class="w-10 h-10 rounded-full object-cover bg-slate-100">
-                <div>
-                    <h4 id="chat-name" class="font-bold text-slate-800 leading-tight"></h4>
-                    <span class="text-[10px] text-blue-500 font-black uppercase italic">Online Now</span>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <button onclick="startCall('voice')" class="text-slate-300 hover:text-blue-600 p-2"><i class="fa-solid fa-phone"></i></button>
-                <button onclick="startCall('video')" class="text-slate-300 hover:text-blue-600 p-2"><i class="fa-solid fa-video"></i></button>
-            </div>
+        <header class="p-5 flex items-center gap-4 bg-white border-b shadow-sm">
+            <button onclick="closeChat()" class="text-slate-400"><i class="fa-solid fa-chevron-left text-xl"></i></button>
+            <img id="chat-avatar" class="w-10 h-10 rounded-full object-cover">
+            <div class="flex-1"><h4 id="chat-name" class="font-bold text-slate-800 leading-none"></h4><p class="text-[10px] text-blue-500 font-bold uppercase">Online</p></div>
         </header>
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+        <div class="p-4 bg-white border-t flex gap-3">
+            <input type="text" id="chat-input" placeholder="Tulis pesan..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none font-bold">
+            <div id="emoji-container" class="hidden absolute bottom-24 left-4 z-[110] shadow-2xl rounded-3xl overflow-hidden"></div>
+<button id="emoji-btn" class="text-slate-400 p-2 hover:text-blue-600 transition">
+    <i class="fa-solid fa-face-smile text-2xl"></i>
+</button>
+             <div class="flex items-center gap-4">
+    <button onclick="startCall('voice')" class="text-slate-400 hover:text-blue-600"><i class="fa-solid fa-phone"></i></button>
+    <button onclick="startCall('video')" class="text-slate-400 hover:text-blue-600"><i class="fa-solid fa-video"></i></button>
+</div>
 
-        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 hide-scroll"></div>
-
-        <div id="emoji-container" class="hidden absolute bottom-24 left-4 z-[110] shadow-2xl rounded-3xl overflow-hidden border"></div>
-
-        <div class="p-4 bg-white border-t flex items-center gap-2">
-            <button id="emoji-btn" class="text-slate-400 p-2"><i class="fa-solid fa-face-smile text-2xl"></i></button>
-            <input type="text" id="chat-input" placeholder="Ketik pesan..." class="flex-1 p-3 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
-            
-            <button id="vn-btn" 
-                onmousedown="startRecording(event)" onmouseup="stopRecording(event)"
-                ontouchstart="startRecording(event)" ontouchend="stopRecording(event)"
-                class="bg-slate-100 text-slate-500 w-12 h-12 rounded-2xl flex items-center justify-center transition">
-                <i class="fa-solid fa-microphone text-lg"></i>
-            </button>
-
-            <button onclick="sendMessage()" class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-        </div>
-    </div>
-
-    <div id="story-modal" class="hidden fixed inset-0 z-[150] bg-black/70 flex items-end justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-[35px] p-6 shadow-2xl">
-            <div class="flex justify-between items-center mb-6"><h3 class="text-xl font-black uppercase italic">Story Baru</h3><button onclick="closeStoryModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button></div>
-            <input type="file" id="story-file" accept="image/*,video/*" class="w-full mb-4 text-xs font-bold">
-            <textarea id="story-caption" placeholder="Caption story..." class="w-full p-4 bg-slate-100 rounded-2xl outline-none min-h-[100px] font-bold text-sm"></textarea>
-            <button id="btn-upload" onclick="uploadStory()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl mt-4 shadow-xl active:scale-95 transition uppercase text-xs">Publish Story</button>
+<div class="p-4 bg-white border-t flex items-center gap-2">
+    <button id="emoji-btn" class="text-slate-400 p-2"><i class="fa-solid fa-face-smile text-xl"></i></button>
+    <input type="text" id="chat-input" placeholder="Tulis pesan..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none font-bold">
+    <button id="vn-btn" onmousedown="startRecording()" onmouseup="stopRecording()" class="bg-slate-100 text-slate-500 w-14 h-14 rounded-2xl flex items-center justify-center transition active:bg-red-50 active:text-red-500">
+        <i class="fa-solid fa-microphone"></i>
+    </button>
+            <button onclick="sendMessage()" class="bg-blue-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
 
     <div id="story-view-screen" class="hidden fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center">
         <div class="w-full max-w-lg h-full relative">
-            <div id="progress-container" class="absolute top-4 left-0 right-0 flex gap-1 px-4 z-[110]"></div>
+            <div id="progress-container" class="progress-container"></div>
             <div class="absolute top-8 left-0 right-0 px-4 flex justify-between items-center z-[110]">
                 <div class="flex items-center gap-3">
                     <img id="viewer-avatar" src="" class="w-10 h-10 rounded-full border border-white">
-                    <span id="viewer-name" class="text-white font-black text-sm uppercase"></span>
+                    <span id="viewer-name" class="text-white font-bold text-sm"></span>
                 </div>
-                <button onclick="closeStoryViewer()" class="text-white p-2"><i class="fa-solid fa-xmark text-3xl"></i></button>
+                <div class="flex items-center gap-2">
+                    <button id="btn-delete-story" onclick="deleteCurrentStory()" class="hidden text-white/50 hover:text-red-500 p-2"><i class="fa-solid fa-trash-can"></i></button>
+                    <button onclick="closeStoryViewer()" class="text-white p-2"><i class="fa-solid fa-xmark text-3xl"></i></button>
+                </div>
             </div>
+            <div class="absolute inset-0 flex z-[105]"><div class="w-1/3 h-full" onclick="prevSlide()"></div><div class="w-2/3 h-full" onclick="nextSlide()"></div></div>
             <div class="h-full flex items-center justify-center bg-zinc-900">
                 <img id="view-img" class="hidden max-w-full max-h-full object-contain">
                 <video id="view-vid" class="hidden max-w-full max-h-full" playsinline></video>
+                <div id="view-text" class="hidden text-white text-3xl font-black text-center px-10"></div>
             </div>
-            <div class="absolute bottom-12 left-0 right-0 px-6 text-center z-[110]"><p id="view-caption" class="text-white text-sm bg-black/40 backdrop-blur-md p-4 rounded-3xl inline-block max-w-[85%] font-bold"></p></div>
+            <div class="absolute bottom-12 left-0 right-0 px-6 text-center z-[110]"><p id="view-caption" class="text-white text-sm bg-black/50 p-4 rounded-3xl inline-block max-w-[80%]"></p></div>
+        </div>
+    </div>
+
+    <div id="story-modal" class="hidden fixed inset-0 z-[150] bg-black/70 flex items-end justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-[35px] p-6">
+            <div class="flex justify-between items-center mb-6"><h3 class="text-xl font-black uppercase tracking-tighter">Post Story</h3><button onclick="closeStoryModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button></div>
+            <label class="w-full flex flex-col items-center justify-center py-10 border-2 border-dashed border-slate-200 rounded-3xl cursor-pointer">
+                <i class="fa-solid fa-cloud-arrow-up text-4xl text-blue-500 mb-2"></i>
+                <p id="preview-text" class="text-xs font-bold text-slate-500 uppercase">Pilih Media</p>
+                <input type="file" id="story-file" accept="image/*,video/*" class="hidden" onchange="handleFilePreview(this)">
+            </label>
+            <textarea id="story-caption" placeholder="Ketik sesuatu..." class="w-full p-4 bg-slate-100 rounded-2xl outline-none min-h-[100px] mt-4 font-bold text-sm"></textarea>
+            <button id="btn-upload" onclick="uploadStory()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl mt-4 shadow-lg active:scale-95 transition">UPLOAD</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy, where, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
@@ -177,259 +223,375 @@
             messagingSenderId: "1040239629485",
             appId: "1:1040239629485:web:254a7b50a4243b6c5d6224"
         };
+// Ganti fungsi loadChatList lama dengan ini:
+function loadChatList() {
+    if (!auth.currentUser) return;
 
+    // Ambil pesan terbaru secara keseluruhan (order by time)
+    const q = query(
+        collection(db, "chats"),
+        orderBy("time", "desc")
+    );
+
+    onSnapshot(q, async (snap) => {
+        const chatListDiv = document.getElementById('chat-list');
+        const uniqueUsers = new Set();
+        const lastMessages = [];
+
+        // Filter manual: Hanya ambil yang room-nya ada UID kita
+        snap.forEach(doc => {
+            const data = doc.data();
+            if (data.room && data.room.includes(auth.currentUser.uid)) {
+                const members = data.room.split("_");
+                const otherUid = members.find(uid => uid !== auth.currentUser.uid);
+                
+                if (otherUid && !uniqueUsers.has(otherUid)) {
+                    uniqueUsers.add(otherUid);
+                    lastMessages.push({
+                        uid: otherUid,
+                        text: data.text,
+                        time: data.time?.toDate() || new Date()
+                    });
+                }
+            }
+        });
+
+        if (lastMessages.length === 0) {
+            chatListDiv.innerHTML = `
+                <div class="text-center py-20 opacity-20">
+                    <i class="fa-solid fa-message text-6xl mb-4"></i>
+                    <p class="text-sm font-bold uppercase">Belum ada obrolan</p>
+                </div>`;
+            return;
+        }
+
+        chatListDiv.innerHTML = "";
+        
+        for (const chat of lastMessages) {
+            const userDoc = await getDoc(doc(db, "users", chat.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                const timeStr = chat.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-[28px] flex items-center justify-between shadow-sm border border-slate-50 active:scale-95 transition cursor-pointer";
+                card.onclick = () => openChat(userData.uid, userData.nama, userData.photo);
+                
+                card.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <img src="${userData.photo}" class="w-14 h-14 rounded-2xl object-cover">
+                        <div class="overflow-hidden">
+                            <h4 class="font-bold text-slate-800 leading-tight">${userData.nama}</h4>
+                            <p class="text-xs text-slate-400 truncate w-40 font-bold">${chat.text}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] font-black text-blue-500">${timeStr}</p>
+                    </div>
+                `;
+                chatListDiv.appendChild(card);
+            }
+        }
+    });
+}
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        let myData = null, targetUser = null, mediaRecorder = null, audioChunks = [];
-        let storyGroups = [], currentStoryIdx = 0, storyTimer = null;
+        let myData = null, selectedFile = null, profileFile = null, targetUser = null, storyTimer = null, generatedCaptcha = "";
+        let activeSlides = [], currentSlideIndex = 0;
 
-        window.toggleAuth = (is) => { document.getElementById('register-container').classList.toggle('hidden', !is); document.getElementById('login-container').classList.toggle('hidden', is); };
-        
-        window.handleLogin = async () => {
-            const id = document.getElementById('login-id').value + "@app.com";
-            const ps = document.getElementById('login-pass').value;
-            try { await signInWithEmailAndPassword(auth, id, ps); } catch (e) { alert("ID/Password salah!"); }
+        // --- AUTH & CAPTCHA ---
+        function generateCaptcha() {
+            const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            generatedCaptcha = Array.from({length: 5}, () => c[Math.floor(Math.random()*c.length)]).join('');
+            document.getElementById('captcha-code').innerText = generatedCaptcha;
+        }
+
+        window.toggleAuth = (is) => {
+            document.getElementById('register-container').classList.toggle('hidden', !is);
+            document.getElementById('login-container').classList.toggle('hidden', is);
+            if(is) generateCaptcha();
         };
 
         window.handleRegister = async () => {
-            const n = document.getElementById('reg-nama').value;
-            const id = document.getElementById('reg-id').value;
-            const ps = document.getElementById('reg-pass').value;
-            if(!n || !id || !ps) return alert("Isi lengkap!");
+            const n = document.getElementById('reg-nama').value, id = document.getElementById('reg-id').value.trim().toLowerCase();
+            const ph = document.getElementById('reg-phone').value, g = document.getElementById('reg-gender').value;
+            const p = document.getElementById('reg-pass').value, ci = document.getElementById('reg-captcha-input').value.toUpperCase();
+
+            if(!n || !id || !ph || !g || !p) return alert("Isi semua data!");
+            if(ci !== generatedCaptcha) { alert("Captcha Salah!"); return generateCaptcha(); }
+
             try {
-                const cred = await createUserWithEmailAndPassword(auth, id + "@app.com", ps);
-                const photo = `https://ui-avatars.com/api/?name=${n}&background=random&size=256`;
-                await setDoc(doc(db, "users", cred.user.uid), { uid: cred.user.uid, nama: n, user_id: id, photo });
-                location.reload();
-            } catch (e) { alert("Gagal Daftar!"); }
+                const c = await createUserWithEmailAndPassword(auth, id + "@chat.com", p);
+                await setDoc(doc(db, "users", c.user.uid), { nama: n, id, phone: ph, gender: g, uid: c.user.uid, photo: `https://ui-avatars.com/api/?name=${n}&bg=3b82f6&color=fff` });
+            } catch (e) { alert(e.message); generateCaptcha(); }
+        };
+
+        window.handleLogin = async () => {
+            const id = document.getElementById('login-id').value.trim().toLowerCase(), p = document.getElementById('login-pass').value;
+            try { await signInWithEmailAndPassword(auth, id + "@chat.com", p); } catch (e) { alert("ID/Password Salah!"); }
         };
 
         window.logout = () => signOut(auth);
 
-        window.navigate = (p, t, el) => {
-            document.querySelectorAll('.page-content').forEach(pc => pc.classList.remove('active'));
-            document.getElementById('page-' + p).classList.add('active');
-            document.getElementById('page-title').innerText = t;
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.replace('text-blue-600', 'text-slate-300'));
-            el.classList.replace('text-slate-300', 'text-blue-600');
+        // --- NAVIGATION & PROFILE ---
+        window.navigate = (page, title, el) => {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            document.getElementById('page-title').innerText = title;
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.replace('text-blue-600', 'text-slate-400'));
+            el.classList.replace('text-slate-400', 'text-blue-600');
+            if(page === 'profile') { document.getElementById('edit-nama').value = myData.nama; document.getElementById('edit-id').value = "@"+myData.id; document.getElementById('profile-preview').src = myData.photo; }
+            if(page === 'history') loadHistory();
         };
 
-        window.searchUser = () => {
-            const val = document.getElementById('search-input').value.toLowerCase();
-            if(!val) return document.getElementById('search-result').innerHTML = "";
-            onSnapshot(query(collection(db, "users")), (snap) => {
-                const res = document.getElementById('search-result'); res.innerHTML = "";
-                snap.forEach(d => {
-                    const u = d.data();
-                    if(u.user_id.toLowerCase().includes(val) && u.uid !== auth.currentUser.uid) {
-                        const dv = document.createElement('div');
-                        dv.className = "bg-white p-4 rounded-[28px] flex items-center justify-between shadow-sm border border-slate-50";
-                        dv.innerHTML = `<div class="flex items-center gap-4"><img src="${u.photo}" class="w-12 h-12 rounded-2xl object-cover"><div><h4 class="font-bold text-slate-800">${u.nama}</h4><p class="text-[10px] text-slate-400 font-bold uppercase">@${u.user_id}</p></div></div><button onclick="openChat('${u.uid}', '${u.nama}', '${u.photo}')" class="bg-blue-50 text-blue-600 p-3 rounded-2xl active:scale-90 transition"><i class="fa-solid fa-message"></i></button>`;
-                        res.appendChild(dv);
-                    }
-                });
-            });
-        };
-
-        window.openChat = (uid, nama, photo) => {
-            targetUser = { uid, nama, photo };
-            document.getElementById('chat-screen').classList.remove('hidden');
-            document.getElementById('chat-name').innerText = nama;
-            document.getElementById('chat-avatar').src = photo;
-            loadMessages();
-        };
-
-        window.closeChat = () => { document.getElementById('chat-screen').classList.add('hidden'); targetUser = null; };
-
-        function loadMessages() {
-            if(!targetUser) return;
-            const roomId = [auth.currentUser.uid, targetUser.uid].sort().join("_");
-            const q = query(collection(db, "chats"), where("room", "==", roomId), orderBy("time", "asc"));
-            onSnapshot(q, (snap) => {
-                const box = document.getElementById('chat-messages'); box.innerHTML = "";
-                snap.forEach(d => {
-                    const m = d.data(); const isMe = m.sender === auth.currentUser.uid;
-                    const div = document.createElement('div');
-                    div.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
-                    const content = m.type === 'vn' ? `<audio src="${m.fileUrl}" controls class="w-48"></audio>` : m.text;
-                    div.innerHTML = `<div class="max-w-[80%] p-4 text-sm font-bold shadow-sm ${isMe ? 'chat-bubble-me' : 'chat-bubble-them'}">${content}</div>`;
-                    box.appendChild(div);
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-
-        window.sendMessage = async () => {
-            const inp = document.getElementById('chat-input');
-            const val = inp.value.trim();
-            if(!val || !targetUser) return;
-            await addDoc(collection(db, "chats"), {
-                room: [auth.currentUser.uid, targetUser.uid].sort().join("_"),
-                sender: auth.currentUser.uid, text: val, type: 'text', time: serverTimestamp()
-            });
-            inp.value = "";
-        };
-
-        // VN Fix Mobile
-        window.startRecording = async (e) => {
-            if(e) e.preventDefault();
+        window.previewProfilePic = (i) => { profileFile = i.files[0]; if(profileFile) { const r = new FileReader(); r.onload = (e) => document.getElementById('profile-preview').src = e.target.result; r.readAsDataURL(profileFile); } };
+        window.updateProfile = async () => {
+            const b = document.getElementById('btn-save-profile'); b.innerText = "Saving...";
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-                mediaRecorder.ondataavailable = (event) => audioChunks.push(event.data);
-                mediaRecorder.onstop = async () => {
-                    const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const r = ref(storage, `vn/${Date.now()}.webm`);
-                    await uploadBytes(r, blob);
-                    const url = await getDownloadURL(r);
-                    await addDoc(collection(db, "chats"), {
-                        room: [auth.currentUser.uid, targetUser.uid].sort().join("_"),
-                        sender: auth.currentUser.uid, text: "VN", fileUrl: url, type: "vn", time: serverTimestamp()
-                    });
-                };
-                mediaRecorder.start();
-                document.getElementById('vn-btn').classList.add('recording-pulse');
-            } catch (err) { alert("Aktifkan Izin Mic!"); }
+                let url = myData.photo;
+                if(profileFile) { const r = ref(storage, `profiles/${auth.currentUser.uid}`); await uploadBytes(r, profileFile); url = await getDownloadURL(r); }
+                await updateDoc(doc(db, "users", auth.currentUser.uid), { nama: document.getElementById('edit-nama').value, photo: url });
+                location.reload();
+            } catch (e) { alert(e.message); }
         };
 
-        window.stopRecording = (e) => {
-            if(e) e.preventDefault();
-            if(mediaRecorder && mediaRecorder.state === "recording") {
-                mediaRecorder.stop();
-                document.getElementById('vn-btn').classList.remove('recording-pulse');
-            }
-        };
-
-        window.startCall = async (type) => {
-            if(!targetUser) return;
-            alert(`Memanggil ${targetUser.nama} via ${type}...`);
-            await addDoc(collection(db, "history"), {
-                uid: auth.currentUser.uid, to: targetUser.nama,
-                type: type === 'video' ? 'Video Call' : 'Voice Call',
-                time: serverTimestamp()
-            });
-        };
-
-        // Emoji Fix
-        const picker = new EmojiMart.Picker({
-            data: async () => { const r = await fetch('https://cdn.jsdelivr.net/npm/@emoji-mart/data'); return r.json(); },
-            set: 'apple',
-            onEmojiSelect: (emoji) => { document.getElementById('chat-input').value += emoji.native; },
-            theme: 'light', previewPosition: 'none'
-        });
-        document.getElementById('emoji-container').appendChild(picker);
-        document.getElementById('emoji-btn').onclick = (e) => { e.stopPropagation(); document.getElementById('emoji-container').classList.toggle('hidden'); };
-
-        // Story Fix
+        // --- STORY SYSTEM ---
         window.openStoryModal = () => document.getElementById('story-modal').classList.remove('hidden');
         window.closeStoryModal = () => document.getElementById('story-modal').classList.add('hidden');
-        
+        window.handleFilePreview = (i) => { selectedFile = i.files[0]; if(selectedFile) document.getElementById('preview-text').innerText = "✅ Selected"; };
         window.uploadStory = async () => {
-            const file = document.getElementById('story-file').files[0];
-            const caption = document.getElementById('story-caption').value;
-            const btn = document.getElementById('btn-upload');
-            if(!file) return alert("Pilih media!");
-            
-            btn.disabled = true; btn.innerText = "...";
-            const r = ref(storage, `stories/${Date.now()}`);
-            await uploadBytes(r, file);
-            const url = await getDownloadURL(r);
-            await addDoc(collection(db, "stories"), {
-                uid: auth.currentUser.uid, nama: myData.nama, photo: myData.photo,
-                mediaUrl: url, type: file.type.includes('video') ? 'video' : 'image',
-                caption, createdAt: serverTimestamp()
-            });
-            btn.disabled = false; btn.innerText = "Publish Story";
-            closeStoryModal();
+            const b = document.getElementById('btn-upload'); b.innerText = "Uploading...";
+            try {
+                let url = "", type = "text";
+                if(selectedFile) { const r = ref(storage, `stories/${Date.now()}`); await uploadBytes(r, selectedFile); url = await getDownloadURL(r); type = selectedFile.type.split('/')[0]; }
+                await addDoc(collection(db, "stories"), { uid: auth.currentUser.uid, nama: myData.nama, photo: myData.photo, caption: document.getElementById('story-caption').value, url, type, createdAt: serverTimestamp() });
+                closeStoryModal();
+            } catch (e) { alert(e.message); }
+            b.innerText = "UPLOAD";
         };
 
-        window.openStoryGroup = (gs) => { storyGroups = gs; currentStoryIdx = 0; document.getElementById('story-view-screen').classList.remove('hidden'); showStory(); };
+        window.openStoryGroup = (gs) => { activeSlides = gs; currentSlideIndex = 0; document.getElementById('story-view-screen').classList.remove('hidden'); renderSlide(); };
+        function renderSlide() {
+            const d = activeSlides[currentSlideIndex];
+            const img = document.getElementById('view-img'), vid = document.getElementById('view-vid'), txt = document.getElementById('view-text');
+            document.getElementById('btn-delete-story').classList.toggle('hidden', d.uid !== auth.currentUser.uid);
+            document.getElementById('progress-container').innerHTML = activeSlides.map((_, i) => `<div class="progress-track"><div id="fill-${i}" class="progress-fill" style="width: ${i < currentSlideIndex ? '100%' : '0%'}"></div></div>`).join('');
+            [img, vid, txt].forEach(el => el.classList.add('hidden')); vid.pause();
+            document.getElementById('viewer-avatar').src = d.photo; document.getElementById('viewer-name').innerText = d.nama; document.getElementById('view-caption').innerText = d.caption || "";
+            let ms = 5000;
+            if(d.type === 'image') { img.src = d.url; img.classList.remove('hidden'); }
+            else if(d.type === 'video') { vid.src = d.url; vid.classList.remove('hidden'); vid.play(); ms = 15000; }
+            else { txt.innerText = d.caption; txt.classList.remove('hidden'); }
+            setTimeout(() => { const f = document.getElementById(`fill-${currentSlideIndex}`); if(f){ f.style.transitionDuration = `${ms}ms`; f.style.width = '100%'; } }, 50);
+            clearTimeout(storyTimer); storyTimer = setTimeout(nextSlide, ms);
+        }
+        window.nextSlide = () => { if(currentSlideIndex < activeSlides.length - 1) { currentSlideIndex++; renderSlide(); } else { closeStoryViewer(); } };
+        window.prevSlide = () => { if(currentSlideIndex > 0) { currentSlideIndex--; renderSlide(); } };
+        window.closeStoryViewer = () => { document.getElementById('story-view-screen').classList.add('hidden'); document.getElementById('view-vid').pause(); clearTimeout(storyTimer); };
+        window.deleteCurrentStory = async () => { if(confirm("Hapus?")) { await deleteDoc(doc(db, "stories", activeSlides[currentSlideIndex].id)); closeStoryViewer(); } };
+
+        // --- SEARCH, CHAT & HISTORY ---
+        window.searchUser = () => {
+            const id = document.getElementById('search-input').value.trim().toLowerCase();
+            const res = document.getElementById('search-result');
+            if(id.length < 3) return res.innerHTML = "";
+            onSnapshot(query(collection(db, "users"), where("id", "==", id)), (snap) => {
+                res.innerHTML = "";
+                snap.forEach(d => {
+                    const u = d.data();
+                    const div = document.createElement('div');
+                    div.className = "bg-white p-4 rounded-3xl flex items-center justify-between border border-slate-100 shadow-sm";
+                    div.innerHTML = `<div class="flex items-center gap-3"><img src="${u.photo}" class="w-12 h-12 rounded-2xl object-cover"><div><h4 class="font-bold text-slate-800">${u.nama}</h4><p class="text-[10px] text-blue-500 font-bold uppercase">@${u.id}</p></div></div><button onclick="openChat('${u.uid}', '${u.nama}', '${u.photo}')" class="bg-blue-600 text-white px-5 py-2 rounded-2xl font-black text-xs">CHAT</button>`;
+                    res.appendChild(div);
+                });
+            });
+        };
+        window.openChat = (uid, nama, photo) => { targetUser = { uid, nama, photo }; document.getElementById('chat-screen').classList.remove('hidden'); document.getElementById('chat-name').innerText = nama; document.getElementById('chat-avatar').src = photo; loadMessages(); };
+        window.closeChat = () => document.getElementById('chat-screen').classList.add('hidden');
+// --- FUNGSI LOAD CHAT DEBUG MODE ---
+function loadMessages() {
+    if (!targetUser) return;
+
+    // buat vn
+    // Di dalam loop loadMessages
+const isVN = m.type === 'vn';
+div.innerHTML = `
+    <div class="max-w-[80%] p-4 text-sm font-bold shadow-sm ${isMe ? 'chat-bubble-me' : 'chat-bubble-them'}">
+        ${isVN ? `<audio src="${m.fileUrl}" controls class="w-48"></audio>` : m.text}
+    </div>
+`;
+    
+    // Kita buat Room ID yang konsisten
+    const roomId = [auth.currentUser.uid, targetUser.uid].sort().join("_");
+    console.log("Membuka Room ID:", roomId); // Debug: Cek di F12
+
+    const chatBox = document.getElementById('chat-messages');
+    
+    // Sederhanakan query: Hapus orderBy dulu untuk tes awal
+    // Karena orderBy sering bikin chat macet kalau Index belum dibuat
+    const q = query(
+        collection(db, "chats"), 
+        where("room", "==", roomId)
+    );
+
+    onSnapshot(q, (snap) => {
+        console.log("Data diterima! Jumlah pesan:", snap.size); // Debug: Cek jumlah data
+        chatBox.innerHTML = "";
         
-        function showStory() {
-            clearTimeout(storyTimer); const s = storyGroups[currentStoryIdx];
-            document.getElementById('viewer-avatar').src = s.photo;
-            document.getElementById('viewer-name').innerText = s.nama;
-            document.getElementById('view-caption').innerText = s.caption || "";
-            const img = document.getElementById('view-img'); const vid = document.getElementById('view-vid');
-            img.classList.add('hidden'); vid.classList.add('hidden');
-            if(s.type === 'image') { img.src = s.mediaUrl; img.classList.remove('hidden'); storyTimer = setTimeout(nextSlide, 5000); }
-            else { vid.src = s.mediaUrl; vid.classList.remove('hidden'); vid.play(); vid.onended = nextSlide; }
-            renderStoryProgress();
+        if (snap.empty) {
+            chatBox.innerHTML = `<div class="text-center mt-10 text-slate-400 text-xs font-bold uppercase tracking-widest opacity-50">Belum ada pesan</div>`;
+            return;
         }
 
-        function renderStoryProgress() {
-            const cont = document.getElementById('progress-container'); cont.innerHTML = "";
-            storyGroups.forEach((_, i) => {
-                const dv = document.createElement('div');
-                dv.className = `h-1 flex-1 rounded-full ${i <= currentStoryIdx ? 'bg-white' : 'bg-white/30'}`;
-                cont.appendChild(dv);
+        // Urutkan manual di sisi client agar tidak butuh Index Firebase sementara
+        const docs = [];
+        snap.forEach(d => docs.push(d.data()));
+        docs.sort((a, b) => (a.time?.seconds || 0) - (b.time?.seconds || 0));
+
+        docs.forEach(m => {
+            const isMe = m.sender === auth.currentUser.uid;
+            const div = document.createElement('div');
+            div.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
+            div.innerHTML = `
+                <div class="max-w-[80%] p-4 text-sm font-bold shadow-sm ${isMe ? 'chat-bubble-me' : 'chat-bubble-them'}">
+                    ${m.text}
+                </div>
+            `;
+            chatBox.appendChild(div);
+        });
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, (error) => {
+        console.error("FIREBASE ERROR:", error.message);
+        alert("Terjadi masalah koneksi database!");
+    });
+}
+
+// --- FUNGSI SEND CHAT DEBUG MODE ---
+window.sendMessage = async () => {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if(!text || !targetUser) return;
+
+    const roomId = [auth.currentUser.uid, targetUser.uid].sort().join("_");
+
+    try {
+        console.log("Mengirim pesan ke:", roomId);
+        await addDoc(collection(db, "chats"), {
+            room: roomId,
+            sender: auth.currentUser.uid,
+            text: text,
+            time: serverTimestamp()
+        });
+        input.value = "";
+    } catch (e) {
+        console.error("GAGAL KIRIM:", e);
+        alert("Gagal kirim pesan: " + e.message);
+    }
+};
+        function loadHistory() {
+            onSnapshot(query(collection(db, "call_history"), where("uid", "==", auth.currentUser.uid), orderBy("timestamp", "desc")), (snap) => {
+                const list = document.getElementById('history-list'); list.innerHTML = "";
+                snap.forEach(d => { const h = d.data(), dt = h.timestamp?.toDate() || new Date(); list.innerHTML += `<div class="bg-white p-4 rounded-3xl flex items-center justify-between border border-slate-50"><div class="flex items-center gap-3"><i class="fa-solid fa-phone text-blue-500"></i><div><h4 class="font-bold text-sm">${h.callerName}</h4><p class="text-[8px] uppercase font-black text-slate-400">${h.status}</p></div></div><span class="text-[10px] font-bold text-slate-400">${dt.getHours()}:${dt.getMinutes()}</span></div>`; });
             });
         }
-
-        window.nextSlide = () => { if(currentStoryIdx < storyGroups.length - 1) { currentStoryIdx++; showStory(); } else { closeStoryViewer(); } };
-        window.closeStoryViewer = () => { document.getElementById('story-view-screen').classList.add('hidden'); document.getElementById('view-vid').pause(); clearTimeout(storyTimer); };
 
         onAuthStateChanged(auth, async (u) => {
             if(u) {
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('main-app').classList.remove('hidden');
-                const s = await getDoc(doc(db, "users", u.uid)); myData = s.data();
-                document.getElementById('header-photo').src = myData.photo;
-                document.getElementById('profile-preview').src = myData.photo;
-                document.getElementById('profile-display-name').innerText = myData.nama;
-
-                // Listeners
+                document.getElementById('auth-screen').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden');
+                const s = await getDoc(doc(db, "users", u.uid)); myData = s.data(); document.getElementById('header-photo').src = myData.photo;
                 onSnapshot(query(collection(db, "stories"), orderBy("createdAt", "asc")), (snap) => {
-                    const g = {}; snap.forEach(d => { const dt = d.data(); if(!g[dt.uid]) g[dt.uid] = []; g[dt.uid].push(dt); });
+                    const g = {}; snap.forEach(d => { const dt = d.data(); dt.id = d.id; if(!g[dt.uid]) g[dt.uid] = []; g[dt.uid].push(dt); });
                     const l = document.getElementById('online-list'); l.innerHTML = "";
-                    Object.values(g).forEach(gs => {
-                        const dv = document.createElement('div'); dv.className = "min-w-[70px] flex flex-col items-center cursor-pointer";
-                        dv.innerHTML = `<img src="${gs[0].photo}" class="w-14 h-14 story-ring object-cover"><span class="text-[9px] font-black text-slate-400 mt-1">${gs[0].nama.split(' ')[0]}</span>`;
-                        dv.onclick = () => openStoryGroup(gs); l.appendChild(dv);
-                    });
+                    Object.values(g).forEach(gs => { const last = gs[gs.length - 1]; const dv = document.createElement('div'); dv.className = "flex flex-col items-center gap-1 min-w-[70px]"; dv.innerHTML = `<img src="${last.photo}" class="w-14 h-14 story-ring object-cover"><span class="text-[9px] font-bold text-slate-400">${last.nama.split(' ')[0]}</span>`; dv.onclick = () => openStoryGroup(gs); l.appendChild(dv); });
+               loadChatList();
                 });
-
-                onSnapshot(query(collection(db, "chats"), orderBy("time", "desc")), async (snap) => {
-                    const list = document.getElementById('chat-list'); list.innerHTML = "";
-                    const unique = new Set();
-                    for(const d of snap.docs) {
-                        const m = d.data();
-                        if(m.room && m.room.includes(u.uid)) {
-                            const other = m.room.split("_").find(id => id !== u.uid);
-                            if(other && !unique.has(other)) {
-                                unique.add(other);
-                                const udDoc = await getDoc(doc(db, "users", other));
-                                if(udDoc.exists()) {
-                                    const ud = udDoc.data();
-                                    const dv = document.createElement('div');
-                                    dv.className = "bg-white p-4 rounded-[28px] flex items-center gap-4 shadow-sm active:scale-95 transition cursor-pointer";
-                                    dv.onclick = () => openChat(ud.uid, ud.nama, ud.photo);
-                                    dv.innerHTML = `<img src="${ud.photo}" class="w-14 h-14 rounded-2xl object-cover"><div class="flex-1"><h4 class="font-bold text-slate-800">${ud.nama}</h4><p class="text-xs text-slate-400 truncate w-32 font-bold">${m.text}</p></div>`;
-                                    list.appendChild(dv);
-                                }
-                            }
-                        }
-                    }
-                });
-
-                onSnapshot(query(collection(db, "history"), where("uid", "==", u.uid)), (snap) => {
-                    const h = document.getElementById('history-list'); h.innerHTML = "";
-                    snap.forEach(d => {
-                        const dt = d.data(); const dv = document.createElement('div');
-                        dv.className = "bg-white p-4 rounded-3xl flex justify-between items-center shadow-sm";
-                        dv.innerHTML = `<div><h4 class="font-bold text-slate-800">${dt.to}</h4><p class="text-[10px] uppercase font-black text-blue-500">${dt.type}</p></div><i class="fa-solid fa-phone-slash opacity-10"></i>`;
-                        h.appendChild(dv);
-                    });
-                });
-            } else {
-                document.getElementById('auth-screen').classList.remove('hidden');
-                document.getElementById('main-app').classList.add('hidden');
-            }
+            } else { document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('main-app').classList.add('hidden'); }
         });
-    </script>
+
+        let mediaRecorder;
+let audioChunks = [];
+
+window.startRecording = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    
+    mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+    mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const vnRef = ref(storage, `vn/${Date.now()}.webm`);
+        await uploadBytes(vnRef, audioBlob);
+        const url = await getDownloadURL(vnRef);
+        
+        // Kirim sebagai pesan tipe VN
+        await addDoc(collection(db, "chats"), {
+            room: [auth.currentUser.uid, targetUser.uid].sort().join("_"),
+            sender: auth.currentUser.uid,
+            text: "Voice Note",
+            type: "vn",
+            fileUrl: url,
+            time: serverTimestamp()
+        });
+    };
+    mediaRecorder.start();
+};
+
+window.stopRecording = () => {
+    if(mediaRecorder) mediaRecorder.stop();
+};
+
+        window.startCall = async (type) => {
+    if(!targetUser) return;
+    alert(`Memanggil ${targetUser.nama} via ${type}...`);
+    
+    await addDoc(collection(db, "call_history"), {
+        uid: targetUser.uid,
+        callerId: auth.currentUser.uid,
+        callerName: myData.nama,
+        status: type === 'video' ? 'Video Call' : 'Voice Call',
+        timestamp: serverTimestamp()
+    });
+};
+
+// Inisialisasi Picker
+const pickerOptions = { 
+    data: async () => {
+        const response = await fetch('https://cdn.jsdelivr.net/npm/@emoji-mart/data');
+        return response.json();
+    },
+    set: 'apple', // Memaksa tampilan emoji gaya iPhone/Apple
+    onEmojiSelect: (emoji) => {
+        const input = document.getElementById('chat-input');
+        input.value += emoji.native;
+        // Opsional: sembunyikan setelah pilih
+        // document.getElementById('emoji-container').classList.add('hidden');
+    },
+    theme: 'light',
+    skinTonePosition: 'none',
+    previewPosition: 'none',
+};
+
+const picker = new EmojiMart.Picker(pickerOptions);
+document.getElementById('emoji-container').appendChild(picker);
+
+// Toggle Tampilan
+document.getElementById('emoji-btn').onclick = (e) => {
+    e.stopPropagation();
+    const container = document.getElementById('emoji-container');
+    container.classList.toggle('hidden');
+};
+
+// Tutup picker jika klik di luar area chat
+document.addEventListener('click', (e) => {
+    const container = document.getElementById('emoji-container');
+    const btn = document.getElementById('emoji-btn');
+    if (!container.contains(e.target) && e.target !== btn) {
+        container.classList.add('hidden');
+    }
+});
+        </script>
 </body>
 </html>
