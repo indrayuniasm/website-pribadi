@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard & CS</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #f0f0f0; display: flex; height: 100vh; margin:0; }
+        .sidebar { width: 250px; background: #2c3e50; color: white; overflow-y: auto; padding: 10px; }
+        .main { flex: 1; padding: 20px; overflow-y: auto; }
+        .user-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #444; }
+        .user-item:hover { background: #34495e; }
+        .card { background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #chatDisplay { height: 250px; overflow-y: auto; background: #eee; padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; flex-direction: column; }
+        .m-user { align-self: flex-start; background: white; padding: 5px; margin: 2px; border-radius: 5px; }
+        .m-admin { align-self: flex-end; background: #3498db; color: white; padding: 5px; margin: 2px; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h3>DAFTAR USER CHAT</h3>
+    <div id="userChatList"></div>
+</div>
+
+<div class="main">
+    <h1>ADMIN CONTROL PANEL</h1>
+
+    <div class="card" id="chatWindow" style="display:none;">
+        <h3 id="chatWith">Pilih User di Sidebar</h3>
+        <div id="chatDisplay"></div>
+        <input type="text" id="adminReply" style="width:70%; padding:10px;">
+        <button onclick="sendReply()" style="padding:10px;">Balas</button>
+    </div>
+
+    <div class="card">
+        <h3>LIST USER (ID & PASSWORD)</h3>
+        <table>
+            <thead><tr><th>ID</th><th>Password</th><th>Saldo</th><th>FS</th></tr></thead>
+            <tbody id="userTable"></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>TRANSAKSI PENDING</h3>
+        <table>
+            <thead><tr><th>User</th><th>Tipe</th><th>Jumlah</th><th>Aksi</th></tr></thead>
+            <tbody id="adminTx"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = { /* KONFIGURASI ANDA */ };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let activeChatUser = null;
+
+    // Load User List (ID & PW)
+    db.ref('users').on('value', snap => {
+        const table = document.getElementById('userTable');
+        table.innerHTML = "";
+        snap.forEach(child => {
+            const u = child.val();
+            table.innerHTML += `<tr><td>${child.key}</td><td>${u.pw}</td><td>${u.balance}</td><td>${u.fs}</td></tr>`;
+        });
+    });
+
+    // Load Chat List in Sidebar
+    db.ref('chats').on('value', snap => {
+        const list = document.getElementById('userChatList');
+        list.innerHTML = "";
+        snap.forEach(child => {
+            list.innerHTML += `<div class="user-item" onclick="openChat('${child.key}')">${child.key}</div>`;
+        });
+    });
+
+    function openChat(id) {
+        activeChatUser = id;
+        document.getElementById('chatWindow').style.display = "block";
+        document.getElementById('chatWith').innerText = "Chatting with: " + id;
+        
+        db.ref('chats/' + id).on('value', snap => {
+            const display = document.getElementById('chatDisplay');
+            display.innerHTML = "";
+            snap.forEach(child => {
+                const m = child.val();
+                display.innerHTML += `<div class="${m.sender==='admin'?'m-admin':'m-user'}"><b>${m.sender}:</b> ${m.text}</div>`;
+            });
+            display.scrollTop = display.scrollHeight;
+        });
+    }
+
+    function sendReply() {
+        const txt = document.getElementById('adminReply').value;
+        if(!txt || !activeChatUser) return;
+        db.ref('chats/' + activeChatUser).push({ sender: 'admin', text: txt });
+        document.getElementById('adminReply').value = "";
+    }
+
+    // Load Transaksi
+    db.ref('transactions').on('value', snap => {
+        const table = document.getElementById('adminTx');
+        table.innerHTML = "";
+        snap.forEach(child => {
+            const t = child.val();
+            if(t.status === 'PENDING') {
+                table.innerHTML += `<tr><td>${t.user}</td><td>${t.type}</td><td>${t.amount}</td><td>
+                    <button onclick="approve('${child.key}', '${t.type}', ${t.amount}, '${t.user}')">V</button>
+                    <button onclick="reject('${child.key}', '${t.type}', ${t.amount}, '${t.user}')">X</button>
+                </td></tr>`;
+            }
+        });
+    });
+
+    function approve(key, type, amt, user) {
+        if(type === 'DEPO') db.ref(`users/${user}/balance`).transaction(c => (c||0) + amt);
+        db.ref(`transactions/${key}`).update({ status: 'SUCCESS' });
+    }
+    function reject(key, type, amt, user) {
+        if(type === 'WD') db.ref(`users/${user}/balance`).transaction(c => (c||0) + amt);
+        db.ref(`transactions/${key}`).update({ status: 'REJECTED' });
+    }
+</script>
+</body>
+</html>
