@@ -3,276 +3,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexChat Premium - LDR & Dealer System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>ConnectApp - Secure Chat</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0b0f1a; color: white; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .hidden { display: none !important; }
-        input:focus { border-color: #38bdf8 !important; outline: none; }
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --primary: #3b82f6;
+            --text: #f8fafc;
+            --border: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* --- AUTH SECTION --- */
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #0f172a;
+            color: white;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .captcha-box {
+            background: #334155;
+            padding: 10px;
+            text-align: center;
+            letter-spacing: 8px;
+            font-weight: 800;
+            margin: 10px 0;
+            border-radius: 8px;
+            user-select: none;
+            color: #fbbf24;
+        }
+
+        .switch-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+
+        /* --- CHAT SECTION --- */
+        .chat-app {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            grid-template-columns: 300px 1fr;
+        }
+
+        .sidebar {
+            background: var(--card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .main-chat {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+        }
+
+        .chat-header {
+            padding: 20px;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            font-weight: bold;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bubble {
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 70%;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .me { align-self: flex-end; background: var(--primary); border-bottom-right-radius: 2px; }
+        .them { align-self: flex-start; background: var(--border); border-bottom-left-radius: 2px; }
+
+        .chat-input {
+            padding: 20px;
+            display: flex;
+            gap: 10px;
+            background: var(--card);
+        }
+
+        .user-found {
+            margin-top: 15px;
+            padding: 10px;
+            background: #334155;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .chat-app { grid-template-columns: 1fr; }
+            .sidebar { display: none; } /* Mobile sederhana */
+        }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center overflow-hidden">
+<body>
 
-    <div id="captcha-container"></div>
+    <div class="auth-container" id="authUI">
+        <h2 id="title" style="text-align:center; margin-bottom:20px;">Masuk</h2>
+        
+        <div id="regExtra" style="display:none;">
+            <input type="text" id="regNama" placeholder="Nama Lengkap">
+            <input type="number" id="regWA" placeholder="Nomor HP WhatsApp">
+        </div>
 
-    <div id="auth-container" class="w-full max-w-md p-6">
-        <div id="reg-card" class="glass p-8 rounded-[2rem] shadow-2xl">
-            <h2 class="text-3xl font-bold mb-2 bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">Daftar Akun</h2>
-            <p class="text-slate-400 text-sm mb-6">Lengkapi data untuk bergabung.</p>
+        <input type="text" id="userID" placeholder="ID Username">
+        <input type="password" id="userPW" placeholder="Password">
+
+        <div id="captchaArea" style="display:none;">
+            <div class="captcha-box" id="captchaDisp"></div>
+            <input type="text" id="captchaInp" placeholder="Masukkan Captcha">
+        </div>
+
+        <button class="btn" onclick="processAuth()" id="btnMain">MASUK</button>
+        <p class="switch-link" onclick="toggleView()" id="btnSwitch">Belum punya akun? Daftar</p>
+    </div>
+
+    <div class="chat-app" id="chatUI">
+        <div class="sidebar">
+            <h3>Cari User</h3>
+            <input type="text" id="findID" placeholder="Masukkan ID teman...">
+            <button class="btn" onclick="searchUser()">Cari ID</button>
+            <div id="searchRes"></div>
             
-            <div class="space-y-4">
-                <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-3 bg-slate-900/50 rounded-xl border border-slate-700 transition">
-                <input type="text" id="reg-id" placeholder="ID Unik (Tanpa Spasi)" class="w-full p-3 bg-slate-900/50 rounded-xl border border-slate-700 transition">
-                <div class="flex gap-2">
-                    <input type="tel" id="reg-phone" placeholder="+628..." class="flex-1 p-3 bg-slate-900/50 rounded-xl border border-slate-700 transition">
-                    <button id="btn-otp" onclick="handleSendOTP()" class="bg-sky-600 px-4 rounded-xl text-xs font-bold hover:bg-sky-500">Kirim OTP</button>
-                </div>
-                <input type="text" id="reg-otp" placeholder="Kode OTP" class="w-full p-3 bg-slate-900/50 rounded-xl border border-slate-700 transition">
-                <input type="password" id="reg-pass" placeholder="Password" class="w-full p-3 bg-slate-900/50 rounded-xl border border-slate-700 transition">
-                <button onclick="handleRegister()" class="w-full py-4 bg-sky-600 rounded-2xl font-bold shadow-lg shadow-sky-900/40 mt-2">Daftar Sekarang</button>
+            <div style="margin-top:auto;">
+                <p style="font-size:0.8rem; color:#64748b;">Logged in as: <b id="myIdentity"></b></p>
+                <button onclick="location.reload()" style="background:none; border:none; color:#ef4444; cursor:pointer;">Keluar</button>
             </div>
-            <p class="mt-4 text-center text-sm text-slate-500">Sudah punya akun? <button onclick="toggleView('login')" class="text-sky-400">Login</button></p>
         </div>
 
-        <div id="log-card" class="glass p-8 rounded-[2rem] shadow-2xl hidden">
-            <h2 class="text-3xl font-bold mb-6 text-white text-center">Login</h2>
-            <div class="space-y-4">
-                <input type="tel" id="log-phone" placeholder="Nomor HP (+62)" class="w-full p-3 bg-slate-900/50 rounded-xl border border-slate-700">
-                <input type="password" id="log-pass" placeholder="Password" class="w-full p-3 bg-slate-900/50 rounded-xl border border-slate-700">
-                <button onclick="handleLogin()" class="w-full py-4 bg-indigo-600 rounded-2xl font-bold shadow-lg">Masuk</button>
-            </div>
-            <p class="mt-4 text-center text-sm text-slate-500">Belum punya akun? <button onclick="toggleView('reg')" class="text-sky-400">Daftar</button></p>
-        </div>
-    </div>
-
-    <div id="main-app" class="w-screen h-screen glass flex hidden">
-        <div class="w-80 border-r border-white/10 flex flex-col">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h1 class="text-xl font-bold tracking-tight">NexChat</h1>
-                    <button onclick="logout()" class="text-red-400 text-sm">Keluar</button>
-                </div>
-                <input type="text" id="search-bar" placeholder="Cari ID atau Nomor..." class="w-full p-3 bg-slate-800/50 rounded-xl text-sm border border-slate-700">
-            </div>
-            <div id="contact-list" class="flex-1 overflow-y-auto custom-scroll">
-                </div>
-        </div>
-
-        <div class="flex-1 flex flex-col bg-slate-900/30">
-            <div id="chat-header" class="p-4 border-b border-white/10 flex justify-between items-center hidden">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-500"></div>
-                    <div>
-                        <p id="target-name" class="font-bold">-</p>
-                        <p class="text-[10px] text-green-400 uppercase tracking-widest">Active Now</p>
-                    </div>
-                </div>
-                <div class="flex gap-4">
-                    <button onclick="initCall('voice')" class="p-2 hover:bg-white/10 rounded-full">📞</button>
-                    <button onclick="initCall('video')" class="p-2 hover:bg-white/10 rounded-full">📹</button>
-                </div>
-            </div>
-
-            <div id="chat-messages" class="flex-1 p-6 overflow-y-auto custom-scroll space-y-4">
-                </div>
-
-            <div id="chat-input-area" class="p-4 bg-slate-900/80 flex gap-3 hidden">
-                <input type="text" id="input-pesan" placeholder="Ketik pesan..." class="flex-1 bg-slate-800 border-none rounded-xl px-4">
-                <button onclick="kirimPesan()" class="bg-sky-600 px-6 rounded-xl font-bold">Kirim</button>
+        <div class="main-chat">
+            <div class="chat-header" id="chatHeader">Silakan cari user untuk memulai</div>
+            <div class="messages" id="msgBox"></div>
+            <div class="chat-input">
+                <input type="text" id="msgContent" placeholder="Ketik pesan..." style="margin:0;">
+                <button class="btn" onclick="sendMessage()" style="width:80px; margin:0;"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
-    <div id="video-modal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center hidden">
-        <video id="remote-video" autoplay class="w-full h-full object-cover"></video>
-        <video id="local-video" autoplay muted class="absolute bottom-10 right-10 w-48 h-72 border-2 border-white rounded-xl object-cover"></video>
-        <button onclick="endCall()" class="absolute bottom-10 left-1/2 -translate-x-1/2 bg-red-600 p-4 rounded-full px-8 font-bold">Tutup Telepon</button>
-    </div>
+<script>
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
+  authDomain: "fotobooth-e36ab.firebaseapp.com",
+  databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
+  projectId: "fotobooth-e36ab",
+  storageBucket: "fotobooth-e36ab.firebasestorage.app",
+  messagingSenderId: "1040239629485",
+  appId: "1:1040239629485:web:254a7b50a4243b6c5d6224",
+  measurementId: "G-SEKNK1YY41"
+};
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    <script type="module">
-        // --- FIREBASE CONFIGURATION ---
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPhoneNumber, RecaptchaVerifier, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, onSnapshot, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    let modeRegister = false;
+    let captchaReal = "";
+    let myID = "";
+    let partnerID = "";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
-            authDomain: "fotobooth-e36ab.firebaseapp.com",
-            databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
-            projectId: "fotobooth-e36ab",
-            storageBucket: "fotobooth-e36ab.firebasestorage.app",
-            messagingSenderId: "1040239629485",
-            appId: "1:1040239629485:web:f48eba2428d267895d6224",
-            measurementId: "G-EZG1C3KX2P"
-        };
+    // --- LOGIC AUTH ---
+    function toggleView() {
+        modeRegister = !modeRegister;
+        document.getElementById('title').innerText = modeRegister ? "Daftar Akun" : "Masuk";
+        document.getElementById('btnMain').innerText = modeRegister ? "DAFTAR SEKARANG" : "MASUK";
+        document.getElementById('regExtra').style.display = modeRegister ? "block" : "none";
+        document.getElementById('captchaArea').style.display = modeRegister ? "block" : "none";
+        document.getElementById('btnSwitch').innerText = modeRegister ? "Sudah punya akun? Login" : "Belum punya akun? Daftar";
+        if(modeRegister) createCaptcha();
+    }
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        let currentUser = null;
-        let activeChatTarget = null;
+    function createCaptcha() {
+        captchaReal = Math.random().toString(36).substring(2, 7).toUpperCase();
+        document.getElementById('captchaDisp').innerText = captchaReal;
+    }
 
-        // --- AUTH LOGIC ---
-        window.toggleView = (view) => {
-            if(view === 'login') {
-                document.getElementById('reg-card').classList.add('hidden');
-                document.getElementById('log-card').classList.remove('hidden');
-            } else {
-                document.getElementById('reg-card').classList.remove('hidden');
-                document.getElementById('log-card').classList.add('hidden');
+    function processAuth() {
+        const id = document.getElementById('userID').value.trim().toLowerCase();
+        const pw = document.getElementById('userPW').value;
+
+        if(!id || !pw) return alert("ID dan Password wajib diisi!");
+
+        if(modeRegister) {
+            const nama = document.getElementById('regNama').value;
+            const wa = document.getElementById('regWA').value;
+            const capInp = document.getElementById('captchaInp').value;
+
+            if(!nama || !wa) return alert("Lengkapi data profil!");
+            if(capInp.toUpperCase() !== captchaReal) {
+                alert("Captcha Salah!");
+                createCaptcha();
+                return;
             }
-        };
 
-        // Inisialisasi Recaptcha
-        const initRecaptcha = () => {
-            if (!window.recaptchaVerifier) {
-                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'captcha-container', { 'size': 'invisible' });
-            }
-        };
-
-        window.handleSendOTP = async () => {
-            const phone = document.getElementById('reg-phone').value;
-            if (!phone.startsWith('+62')) return alert("Gunakan format +62");
-            initRecaptcha();
-            try {
-                window.confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
-                alert("OTP Terkirim!");
-            } catch (e) { alert(e.message); }
-        };
-
-        window.handleRegister = async () => {
-            const otp = document.getElementById('reg-otp').value;
-            const userData = {
-                nama: document.getElementById('reg-nama').value,
-                username: document.getElementById('reg-id').value,
-                phone: document.getElementById('reg-phone').value,
-                bio: "Available",
-                mode: "public"
-            };
-
-            try {
-                const result = await window.confirmationResult.confirm(otp);
-                await setDoc(doc(db, "users", result.user.uid), userData);
-                alert("Pendaftaran Berhasil!");
-                location.reload();
-            } catch (e) { alert("OTP Salah atau Data Kurang"); }
-        };
-
-        // --- SESSION MANAGEMENT ---
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const docSnap = await getDoc(doc(db, "users", user.uid));
-                if (docSnap.exists()) {
-                    currentUser = { uid: user.uid, ...docSnap.data() };
-                    document.getElementById('auth-container').classList.add('hidden');
-                    document.getElementById('main-app').classList.remove('hidden');
-                    initPeer(user.uid);
-                    loadContacts();
+            db.ref('users/' + id).once('value', snap => {
+                if(snap.exists()) return alert("ID sudah dipakai orang lain!");
+                db.ref('users/' + id).set({
+                    nama: nama,
+                    wa: wa,
+                    pw: pw,
+                    status: "online"
+                }).then(() => {
+                    alert("Pendaftaran Berhasil! Silakan Login.");
+                    toggleView();
+                });
+            });
+        } else {
+            db.ref('users/' + id).once('value', snap => {
+                if(snap.exists() && snap.val().pw === pw) {
+                    myID = id;
+                    openChatApp();
+                } else {
+                    alert("ID atau Password salah!");
                 }
+            });
+        }
+    }
+
+    // --- LOGIC CHAT ---
+    function openChatApp() {
+        document.getElementById('authUI').style.display = 'none';
+        document.getElementById('chatUI').style.display = 'grid';
+        document.getElementById('myIdentity').innerText = myID;
+    }
+
+    function searchUser() {
+        const target = document.getElementById('findID').value.trim().toLowerCase();
+        if(target === myID) return alert("Tidak bisa chat diri sendiri!");
+        
+        db.ref('users/' + target).once('value', snap => {
+            if(snap.exists()) {
+                const u = snap.val();
+                document.getElementById('searchRes').innerHTML = `
+                    <div class="user-found" onclick="startChatting('${target}')">
+                        <i class="fas fa-user-circle" style="font-size:2rem;"></i>
+                        <div>
+                            <b>${u.nama}</b><br>
+                            <small>ID: ${target}</small>
+                        </div>
+                    </div>
+                `;
+            } else {
+                alert("User ID tidak ditemukan!");
             }
         });
+    }
 
-        window.logout = () => { signOut(auth).then(() => location.reload()); };
+    function startChatting(id) {
+        partnerID = id;
+        document.getElementById('chatHeader').innerText = "Chatting dengan: " + id;
+        listenMessages();
+    }
 
-        // --- CHAT LOGIC ---
-        async function loadContacts() {
-            const q = query(collection(db, "users"), where("mode", "==", "public"));
-            onSnapshot(q, (snapshot) => {
-                const list = document.getElementById('contact-list');
-                list.innerHTML = "";
-                snapshot.forEach(doc => {
-                    if(doc.id === currentUser.uid) return;
-                    const u = doc.data();
-                    const div = document.createElement('div');
-                    div.className = "p-4 flex items-center gap-3 hover:bg-white/5 cursor-pointer border-b border-white/5";
-                    div.innerHTML = `<div class="w-10 h-10 rounded-full bg-slate-700"></div><div><p class="font-bold text-sm">${u.nama}</p><p class="text-xs text-slate-500">@${u.username}</p></div>`;
-                    div.onclick = () => startChat(doc.id, u.nama);
-                    list.appendChild(div);
-                });
+    function listenMessages() {
+        // Buat room ID unik (alfabetis agar ID tetap sama meskipun dibalik)
+        const roomID = [myID, partnerID].sort().join("_");
+        
+        db.ref('chats/' + roomID).on('value', snap => {
+            const box = document.getElementById('msgBox');
+            box.innerHTML = "";
+            snap.forEach(child => {
+                const data = child.val();
+                const className = data.sender === myID ? 'me' : 'them';
+                box.innerHTML += `<div class="bubble ${className}">${data.text}</div>`;
             });
-        }
+            box.scrollTop = box.scrollHeight;
+        });
+    }
 
-        function startChat(id, nama) {
-            activeChatTarget = id;
-            document.getElementById('chat-header').classList.remove('hidden');
-            document.getElementById('chat-input-area').classList.remove('hidden');
-            document.getElementById('target-name').innerText = nama;
-            loadMessages(id);
-        }
+    function sendMessage() {
+        const text = document.getElementById('msgContent').value;
+        if(!text || !partnerID) return;
 
-        function loadMessages(targetId) {
-            const q = query(collection(db, "chats"), orderBy("time", "asc"));
-            onSnapshot(q, (snapshot) => {
-                const msgBox = document.getElementById('chat-messages');
-                msgBox.innerHTML = "";
-                snapshot.forEach(d => {
-                    const m = d.data();
-                    if((m.from === currentUser.uid && m.to === targetId) || (m.from === targetId && m.to === currentUser.uid)) {
-                        const isMe = m.from === currentUser.uid;
-                        const div = document.createElement('div');
-                        div.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
-                        div.innerHTML = `<div class="${isMe ? 'bg-sky-600' : 'bg-slate-800'} p-3 rounded-2xl max-w-[80%] text-sm">${m.text}</div>`;
-                        msgBox.appendChild(div);
-                    }
-                });
-                msgBox.scrollTop = msgBox.scrollHeight;
-            });
-        }
-
-        window.kirimPesan = async () => {
-            const txt = document.getElementById('input-pesan').value;
-            if(!txt) return;
-            await addDoc(collection(db, "chats"), {
-                from: currentUser.uid,
-                to: activeChatTarget,
-                text: txt,
-                time: Date.now()
-            });
-            document.getElementById('input-pesan').value = "";
-        };
-
-        // --- VIDEO CALL LOGIC (PEERJS) ---
-        let myPeer, localStream;
-        function initPeer(id) {
-            myPeer = new Peer(id);
-            myPeer.on('call', call => {
-                if(confirm("Ada panggilan masuk. Terima?")) {
-                    navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
-                        localStream = stream;
-                        document.getElementById('local-video').srcObject = stream;
-                        document.getElementById('video-modal').classList.remove('hidden');
-                        call.answer(stream);
-                        call.on('stream', userStream => {
-                            document.getElementById('remote-video').srcObject = userStream;
-                        });
-                    });
-                }
-            });
-        }
-
-        window.initCall = (type) => {
-            navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
-                localStream = stream;
-                document.getElementById('local-video').srcObject = stream;
-                document.getElementById('video-modal').classList.remove('hidden');
-                const call = myPeer.call(activeChatTarget, stream);
-                call.on('stream', userStream => {
-                    document.getElementById('remote-video').srcObject = userStream;
-                });
-            });
-        };
-
-        window.endCall = () => {
-            localStream.getTracks().forEach(track => track.stop());
-            document.getElementById('video-modal').classList.add('hidden');
-        };
-
-    </script>
+        const roomID = [myID, partnerID].sort().join("_");
+        db.ref('chats/' + roomID).push({
+            sender: myID,
+            text: text,
+            time: Date.now()
+        });
+        document.getElementById('msgContent').value = "";
+    }
+</script>
 </body>
-</html>
+    </html>
