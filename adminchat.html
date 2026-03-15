@@ -156,74 +156,108 @@
         <div onclick="alert('Admin Mode Active')"><i class="fas fa-user-gear fa-lg"></i></div>
     </div>
 
-<script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         authDomain: "fotobooth-e36ab.firebaseapp.com",
-        databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
         projectId: "fotobooth-e36ab",
         storageBucket: "fotobooth-e36ab.firebasestorage.app",
         messagingSenderId: "1040239629485",
         appId: "1:1040239629485:web:254a7b50a4243b6c5d6224"
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
 
-    db.ref('users').on('value', snap => {
-        const table = document.getElementById('userTable');
-        table.innerHTML = "";
-        let m = 0, f = 0, total = 0;
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-        snap.forEach(user => {
-            const d = user.val();
-            const id = user.key;
-            total++;
-            if(d.gender === 'Laki-laki') m++; else f++;
+    // --- DAFTAR (Wajib isi Nomor HP) ---
+    window.handleRegister = async () => {
+        const nama = document.getElementById('reg-nama').value.trim();
+        const idUser = document.getElementById('reg-id').value.trim().toLowerCase(); // Simpan kecil semua agar aman
+        const noHp = document.getElementById('reg-hp').value.trim();
+        const pass = document.getElementById('reg-pass').value;
+        const gender = document.getElementById('reg-gender').value;
+        const umur = document.getElementById('reg-umur').value;
 
-            table.innerHTML += `
-                <tr>
-                    <td>
-                        <div class="user-info">
-                            <img src="${d.pfp || 'https://via.placeholder.com/100'}">
-                            <div><b>${id}</b><br><small style="color:var(--text-dim)">${d.nama}</small></div>
-                        </div>
-                    </td>
-                    <td><code style="color:#fbbf24; font-weight:bold;">${d.pw}</code></td>
-                    <td>${d.wa || '-'}</td>
-                    <td><span class="badge ${d.gender}">${d.gender}</span></td>
-                    <td><button class="btn-spy" onclick="sadap('${id}')">Intip</button></td>
-                </tr>
-            `;
-        });
-        document.getElementById('tUser').innerText = total;
-        document.getElementById('tMale').innerText = m;
-        document.getElementById('tFemale').innerText = f;
+        if (!nama || !idUser || !noHp || !pass) return alert("Semua kolom wajib diisi!");
+
+        try {
+            // 1. Cek apakah ID sudah dipakai di Firestore
+            const q = query(collection(db, "users"), where("id", "==", idUser));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) return alert("ID sudah digunakan, cari ID lain!");
+
+            // 2. Daftar ke Auth (Email bayangan menggunakan ID)
+            const emailBayangan = idUser + "@chat.com";
+            const cred = await createUserWithEmailAndPassword(auth, emailBayangan, pass);
+
+            // 3. Simpan data lengkap ke Firestore
+            await setDoc(doc(db, "users", cred.user.uid), {
+                nama,
+                id: idUser,
+                hp: noHp,
+                gender,
+                umur,
+                uid: cred.user.uid,
+                bio: "Halo, saya baru di sini!",
+                photo: `https://ui-avatars.com/api/?name=${nama}&bg=6366f1&color=fff`
+            });
+
+            alert("Daftar Berhasil! Sekarang silakan Login menggunakan ID Anda.");
+            window.toggleAuth(false); // Pindah ke form login
+        } catch (e) {
+            alert("Gagal Daftar: " + e.message);
+        }
+    };
+
+    // --- LOGIN (Hanya ID dan Password) ---
+    window.handleLogin = async () => {
+        const inputId = document.getElementById('login-id').value.trim().toLowerCase();
+        const pass = document.getElementById('login-pass').value;
+
+        if (!inputId || !pass) return alert("Isi ID dan Password!");
+
+        // Karena kita mendaftar dengan format id@chat.com, login harus sama
+        const emailBayangan = inputId.includes("@") ? inputId : inputId + "@chat.com";
+
+        try {
+            await signInWithEmailAndPassword(auth, emailBayangan, pass);
+            // Autoredirect akan ditangani oleh onAuthStateChanged
+        } catch (e) {
+            if (e.code === "auth/user-not-found") alert("ID tidak ditemukan!");
+            else if (e.code === "auth/wrong-password") alert("Password salah!");
+            else alert("Login Gagal: " + e.message);
+        }
+    };
+
+    // --- MONITOR STATUS LOGIN ---
+    onAuthStateChanged(auth, async (user) => {
+        const authScreen = document.getElementById('auth-screen');
+        const mainApp = document.getElementById('main-app');
+        if (user) {
+            authScreen.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+            // Ambil data user dari Firestore untuk ditampilkan di profil
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if (snap.exists()) {
+                window.currentUserData = snap.data();
+                console.log("Logged in as:", window.currentUserData.nama);
+            }
+        } else {
+            authScreen.classList.remove('hidden');
+            mainApp.classList.add('hidden');
+        }
     });
 
-    function sadap(id) {
-        const out = document.getElementById('spyOutput');
-        out.innerHTML = `<p style="color:white; margin-bottom:15px;">Target: <b>@${id}</b></p>`;
-        
-        db.ref(`contacts/${id}`).once('value', snap => {
-            if(!snap.exists()) return out.innerHTML += "Tidak ada riwayat chat.";
-            
-            snap.forEach(c => {
-                const partner = c.key;
-                const room = [id, partner].sort().join("_");
-                const row = document.createElement('div');
-                row.className = 'chat-row';
-                row.innerHTML = `<small>Chat dengan: <b>${partner}</b></small>`;
-
-                db.ref(`messages/${room}`).limitToLast(5).once('value', mSnap => {
-                    mSnap.forEach(msg => {
-                        const m = msg.val();
-                        row.innerHTML += `<div class="chat-bubble"><b>${m.sender === id ? 'Dia' : 'Lawan'}:</b> ${m.text || '[VN/Media]'}</div>`;
-                    });
-                });
-                out.appendChild(row);
-            });
-        });
-    }
-</script>
+    window.logout = () => signOut(auth);
+    window.toggleAuth = (isReg) => {
+        document.getElementById('register-container').classList.toggle('hidden', !isReg);
+        document.getElementById('login-container').classList.toggle('hidden', isReg);
+    };
+            </script>
 </body>
     </html>
