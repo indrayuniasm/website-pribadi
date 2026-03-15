@@ -3,326 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Pro - Final Identity & Security</title>
+    <title>WhatsApp Clone 100% UI</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
         :root {
-            --wa-green: #25d366;
             --wa-bg: #0b141a;
-            --wa-surface: #1f2c33;
+            --wa-surface: #121b22;
+            --wa-header-bg: #0b141a;
+            --wa-green: #25d366;
             --wa-text: #e9edef;
             --wa-muted: #8696a0;
+            --wa-search: #202c33;
+            --wa-active-pill: #113f31;
             --wa-bubble-sent: #005c4b;
-            --wa-bubble-rcvd: #202c33;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--wa-bg); color: var(--wa-text); height: 100vh; overflow: hidden; position: fixed; width: 100%; }
 
-        /* --- AUTH SCREENS --- */
-        .auth-container { position: fixed; inset: 0; background: var(--wa-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
-        .auth-card { background: var(--wa-surface); padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .auth-input, .auth-select { width: 100%; padding: 12px; background: #2a3942; border: 1px solid transparent; color: white; border-radius: 8px; margin-bottom: 10px; outline: none; font-size: 14px; }
-        .auth-btn { width: 100%; padding: 12px; background: var(--wa-green); border: none; color: #000; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; font-size: 1rem; }
-        .captcha-box { background: #0b141a; padding: 10px; border-radius: 8px; color: var(--wa-green); font-weight: bold; letter-spacing: 8px; margin-bottom: 10px; font-size: 24px; user-select: none; border: 1px dashed var(--wa-muted); }
+        /* --- AUTH SCREEN --- */
+        .auth-overlay { position: fixed; inset: 0; background: var(--wa-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .auth-card { width: 85%; max-width: 350px; text-align: center; }
+        .auth-input { width: 100%; padding: 15px; background: var(--wa-search); border: none; color: white; border-radius: 10px; margin-bottom: 10px; outline: none; }
+        .auth-btn { width: 100%; padding: 15px; background: var(--wa-green); border: none; color: #000; font-weight: bold; border-radius: 10px; cursor: pointer; }
 
-        /* --- MAIN LAYOUT --- */
-        .app-container { display: flex; height: 100vh; width: 100%; }
-        .side-bar { width: 400px; background: var(--wa-bg); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; flex-shrink: 0; }
-        
-        .header { background: #202c33; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .header-icons { display: flex; gap: 25px; color: var(--wa-muted); cursor: pointer; align-items: center; }
+        /* --- LAYOUT --- */
+        .app-wrapper { display: flex; flex-direction: column; height: 100vh; max-width: 500px; margin: 0 auto; background: var(--wa-bg); position: relative; }
 
-        .list-container { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-        .item { padding: 15px 16px; display: flex; gap: 15px; cursor: pointer; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
-        .item:hover { background: #2a3942; }
-        .avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: #3b4a54; flex-shrink: 0; }
-        
-        .user-info { flex: 1; min-width: 0; }
-        .user-info b { font-size: 0.95rem; color: #fff; display: flex; align-items: center; gap: 6px; }
-        .badge-id { font-size: 0.65rem; background: #3b4a54; padding: 2px 6px; border-radius: 4px; color: var(--wa-green); font-weight: normal; }
-        .user-info p { font-size: 0.75rem; color: var(--wa-muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .user-meta { font-size: 0.7rem; color: var(--wa-green); margin-top: 2px; display: flex; gap: 10px; opacity: 0.8; }
+        /* Top Header */
+        header { padding: 15px 20px 10px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 1.5rem; color: var(--wa-text); font-weight: 500; letter-spacing: 0.5px; }
+        .head-icons { display: flex; gap: 22px; font-size: 1.2rem; }
 
-        /* --- CHAT AREA --- */
-        .main-chat { flex: 1; display: flex; flex-direction: column; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); position: relative; background-color: #0b141a; }
-        
-        @media (max-width: 900px) {
-            .side-bar { width: 100%; }
-            .main-chat { position: fixed; inset: 0; z-index: 100; transform: translateX(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-            .main-chat.active { transform: translateX(0); }
-        }
+        /* Meta Search Bar */
+        .search-area { padding: 10px 16px; }
+        .search-bar { background: var(--wa-search); display: flex; align-items: center; padding: 12px 18px; border-radius: 30px; gap: 12px; }
+        .search-bar i { color: var(--wa-muted); font-size: 0.9rem; }
+        .search-bar input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 0.95rem; }
 
-        .chat-head { background: #202c33; padding: 10px 18px; display: flex; align-items: center; gap: 15px; }
-        .msg-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
-        .bubble { padding: 8px 14px; border-radius: 10px; max-width: 80%; font-size: 0.95rem; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        /* Filter Chips */
+        .filters { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; scrollbar-width: none; }
+        .chip { background: var(--wa-search); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; color: var(--wa-muted); white-space: nowrap; cursor: pointer; }
+        .chip.active { background: var(--wa-active-pill); color: var(--wa-green); }
+
+        /* Chat List */
+        .chat-container { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+        .chat-item { display: flex; padding: 14px 16px; gap: 15px; cursor: pointer; }
+        .chat-item:active { background: rgba(255,255,255,0.05); }
+        .pfp { width: 52px; height: 52px; border-radius: 50%; background: #3b4a54; object-fit: cover; }
+        .chat-details { flex: 1; border-bottom: 0.1px solid rgba(134, 150, 160, 0.1); padding-bottom: 12px; min-width: 0; }
+        .chat-row1 { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .chat-row1 b { font-size: 1.05rem; }
+        .chat-row1 span { font-size: 0.75rem; color: var(--wa-muted); }
+        .chat-row2 { display: flex; justify-content: space-between; align-items: center; }
+        .chat-row2 p { font-size: 0.9rem; color: var(--wa-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* Floating Action Button (FAB) */
+        .fab { position: absolute; bottom: 100px; right: 20px; background: var(--wa-green); width: 55px; height: 55px; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #000; font-size: 1.3rem; box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 5; }
+
+        /* Bottom Navigation */
+        nav.bottom-bar { background: var(--wa-surface); display: flex; height: 80px; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); }
+        .nav-link { text-align: center; color: var(--wa-muted); cursor: pointer; text-decoration: none; position: relative; }
+        .nav-link i { font-size: 1.2rem; padding: 6px 20px; border-radius: 20px; display: inline-block; transition: 0.2s; }
+        .nav-link.active i { background: var(--wa-active-pill); color: #fff; }
+        .nav-link.active span { color: #fff; font-weight: 600; }
+        .nav-link span { display: block; font-size: 0.8rem; margin-top: 5px; }
+        .nav-badge { position: absolute; top: -5px; right: 8px; background: var(--wa-green); color: #000; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; }
+
+        /* --- CHAT OVERLAY --- */
+        .chat-screen { position: fixed; inset: 0; background: var(--wa-bg); z-index: 1000; transform: translateX(100%); transition: 0.3s; display: flex; flex-direction: column; }
+        .chat-screen.active { transform: translateX(0); }
+        .chat-header { background: var(--wa-search); padding: 10px 15px; display: flex; align-items: center; gap: 10px; }
+        .chat-content { flex: 1; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .bubble { padding: 8px 14px; border-radius: 10px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; }
         .sent { align-self: flex-end; background: var(--wa-bubble-sent); border-top-right-radius: 0; }
-        .received { align-self: flex-start; background: var(--wa-bubble-rcvd); border-top-left-radius: 0; }
-
-        .input-area { background: #202c33; padding: 10px 15px; display: flex; align-items: center; gap: 15px; }
-        .m-input { flex: 1; background: #2a3942; border: none; padding: 12px 18px; color: white; border-radius: 25px; outline: none; font-size: 16px; }
+        .rcvd { align-self: flex-start; background: var(--wa-search); border-top-left-radius: 0; }
+        .chat-footer { background: var(--wa-search); padding: 10px; display: flex; align-items: center; gap: 10px; }
+        .chat-footer input { flex: 1; background: #2a3942; border: none; padding: 12px 18px; color: white; border-radius: 25px; outline: none; font-size: 16px; }
 
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="loginPage" class="auth-container">
+    <div id="authPage" class="auth-overlay">
         <div class="auth-card">
-            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:4rem;"></i>
-            <h2 style="margin: 20px 0;">WhatsApp Login</h2>
-            <input type="text" id="l-id" class="auth-input" placeholder="ID Pengguna">
-            <input type="password" id="l-pass" class="auth-input" placeholder="Password">
-            <button onclick="auth('login')" class="auth-btn">LOG IN</button>
-            <p style="margin-top:20px; font-size:0.85rem;">Belum punya akun? <span onclick="toggleAuth('reg')" style="color:var(--wa-green); cursor:pointer; font-weight:bold;">Daftar</span></p>
+            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:4.5rem; margin-bottom:20px;"></i>
+            <input type="text" id="myID" class="auth-input" placeholder="Masukkan ID">
+            <input type="password" id="myPass" class="auth-input" placeholder="Password">
+            <button onclick="login()" class="auth-btn">MASUK</button>
         </div>
     </div>
 
-    <div id="regPage" class="auth-container hidden">
-        <div class="auth-card">
-            <h2 style="margin-bottom: 15px;">Buat Akun Baru</h2>
-            <input type="text" id="r-nama" class="auth-input" placeholder="Nama Lengkap">
-            <input type="text" id="r-id" class="auth-input" placeholder="Pilih ID (Contoh: budi12)">
-            <input type="number" id="r-hp" class="auth-input" placeholder="Nomor HP (08xx...)">
-            <select id="r-gender" class="auth-select">
-                <option value="">Pilih Jenis Kelamin</option>
-                <option value="Laki-laki">Laki-laki</option>
-                <option value="Perempuan">Perempuan</option>
-            </select>
-            <input type="password" id="r-pass" class="auth-input" placeholder="Password">
-            
-            <div style="margin: 10px 0;">
-                <p style="font-size: 0.75rem; color: var(--wa-muted); margin-bottom: 8px;">Verifikasi Keamanan (Captcha):</p>
-                <div id="captchaCode" class="captcha-box">0000</div>
-                <input type="text" id="r-captcha" class="auth-input" placeholder="Ketik angka di atas">
+    <div id="app" class="app-wrapper hidden">
+        <header>
+            <h1>WhatsApp</h1>
+            <div class="head-icons">
+                <i class="fa-solid fa-camera"></i>
+                <i class="fa-solid fa-magnifying-glass" onclick="alert('Cari...')"></i>
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </div>
+        </header>
+
+        <div class="search-area">
+            <div class="search-bar">
+                <i class="fa-solid fa-circle-nodes" style="color:#34b7f1;"></i>
+                <input type="text" placeholder="Tanya Meta AI atau cari">
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="chip active">Semua</div>
+            <div class="chip">Belum dibaca</div>
+            <div class="chip">Favorit</div>
+            <div class="chip">Grup</div>
+        </div>
+
+        <div id="chatList" class="chat-container">
             </div>
 
-            <button onclick="auth('reg')" class="auth-btn">DAFTAR SEKARANG</button>
-            <p style="margin-top:15px; font-size:0.85rem;">Sudah punya akun? <span onclick="toggleAuth('login')" style="color:var(--wa-green); cursor:pointer; font-weight:bold;">Masuk</span></p>
+        <div class="fab" onclick="newChat()">
+            <i class="fa-solid fa-plus"></i>
         </div>
+
+        <nav class="bottom-bar">
+            <div class="nav-link active">
+                <span class="nav-badge">37</span>
+                <i class="fa-solid fa-message"></i>
+                <span>Chat</span>
+            </div>
+            <div class="nav-link">
+                <i class="fa-solid fa-circle-notch"></i>
+                <span>Pembaruan</span>
+            </div>
+            <div class="nav-link">
+                <i class="fa-solid fa-users"></i>
+                <span>Komunitas</span>
+            </div>
+            <div class="nav-link">
+                <i class="fa-solid fa-phone"></i>
+                <span>Panggilan</span>
+            </div>
+        </nav>
     </div>
 
-    <div id="app" class="app-container hidden">
-        <aside class="side-bar">
-            <div class="header">
-                <img id="myAvatar" class="avatar" style="width:40px; height:40px; cursor:pointer;" title="Profil Saya">
-                <div class="header-icons">
-                    <i class="fa-solid fa-circle-notch" onclick="document.getElementById('storyInput').click()" title="Post Story"></i>
-                    <i class="fa-solid fa-message" onclick="startChat()" title="Tambah Chat"></i>
-                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                </div>
+    <div id="chatScreen" class="chat-screen">
+        <div class="chat-header">
+            <i class="fa-solid fa-arrow-left" onclick="closeChat()"></i>
+            <img id="hPfp" class="pfp" style="width:38px; height:38px;">
+            <div style="flex:1">
+                <b id="hName">...</b><br>
+                <small style="font-size:0.7rem; color:var(--wa-green);">online</small>
             </div>
-            
-            <input type="file" id="storyInput" accept="image/*" class="hidden" onchange="postStory(this)">
-
-            <div id="pane-chats" class="list-container"></div>
-        </aside>
-
-        <main id="chatWindow" class="main-chat">
-            <div id="noChat" style="margin:auto; text-align:center; color:var(--wa-muted); opacity:0.4;">
-                <i class="fa-brands fa-whatsapp" style="font-size:8rem;"></i>
-                <p style="margin-top: 15px; font-size: 1.1rem;">Pilih pengguna untuk mulai chatting</p>
+            <div class="head-icons" style="font-size: 1rem;">
+                <i class="fa-solid fa-video"></i>
+                <i class="fa-solid fa-phone"></i>
             </div>
-
-            <div id="chatActive" class="hidden" style="display:flex; flex-direction:column; height:100%;">
-                <div class="chat-head">
-                    <i class="fa-solid fa-arrow-left" onclick="closeChat()" style="cursor:pointer; color:var(--wa-muted);"></i>
-                    <img id="hAvatar" class="avatar" style="width:40px; height:40px;">
-                    <div style="flex:1">
-                        <b id="hName">...</b><br>
-                        <small id="hStatus" style="font-size:0.7rem;"></small>
-                    </div>
-                    <div class="header-icons">
-                        <i class="fa-solid fa-video"></i>
-                        <i class="fa-solid fa-phone"></i>
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </div>
-                </div>
-                <div id="mBox" class="msg-box"></div>
-                <div class="input-area">
-                    <i class="fa-regular fa-face-smile" style="font-size:1.5rem; color:var(--wa-muted);"></i>
-                    <input type="text" id="mInput" class="m-input" placeholder="Ketik pesan">
-                    <i class="fa-solid fa-paper-plane" onclick="send()" style="color:var(--wa-green); cursor:pointer; font-size: 1.3rem;"></i>
-                </div>
-            </div>
-        </main>
+        </div>
+        <div id="msgBox" class="chat-content"></div>
+        <div class="chat-footer">
+            <i class="fa-regular fa-face-smile" style="font-size:1.5rem; color:var(--wa-muted);"></i>
+            <input type="text" id="mInput" placeholder="Ketik pesan">
+            <i class="fa-solid fa-paper-plane" onclick="sendMsg()" style="color:var(--wa-green); cursor:pointer;"></i>
+        </div>
     </div>
 
 <script>
-    // --- FIREBASE SETUP ---
+    // --- FIREBASE CONFIG ---
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    
-    let myID = "", partnerID = "", currentCaptcha = "";
 
-    // --- CAPTCHA GENERATOR ---
-    function genCaptcha() {
-        currentCaptcha = Math.floor(1000 + Math.random() * 9000).toString();
-        const box = document.getElementById('captchaCode');
-        if(box) box.innerText = currentCaptcha;
-    }
-    genCaptcha();
+    let userID = "", targetID = "";
 
-    function toggleAuth(m) {
-        document.getElementById('loginPage').classList.toggle('hidden', m!=='login');
-        document.getElementById('regPage').classList.toggle('hidden', m!=='reg');
-        if(m === 'reg') genCaptcha();
-    }
+    function login() {
+        const id = document.getElementById('myID').value.trim().toLowerCase();
+        const pass = document.getElementById('myPass').value.trim();
+        if(!id || !pass) return alert("Isi data!");
 
-    // --- AUTH LOGIC ---
-    async function auth(mode) {
-        if(mode === 'login') {
-            const id = document.getElementById('l-id').value.trim().toLowerCase();
-            const pass = document.getElementById('l-pass').value.trim();
-            if(!id || !pass) return;
-
-            const snap = await db.ref('accounts/'+id).once('value');
-            if(snap.exists() && snap.val().password === pass) launch(id);
-            else alert("ID atau Password salah!");
-        } else {
-            const nama = document.getElementById('r-nama').value.trim();
-            const id = document.getElementById('r-id').value.trim().toLowerCase();
-            const hp = document.getElementById('r-hp').value.trim();
-            const gender = document.getElementById('r-gender').value;
-            const pass = document.getElementById('r-pass').value.trim();
-            const cap = document.getElementById('r-captcha').value.trim();
-
-            if(!nama || !id || !hp || !gender || !pass) return alert("Lengkapi data!");
-            if(cap !== currentCaptcha) {
-                alert("Captcha salah!");
-                genCaptcha();
-                return;
+        db.ref('accounts/'+id).once('value', s => {
+            if(s.exists() && s.val().password === pass) {
+                userID = id;
+                document.getElementById('authPage').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+                loadChats();
+            } else {
+                alert("Salah password/ID!");
             }
-
-            const check = await db.ref('accounts/'+id).once('value');
-            if(check.exists()) alert("ID sudah terdaftar!");
-            else {
-                await db.ref('accounts/'+id).set({password: pass});
-                await db.ref('users/'+id).set({
-                    nama: nama, id: id, hp: hp, gender: gender, pfp: "", status: "online"
-                });
-                launch(id);
-            }
-        }
+        });
     }
 
-    function launch(id) {
-        myID = id;
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('regPage').classList.add('hidden');
-        document.getElementById('app').classList.remove('hidden');
-        
-        db.ref('users/'+id+'/status').set('online');
-        db.ref('users/'+id+'/status').onDisconnect().set('offline');
-        
-        document.getElementById('myAvatar').src = `https://ui-avatars.com/api/?name=${id}&background=random`;
-        loadChatList();
-    }
-
-    // --- CHAT LIST & INFO ---
-    function loadChatList() {
+    function loadChats() {
         db.ref('messages').on('value', snap => {
-            const list = document.getElementById('pane-chats');
+            const list = document.getElementById('chatList');
             list.innerHTML = "";
             let rooms = [];
-            
             snap.forEach(room => {
-                if(room.key.includes(myID)) {
-                    const other = room.key.split("_").find(i => i!==myID);
+                if(room.key.includes(userID)) {
+                    const other = room.key.split("_").find(i => i!==userID);
                     const last = Object.values(room.val()).pop();
                     rooms.push({id: other, msg: last.text, time: last.time});
                 }
             });
 
             rooms.sort((a,b) => b.time - a.time).forEach(r => {
-                db.ref('users/'+r.id).once('value', u => {
-                    const d = u.val() || {};
-                    list.innerHTML += `
-                        <div class="item" onclick="openChat('${r.id}')">
-                            <img src="${d.pfp || 'https://ui-avatars.com/api/?name='+r.id}" class="avatar">
-                            <div class="user-info">
-                                <b>${d.nama || r.id} <span class="badge-id">@${r.id}</span></b>
-                                <div class="user-meta">
-                                    <span><i class="fa-solid fa-phone"></i> ${d.hp}</span>
-                                    <span><i class="fa-solid fa-venus-mars"></i> ${d.gender}</span>
-                                </div>
-                                <p>"${r.msg}"</p>
+                const timeStr = new Date(r.time).toLocaleTimeString([], {hour: '2.2', minute: '2.2'});
+                list.innerHTML += `
+                    <div class="chat-item" onclick="openChat('${r.id}')">
+                        <img src="https://ui-avatars.com/api/?name=${r.id}&background=random" class="pfp">
+                        <div class="chat-details">
+                            <div class="chat-row1">
+                                <b>${r.id}</b>
+                                <span>${timeStr}</span>
                             </div>
-                        </div>`;
-                });
+                            <div class="chat-row2">
+                                <p>${r.msg}</p>
+                            </div>
+                        </div>
+                    </div>`;
             });
         });
     }
 
-    // --- CHAT SYSTEM ---
     function openChat(id) {
-        partnerID = id;
-        document.getElementById('noChat').classList.add('hidden');
-        document.getElementById('chatActive').classList.remove('hidden');
-        document.getElementById('chatWindow').classList.add('active');
+        targetID = id;
+        document.getElementById('chatScreen').classList.add('active');
+        document.getElementById('hName').innerText = id;
+        document.getElementById('hPfp').src = `https://ui-avatars.com/api/?name=${id}&background=random`;
 
-        db.ref('users/'+id).on('value', s => {
-            const d = s.val() || {};
-            document.getElementById('hName').innerText = d.nama || id;
-            document.getElementById('hAvatar').src = d.pfp || `https://ui-avatars.com/api/?name=${id}`;
-            document.getElementById('hStatus').innerText = d.status || 'offline';
-            document.getElementById('hStatus').style.color = d.status === 'online' ? 'var(--wa-green)' : 'var(--wa-muted)';
-        });
-
-        const room = [myID, partnerID].sort().join("_");
-        db.ref('messages/'+room).on('value', snap => {
-            const box = document.getElementById('mBox');
+        const room = [userID, targetID].sort().join("_");
+        db.ref('messages/'+room).on('value', s => {
+            const box = document.getElementById('msgBox');
             box.innerHTML = "";
-            snap.forEach(m => {
-                const data = m.val();
-                box.innerHTML += `<div class="bubble ${data.sender===myID?'sent':'received'}">${data.text}</div>`;
+            s.forEach(m => {
+                const d = m.val();
+                box.innerHTML += `<div class="bubble ${d.sender===userID?'sent':'rcvd'}">${d.text}</div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
-    function send() {
-        const t = document.getElementById('mInput').value;
-        if(!t) return;
-        const room = [myID, partnerID].sort().join("_");
-        db.ref('messages/'+room).push({sender: myID, text: t, time: Date.now()});
+    function sendMsg() {
+        const val = document.getElementById('mInput').value;
+        if(!val) return;
+        const room = [userID, targetID].sort().join("_");
+        db.ref('messages/'+room).push({sender: userID, text: val, time: Date.now()});
         document.getElementById('mInput').value = "";
     }
 
-    // --- STORY FEATURE ---
-    function postStory(input) {
-        const file = input.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            db.ref('stories/'+myID).set({
-                img: e.target.result,
-                time: Date.now()
-            });
-            alert("Story foto berhasil diposting!");
-        };
-        reader.readAsDataURL(file);
+    function closeChat() { document.getElementById('chatScreen').classList.remove('active'); }
+    function newChat() {
+        const id = prompt("Masukkan ID Teman:");
+        if(id) openChat(id.toLowerCase());
     }
-
-    async function startChat() {
-        const id = prompt("Masukkan ID teman:").toLowerCase();
-        if(!id) return;
-        const u = await db.ref('users/'+id).once('value');
-        if(u.exists()) openChat(id);
-        else alert("User tidak ditemukan!");
-    }
-
-    function closeChat() { document.getElementById('chatWindow').classList.remove('active'); }
 </script>
 </body>
-    </html>
+                </html>
