@@ -1,320 +1,166 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>WA Clone Simple</title>
-
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<style>
-
-body{
-margin:0;
-font-family:Segoe UI;
-background:#0b141a;
-color:white;
-}
-
-.app{
-max-width:500px;
-margin:auto;
-height:100vh;
-display:flex;
-flex-direction:column;
-}
-
-header{
-background:#202c33;
-padding:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.chat-list{
-flex:1;
-overflow:auto;
-}
-
-.row{
-display:flex;
-padding:14px;
-gap:10px;
-border-bottom:1px solid rgba(255,255,255,0.05);
-cursor:pointer;
-}
-
-.row img{
-width:50px;
-height:50px;
-border-radius:50%;
-}
-
-.row b{
-display:block;
-}
-
-.chat-room{
-position:fixed;
-inset:0;
-background:#0b141a;
-display:none;
-flex-direction:column;
-}
-
-.chat-header{
-background:#202c33;
-padding:10px;
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.chat-messages{
-flex:1;
-overflow:auto;
-padding:10px;
-}
-
-.msg{
-padding:8px 12px;
-border-radius:10px;
-max-width:70%;
-margin-bottom:6px;
-font-size:14px;
-}
-
-.me{
-background:#005c4b;
-margin-left:auto;
-}
-
-.other{
-background:#202c33;
-}
-
-.input-area{
-display:flex;
-background:#202c33;
-padding:8px;
-}
-
-.input-area input{
-flex:1;
-padding:10px;
-border:none;
-border-radius:20px;
-outline:none;
-}
-
-.input-area button{
-background:#25d366;
-border:none;
-border-radius:50%;
-width:40px;
-height:40px;
-margin-left:8px;
-}
-
-.login{
-position:fixed;
-inset:0;
-background:#0b141a;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-.login-box{
-width:300px;
-text-align:center;
-}
-
-.login input{
-width:100%;
-padding:12px;
-border:none;
-border-radius:10px;
-margin-bottom:10px;
-}
-
-.login button{
-width:100%;
-padding:12px;
-border:none;
-border-radius:20px;
-background:#25d366;
-font-weight:bold;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatApp - Private & Story</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Sembunyikan footer di desktop, tampilkan di mobile */
+        @media (min-width: 768px) { .mobile-footer { display: none; } }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
 </head>
-<body>
+<body class="bg-slate-100 font-sans">
 
-<div class="login" id="login">
-<div class="login-box">
-<h2>WA Clone</h2>
-<input id="userInput" placeholder="Masukkan ID">
-<button onclick="login()">MASUK</button>
-</div>
-</div>
+    <div id="auth-screen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6">
+        <div id="register-form" class="w-full max-w-md space-y-4">
+            <h2 class="text-2xl font-bold text-blue-600 text-center">Daftar Akun</h2>
+            <input id="reg-nama" type="text" placeholder="Nama Lengkap" class="w-full border p-3 rounded-lg">
+            <input id="reg-id" type="text" placeholder="ID Unik (contoh: budi_99)" class="w-full border p-3 rounded-lg">
+            <input id="reg-hp" type="tel" placeholder="Nomor HP" class="w-full border p-3 rounded-lg">
+            <input id="reg-pass" type="password" placeholder="Password" class="w-full border p-3 rounded-lg">
+            <div class="flex gap-4">
+                <select id="reg-gender" class="w-1/2 border p-3 rounded-lg">
+                    <option value="Pria">Pria</option>
+                    <option value="Wanita">Wanita</option>
+                </select>
+                <input id="reg-umur" type="number" placeholder="Umur" class="w-1/2 border p-3 rounded-lg">
+            </div>
+            <button onclick="handleRegister()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">Daftar</button>
+            <p class="text-center text-sm cursor-pointer text-blue-500" onclick="toggleAuth()">Sudah punya akun? Login</p>
+        </div>
 
-<div class="app" id="app" style="display:none">
+        <div id="login-form" class="hidden w-full max-w-md space-y-4">
+            <h2 class="text-2xl font-bold text-blue-600 text-center">Masuk ChatApp</h2>
+            <input id="login-id" type="text" placeholder="No HP atau ID" class="w-full border p-3 rounded-lg">
+            <input id="login-pass" type="password" placeholder="Password" class="w-full border p-3 rounded-lg">
+            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">Login</button>
+            <p class="text-center text-sm cursor-pointer text-blue-500" onclick="toggleAuth()">Belum punya akun? Daftar</p>
+        </div>
+    </div>
 
-<header>
-<b>WhatsApp</b>
-<i class="fa fa-ellipsis-vertical"></i>
-</header>
+    <div id="app-screen" class="hidden flex h-screen overflow-hidden">
+        
+        <aside class="hidden md:flex w-80 bg-white border-r flex-col">
+            <div class="p-4 border-b">
+                <h1 class="text-xl font-bold text-blue-600">ChatApp</h1>
+                <input type="text" placeholder="Cari pesan atau ID..." class="w-full mt-3 bg-slate-100 p-2 rounded-md outline-none border-none">
+            </div>
+            <div id="chat-list" class="flex-1 overflow-y-auto">
+                </div>
+        </aside>
 
-<div class="chat-list" id="chatList"></div>
+        <main class="flex-1 flex flex-col bg-white">
+            <header class="h-16 border-b flex items-center justify-between px-4 bg-white">
+                <div class="flex items-center gap-3">
+                    <img id="current-chat-img" src="https://ui-avatars.com/api/?name=User" class="w-10 h-10 rounded-full">
+                    <div>
+                        <h3 id="current-chat-name" class="font-bold text-sm">Pilih Chat</h3>
+                        <p class="text-xs text-green-500">Online</p>
+                    </div>
+                </div>
+                <div class="flex gap-4 text-slate-500">
+                    <button onclick="alert('Memulai Telepon...')"><i class="fas fa-phone"></i></button>
+                    <button onclick="alert('Memulai Video Call...')"><i class="fas fa-video"></i></button>
+                </div>
+            </header>
 
-</div>
+            <div id="message-container" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
+                </div>
 
-<div class="chat-room" id="chatRoom">
+            <div class="p-4 border-t flex gap-2 bg-white">
+                <input id="msg-input" type="text" placeholder="Ketik pesan..." class="flex-1 bg-slate-100 p-3 rounded-full outline-none">
+                <button onclick="sendMsg()" class="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </main>
 
-<div class="chat-header">
-<i class="fa fa-arrow-left" onclick="closeChat()"></i>
-<b id="chatUser"></b>
-</div>
+        <nav class="mobile-footer fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3">
+            <button class="flex flex-col items-center text-blue-600"><i class="fas fa-comment"></i><span class="text-[10px]">Chat</span></button>
+            <button onclick="showStory()" class="flex flex-col items-center text-slate-400"><i class="fas fa-circle-notch"></i><span class="text-[10px]">Story</span></button>
+            <button class="flex flex-col items-center text-slate-400"><i class="fas fa-history"></i><span class="text-[10px]">History</span></button>
+            <button onclick="showProfile()" class="flex flex-col items-center text-slate-400"><i class="fas fa-user-circle"></i><span class="text-[10px]">Profil</span></button>
+        </nav>
+    </div>
 
-<div class="chat-messages" id="messages"></div>
+    <script type="module">
+        // Import Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-<div class="input-area">
-<input id="msgInput" placeholder="Ketik pesan">
-<button onclick="sendMsg()">
-<i class="fa fa-paper-plane"></i>
-</button>
-</div>
-
-</div>
-
-<script>
-
-const firebaseConfig={
-apiKey:"AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
-databaseURL:"https://fotobooth-e36ab-default-rtdb.firebaseio.com"
+        // CONFIG FIREBASE (Ganti dengan milik Anda)
+        const firebaseConfig = {
+  apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
+  authDomain: "fotobooth-e36ab.firebaseapp.com",
+  databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
+  projectId: "fotobooth-e36ab",
+  storageBucket: "fotobooth-e36ab.firebasestorage.app",
+  messagingSenderId: "1040239629485",
+  appId: "1:1040239629485:web:254a7b50a4243b6c5d6224",
+  measurementId: "G-SEKNK1YY41"
 };
+      }
 
-firebase.initializeApp(firebaseConfig);
-const db=firebase.database();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-let myID="";
-let currentChat="";
+        // LOGIKA PINDAH LAYAR
+        window.toggleAuth = () => {
+            document.getElementById('register-form').classList.toggle('hidden');
+            document.getElementById('login-form').classList.toggle('hidden');
+        };
 
-function login(){
+        // DAFTAR
+        window.handleRegister = async () => {
+            const nama = document.getElementById('reg-nama').value;
+            const idUnik = document.getElementById('reg-id').value;
+            const hp = document.getElementById('reg-hp').value;
+            const pass = document.getElementById('reg-pass').value;
 
-const id=document.getElementById("userInput").value.trim();
+            try {
+                // Gunakan dummy email karena Firebase Auth butuh format email
+                const userCredential = await createUserWithEmailAndPassword(auth, idUnik + "@chat.com", pass);
+                const user = userCredential.user;
 
-if(!id)return;
+                // Simpan detail ke Firestore
+                await setDoc(doc(db, "users", user.uid), {
+                    nama, userID: idUnik, hp, gender: document.getElementById('reg-gender').value,
+                    umur: document.getElementById('reg-umur').value,
+                    photoURL: `https://ui-avatars.com/api/?name=${nama}`,
+                    bio: "Halo, saya menggunakan ChatApp!"
+                });
 
-myID=id;
+                alert("Berhasil Daftar!");
+                location.reload();
+            } catch (err) { alert(err.message); }
+        };
 
-document.getElementById("login").style.display="none";
-document.getElementById("app").style.display="flex";
+        // LOGIN
+        window.handleLogin = async () => {
+            const id = document.getElementById('login-id').value;
+            const pass = document.getElementById('login-pass').value;
+            try {
+                await signInWithEmailAndPassword(auth, id + "@chat.com", pass);
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+            } catch (err) { alert("Login Gagal: Periksa ID/Password"); }
+        };
 
-loadChats();
-
-}
-
-function loadChats(){
-
-db.ref("messages").on("value",snap=>{
-
-const box=document.getElementById("chatList");
-box.innerHTML="";
-
-snap.forEach(room=>{
-
-if(room.key.includes(myID)){
-
-const other=room.key.split("_").find(x=>x!==myID);
-
-box.innerHTML+=`
-<div class="row" onclick="openChat('${other}')">
-
-<img src="https://ui-avatars.com/api/?name=${other}">
-
-<div>
-<b>${other}</b>
-<span>Buka chat</span>
-</div>
-
-</div>
-`;
-
-}
-
-});
-
-});
-
-}
-
-function openChat(user){
-
-currentChat=user;
-
-document.getElementById("chatRoom").style.display="flex";
-document.getElementById("chatUser").innerText=user;
-
-db.ref("messages/"+roomID()).on("value",snap=>{
-
-const box=document.getElementById("messages");
-box.innerHTML="";
-
-snap.forEach(m=>{
-
-const d=m.val();
-
-box.innerHTML+=`
-<div class="msg ${d.sender==myID?'me':'other'}">
-${d.text}
-</div>
-`;
-
-});
-
-box.scrollTop=box.scrollHeight;
-
-});
-
-}
-
-function closeChat(){
-
-document.getElementById("chatRoom").style.display="none";
-
-}
-
-function sendMsg(){
-
-const text=document.getElementById("msgInput").value;
-
-if(!text)return;
-
-db.ref("messages/"+roomID()).push({
-
-sender:myID,
-text:text,
-time:Date.now()
-
-});
-
-document.getElementById("msgInput").value="";
-
-}
-
-function roomID(){
-
-return [myID,currentChat].sort().join("_");
-
-}
-
-</script>
-
+        // REAL-TIME STORY VIEWER LOGIC (Contoh Singkat)
+        window.trackStoryView = async (storyId, viewerId) => {
+            const storyRef = doc(db, "stories", storyId);
+            // Update array viewer di Firestore secara real-time
+            await updateDoc(storyRef, {
+                viewers: arrayUnion(viewerId)
+            });
+        };
+    </script>
 </body>
-</html>
+          </html>
