@@ -3,56 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ConnectPro - Login & Register</title>
+    <title>ConnectPro - Chat & Social</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+    </style>
 </head>
-<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
+<body class="bg-slate-50 text-slate-800">
 
-    <div class="bg-white w-full max-w-md rounded-[30px] shadow-xl overflow-hidden p-8">
-        
-        <div id="login-container">
-            <h2 class="text-3xl font-black text-slate-800 mb-2">Login</h2>
-            <p class="text-slate-500 mb-8">Masuk dengan ID ConnectPro kamu.</p>
-            
-            <div class="space-y-4">
-                <input type="text" id="login-id" placeholder="ID User (contoh: indra)" class="w-full p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500 outline-none">
-                <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500 outline-none">
-                <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition">Masuk Sekarang</button>
-            </div>
-            
-            <p class="text-center mt-6 text-slate-600">Belum punya akun? <a href="javascript:void(0)" onclick="toggleAuth(true)" class="text-blue-600 font-bold">Daftar</a></p>
-        </div>
-
-        <div id="register-container" class="hidden">
-            <h2 class="text-3xl font-black text-slate-800 mb-2">Daftar</h2>
-            <p class="text-slate-500 mb-6">Buat akun baru kamu.</p>
-            
-            <div class="space-y-3">
-                <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-3 bg-slate-50 rounded-xl outline-none border focus:border-blue-500">
-                <input type="text" id="reg-id" placeholder="Buat ID User (Tanpa spasi)" class="w-full p-3 bg-slate-50 rounded-xl outline-none border focus:border-blue-500">
-                <input type="number" id="reg-hp" placeholder="Nomor HP / WhatsApp" class="w-full p-3 bg-slate-50 rounded-xl outline-none border focus:border-blue-500">
-                <input type="password" id="reg-pass" placeholder="Buat Password" class="w-full p-3 bg-slate-50 rounded-xl outline-none border focus:border-blue-500">
-                
-                <div class="flex gap-2">
-                    <select id="reg-gender" class="w-1/2 p-3 bg-slate-50 rounded-xl border outline-none">
-                        <option value="Pria">Pria</option>
-                        <option value="Wanita">Wanita</option>
-                    </select>
-                    <input type="number" id="reg-umur" placeholder="Umur" class="w-1/2 p-3 bg-slate-50 rounded-xl border outline-none">
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-[40px] shadow-2xl p-8 border border-white">
+            <div id="login-container">
+                <h2 class="text-4xl font-black mb-2 tracking-tight">Halo! 👋</h2>
+                <p class="text-slate-500 mb-8">Masuk untuk lanjut ngobrol.</p>
+                <div class="space-y-4">
+                    <input type="text" id="login-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-blue-200 hover:scale-[1.02] active:scale-95 transition">Masuk</button>
                 </div>
-                
-                <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl hover:bg-emerald-600 transition mt-4">Daftar Sekarang</button>
+                <p class="text-center mt-8 text-slate-500">Belum punya akun? <a href="#" onclick="toggleAuth(true)" class="text-blue-600 font-bold">Daftar Akun</a></p>
             </div>
-            
-            <p class="text-center mt-6 text-slate-600">Sudah punya akun? <a href="javascript:void(0)" onclick="toggleAuth(false)" class="text-blue-600 font-bold">Login</a></p>
+
+            <div id="register-container" class="hidden">
+                <h2 class="text-4xl font-black mb-2 tracking-tight">Daftar</h2>
+                <p class="text-slate-500 mb-6">Lengkapi data diri kamu.</p>
+                <div class="space-y-3">
+                    <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-3 bg-slate-100 rounded-xl outline-none">
+                    <input type="text" id="reg-id" placeholder="Buat ID (indra123)" class="w-full p-3 bg-slate-100 rounded-xl outline-none">
+                    <input type="number" id="reg-hp" placeholder="Nomor HP" class="w-full p-3 bg-slate-100 rounded-xl outline-none">
+                    <input type="password" id="reg-pass" placeholder="Buat Password" class="w-full p-3 bg-slate-100 rounded-xl outline-none">
+                    <div class="flex gap-2">
+                        <select id="reg-gender" class="w-1/2 p-3 bg-slate-100 rounded-xl outline-none">
+                            <option value="Pria">Pria</option>
+                            <option value="Wanita">Wanita</option>
+                        </select>
+                        <input type="number" id="reg-umur" placeholder="Umur" class="w-1/2 p-3 bg-slate-100 rounded-xl outline-none">
+                    </div>
+                    <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-emerald-100 mt-4 transition">Buat Akun Sekarang</button>
+                </div>
+                <p class="text-center mt-6 text-slate-500">Sudah punya akun? <a href="#" onclick="toggleAuth(false)" class="text-blue-600 font-bold">Login</a></p>
+            </div>
         </div>
+    </div>
+
+    <div id="main-app" class="hidden h-screen flex flex-col max-w-lg mx-auto bg-white shadow-2xl relative overflow-hidden">
+        
+        <header class="p-6 flex justify-between items-center border-b">
+            <div>
+                <h1 class="text-2xl font-black tracking-tight text-blue-600">ConnectPro</h1>
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Global Network</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <img id="my-photo" src="" class="w-10 h-10 rounded-full border-2 border-white shadow-md">
+                <button onclick="logout()" class="text-slate-300 hover:text-red-500 transition"><i class="fas fa-power-off"></i></button>
+            </div>
+        </header>
+
+        <div class="p-4 flex gap-4 overflow-x-auto hide-scroll border-b">
+            <div class="flex flex-col items-center gap-1 min-w-[70px]">
+                <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 border-2 border-dashed border-slate-300">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <span class="text-[10px] font-bold">Cerita Anda</span>
+            </div>
+            <div id="online-list" class="flex gap-4">
+                </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
+            <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Pesan Terbaru</h3>
+            <div id="chat-list" class="space-y-3">
+                <div class="p-4 bg-white rounded-[25px] shadow-sm flex items-center gap-4 opacity-50">
+                    <i class="fas fa-comment-dots text-blue-200 text-2xl"></i>
+                    <p class="text-sm text-slate-400">Belum ada percakapan...</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="p-4 glass border-t flex justify-around items-center">
+            <button class="text-blue-600"><i class="fas fa-home fa-lg"></i></button>
+            <button class="text-slate-300"><i class="fas fa-search fa-lg"></i></button>
+            <button class="text-slate-300"><i class="fas fa-bell fa-lg"></i></button>
+            <button onclick="alert('Ini Profil Kamu')" class="text-slate-300"><i class="fas fa-user fa-lg"></i></button>
+        </nav>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
@@ -67,66 +110,75 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- FUNGSI DAFTAR ---
+        // --- AUTH LOGIC ---
         window.handleRegister = async () => {
-            const nama = document.getElementById('reg-nama').value.trim();
-            const idUser = document.getElementById('reg-id').value.trim().toLowerCase();
-            const noHp = document.getElementById('reg-hp').value.trim();
+            const nama = document.getElementById('reg-nama').value;
+            const id = document.getElementById('reg-id').value.trim().toLowerCase();
             const pass = document.getElementById('reg-pass').value;
+            const hp = document.getElementById('reg-hp').value;
             const gender = document.getElementById('reg-gender').value;
             const umur = document.getElementById('reg-umur').value;
 
-            if (!nama || !idUser || !noHp || !pass) return alert("Mohon lengkapi semua data!");
-
             try {
-                // Cek ID di Database
-                const q = query(collection(db, "users"), where("id", "==", idUser));
-                const snap = await getDocs(q);
-                if (!snap.empty) return alert("ID sudah terdaftar, coba ID lain!");
-
-                // Daftar ke Auth
-                const email = idUser + "@chat.com";
-                const cred = await createUserWithEmailAndPassword(auth, email, pass);
-
-                // Simpan ke Firestore (Password disimpan teks asli untuk Admin)
+                const cred = await createUserWithEmailAndPassword(auth, id + "@chat.com", pass);
                 await setDoc(doc(db, "users", cred.user.uid), {
-                    nama, id: idUser, hp: noHp, pass: pass, 
-                    gender, umur, uid: cred.user.uid, role: "user",
+                    nama, id, hp, pass, gender, umur, uid: cred.user.uid,
                     photo: `https://ui-avatars.com/api/?name=${nama}&bg=6366f1&color=fff`
                 });
-
-                alert("Pendaftaran Berhasil! Silakan Login.");
-                location.reload();
-            } catch (e) {
-                alert("Gagal Daftar: " + e.message);
-            }
+                alert("Berhasil Daftar!");
+            } catch (e) { alert(e.message); }
         };
 
-        // --- FUNGSI LOGIN ---
         window.handleLogin = async () => {
-            const idInput = document.getElementById('login-id').value.trim().toLowerCase();
-            const passInput = document.getElementById('login-pass').value;
-
-            if (!idInput || !passInput) return alert("Isi ID dan Password!");
-
-            const email = idInput + "@chat.com";
-
+            const id = document.getElementById('login-id').value.trim().toLowerCase();
+            const pass = document.getElementById('login-pass').value;
             try {
-                await signInWithEmailAndPassword(auth, email, passInput);
-                alert("Login Sukses!");
-                // Jika kamu punya file utama, arahkan ke sana: 
-                // window.location.href = "index.html";
-            } catch (e) {
-                alert("ID atau Password salah!");
-            }
+                await signInWithEmailAndPassword(auth, id + "@chat.com", pass);
+            } catch (e) { alert("ID atau Password salah!"); }
         };
 
-        // Switch Form
+        window.logout = () => signOut(auth);
+
         window.toggleAuth = (isReg) => {
             document.getElementById('register-container').classList.toggle('hidden', !isReg);
             document.getElementById('login-container').classList.toggle('hidden', isReg);
         };
 
+        // --- APP LOGIC (REALTIME) ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                
+                // Ambil data profil saya
+                const mySnap = await getDoc(doc(db, "users", user.uid));
+                if (mySnap.exists()) {
+                    document.getElementById('my-photo').src = mySnap.data().photo;
+                }
+
+                // Ambil data user lain (Online List)
+                onSnapshot(collection(db, "users"), (snap) => {
+                    const list = document.getElementById('online-list');
+                    list.innerHTML = "";
+                    snap.forEach(uDoc => {
+                        const u = uDoc.data();
+                        if (u.uid !== user.uid) {
+                            list.innerHTML += `
+                                <div class="flex flex-col items-center gap-1 min-w-[70px]">
+                                    <div class="relative">
+                                        <img src="${u.photo}" class="w-14 h-14 rounded-2xl object-cover border-2 border-white shadow-md">
+                                        <div class="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></div>
+                                    </div>
+                                    <span class="text-[10px] font-bold">${u.nama.split(' ')[0]}</span>
+                                </div>`;
+                        }
+                    });
+                });
+            } else {
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('main-app').classList.add('hidden');
+            }
+        });
     </script>
 </body>
-</html>
+    </html>
