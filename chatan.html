@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Pro - Final Version</title>
+    <title>WhatsApp Pro - Elite Edition</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -20,270 +20,341 @@
             --wa-muted: #8696a0;
             --wa-bubble-sent: #005c4b;
             --wa-bubble-rcvd: #202c33;
-            --wa-panel-header: #202c33;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--wa-bg); color: var(--wa-text); height: 100vh; overflow: hidden; }
 
-        /* --- AUTH SCREENS (LOGIN & REGISTER) --- */
+        /* --- AUTH --- */
         .auth-container { position: fixed; inset: 0; background: var(--wa-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { background: var(--wa-surface); padding: 35px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
-        .auth-card h2 { margin: 20px 0; font-size: 1.5rem; }
-        .auth-input { width: 100%; padding: 14px; background: #2a3942; border: 1px solid transparent; color: white; border-radius: 10px; margin-bottom: 15px; outline: none; font-size: 1rem; }
-        .auth-input:focus { border-color: var(--wa-green); }
-        .auth-btn { width: 100%; padding: 14px; background: var(--wa-green); border: none; color: #000; font-weight: bold; border-radius: 10px; cursor: pointer; font-size: 1rem; }
-        .auth-link { color: var(--wa-green); cursor: pointer; text-decoration: none; font-weight: 600; }
+        .auth-card { background: var(--wa-surface); padding: 30px; border-radius: 15px; width: 100%; max-width: 380px; text-align: center; }
+        .auth-input { width: 100%; padding: 12px; background: #2a3942; border: 1px solid transparent; color: white; border-radius: 8px; margin-bottom: 12px; outline: none; }
+        .auth-btn { width: 100%; padding: 12px; background: var(--wa-green); border: none; color: #000; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; }
 
-        /* --- MAIN LAYOUT --- */
+        /* --- LAYOUT --- */
         .app-container { display: flex; height: 100vh; width: 100%; position: relative; }
+        .side-bar { width: 400px; background: var(--wa-bg); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; }
+        .header { background: #202c33; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
         
-        /* Sidebar (Daftar User) */
-        .side-bar { width: 400px; background: var(--wa-bg); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; flex-shrink: 0; }
-        .side-header { background: var(--wa-panel-header); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
-        .chat-list { flex: 1; overflow-y: auto; }
-        .chat-item { padding: 12px 16px; display: flex; gap: 15px; cursor: pointer; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .chat-item:hover { background: #2a3942; }
-        .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #3b4a54; }
+        /* --- TABS --- */
+        .tabs { display: flex; background: #202c33; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .tab-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; color: var(--wa-muted); font-weight: 600; font-size: 0.9rem; }
+        .tab-btn.active { color: var(--wa-green); border-bottom: 3px solid var(--wa-green); }
 
-        /* Main Chat Area */
-        .main-chat { 
-            flex: 1; 
-            background: #0b141a; 
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
-            display: flex; 
-            flex-direction: column; 
-            position: relative; 
-        }
+        /* --- LISTS --- */
+        .list-container { flex: 1; overflow-y: auto; }
+        .item { padding: 12px 16px; display: flex; gap: 15px; cursor: pointer; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .item:hover { background: #2a3942; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #3b4a54; }
+        .ring { border: 2px solid var(--wa-green); padding: 2px; }
 
-        /* --- RESPONSIVE MOBILE --- */
+        /* --- CHAT AREA --- */
+        .main-chat { flex: 1; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); display: flex; flex-direction: column; }
+        .chat-head { background: #202c33; padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+        .msg-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 5px; }
+        .bubble { padding: 8px 12px; border-radius: 8px; max-width: 70%; font-size: 0.9rem; }
+        .sent { align-self: flex-end; background: var(--wa-bubble-sent); }
+        .received { align-self: flex-start; background: var(--wa-bubble-rcvd); }
+
+        /* --- PROFILE EDIT --- */
+        .profile-pane { padding: 20px; text-align: center; }
+        .p-img-box { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; }
+        .p-img-box i { position: absolute; bottom: 0; right: 0; background: var(--wa-green); padding: 10px; border-radius: 50%; color: #000; cursor: pointer; }
+
+        /* Mobile Overlay */
         @media (max-width: 900px) {
             .side-bar { width: 100%; }
-            .main-chat { 
-                position: absolute; 
-                inset: 0; 
-                z-index: 1000; 
-                transform: translateX(100%); 
-                transition: transform 0.3s ease-out; 
-            }
+            .main-chat { position: absolute; inset: 0; z-index: 100; transform: translateX(100%); transition: 0.3s; }
             .main-chat.active { transform: translateX(0); }
         }
 
-        /* --- CHAT COMPONENTS --- */
-        .chat-header { background: var(--wa-panel-header); padding: 10px 16px; display: flex; align-items: center; gap: 15px; }
-        .msg-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 5px; }
-        .bubble { padding: 8px 12px; border-radius: 8px; max-width: 75%; font-size: 0.95rem; position: relative; color: white; line-height: 1.4; }
-        .sent { align-self: flex-end; background: var(--wa-bubble-sent); border-top-right-radius: 0; }
-        .received { align-self: flex-start; background: var(--wa-bubble-rcvd); border-top-left-radius: 0; }
-        
-        .input-area { background: var(--wa-panel-header); padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
-        .m-input { flex: 1; background: #2a3942; border: none; padding: 12px 15px; color: white; border-radius: 8px; outline: none; font-size: 1rem; }
-        
         .hidden { display: none !important; }
-        #backBtn { font-size: 1.2rem; cursor: pointer; color: var(--wa-muted); }
     </style>
 </head>
 <body>
 
-    <div id="loginScreen" class="auth-container">
+    <div id="loginPage" class="auth-container">
         <div class="auth-card">
-            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:4rem;"></i>
-            <h2>Masuk ke Akun</h2>
-            <input type="text" id="l-id" class="auth-input" placeholder="ID Pengguna">
+            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:3rem; margin-bottom:15px;"></i>
+            <h2>Masuk</h2>
+            <input type="text" id="l-id" class="auth-input" placeholder="ID">
             <input type="password" id="l-pass" class="auth-input" placeholder="Password">
-            <button onclick="login()" class="auth-btn">LOG IN</button>
-            <p style="margin-top:20px; font-size:0.9rem;">
-                Belum punya akun? <span class="auth-link" onclick="switchAuth('reg')">Daftar Sekarang</span>
-            </p>
-            <p id="l-msg" style="color:#ff4b4b; margin-top:10px; font-size:0.8rem;"></p>
+            <button onclick="auth('login')" class="auth-btn">MASUK</button>
+            <p style="margin-top:15px; font-size:0.8rem;">Belum punya akun? <span onclick="toggleAuth('reg')" style="color:var(--wa-green); cursor:pointer;">Daftar</span></p>
         </div>
     </div>
 
-    <div id="regScreen" class="auth-container hidden">
+    <div id="regPage" class="auth-container hidden">
         <div class="auth-card">
-            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:4rem;"></i>
-            <h2>Daftar Baru</h2>
-            <input type="text" id="r-id" class="auth-input" placeholder="Buat ID (Contoh: budi123)">
-            <input type="password" id="r-pass" class="auth-input" placeholder="Buat Password">
-            <button onclick="register()" class="auth-btn">DAFTAR</button>
-            <p style="margin-top:20px; font-size:0.9rem;">
-                Sudah punya akun? <span class="auth-link" onclick="switchAuth('login')">Kembali Masuk</span>
-            </p>
-            <p id="r-msg" style="color:#ff4b4b; margin-top:10px; font-size:0.8rem;"></p>
+            <h2>Daftar Akun</h2>
+            <input type="text" id="r-id" class="auth-input" placeholder="ID Baru">
+            <input type="password" id="r-pass" class="auth-input" placeholder="Password">
+            <button onclick="auth('reg')" class="auth-btn">DAFTAR</button>
+            <p style="margin-top:15px; font-size:0.8rem;">Sudah punya akun? <span onclick="toggleAuth('login')" style="color:var(--wa-green); cursor:pointer;">Masuk</span></p>
         </div>
     </div>
 
-    <div class="app-container hidden" id="appMain">
+    <div id="app" class="app-container hidden">
         <aside class="side-bar">
-            <div class="side-header">
-                <img id="myAvatar" class="avatar" style="width:38px; height:38px;">
-                <div style="display:flex; gap:20px; color:var(--wa-muted); cursor:pointer;">
-                    <i class="fa-solid fa-plus" onclick="createNewChat()" title="Mulai Chat Baru"></i>
-                    <i class="fa-solid fa-right-from-bracket" onclick="location.reload()"></i>
+            <div class="header">
+                <img id="myAvatar" class="avatar" style="width:35px; height:35px;" onclick="showTab('profile')">
+                <div style="display:flex; gap:15px; color:var(--wa-muted); cursor:pointer;">
+                    <i class="fa-solid fa-circle-notch" onclick="showTab('story')"></i>
+                    <i class="fa-solid fa-plus" onclick="startChat()"></i>
+                    <i class="fa-solid fa-phone" onclick="showTab('calls')"></i>
                 </div>
             </div>
-            <div id="historyList" class="chat-list"></div>
+
+            <div class="tabs">
+                <div class="tab-btn active" id="btn-chats" onclick="showTab('chats')">CHATS</div>
+                <div class="tab-btn" id="btn-story" onclick="showTab('story')">STORY</div>
+                <div class="tab-btn" id="btn-calls" onclick="showTab('calls')">CALLS</div>
+            </div>
+
+            <div id="pane-chats" class="list-container"></div>
+            
+            <div id="pane-story" class="list-container hidden">
+                <div class="item" onclick="uploadStory()">
+                    <div style="position:relative"><img id="sAvatar" class="avatar"><div style="position:absolute; bottom:0; right:0; background:var(--wa-green); border-radius:50%; font-size:10px; padding:2px; color:#000;">+</div></div>
+                    <div><b>Status Saya</b><br><small id="storyViewerCount">Ketuk untuk update</small></div>
+                </div>
+                <div id="otherStories"></div>
+            </div>
+
+            <div id="pane-calls" class="list-container hidden"></div>
+
+            <div id="pane-profile" class="list-container hidden profile-pane">
+                <div class="p-img-box">
+                    <img id="p-img" class="avatar" style="width:120px; height:120px;">
+                    <i class="fa-solid fa-camera" onclick="edit('pfp')"></i>
+                </div>
+                <h3 id="p-nama" onclick="edit('nama')">Nama</h3>
+                <p id="p-id" style="color:var(--wa-muted); margin-bottom:10px;">@id</p>
+                <p id="p-bio" onclick="edit('bio')">Bio...</p>
+                <div style="margin-top:20px; background:#2a3942; padding:15px; border-radius:10px;">
+                    <label>Privasi Akun:</label>
+                    <select id="p-priv" onchange="updatePrivacy(this.value)" style="background:none; color:var(--wa-green); border:none; font-weight:bold; cursor:pointer;">
+                        <option value="public">Publik</option>
+                        <option value="private">Privat</option>
+                    </select>
+                </div>
+                <button onclick="showTab('chats')" class="auth-btn" style="margin-top:20px;">Kembali</button>
+            </div>
         </aside>
 
-        <main class="main-chat" id="chatArea">
-            <div id="emptyChat" style="margin:auto; text-align:center; color:var(--wa-muted);">
-                <i class="fa-brands fa-whatsapp" style="font-size:6rem; opacity:0.1;"></i>
-                <p style="margin-top:20px;">Pilih pengguna untuk mulai mengirim pesan.</p>
-            </div>
-
-            <div id="activeChat" class="hidden" style="display:flex; flex-direction:column; height:100%;">
-                <div class="chat-header">
-                    <i class="fa-solid fa-arrow-left" id="backBtn" onclick="closeChat()"></i>
-                    <img id="pAvatar" class="avatar" style="width:40px; height:40px;">
+        <main id="chatWindow" class="main-chat">
+            <div id="noChat" style="margin:auto; text-align:center; color:var(--wa-muted);"><i class="fa-brands fa-whatsapp" style="font-size:5rem; opacity:0.1;"></i><p>Pilih chat untuk memulai</p></div>
+            <div id="chatActive" class="hidden" style="display:flex; flex-direction:column; height:100%;">
+                <div class="chat-head">
+                    <i class="fa-solid fa-arrow-left" onclick="closeChat()"></i>
+                    <img id="hAvatar" class="avatar" style="width:40px; height:40px;">
                     <div style="flex:1">
-                        <b id="pName">Nama Partner</b><br>
-                        <small id="pStatus" style="color:var(--wa-muted); font-size:0.7rem;">online</small>
+                        <b id="hName">...</b><br>
+                        <small id="hStatus" style="font-size:0.7rem;"></small>
                     </div>
+                    <div style="display:flex; gap:20px; color:var(--wa-muted);"><i class="fa-solid fa-video" onclick="makeCall('video')"></i><i class="fa-solid fa-phone" onclick="makeCall('voice')"></i></div>
                 </div>
-                
-                <div class="msg-container" id="msgBox"></div>
-
+                <div id="mBox" class="msg-box"></div>
                 <div class="input-area">
-                    <i class="fa-regular fa-face-smile" style="font-size:1.5rem; color:var(--wa-muted); cursor:pointer;"></i>
                     <input type="text" id="mInput" class="m-input" placeholder="Ketik pesan">
-                    <i class="fa-solid fa-paper-plane" onclick="sendMessage()" style="color:var(--wa-muted); font-size:1.4rem; cursor:pointer;"></i>
+                    <i class="fa-solid fa-paper-plane" onclick="send()"></i>
                 </div>
             </div>
         </main>
     </div>
 
 <script>
-    // --- KONFIGURASI FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
     let myID = "", partnerID = "";
 
-    // --- LOGIKA AUTH ---
-    function switchAuth(mode) {
-        document.getElementById('loginScreen').classList.toggle('hidden', mode !== 'login');
-        document.getElementById('regScreen').classList.toggle('hidden', mode !== 'reg');
+    function toggleAuth(m) {
+        document.getElementById('loginPage').classList.toggle('hidden', m!=='login');
+        document.getElementById('regPage').classList.toggle('hidden', m!=='reg');
     }
 
-    async function login() {
-        const id = document.getElementById('l-id').value.trim().toLowerCase();
-        const pass = document.getElementById('l-pass').value.trim();
-        if(!id || !pass) return;
+    async function auth(mode) {
+        const id = document.getElementById(mode==='login'?'l-id':'r-id').value.trim().toLowerCase();
+        const pass = document.getElementById(mode==='login'?'l-pass':'r-pass').value.trim();
+        const ref = db.ref('accounts/'+id);
+        const snap = await ref.once('value');
 
-        const snap = await db.ref('accounts/' + id).once('value');
-        if(snap.exists() && snap.val().password === pass) {
-            startApp(id);
+        if(mode==='login') {
+            if(snap.exists() && snap.val().password === pass) launch(id);
+            else alert("Gagal Login!");
         } else {
-            document.getElementById('l-msg').innerText = "ID atau Password salah!";
+            if(snap.exists()) alert("ID sudah ada!");
+            else {
+                await ref.set({password: pass});
+                await db.ref('users/'+id).set({nama: id, bio: "Available", pfp: "", privacy: "public", status: "online"});
+                launch(id);
+            }
         }
     }
 
-    async function register() {
-        const id = document.getElementById('r-id').value.trim().toLowerCase();
-        const pass = document.getElementById('r-pass').value.trim();
-        if(!id || !pass) return;
-
-        const snap = await db.ref('accounts/' + id).once('value');
-        if(snap.exists()) {
-            document.getElementById('r-msg').innerText = "ID sudah terdaftar!";
-        } else {
-            await db.ref('accounts/' + id).set({ password: pass });
-            await db.ref('users/' + id).set({ nama: id, status: 'online' });
-            startApp(id);
-        }
-    }
-
-    function startApp(id) {
+    function launch(id) {
         myID = id;
-        document.getElementById('loginScreen').classList.add('hidden');
-        document.getElementById('regScreen').classList.add('hidden');
-        document.getElementById('appMain').classList.remove('hidden');
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('regPage').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
         
-        document.getElementById('myAvatar').src = `https://ui-avatars.com/api/?name=${id}&background=random`;
-        
-        db.ref('users/' + id + '/status').set('online');
-        db.ref('users/' + id + '/status').onDisconnect().set('offline');
+        db.ref('users/'+id+'/status').set('online');
+        db.ref('users/'+id+'/status').onDisconnect().set('offline');
 
+        syncProfile();
         loadHistory();
+        loadStories();
+        loadCalls();
     }
 
-    // --- LOGIKA CHAT ---
+    function syncProfile() {
+        db.ref('users/'+myID).on('value', s => {
+            const d = s.val() || {};
+            const img = d.pfp || `https://ui-avatars.com/api/?name=${myID}`;
+            document.getElementById('myAvatar').src = document.getElementById('sAvatar').src = document.getElementById('p-img').src = img;
+            document.getElementById('p-nama').innerText = d.nama;
+            document.getElementById('p-id').innerText = "@"+myID;
+            document.getElementById('p-bio').innerText = d.bio;
+            document.getElementById('p-priv').value = d.privacy;
+        });
+    }
+
     function loadHistory() {
         db.ref('messages').on('value', snap => {
-            const list = document.getElementById('historyList');
+            const list = document.getElementById('pane-chats');
             list.innerHTML = "";
-            let rooms = [];
-            
             snap.forEach(room => {
                 if(room.key.includes(myID)) {
-                    const other = room.key.split("_").find(i => i !== myID);
-                    const lastMsg = Object.values(room.val()).pop();
-                    rooms.push({ id: other, msg: lastMsg.text, time: lastMsg.time });
+                    const other = room.key.split("_").find(i => i!==myID);
+                    const last = Object.values(room.val()).pop();
+                    db.ref('users/'+other).once('value', u => {
+                        const ud = u.val();
+                        list.innerHTML += `<div class="item" onclick="openChat('${other}')">
+                            <img src="${ud.pfp || 'https://ui-avatars.com/api/?name='+other}" class="avatar">
+                            <div><b>${ud.nama}</b><br><small style="color:var(--wa-muted)">${last.text}</small></div>
+                        </div>`;
+                    });
                 }
-            });
-
-            rooms.sort((a,b) => b.time - a.time).forEach(r => {
-                list.innerHTML += `
-                    <div class="chat-item" onclick="openChat('${r.id}')">
-                        <img src="https://ui-avatars.com/api/?name=${r.id}" class="avatar">
-                        <div style="flex:1">
-                            <b>${r.id}</b><br>
-                            <small style="color:var(--wa-muted)">${r.msg}</small>
-                        </div>
-                    </div>`;
             });
         });
     }
 
     function openChat(id) {
         partnerID = id;
-        document.getElementById('emptyChat').classList.add('hidden');
-        document.getElementById('activeChat').classList.remove('hidden');
-        document.getElementById('chatArea').classList.add('active'); // Slide-in on mobile
+        document.getElementById('noChat').classList.add('hidden');
+        document.getElementById('chatActive').classList.remove('hidden');
+        document.getElementById('chatWindow').classList.add('active');
 
-        document.getElementById('pName').innerText = id;
-        document.getElementById('pAvatar').src = `https://ui-avatars.com/api/?name=${id}`;
+        db.ref('users/'+id).on('value', s => {
+            const d = s.val();
+            document.getElementById('hName').innerText = d.nama;
+            document.getElementById('hAvatar').src = d.pfp || `https://ui-avatars.com/api/?name=${id}`;
+            document.getElementById('hStatus').innerText = d.status;
+            document.getElementById('hStatus').style.color = d.status === 'online' ? 'var(--wa-green)' : 'var(--wa-muted)';
+        });
 
-        const roomID = [myID, partnerID].sort().join("_");
-        db.ref('messages/' + roomID).on('value', snap => {
-            const box = document.getElementById('msgBox');
+        const room = [myID, partnerID].sort().join("_");
+        db.ref('messages/'+room).on('value', snap => {
+            const box = document.getElementById('mBox');
             box.innerHTML = "";
-            snap.forEach(msg => {
-                const data = msg.val();
-                box.innerHTML += `
-                    <div class="bubble ${data.sender === myID ? 'sent' : 'received'}">
-                        ${data.text}
-                    </div>`;
+            snap.forEach(m => {
+                const d = m.val();
+                box.innerHTML += `<div class="bubble ${d.sender===myID?'sent':'received'}">${d.text}</div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
-    function closeChat() {
-        document.getElementById('chatArea').classList.remove('active');
-    }
-
-    function sendMessage() {
-        const txt = document.getElementById('mInput').value;
-        if(!txt) return;
-
-        const roomID = [myID, partnerID].sort().join("_");
-        db.ref('messages/' + roomID).push({
-            sender: myID,
-            text: txt,
-            time: Date.now()
-        });
+    function send() {
+        const t = document.getElementById('mInput').value;
+        if(!t) return;
+        const room = [myID, partnerID].sort().join("_");
+        db.ref('messages/'+room).push({sender: myID, text: t, time: Date.now()});
         document.getElementById('mInput').value = "";
     }
 
-    function createNewChat() {
-        const target = prompt("Masukkan ID User tujuan:");
-        if(target) openChat(target.toLowerCase());
+    // --- STORY ---
+    function uploadStory() {
+        const txt = prompt("Ketik isi story kamu:");
+        if(txt) db.ref('stories/'+myID).set({text: txt, time: Date.now(), viewers: {}});
     }
+
+    function loadStories() {
+        db.ref('stories').on('value', snap => {
+            const list = document.getElementById('otherStories');
+            list.innerHTML = "";
+            snap.forEach(s => {
+                if(s.key === myID) {
+                    const views = s.val().viewers ? Object.keys(s.val().viewers).length : 0;
+                    document.getElementById('storyViewerCount').innerText = views + " Dilihat";
+                } else {
+                    list.innerHTML += `<div class="item" onclick="viewStory('${s.key}','${s.val().text}')">
+                        <img src="https://ui-avatars.com/api/?name=${s.key}" class="avatar ring">
+                        <div><b>${s.key}</b><br><small>Baru saja</small></div>
+                    </div>`;
+                }
+            });
+        });
+    }
+
+    function viewStory(id, txt) {
+        db.ref(`stories/${id}/viewers/${myID}`).set(true);
+        alert("Story " + id + ":\n\n" + txt);
+    }
+
+    // --- CALL HISTORY ---
+    function makeCall(type) {
+        db.ref('calls').push({from: myID, to: partnerID, type: type, time: Date.now()});
+        alert("Memulai " + type + " call ke " + partnerID);
+    }
+
+    function loadCalls() {
+        db.ref('calls').on('value', snap => {
+            const list = document.getElementById('pane-calls');
+            list.innerHTML = "";
+            snap.forEach(c => {
+                const d = c.val();
+                if(d.from === myID || d.to === myID) {
+                    const target = d.from === myID ? d.to : d.from;
+                    list.innerHTML += `<div class="item">
+                        <i class="fa-solid fa-phone" style="color:var(--wa-muted)"></i>
+                        <div><b>${target}</b><br><small>${d.type} - ${new Date(d.time).toLocaleString()}</small></div>
+                    </div>`;
+                }
+            });
+        });
+    }
+
+    // --- UTILS ---
+    async function startChat() {
+        const id = prompt("Cari ID teman:").toLowerCase();
+        const u = await db.ref('users/'+id).once('value');
+        if(u.exists()) {
+            if(u.val().privacy === 'private') alert("User ini memprivat akunnya!");
+            else openChat(id);
+        } else alert("User tidak ditemukan!");
+    }
+
+    function showTab(t) {
+        ['chats', 'story', 'calls', 'profile'].forEach(p => {
+            document.getElementById('pane-'+p).classList.add('hidden');
+            if(document.getElementById('btn-'+p)) document.getElementById('btn-'+p).classList.remove('active');
+        });
+        document.getElementById('pane-'+t).classList.remove('hidden');
+        if(document.getElementById('btn-'+t)) document.getElementById('btn-'+t).classList.add('active');
+    }
+
+    function edit(field) {
+        const val = prompt("Masukkan " + field + " baru:");
+        if(val) db.ref('users/'+myID).update({[field]: val});
+    }
+
+    function updatePrivacy(v) { db.ref('users/'+myID).update({privacy: v}); }
+    function closeChat() { document.getElementById('chatWindow').classList.remove('active'); }
 </script>
 </body>
-                </html>
+                    </html>
