@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Clone 100% UI</title>
+    <title>WhatsApp Ultra Pro 2026</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -15,7 +15,6 @@
         :root {
             --wa-bg: #0b141a;
             --wa-surface: #121b22;
-            --wa-header-bg: #0b141a;
             --wa-green: #25d366;
             --wa-text: #e9edef;
             --wa-muted: #8696a0;
@@ -27,77 +26,75 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--wa-bg); color: var(--wa-text); height: 100vh; overflow: hidden; position: fixed; width: 100%; }
 
-        /* --- AUTH SCREEN --- */
-        .auth-overlay { position: fixed; inset: 0; background: var(--wa-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .auth-card { width: 85%; max-width: 350px; text-align: center; }
-        .auth-input { width: 100%; padding: 15px; background: var(--wa-search); border: none; color: white; border-radius: 10px; margin-bottom: 10px; outline: none; }
-        .auth-btn { width: 100%; padding: 15px; background: var(--wa-green); border: none; color: #000; font-weight: bold; border-radius: 10px; cursor: pointer; }
-
-        /* --- LAYOUT --- */
+        /* --- LAYOUT UTAMA --- */
         .app-wrapper { display: flex; flex-direction: column; height: 100vh; max-width: 500px; margin: 0 auto; background: var(--wa-bg); position: relative; }
 
-        /* Top Header */
-        header { padding: 15px 20px 10px; display: flex; justify-content: space-between; align-items: center; }
-        header h1 { font-size: 1.5rem; color: var(--wa-text); font-weight: 500; letter-spacing: 0.5px; }
-        .head-icons { display: flex; gap: 22px; font-size: 1.2rem; }
+        header { padding: 15px 20px 5px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 1.6rem; font-weight: 500; color: var(--wa-text); }
+        .head-icons { display: flex; gap: 22px; font-size: 1.3rem; }
 
-        /* Meta Search Bar */
+        /* Search Bar Meta AI Style */
         .search-area { padding: 10px 16px; }
         .search-bar { background: var(--wa-search); display: flex; align-items: center; padding: 12px 18px; border-radius: 30px; gap: 12px; }
-        .search-bar i { color: var(--wa-muted); font-size: 0.9rem; }
+        .search-bar i { color: #34b7f1; font-size: 1rem; } /* Warna Meta AI */
         .search-bar input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 0.95rem; }
 
-        /* Filter Chips */
-        .filters { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; scrollbar-width: none; }
-        .chip { background: var(--wa-search); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; color: var(--wa-muted); white-space: nowrap; cursor: pointer; }
-        .chip.active { background: var(--wa-active-pill); color: var(--wa-green); }
+        /* Filter Kapsul */
+        .filters { display: flex; gap: 8px; padding: 5px 16px 15px; overflow-x: auto; scrollbar-width: none; }
+        .chip { background: var(--wa-search); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; color: var(--wa-muted); white-space: nowrap; cursor: pointer; transition: 0.2s; }
+        .chip.active { background: var(--wa-active-pill); color: var(--wa-green); font-weight: 600; }
 
-        /* Chat List */
-        .chat-container { flex: 1; overflow-y: auto; padding-bottom: 80px; }
-        .chat-item { display: flex; padding: 14px 16px; gap: 15px; cursor: pointer; }
-        .chat-item:active { background: rgba(255,255,255,0.05); }
-        .pfp { width: 52px; height: 52px; border-radius: 50%; background: #3b4a54; object-fit: cover; }
-        .chat-details { flex: 1; border-bottom: 0.1px solid rgba(134, 150, 160, 0.1); padding-bottom: 12px; min-width: 0; }
+        /* Daftar Chat */
+        .chat-container { flex: 1; overflow-y: auto; padding-bottom: 90px; }
+        .chat-item { display: flex; padding: 12px 16px; gap: 15px; cursor: pointer; border-bottom: 0.1px solid rgba(134, 150, 160, 0.05); }
+        .chat-item:active { background: #2a3942; }
+        .pfp { width: 55px; height: 55px; border-radius: 50%; background: #3b4a54; object-fit: cover; flex-shrink: 0; }
+        .chat-details { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
         .chat-row1 { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .chat-row1 b { font-size: 1.05rem; }
+        .chat-row1 b { font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .chat-row1 span { font-size: 0.75rem; color: var(--wa-muted); }
         .chat-row2 { display: flex; justify-content: space-between; align-items: center; }
         .chat-row2 p { font-size: 0.9rem; color: var(--wa-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* Floating Action Button (FAB) */
-        .fab { position: absolute; bottom: 100px; right: 20px; background: var(--wa-green); width: 55px; height: 55px; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #000; font-size: 1.3rem; box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 5; }
+        /* Overlay Telepon / VC */
+        .call-screen { position: fixed; inset: 0; background: #071a14; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 80px 0; display: none; }
+        .call-screen.active { display: flex; }
+        .call-user-info { text-align: center; }
+        .call-user-info img { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--wa-green); margin-bottom: 15px; }
+        .call-status { color: var(--wa-green); letter-spacing: 1px; font-size: 0.9rem; }
+        .call-controls { display: flex; gap: 30px; margin-bottom: 30px; }
+        .call-btn { width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; cursor: pointer; }
+        .btn-hangup { background: #ea4335; }
+        .btn-mute { background: rgba(255,255,255,0.1); }
 
-        /* Bottom Navigation */
-        nav.bottom-bar { background: var(--wa-surface); display: flex; height: 80px; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); }
-        .nav-link { text-align: center; color: var(--wa-muted); cursor: pointer; text-decoration: none; position: relative; }
-        .nav-link i { font-size: 1.2rem; padding: 6px 20px; border-radius: 20px; display: inline-block; transition: 0.2s; }
-        .nav-link.active i { background: var(--wa-active-pill); color: #fff; }
-        .nav-link.active span { color: #fff; font-weight: 600; }
-        .nav-link span { display: block; font-size: 0.8rem; margin-top: 5px; }
-        .nav-badge { position: absolute; top: -5px; right: 8px; background: var(--wa-green); color: #000; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; }
-
-        /* --- CHAT OVERLAY --- */
-        .chat-screen { position: fixed; inset: 0; background: var(--wa-bg); z-index: 1000; transform: translateX(100%); transition: 0.3s; display: flex; flex-direction: column; }
+        /* Jendela Chat (Overlay) */
+        .chat-screen { position: fixed; inset: 0; background: var(--wa-bg); z-index: 1000; transform: translateX(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
         .chat-screen.active { transform: translateX(0); }
-        .chat-header { background: var(--wa-search); padding: 10px 15px; display: flex; align-items: center; gap: 10px; }
-        .chat-content { flex: 1; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .bubble { padding: 8px 14px; border-radius: 10px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; }
+        .chat-header { background: var(--wa-search); padding: 10px 15px; display: flex; align-items: center; gap: 12px; }
+        .chat-body { flex: 1; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .bubble { padding: 8px 14px; border-radius: 12px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; position: relative; }
         .sent { align-self: flex-end; background: var(--wa-bubble-sent); border-top-right-radius: 0; }
         .rcvd { align-self: flex-start; background: var(--wa-search); border-top-left-radius: 0; }
-        .chat-footer { background: var(--wa-search); padding: 10px; display: flex; align-items: center; gap: 10px; }
-        .chat-footer input { flex: 1; background: #2a3942; border: none; padding: 12px 18px; color: white; border-radius: 25px; outline: none; font-size: 16px; }
+
+        /* Bottom Nav Bar */
+        nav.bottom-nav { background: var(--wa-surface); display: flex; height: 80px; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); position: absolute; bottom: 0; width: 100%; }
+        .nav-link { text-align: center; color: var(--wa-muted); cursor: pointer; position: relative; }
+        .nav-link i { font-size: 1.3rem; padding: 6px 20px; border-radius: 20px; transition: 0.3s; }
+        .nav-link.active i { background: var(--wa-active-pill); color: white; }
+        .nav-link.active span { color: white; font-weight: 600; }
+        .nav-link span { display: block; font-size: 0.8rem; margin-top: 5px; }
+        .badge { position: absolute; top: -5px; right: 5px; background: var(--wa-green); color: black; font-size: 0.7rem; font-weight: bold; padding: 2px 7px; border-radius: 10px; }
 
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="authPage" class="auth-overlay">
-        <div class="auth-card">
-            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:4.5rem; margin-bottom:20px;"></i>
-            <input type="text" id="myID" class="auth-input" placeholder="Masukkan ID">
-            <input type="password" id="myPass" class="auth-input" placeholder="Password">
-            <button onclick="login()" class="auth-btn">MASUK</button>
+    <div id="authPage" style="position:fixed; inset:0; background:var(--wa-bg); z-index:9999; display:flex; align-items:center; justify-content:center; padding:30px;">
+        <div style="width:100%; max-width:350px; text-align:center;">
+            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:5rem; margin-bottom:30px;"></i>
+            <input type="text" id="myID" style="width:100%; padding:16px; background:var(--wa-search); border:none; color:white; border-radius:12px; margin-bottom:12px; outline:none;" placeholder="Masukkan ID Kamu">
+            <button onclick="login()" style="width:100%; padding:16px; background:var(--wa-green); border:none; color:black; font-weight:bold; border-radius:12px; cursor:pointer; font-size:1rem;">MASUK</button>
         </div>
     </div>
 
@@ -106,15 +103,14 @@
             <h1>WhatsApp</h1>
             <div class="head-icons">
                 <i class="fa-solid fa-camera"></i>
-                <i class="fa-solid fa-magnifying-glass" onclick="alert('Cari...')"></i>
                 <i class="fa-solid fa-ellipsis-vertical"></i>
             </div>
         </header>
 
         <div class="search-area">
             <div class="search-bar">
-                <i class="fa-solid fa-circle-nodes" style="color:#34b7f1;"></i>
-                <input type="text" placeholder="Tanya Meta AI atau cari">
+                <i class="fa-solid fa-circle-nodes"></i>
+                <input type="text" id="searchInput" placeholder="Tanya Meta AI atau cari nama..." oninput="filterChats()">
             </div>
         </div>
 
@@ -125,57 +121,56 @@
             <div class="chip">Grup</div>
         </div>
 
-        <div id="chatList" class="chat-container">
-            </div>
+        <div id="chatList" class="chat-container"></div>
 
-        <div class="fab" onclick="newChat()">
-            <i class="fa-solid fa-plus"></i>
-        </div>
-
-        <nav class="bottom-bar">
+        <nav class="bottom-nav">
             <div class="nav-link active">
-                <span class="nav-badge">37</span>
+                <span class="badge">37</span>
                 <i class="fa-solid fa-message"></i>
                 <span>Chat</span>
             </div>
-            <div class="nav-link">
-                <i class="fa-solid fa-circle-notch"></i>
-                <span>Pembaruan</span>
-            </div>
-            <div class="nav-link">
-                <i class="fa-solid fa-users"></i>
-                <span>Komunitas</span>
-            </div>
-            <div class="nav-link">
-                <i class="fa-solid fa-phone"></i>
-                <span>Panggilan</span>
-            </div>
+            <div class="nav-link"><i class="fa-solid fa-circle-notch"></i><span>Pembaruan</span></div>
+            <div class="nav-link"><i class="fa-solid fa-users"></i><span>Komunitas</span></div>
+            <div class="nav-link"><i class="fa-solid fa-phone"></i><span>Panggilan</span></div>
         </nav>
+    </div>
+
+    <div id="callOverlay" class="call-screen">
+        <div class="call-user-info">
+            <img id="callPfp" src="">
+            <h2 id="callName" style="font-size: 1.8rem; margin-bottom: 5px;">Nama</h2>
+            <p id="callType" class="call-status">MEMANGGIL...</p>
+        </div>
+        <div class="call-controls">
+            <div class="call-btn btn-mute"><i class="fa-solid fa-microphone-slash"></i></div>
+            <div class="call-btn btn-hangup" onclick="endCall()"><i class="fa-solid fa-phone-slash"></i></div>
+            <div class="call-btn btn-mute"><i class="fa-solid fa-volume-high"></i></div>
+        </div>
     </div>
 
     <div id="chatScreen" class="chat-screen">
         <div class="chat-header">
-            <i class="fa-solid fa-arrow-left" onclick="closeChat()"></i>
+            <i class="fa-solid fa-arrow-left" onclick="closeChat()" style="cursor:pointer; padding:5px;"></i>
             <img id="hPfp" class="pfp" style="width:38px; height:38px;">
-            <div style="flex:1">
-                <b id="hName">...</b><br>
-                <small style="font-size:0.7rem; color:var(--wa-green);">online</small>
+            <div style="flex:1; min-width:0;">
+                <b id="hName" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;">Nama</b>
+                <small style="color:var(--wa-green); font-size:0.75rem;">online</small>
             </div>
-            <div class="head-icons" style="font-size: 1rem;">
-                <i class="fa-solid fa-video"></i>
-                <i class="fa-solid fa-phone"></i>
+            <div class="head-icons" style="font-size:1.1rem; gap:25px;">
+                <i class="fa-solid fa-video" onclick="triggerCall('Video')"></i>
+                <i class="fa-solid fa-phone" onclick="triggerCall('Voice')"></i>
             </div>
         </div>
-        <div id="msgBox" class="chat-content"></div>
-        <div class="chat-footer">
+        <div id="msgBox" class="chat-body"></div>
+        <div style="background:var(--wa-search); padding:10px 15px; display:flex; gap:12px; align-items:center;">
             <i class="fa-regular fa-face-smile" style="font-size:1.5rem; color:var(--wa-muted);"></i>
-            <input type="text" id="mInput" placeholder="Ketik pesan">
-            <i class="fa-solid fa-paper-plane" onclick="sendMsg()" style="color:var(--wa-green); cursor:pointer;"></i>
+            <input type="text" id="mInput" style="flex:1; background:#2a3942; border:none; padding:12px 18px; color:white; border-radius:25px; outline:none; font-size:16px;" placeholder="Ketik pesan">
+            <i class="fa-solid fa-paper-plane" onclick="sendMsg()" style="color:var(--wa-green); cursor:pointer; font-size: 1.3rem;"></i>
         </div>
     </div>
 
 <script>
-    // --- FIREBASE CONFIG ---
+    // --- KONFIGURASI DATABASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
@@ -183,88 +178,112 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let userID = "", targetID = "";
+    let myID = "", targetID = "", chatDataCache = [];
 
+    // --- FUNGSI LOGIN ---
     function login() {
         const id = document.getElementById('myID').value.trim().toLowerCase();
-        const pass = document.getElementById('myPass').value.trim();
-        if(!id || !pass) return alert("Isi data!");
-
-        db.ref('accounts/'+id).once('value', s => {
-            if(s.exists() && s.val().password === pass) {
-                userID = id;
-                document.getElementById('authPage').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-                loadChats();
-            } else {
-                alert("Salah password/ID!");
-            }
-        });
+        if(!id) return alert("Masukkan ID!");
+        myID = id;
+        document.getElementById('authPage').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        loadChatRooms();
     }
 
-    function loadChats() {
-        db.ref('messages').on('value', snap => {
-            const list = document.getElementById('chatList');
-            list.innerHTML = "";
-            let rooms = [];
+    // --- AMBIL DATA CHAT (NAMA USER DARI DB) ---
+    function loadChatRooms() {
+        db.ref('messages').on('value', async snap => {
+            chatDataCache = [];
+            const promises = [];
+
             snap.forEach(room => {
-                if(room.key.includes(userID)) {
-                    const other = room.key.split("_").find(i => i!==userID);
-                    const last = Object.values(room.val()).pop();
-                    rooms.push({id: other, msg: last.text, time: last.time});
+                if(room.key.includes(myID)) {
+                    const otherID = room.key.split("_").find(i => i!==myID);
+                    const lastMsg = Object.values(room.val()).pop();
+                    
+                    const p = db.ref('users/'+otherID).once('value').then(u => {
+                        const userData = u.val() || { nama: otherID };
+                        chatDataCache.push({
+                            id: otherID,
+                            nama: userData.nama,
+                            msg: lastMsg.text,
+                            time: lastMsg.time
+                        });
+                    });
+                    promises.push(p);
                 }
             });
 
-            rooms.sort((a,b) => b.time - a.time).forEach(r => {
-                const timeStr = new Date(r.time).toLocaleTimeString([], {hour: '2.2', minute: '2.2'});
-                list.innerHTML += `
-                    <div class="chat-item" onclick="openChat('${r.id}')">
-                        <img src="https://ui-avatars.com/api/?name=${r.id}&background=random" class="pfp">
-                        <div class="chat-details">
-                            <div class="chat-row1">
-                                <b>${r.id}</b>
-                                <span>${timeStr}</span>
-                            </div>
-                            <div class="chat-row2">
-                                <p>${r.msg}</p>
-                            </div>
-                        </div>
-                    </div>`;
-            });
+            await Promise.all(promises);
+            renderChatList(chatDataCache);
         });
     }
 
-    function openChat(id) {
+    // --- TAMPILKAN DAFTAR CHAT ---
+    function renderChatList(data) {
+        const list = document.getElementById('chatList');
+        list.innerHTML = "";
+        data.sort((a,b) => b.time - a.time).forEach(chat => {
+            const time = new Date(chat.time).toLocaleTimeString([], {hour:'2.2', minute:'2.2'});
+            list.innerHTML += `
+                <div class="chat-item" onclick="openChat('${chat.id}', '${chat.nama}')">
+                    <img src="https://ui-avatars.com/api/?name=${chat.nama}&background=random" class="pfp">
+                    <div class="chat-details">
+                        <div class="chat-row1"><b>${chat.nama}</b> <span>${time}</span></div>
+                        <div class="chat-row2"><p>${chat.msg}</p></div>
+                    </div>
+                </div>`;
+        });
+    }
+
+    // --- FITUR SEARCH NAMA / ID ---
+    function filterChats() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = chatDataCache.filter(c => 
+            c.nama.toLowerCase().includes(query) || c.id.toLowerCase().includes(query)
+        );
+        renderChatList(filtered);
+    }
+
+    // --- BUKA JENDELA CHAT ---
+    function openChat(id, nama) {
         targetID = id;
         document.getElementById('chatScreen').classList.add('active');
-        document.getElementById('hName').innerText = id;
-        document.getElementById('hPfp').src = `https://ui-avatars.com/api/?name=${id}&background=random`;
+        document.getElementById('hName').innerText = nama;
+        document.getElementById('hPfp').src = `https://ui-avatars.com/api/?name=${nama}&background=random`;
 
-        const room = [userID, targetID].sort().join("_");
-        db.ref('messages/'+room).on('value', s => {
+        const roomID = [myID, targetID].sort().join("_");
+        db.ref('messages/'+roomID).on('value', snap => {
             const box = document.getElementById('msgBox');
             box.innerHTML = "";
-            s.forEach(m => {
+            snap.forEach(m => {
                 const d = m.val();
-                box.innerHTML += `<div class="bubble ${d.sender===userID?'sent':'rcvd'}">${d.text}</div>`;
+                box.innerHTML += `<div class="bubble ${d.sender===myID?'sent':'rcvd'}">${d.text}</div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
+    // --- KIRIM PESAN ---
     function sendMsg() {
-        const val = document.getElementById('mInput').value;
-        if(!val) return;
-        const room = [userID, targetID].sort().join("_");
-        db.ref('messages/'+room).push({sender: userID, text: val, time: Date.now()});
+        const text = document.getElementById('mInput').value.trim();
+        if(!text) return;
+        const roomID = [myID, targetID].sort().join("_");
+        db.ref('messages/'+roomID).push({ sender: myID, text: text, time: Date.now() });
         document.getElementById('mInput').value = "";
     }
 
-    function closeChat() { document.getElementById('chatScreen').classList.remove('active'); }
-    function newChat() {
-        const id = prompt("Masukkan ID Teman:");
-        if(id) openChat(id.toLowerCase());
+    // --- SIMULASI TELEPON & VC ---
+    function triggerCall(type) {
+        const nama = document.getElementById('hName').innerText;
+        document.getElementById('callName').innerText = nama;
+        document.getElementById('callPfp').src = document.getElementById('hPfp').src;
+        document.getElementById('callType').innerText = `WhatsApp ${type} Call...`;
+        document.getElementById('callOverlay').classList.add('active');
     }
+
+    function endCall() { document.getElementById('callOverlay').classList.remove('active'); }
+    function closeChat() { document.getElementById('chatScreen').classList.remove('active'); }
 </script>
 </body>
-                </html>
+    </html>
