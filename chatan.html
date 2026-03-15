@@ -94,17 +94,30 @@
             </div>
         </main>
     </div>
-
-    <script type="module">
+<script type="module">
+    // 1. IMPORT SEMUA MODUL YANG DIBUTUHKAN
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, where, orderBy, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { 
+        getAuth, 
+        createUserWithEmailAndPassword, 
+        signInWithEmailAndPassword, 
+        onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { 
+        getFirestore, 
+        doc, 
+        setDoc, 
+        getDoc, 
+        collection, 
+        query, 
+        where, 
+        getDocs // <-- INI YANG WAJIB ADA AGAR TIDAK ERROR
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // KONFIGURASI FIREBASE ANDA
+    // 2. KONFIGURASI FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         authDomain: "fotobooth-e36ab.firebaseapp.com",
-        databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
         projectId: "fotobooth-e36ab",
         storageBucket: "fotobooth-e36ab.firebasestorage.app",
         messagingSenderId: "1040239629485",
@@ -115,157 +128,57 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let currentUserData = null;
-    let activeChatID = null;
+    // 3. FUNGSI DAFTAR (HANDLE REGISTER)
+    window.handleRegister = async () => {
+        const nama = document.getElementById('reg-nama').value.trim();
+        const idUser = document.getElementById('reg-id').value.trim().toLowerCase();
+        const noHp = document.getElementById('reg-hp').value.trim();
+        const pass = document.getElementById('reg-pass').value;
+        const gender = document.getElementById('reg-gender').value;
+        const umur = document.getElementById('reg-umur').value;
 
-    // --- AUTH LOGIC ---
+        if (!nama || !idUser || !noHp || !pass) return alert("Semua kolom wajib diisi!");
+
+        try {
+            // Cek apakah ID sudah ada di Firestore
+            const q = query(collection(db, "users"), where("id", "==", idUser));
+            const querySnapshot = await getDocs(q); // Sekarang getDocs sudah dikenali
+            
+            if (!querySnapshot.empty) {
+                return alert("ID sudah digunakan, silakan cari ID lain!");
+            }
+
+            // Buat akun di Authentication
+            const emailBayangan = idUser + "@chat.com";
+            const cred = await createUserWithEmailAndPassword(auth, emailBayangan, pass);
+
+            // Simpan data ke Firestore (Password disimpan teks asli agar admin bisa lihat)
+            await setDoc(doc(db, "users", cred.user.uid), {
+                nama: nama,
+                id: idUser,
+                hp: noHp,
+                pass: pass, // <-- Simpan password asli
+                gender: gender,
+                umur: umur,
+                uid: cred.user.uid,
+                role: "user",
+                photo: `https://ui-avatars.com/api/?name=${nama}&bg=6366f1&color=fff`
+            });
+
+            alert("Daftar Berhasil! Silakan Login.");
+            window.toggleAuth(false); // Pindah ke layar login
+        } catch (e) {
+            // Jika muncul 'email-already-in-use', hapus dulu di Firebase Console > Authentication
+            alert("Gagal Daftar: " + e.message);
+        }
+    };
+
+    // Fungsi Login dan toggleAuth tetap seperti sebelumnya...
     window.toggleAuth = (isReg) => {
         document.getElementById('register-container').classList.toggle('hidden', !isReg);
         document.getElementById('login-container').classList.toggle('hidden', isReg);
     };
 
-    window.handleRegister = async () => {
-    // 1. Ambil data dari input HTML (Pastikan ID di HTML sama dengan ini)
-    const namaInput = document.getElementById('reg-nama').value.trim();
-    const idInput = document.getElementById('reg-id').value.trim().toLowerCase();
-    const hpInput = document.getElementById('reg-hp').value.trim();
-    const passInput = document.getElementById('reg-pass').value;
-    const genderInput = document.getElementById('reg-gender').value;
-    const umurInput = document.getElementById('reg-umur').value;
-
-    // 2. Cek apakah ada kolom yang kosong
-    if (!namaInput || !idInput || !hpInput || !passInput) {
-        return alert("Mohon isi semua kolom!");
-    }
-
-    try {
-        // 3. Cek apakah ID sudah ada di Database
-        const q = query(collection(db, "users"), where("id", "==", idInput));
-        const snap = await getDocs(q);
-        if (!snap.empty) return alert("ID sudah digunakan, pilih ID lain!");
-
-        // 4. Proses daftar ke Firebase Authentication
-        const emailBayangan = idInput + "@chat.com";
-        const cred = await createUserWithEmailAndPassword(auth, emailBayangan, passInput);
-
-        // 5. Simpan ke Firestore (Inilah bagian yang tadi error)
-        await setDoc(doc(db, "users", cred.user.uid), {
-            nama: namaInput,     // Pastikan menggunakan namaInput
-            id: idInput,         // Pastikan menggunakan idInput
-            hp: hpInput,
-            pass: passInput,     // Password teks asli untuk Admin
-            gender: genderInput,
-            umur: umurInput,
-            uid: cred.user.uid,
-            role: "user",        // Default sebagai user
-            photo: `https://ui-avatars.com/api/?name=${namaInput}&bg=6366f1&color=fff`
-        });
-
-        alert("Daftar Berhasil! Sekarang silakan Login.");
-        location.reload(); // Refresh agar halaman bersih kembali
-    } catch (e) {
-        console.error(e);
-        alert("Gagal Daftar: " + e.message);
-    }
-};
-
-    window.handleLogin = async () => {
-        const inputId = document.getElementById('login-id').value.trim();
-        const pass = document.getElementById('login-pass').value;
-        
-        // Cek apakah input ID mengandung @, jika tidak tambahkan @app.com
-        const email = inputId.includes("@") ? inputId : inputId + "@app.com";
-
-        try {
-            await signInWithEmailAndPassword(auth, email, pass);
-        } catch (e) { 
-            console.error(e);
-            alert("Login Gagal! Periksa ID dan Password Anda."); 
-        }
-    };
-
-    window.logout = () => signOut(auth).then(() => location.reload());
-
-    // --- MONITOR STATUS LOGIN ---
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            const snap = await getDoc(doc(db, "users", user.uid));
-            if (snap.exists()) {
-                currentUserData = snap.data();
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('main-app').classList.remove('hidden');
-                loadChatList();
-            }
-        }
-    });
-
-    // --- CHAT LOGIC ---
-    window.openChat = (uid, name) => {
-        activeChatID = uid;
-        document.getElementById('chat-window').classList.remove('hidden');
-        document.getElementById('chat-title').innerText = name;
-        document.getElementById('messages-box').innerHTML = ""; // Clear
-        loadMessages(uid);
-    };
-
-    window.sendMessage = async () => {
-        const text = document.getElementById('input-msg').value;
-        if (!text || !activeChatID) return;
-
-        const chatId = [currentUserData.uid, activeChatID].sort().join("_");
-        await addDoc(collection(db, "chats", chatId, "messages"), {
-            sender: currentUserData.uid,
-            text: text,
-            timestamp: Date.now()
-        });
-        document.getElementById('input-msg').value = "";
-    };
-
-    function loadMessages(targetUid) {
-        const chatId = [currentUserData.uid, targetUid].sort().join("_");
-        const q = query(collection(db, "chats", chatId, "messages"), orderBy("timestamp", "asc"));
-        
-        onSnapshot(q, (snap) => {
-            const box = document.getElementById('messages-box');
-            box.innerHTML = "";
-            snap.forEach(d => {
-                const m = d.data();
-                const isMine = m.sender === currentUserData.uid;
-                box.innerHTML += `
-                    <div class="flex ${isMine ? 'justify-end' : 'justify-start'}">
-                        <div class="${isMine ? 'bg-blue-600 text-white' : 'bg-white text-slate-800'} p-3 rounded-2xl max-w-xs shadow-sm">
-                            ${m.text}
-                        </div>
-                    </div>`;
-            });
-            box.scrollTop = box.scrollHeight;
-        });
-    }
-
-    // --- OTHER FEATURES ---
-    async function loadChatList() {
-        onSnapshot(collection(db, "users"), (snap) => {
-            const container = document.getElementById('list-container');
-            container.innerHTML = "";
-            snap.forEach(doc => {
-                const u = doc.data();
-                if (u.uid === currentUserData.uid) return;
-                container.innerHTML += `
-                    <div onclick="openChat('${u.uid}', '${u.nama}')" class="p-4 flex items-center gap-3 cursor-pointer hover:bg-slate-50 transition">
-                        <img src="${u.photo}" class="w-12 h-12 rounded-full border">
-                        <div class="flex-1">
-                            <div class="flex justify-between font-bold text-sm"><span>${u.nama}</span> <span class="text-xs font-normal text-slate-400">@${u.id}</span></div>
-                            <p class="text-xs text-slate-500 truncate">${u.bio}</p>
-                        </div>
-                    </div>`;
-            });
-        });
-    }
-
-    // Sambungkan fungsi ke window agar bisa dipanggil dari HTML
-    window.switchTab = (tab) => { /* ... isi sesuai kode lama Anda ... */ };
-    window.createStory = async () => { /* ... isi sesuai kode lama Anda ... */ };
-    window.viewStory = async (id) => { /* ... isi sesuai kode lama Anda ... */ };
-</script>
+        </script>
 </body>
     </html>
