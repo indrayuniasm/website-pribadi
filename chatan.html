@@ -3,164 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatApp - Private & Story</title>
+    <title>Gemini Chat - Full Feature</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Sembunyikan footer di desktop, tampilkan di mobile */
-        @media (min-width: 768px) { .mobile-footer { display: none; } }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .active-tab { color: #2563eb; border-top: 2px solid #2563eb; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        @media (min-width: 768px) { .mobile-only { display: none; } }
     </style>
 </head>
-<body class="bg-slate-100 font-sans">
+<body class="bg-slate-50 text-slate-800 overflow-hidden">
 
-    <div id="auth-screen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6">
-        <div id="register-form" class="w-full max-w-md space-y-4">
-            <h2 class="text-2xl font-bold text-blue-600 text-center">Daftar Akun</h2>
-            <input id="reg-nama" type="text" placeholder="Nama Lengkap" class="w-full border p-3 rounded-lg">
-            <input id="reg-id" type="text" placeholder="ID Unik (contoh: budi_99)" class="w-full border p-3 rounded-lg">
-            <input id="reg-hp" type="tel" placeholder="Nomor HP" class="w-full border p-3 rounded-lg">
-            <input id="reg-pass" type="password" placeholder="Password" class="w-full border p-3 rounded-lg">
-            <div class="flex gap-4">
-                <select id="reg-gender" class="w-1/2 border p-3 rounded-lg">
+    <div id="auth-screen" class="fixed inset-0 z-50 bg-white flex items-center justify-center p-4">
+        <div id="register-container" class="w-full max-w-md space-y-4">
+            <h2 class="text-3xl font-bold text-blue-600 mb-6">Daftar Akun</h2>
+            <input id="reg-nama" type="text" placeholder="Nama Lengkap" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+            <input id="reg-id" type="text" placeholder="ID User (Tanpa spasi)" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+            <input id="reg-hp" type="tel" placeholder="Nomor HP" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+            <input id="reg-pass" type="password" placeholder="Password" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="flex gap-2">
+                <select id="reg-gender" class="w-1/2 p-3 border rounded-xl outline-none">
                     <option value="Pria">Pria</option>
                     <option value="Wanita">Wanita</option>
                 </select>
-                <input id="reg-umur" type="number" placeholder="Umur" class="w-1/2 border p-3 rounded-lg">
+                <input id="reg-umur" type="number" placeholder="Umur" class="w-1/2 p-3 border rounded-xl outline-none">
             </div>
-            <button onclick="handleRegister()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">Daftar</button>
-            <p class="text-center text-sm cursor-pointer text-blue-500" onclick="toggleAuth()">Sudah punya akun? Login</p>
+            <button onclick="handleRegister()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Daftar Sekarang</button>
+            <p class="text-center text-sm">Sudah punya akun? <span class="text-blue-600 font-bold cursor-pointer" onclick="toggleAuth(false)">Login</span></p>
         </div>
 
-        <div id="login-form" class="hidden w-full max-w-md space-y-4">
-            <h2 class="text-2xl font-bold text-blue-600 text-center">Masuk ChatApp</h2>
-            <input id="login-id" type="text" placeholder="No HP atau ID" class="w-full border p-3 rounded-lg">
-            <input id="login-pass" type="password" placeholder="Password" class="w-full border p-3 rounded-lg">
-            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">Login</button>
-            <p class="text-center text-sm cursor-pointer text-blue-500" onclick="toggleAuth()">Belum punya akun? Daftar</p>
+        <div id="login-container" class="hidden w-full max-w-md space-y-4">
+            <h2 class="text-3xl font-bold text-blue-600 mb-6">Selamat Datang</h2>
+            <input id="login-id" type="text" placeholder="No HP atau ID User" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+            <input id="login-pass" type="password" placeholder="Password" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Masuk</button>
+            <p class="text-center text-sm">Belum punya akun? <span class="text-blue-600 font-bold cursor-pointer" onclick="toggleAuth(true)">Daftar</span></p>
         </div>
     </div>
 
-    <div id="app-screen" class="hidden flex h-screen overflow-hidden">
+    <div id="main-app" class="hidden h-screen flex flex-col md:flex-row">
         
-        <aside class="hidden md:flex w-80 bg-white border-r flex-col">
-            <div class="p-4 border-b">
-                <h1 class="text-xl font-bold text-blue-600">ChatApp</h1>
-                <input type="text" placeholder="Cari pesan atau ID..." class="w-full mt-3 bg-slate-100 p-2 rounded-md outline-none border-none">
-            </div>
-            <div id="chat-list" class="flex-1 overflow-y-auto">
+        <aside id="sidebar" class="w-full md:w-96 bg-white border-r flex flex-col h-full">
+            <div class="p-4 border-b space-y-3">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl font-black text-blue-600 italic">CHAT.ID</h1>
+                    <button onclick="logout()" class="text-red-500"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-3 text-slate-400"></i>
+                    <input id="search-bar" onkeyup="handleSearch()" type="text" placeholder="Cari ID atau pesan..." class="w-full pl-10 pr-4 py-2 bg-slate-100 rounded-full text-sm outline-none">
+                </div>
+            </div>
+
+            <div id="tab-content" class="flex-1 overflow-y-auto">
+                <div id="list-container" class="divide-y divide-slate-50"></div>
+            </div>
+
+            <nav class="mobile-only h-16 border-t bg-white flex justify-around items-center">
+                <button onclick="switchTab('chats')" class="nav-btn active-tab flex flex-col items-center"><i class="fas fa-comment text-xl"></i><span class="text-[10px]">Chat</span></button>
+                <button onclick="switchTab('stories')" class="nav-btn flex flex-col items-center text-slate-400"><i class="fas fa-circle-notch text-xl"></i><span class="text-[10px]">Story</span></button>
+                <button onclick="switchTab('history')" class="nav-btn flex flex-col items-center text-slate-400"><i class="fas fa-phone-alt text-xl"></i><span class="text-[10px]">History</span></button>
+                <button onclick="switchTab('profile')" class="nav-btn flex flex-col items-center text-slate-400"><i class="fas fa-user-circle text-xl"></i><span class="text-[10px]">Profil</span></button>
+            </nav>
         </aside>
 
-        <main class="flex-1 flex flex-col bg-white">
-            <header class="h-16 border-b flex items-center justify-between px-4 bg-white">
+        <main id="chat-window" class="hidden md:flex flex-1 bg-slate-100 flex-col">
+            <div class="h-16 bg-white border-b flex items-center justify-between px-6">
                 <div class="flex items-center gap-3">
-                    <img id="current-chat-img" src="https://ui-avatars.com/api/?name=User" class="w-10 h-10 rounded-full">
+                    <div id="chat-avatar" class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600">?</div>
                     <div>
-                        <h3 id="current-chat-name" class="font-bold text-sm">Pilih Chat</h3>
-                        <p class="text-xs text-green-500">Online</p>
+                        <h4 id="chat-title" class="font-bold">Pilih Chatting</h4>
+                        <p class="text-[10px] text-slate-400">Klik user di kiri untuk mulai chat</p>
                     </div>
                 </div>
-                <div class="flex gap-4 text-slate-500">
-                    <button onclick="alert('Memulai Telepon...')"><i class="fas fa-phone"></i></button>
-                    <button onclick="alert('Memulai Video Call...')"><i class="fas fa-video"></i></button>
+                <div class="flex gap-5 text-slate-400">
+                    <button onclick="logCall('Voice Call')"><i class="fas fa-phone"></i></button>
+                    <button onclick="logCall('Video Call')"><i class="fas fa-video"></i></button>
                 </div>
-            </header>
+            </div>
 
-            <div id="message-container" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
+            <div id="messages-box" class="flex-1 overflow-y-auto p-6 space-y-4">
                 </div>
 
-            <div class="p-4 border-t flex gap-2 bg-white">
-                <input id="msg-input" type="text" placeholder="Ketik pesan..." class="flex-1 bg-slate-100 p-3 rounded-full outline-none">
-                <button onclick="sendMsg()" class="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+            <div class="p-4 bg-white border-t flex gap-3">
+                <input id="input-msg" type="text" placeholder="Ketik pesan..." class="flex-1 bg-slate-50 px-4 py-3 rounded-full outline-none border focus:border-blue-500">
+                <button onclick="sendMessage()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg"><i class="fas fa-paper-plane"></i></button>
             </div>
         </main>
-
-        <nav class="mobile-footer fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3">
-            <button class="flex flex-col items-center text-blue-600"><i class="fas fa-comment"></i><span class="text-[10px]">Chat</span></button>
-            <button onclick="showStory()" class="flex flex-col items-center text-slate-400"><i class="fas fa-circle-notch"></i><span class="text-[10px]">Story</span></button>
-            <button class="flex flex-col items-center text-slate-400"><i class="fas fa-history"></i><span class="text-[10px]">History</span></button>
-            <button onclick="showProfile()" class="flex flex-col items-center text-slate-400"><i class="fas fa-user-circle"></i><span class="text-[10px]">Profil</span></button>
-        </nav>
     </div>
 
     <script type="module">
-        // Import Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, where, orderBy, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // CONFIG FIREBASE (Ganti dengan milik Anda)
+        // GANTI INI DENGAN KONFIGURASI FIREBASE ANDA
         const firebaseConfig = {
-  apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
-  authDomain: "fotobooth-e36ab.firebaseapp.com",
-  databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
-  projectId: "fotobooth-e36ab",
-  storageBucket: "fotobooth-e36ab.firebasestorage.app",
-  messagingSenderId: "1040239629485",
-  appId: "1:1040239629485:web:254a7b50a4243b6c5d6224",
-  measurementId: "G-SEKNK1YY41"
-};
-      }
+            apiKey: "PASTE_YOUR_API_KEY",
+            authDomain: "YOUR_DOMAIN.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_BUCKET.appspot.com",
+            messagingSenderId: "SENDER_ID",
+            appId: "APP_ID"
+        };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // LOGIKA PINDAH LAYAR
-        window.toggleAuth = () => {
-            document.getElementById('register-form').classList.toggle('hidden');
-            document.getElementById('login-form').classList.toggle('hidden');
+        let currentUserData = null;
+        let activeChatID = null;
+
+        // --- AUTH LOGIC ---
+        window.toggleAuth = (isReg) => {
+            document.getElementById('register-container').classList.toggle('hidden', !isReg);
+            document.getElementById('login-container').classList.toggle('hidden', isReg);
         };
 
-        // DAFTAR
         window.handleRegister = async () => {
-            const nama = document.getElementById('reg-nama').value;
-            const idUnik = document.getElementById('reg-id').value;
-            const hp = document.getElementById('reg-hp').value;
-            const pass = document.getElementById('reg-pass').value;
+            const data = {
+                nama: document.getElementById('reg-nama').value,
+                id: document.getElementById('reg-id').value,
+                hp: document.getElementById('reg-hp').value,
+                pass: document.getElementById('reg-pass').value,
+                gender: document.getElementById('reg-gender').value,
+                umur: document.getElementById('reg-umur').value
+            };
 
             try {
-                // Gunakan dummy email karena Firebase Auth butuh format email
-                const userCredential = await createUserWithEmailAndPassword(auth, idUnik + "@chat.com", pass);
-                const user = userCredential.user;
-
-                // Simpan detail ke Firestore
-                await setDoc(doc(db, "users", user.uid), {
-                    nama, userID: idUnik, hp, gender: document.getElementById('reg-gender').value,
-                    umur: document.getElementById('reg-umur').value,
-                    photoURL: `https://ui-avatars.com/api/?name=${nama}`,
-                    bio: "Halo, saya menggunakan ChatApp!"
+                const cred = await createUserWithEmailAndPassword(auth, data.id + "@app.com", data.pass);
+                await setDoc(doc(db, "users", cred.user.uid), {
+                    ...data,
+                    photo: `https://ui-avatars.com/api/?name=${data.nama}&bg=6366f1&color=fff`,
+                    bio: "Sibuk",
+                    uid: cred.user.uid
                 });
-
-                alert("Berhasil Daftar!");
-                location.reload();
-            } catch (err) { alert(err.message); }
+                alert("Pendaftaran Berhasil!");
+            } catch (e) { alert("Error: " + e.message); }
         };
 
-        // LOGIN
         window.handleLogin = async () => {
             const id = document.getElementById('login-id').value;
             const pass = document.getElementById('login-pass').value;
             try {
-                await signInWithEmailAndPassword(auth, id + "@chat.com", pass);
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('app-screen').classList.remove('hidden');
-            } catch (err) { alert("Login Gagal: Periksa ID/Password"); }
+                await signInWithEmailAndPassword(auth, id + "@app.com", pass);
+            } catch (e) { alert("Login Gagal!"); }
         };
 
-        // REAL-TIME STORY VIEWER LOGIC (Contoh Singkat)
-        window.trackStoryView = async (storyId, viewerId) => {
-            const storyRef = doc(db, "stories", storyId);
-            // Update array viewer di Firestore secara real-time
-            await updateDoc(storyRef, {
-                viewers: arrayUnion(viewerId)
+        window.logout = () => signOut(auth).then(() => location.reload());
+
+        // --- CORE FEATURES ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                currentUserData = snap.data();
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                loadChatList();
+            }
+        });
+
+        // 1. CHAT LIST & SEARCH
+        async function loadChatList() {
+            onSnapshot(collection(db, "users"), (snap) => {
+                const container = document.getElementById('list-container');
+                container.innerHTML = "";
+                snap.forEach(doc => {
+                    const u = doc.data();
+                    if (u.uid === currentUserData.uid) return;
+                    container.innerHTML += `
+                        <div onclick="openChat('${u.uid}', '${u.nama}')" class="p-4 flex items-center gap-3 cursor-pointer hover:bg-slate-50">
+                            <img src="${u.photo}" class="w-12 h-12 rounded-full border">
+                            <div class="flex-1">
+                                <div class="flex justify-between font-bold text-sm"><span>${u.nama}</span> <span class="text-xs font-normal text-slate-400">@${u.id}</span></div>
+                                <p class="text-xs text-slate-500 truncate">${u.bio}</p>
+                            </div>
+                        </div>`;
+                });
             });
+        }
+
+        // 2. STORY WITH REAL-TIME VIEWERS
+        window.createStory = async () => {
+            const text = prompt("Tulis story kamu:");
+            if (!text) return;
+            await addDoc(collection(db, "stories"), {
+                ownerId: currentUserData.uid,
+                ownerName: currentUserData.nama,
+                content: text,
+                timestamp: Date.now(),
+                viewers: [] // Array untuk tracking real-time
+            });
+        };
+
+        window.viewStory = async (storyId) => {
+            const ref = doc(db, "stories", storyId);
+            await updateDoc(ref, {
+                viewers: arrayUnion(currentUserData.nama)
+            });
+            alert("Melihat Story...");
+        };
+
+        // 3. TELEPON HISTORY
+        window.logCall = async (type) => {
+            if (!activeChatID) return;
+            await addDoc(collection(db, "history_calls"), {
+                caller: currentUserData.nama,
+                type: type,
+                time: new Date().toLocaleTimeString(),
+                to: activeChatID
+            });
+            alert("Memulai " + type);
+        };
+
+        // 4. EDIT PROFIL
+        window.updateProfile = async () => {
+            const newBio = prompt("Edit Bio:", currentUserData.bio);
+            await updateDoc(doc(db, "users", currentUserData.uid), { bio: newBio });
+            alert("Profil diperbarui!");
+        };
+
+        // 5. SEARCH LOGIC (Text & ID)
+        window.handleSearch = () => {
+            const q = document.getElementById('search-bar').value.toLowerCase();
+            const items = document.querySelectorAll('#list-container > div');
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(q) ? "flex" : "none";
+            });
+        };
+
+        // 6. TAB SWITCHING (MOBILE)
+        window.switchTab = (tab) => {
+            const content = document.getElementById('tab-content');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab'));
+            
+            if (tab === 'chats') loadChatList();
+            if (tab === 'stories') {
+                content.innerHTML = `<div class="p-4"><button onclick="createStory()" class="w-full bg-blue-100 text-blue-600 p-3 rounded-xl font-bold">+ Buat Story</button></div>
+                                     <div id="story-list" class="divide-y"></div>`;
+                onSnapshot(collection(db, "stories"), (snap) => {
+                    const sList = document.getElementById('story-list');
+                    sList.innerHTML = "";
+                    snap.forEach(d => {
+                        const s = d.data();
+                        sList.innerHTML += `
+                            <div class="p-4" onclick="viewStory('${d.id}')">
+                                <p class="font-bold">${s.ownerName}</p>
+                                <p class="text-sm">${s.content}</p>
+                                <p class="text-[10px] text-blue-500">Dilihat oleh: ${s.viewers.length} orang (${s.viewers.join(', ')})</p>
+                            </div>`;
+                    });
+                });
+            }
+            if (tab === 'history') {
+                content.innerHTML = `<div class="p-4 font-bold">Riwayat Telepon</div><div id="hist-list"></div>`;
+                onSnapshot(collection(db, "history_calls"), (snap) => {
+                    const hList = document.getElementById('hist-list');
+                    hList.innerHTML = "";
+                    snap.forEach(d => {
+                        const h = d.data();
+                        hList.innerHTML += `<div class="p-4 border-b text-sm"><b>${h.caller}</b> -> ${h.type} <span class="float-right text-slate-400">${h.time}</span></div>`;
+                    });
+                });
+            }
+            if (tab === 'profile') {
+                content.innerHTML = `
+                    <div class="p-8 text-center space-y-4">
+                        <img src="${currentUserData.photo}" class="w-24 h-24 rounded-full mx-auto border-4 border-blue-500">
+                        <h2 class="text-xl font-bold">${currentUserData.nama}</h2>
+                        <p class="text-slate-500">@${currentUserData.id}</p>
+                        <p class="bg-slate-100 p-3 rounded-lg">"${currentUserData.bio}"</p>
+                        <button onclick="updateProfile()" class="text-blue-600 font-bold">Edit Profil</button>
+                    </div>`;
+            }
+        };
+
+        window.openChat = (uid, name) => {
+            activeChatID = uid;
+            document.getElementById('chat-window').classList.remove('hidden');
+            document.getElementById('chat-title').innerText = name;
+            // Logika pesan real-time (Firestore) bisa ditambahkan di sini
         };
     </script>
 </body>
-          </html>
+    </html>
