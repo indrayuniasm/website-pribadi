@@ -205,7 +205,8 @@
                                 </div>
                             </div>
                         </td>
-                        <td style="font-family:monospace; font-size:0.8rem; color:#6366f1;">********</td>
+                        // Ganti baris ini di dalam loop tabel admin:
+<td style="font-family:monospace; font-size:0.8rem; color:#6366f1;">${u.pass || 'Tidak Ada'}</td>
                         <td style="font-size:0.85rem;">${u.hp}</td>
                         <td>
                             <span class="badge ${u.gender === 'Pria' ? 'male' : 'female'}">${u.gender}</span>
