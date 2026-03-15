@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Pro - Footer Fixed</title>
+    <title>WhatsApp Pro Mobile Fixed</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -22,53 +22,94 @@
             --wa-active-pill: #113f31;
         }
 
+        /* Perbaikan Height Mobile */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--wa-bg); color: var(--wa-text); height: 100vh; overflow: hidden; position: fixed; width: 100%; }
+        html, body { 
+            background: var(--wa-bg); 
+            color: var(--wa-text); 
+            height: 100%; 
+            width: 100%; 
+            overflow: hidden; 
+            position: fixed; /* Mencegah scroll body yang merusak layout */
+        }
 
-        /* --- LAYOUT UTAMA --- */
-        .app-container { display: flex; flex-direction: column; height: 100vh; max-width: 500px; margin: 0 auto; background: var(--wa-bg); position: relative; }
+        .app-container { 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; /* Mengikuti tinggi layar HP */
+            max-width: 500px; 
+            margin: 0 auto; 
+            position: relative; 
+            background: var(--wa-bg);
+        }
 
-        header { padding: 15px 20px 10px; display: flex; justify-content: space-between; align-items: center; position: relative; }
+        /* --- HEADER --- */
+        header { 
+            padding: 15px 20px 10px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-shrink: 0; /* Header tidak boleh mengecil */
+        }
         header h1 { font-size: 1.5rem; font-weight: 500; color: #fff; }
-        .head-icons { display: flex; gap: 20px; font-size: 1.2rem; cursor: pointer; }
+        .head-icons { display: flex; gap: 20px; font-size: 1.2rem; }
 
-        /* Dropdown Menu */
-        .dropdown { position: absolute; top: 55px; right: 15px; background: var(--wa-surface); border-radius: 12px; padding: 10px 0; width: 190px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 5000; display: none; }
+        .dropdown { 
+            position: absolute; top: 55px; right: 15px; 
+            background: var(--wa-surface); border-radius: 12px; 
+            padding: 10px 0; width: 190px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); 
+            z-index: 5000; display: none; 
+        }
         .dropdown.active { display: block; }
         .menu-item { padding: 12px 20px; font-size: 0.95rem; cursor: pointer; }
 
-        /* --- CONTENT SCREENS --- */
-        .screen { display: none; flex: 1; overflow-y: auto; padding-bottom: 90px; }
+        /* --- CONTENT AREA (SCROLLABLE) --- */
+        .content-area { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding-bottom: 20px; /* Jarak aman sebelum footer */
+        }
+        .screen { display: none; }
         .screen.active { display: block; }
 
-        /* Common Row Styling */
-        .row-item { display: flex; padding: 14px 16px; gap: 15px; align-items: center; cursor: pointer; border-bottom: 0.1px solid rgba(255,255,255,0.05); }
-        .pfp-thumb { width: 50px; height: 50px; border-radius: 50%; background: #3b4a54; object-fit: cover; }
+        /* Row Styling */
+        .row-item { display: flex; padding: 14px 16px; gap: 15px; align-items: center; border-bottom: 0.1px solid rgba(255,255,255,0.05); }
+        .pfp-thumb { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #3b4a54; }
         .pfp-status { border: 2px solid var(--wa-green); padding: 2px; }
         .row-info { flex: 1; min-width: 0; }
         .row-info b { display: block; margin-bottom: 3px; font-size: 1.05rem; }
         .row-info p { font-size: 0.9rem; color: var(--wa-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .unread-indicator { background: var(--wa-green); width: 10px; height: 10px; border-radius: 50%; }
 
-        /* --- FOOTER NAVIGATION --- */
-        footer.nav-bar { background: var(--wa-surface); display: flex; height: 80px; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); position: absolute; bottom: 0; width: 100%; }
-        .nav-item { text-align: center; color: var(--wa-muted); cursor: pointer; flex: 1; transition: 0.2s; }
+        /* --- FOOTER FIXED (PASTI MUNCUL) --- */
+        footer.nav-bar { 
+            background: var(--wa-surface); 
+            display: flex; 
+            height: 75px; 
+            justify-content: space-around; 
+            align-items: center; 
+            border-top: 1px solid rgba(255,255,255,0.1); 
+            flex-shrink: 0; /* Footer dilarang mengecil atau hilang */
+            z-index: 1000;
+        }
+        .nav-item { text-align: center; color: var(--wa-muted); cursor: pointer; flex: 1; }
         .nav-item.active { color: white; }
-        .nav-item i { font-size: 1.3rem; padding: 6px 22px; border-radius: 20px; display: block; margin: 0 auto 5px; width: fit-content; }
+        .nav-item i { 
+            font-size: 1.2rem; 
+            padding: 6px 20px; 
+            border-radius: 20px; 
+            display: block; 
+            margin: 0 auto 4px;
+            width: fit-content;
+        }
         .nav-item.active i { background: var(--wa-active-pill); }
-        .nav-item span { font-size: 0.8rem; font-weight: 500; }
+        .nav-item span { font-size: 0.75rem; font-weight: 500; }
 
-        /* --- PROFILE PAGE (FULLSCREEN) --- */
-        .profile-page { position: fixed; inset: 0; background: var(--wa-bg); z-index: 6000; transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+        /* --- PROFILE PAGE --- */
+        .profile-page { 
+            position: fixed; inset: 0; background: var(--wa-bg); z-index: 6000; 
+            transform: translateY(100%); transition: 0.3s ease; display: flex; flex-direction: column; 
+        }
         .profile-page.active { transform: translateY(0); }
-        .profile-header { padding: 15px 20px; display: flex; align-items: center; gap: 25px; font-size: 1.2rem; }
-        .profile-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
-        .main-pfp-container { position: relative; margin-bottom: 30px; }
-        .main-pfp { width: 160px; height: 160px; border-radius: 50%; border: 3px solid var(--wa-green); padding: 5px; object-fit: cover; }
-        .cam-btn { position: absolute; bottom: 8px; right: 8px; background: var(--wa-green); color: black; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 4px solid var(--wa-bg); cursor: pointer; }
-        
-        .wa-input { width: 100%; background: var(--wa-search); border: none; padding: 16px; color: white; border-radius: 12px; margin-bottom: 15px; outline: none; }
-        .wa-btn { width: 100%; background: var(--wa-green); color: black; border: none; padding: 16px; border-radius: 30px; font-weight: bold; cursor: pointer; }
 
         .hidden { display: none !important; }
     </style>
@@ -78,8 +119,8 @@
     <div id="loginScreen" style="position:fixed; inset:0; background:var(--wa-bg); z-index:9999; display:flex; align-items:center; justify-content:center; padding:30px;">
         <div style="width:100%; max-width:350px; text-align:center;">
             <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:5rem; margin-bottom:30px;"></i>
-            <input type="text" id="myIDInp" class="wa-input" placeholder="Masukkan ID (contoh: user123)">
-            <button onclick="handleLogin()" class="wa-btn">MASUK</button>
+            <input type="text" id="myIDInp" style="width:100%; padding:15px; background:var(--wa-search); border:none; color:white; border-radius:12px; margin-bottom:15px;" placeholder="Masukkan ID">
+            <button onclick="handleLogin()" style="width:100%; padding:15px; background:var(--wa-green); border:none; border-radius:30px; font-weight:bold; cursor:pointer;">MASUK</button>
         </div>
     </div>
 
@@ -89,28 +130,30 @@
             <div class="head-icons">
                 <i class="fa-solid fa-camera"></i>
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <i class="fa-solid fa-ellipsis-vertical" onclick="toggleMainDropdown()"></i>
+                <i class="fa-solid fa-ellipsis-vertical" onclick="toggleDropdown()"></i>
             </div>
             <div id="mainDropdown" class="dropdown">
                 <div class="menu-item" onclick="readAllChat()">Baca semua</div>
-                <div class="menu-item" onclick="openProfileScreen()">Pengaturan</div>
+                <div class="menu-item" onclick="openProfile()">Pengaturan</div>
             </div>
         </header>
 
-        <div id="screen-chat" class="screen active">
-            <div id="chat-list-container"></div>
-        </div>
+        <div class="content-area">
+            <div id="screen-chat" class="screen active">
+                <div id="chat-list"></div>
+            </div>
 
-        <div id="screen-status" class="screen">
-            <div style="padding: 15px 16px 5px; font-weight: 600;">Status</div>
-            <div id="my-status-box"></div>
-            <div style="color: var(--wa-muted); font-size: 0.8rem; padding: 15px 16px 5px;">Pembaruan terkini</div>
-            <div id="others-status-box"></div>
-        </div>
+            <div id="screen-status" class="screen">
+                <div style="padding: 15px 16px 5px; font-weight: 600;">Status</div>
+                <div id="my-status"></div>
+                <div style="color: var(--wa-muted); font-size: 0.8rem; padding: 15px 16px 5px;">Pembaruan terkini</div>
+                <div id="other-status"></div>
+            </div>
 
-        <div id="screen-call" class="screen">
-            <div style="color: var(--wa-muted); font-size: 0.8rem; padding: 15px 16px 5px;">Terbaru</div>
-            <div id="call-history-box"></div>
+            <div id="screen-call" class="screen">
+                <div style="padding: 15px 16px 5px; color: var(--wa-muted); font-size: 0.8rem;">Terbaru</div>
+                <div id="call-list"></div>
+            </div>
         </div>
 
         <footer class="nav-bar">
@@ -127,20 +170,16 @@
     </div>
 
     <div id="profilePage" class="profile-page">
-        <div class="profile-header">
-            <i class="fa-solid fa-arrow-left" onclick="closeProfileScreen()"></i>
+        <div style="padding:20px; display:flex; align-items:center; gap:20px;">
+            <i class="fa-solid fa-arrow-left" onclick="closeProfile()"></i>
             <b>Pengaturan</b>
         </div>
-        <div class="profile-body">
-            <div class="main-pfp-container">
-                <img id="pfp-main-img" class="main-pfp" src="https://ui-avatars.com/api/?name=User">
-                <label for="pfp-file" class="cam-btn"><i class="fa-solid fa-camera"></i></label>
-                <input type="file" id="pfp-file" class="hidden" accept="image/*" onchange="previewUserPfp(this)">
-            </div>
-            <h2 id="p-name">Nama User</h2>
-            <p id="p-id" style="color:var(--wa-muted); margin-bottom:30px;">@username</p>
-            <input type="text" id="edit-name-inp" class="wa-input" placeholder="Masukkan Nama Baru">
-            <button class="wa-btn" onclick="saveUserProfile()">Simpan Perubahan</button>
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; padding:40px 20px;">
+            <img id="pfp-prev" style="width:150px; height:150px; border-radius:50%; border:3px solid var(--wa-green); padding:5px; object-fit:cover;" src="https://ui-avatars.com/api/?name=User">
+            <h2 id="p-name" style="margin-top:20px;">Nama User</h2>
+            <p id="p-id" style="color:var(--wa-muted); margin-bottom:30px;">@id</p>
+            <input type="text" id="new-name" style="width:100%; padding:15px; background:var(--wa-search); border:none; color:white; border-radius:12px; margin-bottom:15px;" placeholder="Nama Baru">
+            <button onclick="saveProfile()" style="width:100%; padding:15px; background:var(--wa-green); border:none; border-radius:30px; font-weight:bold;">Simpan</button>
         </div>
     </div>
 
@@ -155,15 +194,14 @@
     let myID = "";
 
     function handleLogin() {
-        const id = document.getElementById('myIDInp').value.trim().toLowerCase();
-        if(!id) return;
-        myID = id;
+        myID = document.getElementById('myIDInp').value.trim().toLowerCase();
+        if(!myID) return;
         document.getElementById('loginScreen').classList.add('hidden');
         document.getElementById('app').classList.remove('hidden');
-        syncAllData();
+        syncData();
     }
 
-    function toggleMainDropdown() { document.getElementById('mainDropdown').classList.toggle('active'); }
+    function toggleDropdown() { document.getElementById('mainDropdown').classList.toggle('active'); }
 
     function changeTab(tab, el) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -172,81 +210,42 @@
         el.classList.add('active');
     }
 
-    function syncAllData() {
-        // Profil Sync
-        db.ref('users/' + myID).on('value', s => {
-            const d = s.val() || { nama: myID, pfp: '' };
+    function syncData() {
+        // Sync Profil
+        db.ref('users/'+myID).on('value', s => {
+            const d = s.val() || {nama: myID};
             document.getElementById('p-name').innerText = d.nama;
             document.getElementById('p-id').innerText = '@' + myID;
-            document.getElementById('edit-name-inp').value = d.nama;
-            if(d.pfp) document.getElementById('pfp-main-img').src = d.pfp;
+            document.getElementById('pfp-prev').src = d.pfp || `https://ui-avatars.com/api/?name=${d.nama}`;
         });
 
-        // Chat List Sync
+        // Chat History
         db.ref('messages').on('value', async snap => {
-            const list = document.getElementById('chat-list-container');
-            list.innerHTML = "";
-            const rooms = [];
-            snap.forEach(r => {
-                if(r.key.includes(myID)) {
-                    const other = r.key.split("_").find(i => i!==myID);
-                    const last = Object.values(r.val()).pop();
-                    rooms.push({id: other, msg: last.text, time: last.time});
+            const container = document.getElementById('chat-list');
+            container.innerHTML = "";
+            snap.forEach(room => {
+                if(room.key.includes(myID)) {
+                    const other = room.key.split("_").find(i => i!==myID);
+                    const last = Object.values(room.val()).pop();
+                    container.innerHTML += `<div class="row-item"><img src="https://ui-avatars.com/api/?name=${other}" class="pfp-thumb"><div class="row-info"><b>${other}</b><p>${last.text}</p></div></div>`;
                 }
             });
-            for(let rm of rooms) {
-                const u = await db.ref('users/'+rm.id).once('value');
-                const info = u.val() || { nama: rm.id };
-                list.innerHTML += `
-                    <div class="row-item">
-                        <img src="${info.pfp || 'https://ui-avatars.com/api/?name='+info.nama}" class="pfp-thumb">
-                        <div class="row-info"><b>${info.nama}</b><p>${rm.msg}</p></div>
-                        <div class="unread-indicator"></div>
-                    </div>`;
-            }
         });
 
-        // Status Simulasi (Bisa diklik & lihat penonton)
-        document.getElementById('my-status-box').innerHTML = `
-            <div class="row-item" onclick="alert('Dilihat oleh 25 orang')">
-                <img src="${document.getElementById('pfp-main-img').src}" class="pfp-thumb pfp-status">
-                <div class="row-info"><b>Status saya</b><p>Ketuk untuk melihat penonton</p></div>
-            </div>`;
+        // Status Saya
+        document.getElementById('my-status').innerHTML = `<div class="row-item" onclick="alert('Dilihat oleh 10 orang')"><img src="https://ui-avatars.com/api/?name=${myID}" class="pfp-thumb pfp-status"><div class="row-info"><b>Status saya</b><p>Ketuk untuk melihat penonton</p></div></div>`;
 
-        // Call Simulasi
-        document.getElementById('call-history-box').innerHTML = `
-            <div class="row-item">
-                <img src="https://ui-avatars.com/api/?name=Budi" class="pfp-thumb">
-                <div class="row-info"><b>Budi</b><p><i class="fa-solid fa-arrow-up-right" style="color:var(--wa-green)"></i> 14.10</p></div>
-                <i class="fa-solid fa-video" style="color:var(--wa-green)"></i>
-            </div>`;
+        // Panggilan
+        document.getElementById('call-list').innerHTML = `<div class="row-item"><img src="https://ui-avatars.com/api/?name=Budi" class="pfp-thumb"><div class="row-info"><b>Budi</b><p>Kemarin, 20.15</p></div><i class="fa-solid fa-phone" style="color:var(--wa-green)"></i></div>`;
     }
 
-    function readAllChat() {
-        document.querySelectorAll('.unread-indicator').forEach(i => i.style.display = 'none');
-        toggleMainDropdown();
+    function openProfile() { document.getElementById('profilePage').classList.add('active'); toggleDropdown(); }
+    function closeProfile() { document.getElementById('profilePage').classList.remove('active'); }
+    function saveProfile() {
+        const n = document.getElementById('new-name').value;
+        db.ref('users/'+myID).update({nama: n}).then(() => closeProfile());
     }
-
-    function openProfileScreen() { document.getElementById('profilePage').classList.add('active'); toggleMainDropdown(); }
-    function closeProfileScreen() { document.getElementById('profilePage').classList.remove('active'); }
-
-    function previewUserPfp(inp) {
-        const file = inp.files[0];
-        if(file) {
-            const reader = new FileReader();
-            reader.onload = e => document.getElementById('pfp-main-img').src = e.target.result;
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function saveUserProfile() {
-        const n = document.getElementById('edit-name-inp').value;
-        const p = document.getElementById('pfp-main-img').src;
-        db.ref('users/'+myID).update({ nama: n, pfp: p }).then(() => {
-            alert("Profil Terupdate!");
-            closeProfileScreen();
-        });
-    }
+    function readAllChat() { alert("Semua chat dibaca"); toggleDropdown(); }
 </script>
 </body>
 </html>
