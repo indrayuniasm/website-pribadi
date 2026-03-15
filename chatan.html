@@ -207,14 +207,13 @@
             messagingSenderId: "1040239629485",
             appId: "1:1040239629485:web:254a7b50a4243b6c5d6224"
         };
-        // Fungsi untuk memuat daftar orang yang pernah chat dengan kita
+// Ganti fungsi loadChatList lama dengan ini:
 function loadChatList() {
     if (!auth.currentUser) return;
 
-    // Ambil semua pesan dimana kita adalah pengirim atau penerima
+    // Ambil pesan terbaru secara keseluruhan (order by time)
     const q = query(
         collection(db, "chats"),
-        where("room", ">=", ""), // Teknik sederhana untuk mengambil semua room
         orderBy("time", "desc")
     );
 
@@ -223,11 +222,10 @@ function loadChatList() {
         const uniqueUsers = new Set();
         const lastMessages = [];
 
+        // Filter manual: Hanya ambil yang room-nya ada UID kita
         snap.forEach(doc => {
             const data = doc.data();
-            // Cek apakah room mengandung UID kita
-            if (data.room.includes(auth.currentUser.uid)) {
-                // Cari tahu UID lawan bicara
+            if (data.room && data.room.includes(auth.currentUser.uid)) {
                 const members = data.room.split("_");
                 const otherUid = members.find(uid => uid !== auth.currentUser.uid);
                 
@@ -242,12 +240,18 @@ function loadChatList() {
             }
         });
 
-        if (lastMessages.length === 0) return;
+        if (lastMessages.length === 0) {
+            chatListDiv.innerHTML = `
+                <div class="text-center py-20 opacity-20">
+                    <i class="fa-solid fa-message text-6xl mb-4"></i>
+                    <p class="text-sm font-bold uppercase">Belum ada obrolan</p>
+                </div>`;
+            return;
+        }
 
         chatListDiv.innerHTML = "";
         
         for (const chat of lastMessages) {
-            // Ambil data profil lawan bicara dari Firestore
             const userDoc = await getDoc(doc(db, "users", chat.uid));
             if (userDoc.exists()) {
                 const userData = userDoc.data();
