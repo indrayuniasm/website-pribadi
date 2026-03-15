@@ -23,9 +23,6 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
-        
         body { background: var(--bg-deep); color: var(--text-high); height: 100vh; overflow: hidden; display: flex; justify-content: center; }
 
         #mainBgLayer { position: fixed; inset: 0; z-index: -2; background-size: cover; background-position: center; transition: 0.8s; background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1920'); }
@@ -34,51 +31,40 @@
         .app-wrapper { width: 100%; max-width: 1440px; height: 100vh; display: grid; grid-template-columns: 300px 1fr 300px; gap: 20px; padding: 20px; }
         .glass-panel { background: var(--glass-card); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 28px; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
-        input, select { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 14px 16px; border-radius: 16px; color: white; outline: none; width: 100%; margin-bottom: 15px; font-size: 0.95rem; }
-        input:focus { border-color: var(--primary); }
-
+        input, select { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 14px 16px; border-radius: 16px; color: white; outline: none; width: 100%; margin-bottom: 15px; }
+        
+        /* Layouting */
         .panel-left { padding: 24px; }
-        .logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
-        .logo i { color: var(--primary); }
         .contact-item { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 18px; cursor: pointer; transition: 0.2s; margin-bottom: 8px; }
         .contact-item:hover { background: rgba(255,255,255,0.05); }
         .pfp-img { width: 50px; height: 50px; border-radius: 16px; object-fit: cover; background: #1f2937; }
 
         .chat-header { padding: 20px 24px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 15px; }
-        .back-btn { display: none; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
         .msg-area { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
         
-        .bubble { padding: 14px 18px; border-radius: 22px; max-width: 70%; font-size: 0.95rem; line-height: 1.5; }
-        .sent { align-self: flex-end; background: var(--primary); border-bottom-right-radius: 4px; }
+        .bubble { padding: 12px 16px; border-radius: 20px; max-width: 75%; font-size: 0.95rem; position: relative; word-wrap: break-word; }
+        .sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
         .received { align-self: flex-start; background: #27272a; border-bottom-left-radius: 4px; }
         
         .input-bar { padding: 20px 24px; display: flex; gap: 12px; border-top: 1px solid var(--glass-border); }
-        .action-circle { width: 48px; height: 48px; border-radius: 16px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; flex-shrink: 0; }
-        .btn-vn { background: #3f3f46; color: white; }
+        .action-circle { width: 48px; height: 48px; border-radius: 16px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; }
         .btn-send { background: var(--primary); color: white; }
         .recording { background: #ef4444 !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        
-        .panel-right { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-        .profile-card { text-align: center; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 24px; border: 1px solid var(--glass-border); }
-        .badge { background: rgba(139, 92, 246, 0.2); color: var(--primary); padding: 4px 10px; border-radius: 10px; font-size: 0.75rem; margin-top: 10px; display: inline-block; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-content { width: 90%; max-width: 400px; padding: 30px; }
-        
-        @media (max-width: 900px) {
-            .app-wrapper { grid-template-columns: 1fr; padding: 0; }
-            .panel-right, .chat-area { display: none; } 
-            .back-btn { display: block; } 
-            .mobile-bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: var(--glass-card); display: flex; justify-content: space-around; align-items: center; z-index: 100; border-top: 1px solid var(--glass-border); }
-            .nav-item { color: var(--text-low); font-size: 1.3rem; cursor: pointer; }
-            .nav-item.active { color: var(--primary); }
-        }
-        @media (min-width: 901px) { .mobile-bottom-nav { display: none; } }
-
+        /* Auth UI */
         .auth-overlay { position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .hidden { display: none !important; }
-        audio { height: 35px; width: 200px; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 900px) {
+            .app-wrapper { grid-template-columns: 1fr; padding: 0; }
+            .panel-right, .chat-area { display: none; }
+            .mobile-bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: var(--glass-card); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--glass-border); }
+            .nav-item { color: var(--text-low); font-size: 1.2rem; }
+            .nav-item.active { color: var(--primary); }
+        }
+        audio { height: 35px; width: 220px; }
     </style>
 </head>
 <body>
@@ -87,74 +73,64 @@
     <div class="bg-overlay"></div>
 
     <div id="authUI" class="auth-overlay">
-        <div class="glass-panel" style="width: 100%; max-width: 400px; padding: 40px;">
-            <div class="logo" style="justify-content: center; font-size: 2rem;"><i class="fa-solid fa-bolt"></i> ConnectPro</div>
+        <div class="glass-panel" style="width: 100%; max-width: 380px; padding: 35px;">
+            <h2 style="text-align: center; margin-bottom: 25px;"><i class="fa-solid fa-bolt" style="color:var(--primary)"></i> ConnectPro</h2>
             
             <div id="loginForm">
                 <input type="text" id="lID" placeholder="ID Username">
                 <input type="password" id="lPW" placeholder="Password">
-                <button class="btn-send action-circle" style="width: 100%; border-radius: 16px;" onclick="handleAuth('login')">Masuk</button>
-                <p align="center" style="margin-top:20px; font-size:0.9rem;">Belum punya akun? <span onclick="toggleAuth()" style="color:var(--primary); cursor:pointer;">Daftar</span></p>
+                <button class="btn-send action-circle" style="width: 100%;" onclick="handleAuth('login')">Masuk</button>
+                <p align="center" style="margin-top:20px; font-size:0.9rem; color:var(--text-low);">Belum ada akun? <span onclick="toggleAuth()" style="color:var(--primary); cursor:pointer;">Daftar Sekarang</span></p>
             </div>
 
             <div id="regForm" class="hidden">
                 <input type="text" id="rNama" placeholder="Nama Lengkap">
-                <input type="text" id="rID" placeholder="Buat ID Username">
+                <input type="text" id="rID" placeholder="ID Username">
                 <input type="password" id="rPW" placeholder="Password">
-                <button class="btn-send action-circle" style="width: 100%; border-radius: 16px;" onclick="handleAuth('reg')">Daftar Akun</button>
-                <p align="center" style="margin-top:20px; font-size:0.9rem;">Sudah punya akun? <span onclick="toggleAuth()" style="color:var(--primary); cursor:pointer;">Login</span></p>
+                <button class="btn-send action-circle" style="width: 100%;" onclick="handleAuth('reg')">Buat Akun</button>
+                <p align="center" style="margin-top:20px; font-size:0.9rem; color:var(--text-low);">Sudah punya akun? <span onclick="toggleAuth()" style="color:var(--primary); cursor:pointer;">Login</span></p>
             </div>
         </div>
     </div>
 
     <div id="appUI" class="app-wrapper hidden">
         <div class="glass-panel panel-left" id="berandaPanel">
-            <div class="logo"><i class="fa-solid fa-bolt"></i> Beranda</div>
+            <h3 style="margin-bottom: 20px;">Beranda</h3>
             <input type="text" id="searchInput" placeholder="Cari teman..." onkeyup="filterContacts()">
             <div id="contactList" style="flex: 1; overflow-y: auto;"></div>
         </div>
 
         <div class="glass-panel chat-area" id="chatPanel">
             <div class="chat-header">
-                <button class="back-btn" onclick="switchMobileTab('beranda')"><i class="fa-solid fa-chevron-left"></i></button>
-                <div id="activeUserHeader">Pilih teman...</div>
+                <button onclick="switchMobileTab('beranda')" style="background:none; border:none; color:white; margin-right:10px;" class="mobile-only"><i class="fa-solid fa-arrow-left"></i></button>
+                <div id="headerInfo"><b>Pilih Teman</b></div>
             </div>
             <div class="msg-area" id="msgBox"></div>
             <div class="input-bar">
-                <button id="vnBtn" class="action-circle btn-vn" onmousedown="startVN()" onmouseup="stopVN()" ontouchstart="startVN()" ontouchend="stopVN()"><i class="fa-solid fa-microphone"></i></button>
+                <button id="vnBtn" class="action-circle" style="background:#3f3f46; color:white;" onmousedown="startVN()" onmouseup="stopVN()" ontouchstart="startVN()" ontouchend="stopVN()"><i class="fa-solid fa-microphone"></i></button>
                 <input type="text" id="msgInput" placeholder="Ketik pesan..." style="margin:0;">
                 <button class="action-circle btn-send" onclick="sendText()"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </div>
 
         <div class="glass-panel panel-right" id="profilePanel">
-            <div class="profile-card">
-                <img id="myPfp" src="https://via.placeholder.com/150" class="pfp-img" style="width:80px; height:80px;">
+            <div style="padding: 24px; text-align: center;">
+                <img id="myPfp" src="https://via.placeholder.com/150" style="width:100px; height:100px; border-radius:25px; margin-bottom:15px; object-fit:cover; border:2px solid var(--primary);">
                 <h3 id="myNama">User</h3>
-                <p id="myIDDisplay" style="color:var(--text-low);">@id</p>
-                <button class="action-circle" style="width:100%; margin-top:10px; background:rgba(255,255,255,0.1); color:white;" onclick="openEditModal()">Edit Profil</button>
+                <p id="myIDDisplay" style="color:var(--text-low); margin-bottom:20px;">@id</p>
+                <button onclick="location.reload()" style="width:100%; padding:12px; border-radius:12px; border:none; background:rgba(239,68,68,0.1); color:#ef4444; cursor:pointer;">Keluar</button>
             </div>
-            <button class="action-circle" style="width:100%; background:rgba(239,68,68,0.2); color:#ef4444;" onclick="location.reload()">Keluar</button>
         </div>
-    </div>
 
-    <div class="mobile-bottom-nav" id="mobileNav">
-        <div class="nav-item active" onclick="switchMobileTab('beranda')" id="tab-beranda"><i class="fa-solid fa-house"></i></div>
-        <div class="nav-item" onclick="switchMobileTab('chat')" id="tab-chat"><i class="fa-solid fa-message"></i></div>
-        <div class="nav-item" onclick="switchMobileTab('profile')" id="tab-profile"><i class="fa-solid fa-user"></i></div>
-    </div>
-
-    <div id="editProfileModal" class="modal-overlay hidden">
-        <div class="glass-panel modal-content">
-            <h3>Edit Profil</h3>
-            <input type="text" id="editNamaInput" placeholder="Nama Baru">
-            <select id="editPrivacyInput"><option value="public">Publik</option><option value="private">Private</option></select>
-            <button class="btn-send action-circle" style="width: 100%;" onclick="saveProfile()" id="saveBtn">Simpan</button>
-            <button style="width:100%; margin-top:10px; background:none; border:none; color:white;" onclick="document.getElementById('editProfileModal').classList.add('hidden')">Batal</button>
+        <div class="mobile-bottom-nav">
+            <div class="nav-item active" id="tab-beranda" onclick="switchMobileTab('beranda')"><i class="fa-solid fa-house"></i></div>
+            <div class="nav-item" id="tab-chat" onclick="switchMobileTab('chat')"><i class="fa-solid fa-message"></i></div>
+            <div class="nav-item" id="tab-profile" onclick="switchMobileTab('profile')"><i class="fa-solid fa-user"></i></div>
         </div>
     </div>
 
 <script>
+    // --- KONFIGURASI ---
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         authDomain: "fotobooth-e36ab.firebaseapp.com",
@@ -172,6 +148,7 @@
     let myID = "", partnerID = "", myData = {};
     let mediaRec, chunks = [];
 
+    // --- AUTH ---
     function toggleAuth() {
         document.getElementById('loginForm').classList.toggle('hidden');
         document.getElementById('regForm').classList.toggle('hidden');
@@ -182,50 +159,66 @@
             const id = document.getElementById('rID').value.trim().toLowerCase();
             const pw = document.getElementById('rPW').value;
             const nama = document.getElementById('rNama').value;
-            if(!id || !pw || !nama) return alert("Lengkapi data!");
+            if(!id || !pw || !nama) return alert("Lengkapi semua data!");
+            
             db.ref('users/' + id).set({ nama, pw, pfp: '', privacy: 'public' })
               .then(() => { alert("Berhasil! Silakan Login."); toggleAuth(); });
         } else {
             const id = document.getElementById('lID').value.trim().toLowerCase();
             const pw = document.getElementById('lPW').value;
+            
             db.ref('users/' + id).once('value').then(snap => {
                 if(snap.exists() && snap.val().pw == pw) {
-                    myID = id; myData = snap.val();
+                    myID = id;
+                    myData = snap.val();
                     document.getElementById('authUI').classList.add('hidden');
                     document.getElementById('appUI').classList.remove('hidden');
-                    updateProfileUI(); loadContacts();
-                } else alert("ID atau Password Salah!");
+                    document.getElementById('myNama').innerText = myData.nama;
+                    document.getElementById('myIDDisplay').innerText = "@" + myID;
+                    loadContacts();
+                } else {
+                    alert("ID atau Password salah!");
+                }
             });
         }
     }
 
+    // --- CONTACTS ---
     function loadContacts() {
         db.ref('users').on('value', snap => {
             const list = document.getElementById('contactList');
             list.innerHTML = "";
             snap.forEach(u => {
-                if(u.key !== myID && u.val().privacy !== 'private') {
-                    list.innerHTML += `<div class="contact-item" onclick="openChat('${u.key}', '${u.val().nama}', '${u.val().pfp}')">
-                        <img src="${u.val().pfp || 'https://via.placeholder.com/150'}" class="pfp-img">
-                        <div><b>${u.val().nama}</b><br><small>@${u.key}</small></div>
-                    </div>`;
+                if(u.key !== myID) {
+                    list.innerHTML += `
+                        <div class="contact-item" onclick="openChat('${u.key}', '${u.val().nama}', '${u.val().pfp}')">
+                            <img src="${u.val().pfp || 'https://via.placeholder.com/150'}" class="pfp-img">
+                            <div><b>${u.val().nama}</b><br><small style="color:var(--text-low)">@${u.key}</small></div>
+                        </div>`;
                 }
             });
         });
     }
 
+    // --- CHAT SYSTEM ---
     function openChat(id, nama, pfp) {
         partnerID = id;
-        document.getElementById('activeUserHeader').innerHTML = `<b>${nama}</b>`;
+        document.getElementById('headerInfo').innerHTML = `<b>${nama}</b>`;
         if(window.innerWidth <= 900) switchMobileTab('chat');
+        
         const room = [myID, partnerID].sort().join("_");
+        db.ref('messages/' + room).off(); // Reset listener
         db.ref('messages/' + room).on('value', snap => {
             const box = document.getElementById('msgBox');
             box.innerHTML = "";
             snap.forEach(m => {
                 const d = m.val();
                 const cls = d.sender === myID ? 'sent' : 'received';
-                box.innerHTML += `<div class="bubble ${cls}">${d.type === 'vn' ? `<audio controls src="${d.url}"></audio>` : d.text}</div>`;
+                if(d.type === 'vn') {
+                    box.innerHTML += `<div class="bubble ${cls}"><audio controls src="${d.url}"></audio></div>`;
+                } else {
+                    box.innerHTML += `<div class="bubble ${cls}">${d.text}</div>`;
+                }
             });
             box.scrollTop = box.scrollHeight;
         });
@@ -235,17 +228,21 @@
         const text = document.getElementById('msgInput').value;
         if(!text || !partnerID) return;
         const room = [myID, partnerID].sort().join("_");
-        db.ref('messages/' + room).push({ sender: myID, text, type: 'text' });
+        db.ref('messages/' + room).push({ sender: myID, text: text, type: 'text', time: Date.now() });
         document.getElementById('msgInput').value = "";
     }
 
+    // --- VOICE NOTE ---
     async function startVN() {
-        if(!partnerID) return;
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRec = new MediaRecorder(stream);
-        mediaRec.start(); chunks = [];
-        document.getElementById('vnBtn').classList.add('recording');
-        mediaRec.ondataavailable = e => chunks.push(e.data);
+        if(!partnerID) return alert("Pilih teman dulu!");
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRec = new MediaRecorder(stream);
+            mediaRec.start();
+            chunks = [];
+            document.getElementById('vnBtn').classList.add('recording');
+            mediaRec.ondataavailable = e => chunks.push(e.data);
+        } catch (e) { alert("Izinkan akses Mic!"); }
     }
 
     function stopVN() {
@@ -254,40 +251,31 @@
         mediaRec.stop();
         mediaRec.onstop = async () => {
             const blob = new Blob(chunks, { type: 'audio/webm' });
+            const room = [myID, partnerID].sort().join("_");
             const ref = storage.ref(`vns/${Date.now()}.webm`);
             await ref.put(blob);
             const url = await ref.getDownloadURL();
-            const room = [myID, partnerID].sort().join("_");
-            db.ref('messages/' + room).push({ sender: myID, url, type: 'vn' });
+            db.ref('messages/' + room).push({ sender: myID, url: url, type: 'vn', time: Date.now() });
         };
     }
 
-    function updateProfileUI() {
-        document.getElementById('myNama').innerText = myData.nama;
-        document.getElementById('myIDDisplay').innerText = "@" + myID;
-        document.getElementById('myPfp').src = myData.pfp || 'https://via.placeholder.com/150';
-    }
-
-    function openEditModal() {
-        document.getElementById('editNamaInput').value = myData.nama;
-        document.getElementById('editProfileModal').classList.remove('hidden');
-    }
-
-    async function saveProfile() {
-        const newNama = document.getElementById('editNamaInput').value;
-        const newPriv = document.getElementById('editPrivacyInput').value;
-        await db.ref('users/' + myID).update({ nama: newNama, privacy: newPriv });
-        myData.nama = newNama; updateProfileUI();
-        document.getElementById('editProfileModal').classList.add('hidden');
-    }
-
+    // --- NAVIGATION ---
     function switchMobileTab(tab) {
+        if(window.innerWidth > 900 && tab !== 'chat') return;
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         document.getElementById('tab-' + tab).classList.add('active');
+        
         document.getElementById('berandaPanel').style.display = tab === 'beranda' ? 'flex' : 'none';
         document.getElementById('chatPanel').style.display = tab === 'chat' ? 'flex' : 'none';
         document.getElementById('profilePanel').style.display = tab === 'profile' ? 'flex' : 'none';
     }
+
+    function filterContacts() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('.contact-item').forEach(item => {
+            item.style.display = item.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+        });
+    }
 </script>
 </body>
-                    </html>
+</html>
