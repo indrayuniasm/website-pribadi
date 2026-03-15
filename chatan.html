@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ConnectPro Ultra - Premium Chat</title>
+    <title>ConnectPro Ultra - Premium Chat & Theme</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
@@ -11,9 +11,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- CORE VARIABLES & KEYFRAMES --- */
         :root {
-            --primary: #6366f1; /* Indigo Default */
+            --primary: #6366f1;
             --bg-overlay: rgba(15, 23, 42, 0.8);
             --card-bg: rgba(255, 255, 255, 0.06);
             --text-main: #f8fafc;
@@ -21,125 +20,62 @@
             --border: rgba(255, 255, 255, 0.1);
             --glass: blur(20px) saturate(180%);
             --neon-shadow: 0 0 15px var(--primary);
-            
-            /* Theme Specs Default (Malam) */
             --theme-bg: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?q=80&w=1920');
-            --theme-color: #fbbf24; /* Amber untuk bintang */
         }
 
         @keyframes starsAnim { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(99, 102, 241, 0); } 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); } }
+        @keyframes pulseRec { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
-        /* --- BASE STYLES & THEME ENGINE --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s background-color, 0.3s border-color; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s ease; }
         
-        body {
-            background-color: #0f172a;
-            color: var(--text-main);
-            height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden;
-            position: relative;
-        }
+        body { background-color: #0f172a; color: var(--text-main); height: 100vh; overflow: hidden; position: relative; }
 
-        /* Layer Background Utama (Gambar/Kustom) */
-        #mainBgLayer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: var(--theme-bg); background-size: cover; background-position: center;
-            z-index: -2; transition: background-image 0.5s ease-in-out;
-        }
+        /* Background Layers */
+        #mainBgLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: var(--theme-bg); background-size: cover; background-position: center; z-index: -2; }
+        #effectLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 
-        /* Layer Overlay Efek (Bintang, Hujan, dll) */
-        #effectLayer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none;
-        }
+        /* Layouts */
+        .glass-card { background: var(--card-bg); backdrop-filter: var(--glass); border: 1px solid var(--border); border-radius: 24px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
 
-        /* --- GLOBAL UI ELEMENTS --- */
-        .glass-card {
-            background: var(--card-bg); backdrop-filter: var(--glass);
-            border: 1px solid var(--border); border-radius: 24px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        input, select {
-            width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px;
-            border: 1px solid var(--border); background: rgba(0,0,0,0.2);
-            color: white; outline: none; transition: 0.3s;
-        }
+        /* Auth UI */
+        .auth-screen { width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .auth-box { width: 100%; max-width: 400px; padding: 40px; }
+        input, select { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: white; outline: none; }
         input:focus { border-color: var(--primary); box-shadow: var(--neon-shadow); }
+        .btn { width: 100%; padding: 14px; background: var(--primary); border: none; color: white; font-weight: 700; border-radius: 12px; cursor: pointer; box-shadow: var(--neon-shadow); }
+        .btn:active { transform: scale(0.98); }
 
-        .btn {
-            width: 100%; padding: 14px; background: var(--primary); border: none;
-            color: white; font-weight: 700; border-radius: 12px; cursor: pointer;
-            transition: 0.3s; box-shadow: var(--neon-shadow);
-        }
-        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        /* App UI */
+        #appUI { display: none; width: 100%; height: 100vh; grid-template-columns: 320px 1fr 300px; }
 
-        /* --- 1. AUTHENTICATION UI (MODERN) --- */
-        .auth-container {
-            width: 100%; max-width: 400px; padding: 40px; position: relative; z-index: 10;
-        }
-        .auth-header { text-align: center; margin-bottom: 30px; }
-        .auth-header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -1px; background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        /* --- 2. MAIN APP LAYOUT (ULTRA RESPONSIVE) --- */
-        #appUI {
-            display: none; width: 100%; height: 100vh;
-            grid-template-columns: 320px 1fr 300px; /* Sidebar | Chat | Info/Theme */
-            position: relative; z-index: 5;
-        }
-
-        /* SIDEBAR (CONTACTS) */
         .sidebar { background: rgba(0,0,0,0.2); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .sb-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-        .my-pfp { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; cursor: pointer; }
-        
-        .contact-list { flex: 1; overflow-y: auto; padding: 10px; }
-        .contact-item {
-            padding: 12px 15px; display: flex; align-items: center; gap: 12px;
-            border-radius: 12px; cursor: pointer; transition: 0.2s; margin-bottom: 5px;
-        }
-        .contact-item:hover, .contact-item.active { background: rgba(255,255,255,0.05); border: 1px solid var(--border); }
-        .avatar-sm { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #334155; }
+        .contact-item { padding: 15px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .contact-item:hover { background: rgba(255,255,255,0.05); }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #334155; }
 
-        /* CHAT WINDOW (NEON) */
-        .chat-window { display: flex; flex-direction: column; border-right: 1px solid var(--border); }
-        .chat-header { padding: 15px 25px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; }
+        .chat-main { display: flex; flex-direction: column; position: relative; }
+        .chat-header { padding: 20px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.1); font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .msg-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         
-        .msg-area { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .bubble { padding: 12px 16px; border-radius: 18px; max-width: 70%; font-size: 0.95rem; line-height: 1.5; position: relative; }
-        
-        .sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; box-shadow: var(--neon-shadow); }
-        .received { align-self: flex-start; background: rgba(255,255,255,0.1); color: white; border-bottom-left-radius: 4px; backdrop-filter: blur(5px); }
-        
-        .input-bar { padding: 20px; display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,0.1); border-top: 1px solid var(--border); }
+        /* Bubbles */
+        .bubble { padding: 12px 16px; border-radius: 18px; max-width: 75%; position: relative; font-size: 0.95rem; }
+        .sent { align-self: flex-end; background: var(--primary); border-bottom-right-radius: 4px; box-shadow: var(--neon-shadow); }
+        .received { align-self: flex-start; background: rgba(255,255,255,0.1); border-bottom-left-radius: 4px; }
+
+        /* VN Controls */
+        .input-bar { padding: 20px; display: flex; gap: 10px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--border); }
         .vn-btn { width: 50px; height: 50px; border-radius: 50%; background: #ef4444; border: none; color: white; cursor: pointer; font-size: 1.2rem; }
-        .recording { animation: pulse 1.5s infinite; }
+        .recording { animation: pulseRec 1.5s infinite; background: #ff0000; }
+        audio { height: 35px; width: 220px; }
 
-        /* --- 3. THEME & PROFILE PANEL (KANAN) --- */
-        .theme-panel { background: rgba(0,0,0,0.2); padding: 20px; display: flex; flex-direction: column; gap: 20px; }
-        .panel-section { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px; border: 1px solid var(--border); }
-        
-        .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .theme-opt {
-            height: 60px; border-radius: 10px; border: 2px solid transparent; cursor: pointer;
-            background-size: cover; background-position: center; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-        }
-        .theme-opt:hover { transform: scale(1.05); }
+        /* Theme Panel */
+        .theme-panel { background: rgba(0,0,0,0.3); border-left: 1px solid var(--border); padding: 20px; }
+        .theme-card { background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .theme-opt { height: 50px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; background-size: cover; border: 2px solid transparent; }
         .theme-opt.active { border-color: var(--primary); box-shadow: var(--neon-shadow); }
 
-        /* UTILS */
-        .hidden { display: none !important; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-
-        /* RESPONSIVE */
-        @media (max-width: 1024px) {
-            #appUI { grid-template-columns: 80px 1fr 0px; }
-            .sidebar h3, .contact-item div, .theme-panel, .sb-header button { display: none; }
-            .sidebar { padding: 10px; align-items: center; }
-            .contact-item { justify-content: center; padding: 10px; }
-        }
+        .hidden { display: none; }
+        @media (max-width: 768px) { #appUI { grid-template-columns: 0px 1fr 0px; } .sidebar, .theme-panel { display: none; } }
     </style>
 </head>
 <body>
@@ -147,217 +83,226 @@
     <div id="mainBgLayer"></div>
     <div id="effectLayer"></div>
 
-    <div id="authUI" class="auth-container glass-card active-ui">
-        <div class="auth-header">
-            <h1>ConnectPro<span style="color:var(--primary)">.</span></h1>
-            <p id="authDesc" style="color:var(--text-dim)">Selamat datang kembali!</p>
-        </div>
+    <div id="authUI" class="auth-screen">
+        <div class="auth-box glass-card">
+            <h1 align="center" style="margin-bottom: 20px;">ConnectPro<span style="color:var(--primary)">.</span></h1>
+            
+            <div id="loginForm">
+                <input type="text" id="lID" placeholder="ID Username">
+                <input type="password" id="lPW" placeholder="Password">
+                <button class="btn" onclick="handleAuth('login')">MASUK</button>
+                <p align="center" style="margin-top:15px; font-size:0.8rem; cursor:pointer;" onclick="toggleAuth()">Belum punya akun? Daftar</p>
+            </div>
 
-        <div id="loginForm">
-            <input type="text" id="lID" placeholder="ID Username">
-            <input type="password" id="lPW" placeholder="Password">
-            <button class="btn" onclick="handleAuth('login')">MASUK <i class="fas fa-arrow-right"></i></button>
-            <p style="text-align:center; margin-top:20px; font-size:0.8rem; color:var(--text-dim);">
-                Belum punya akun? <span style="color:var(--primary); cursor:pointer;" onclick="switchAuth('reg')">Daftar</span>
-            </p>
-        </div>
-
-        <div id="regForm" class="hidden">
-            <input type="text" id="rNama" placeholder="Nama Lengkap">
-            <input type="text" id="rID" placeholder="Buat ID Unik">
-            <input type="password" id="rPW" placeholder="Password">
-            <select id="rGender">
-                <option value="Laki-laki">Laki-laki</option>
-                <option value="Perempuan">Perempuan</option>
-            </select>
-            <div class="captcha-box" id="capBox" style="background:rgba(0,0,0,0.3); padding:10px; text-align:center; color:#fbbf24; font-weight:bold; letter-spacing:5px; border-radius:8px; margin:10px 0;"></div>
-            <input type="text" id="capInp" placeholder="Masukkan kode di atas">
-            <button class="btn" onclick="handleAuth('reg')">BUAT AKUN</button>
-            <p style="text-align:center; margin-top:20px; font-size:0.8rem; color:var(--text-dim);">
-                Sudah ada akun? <span style="color:var(--primary); cursor:pointer;" onclick="switchAuth('login')">Login</span>
-            </p>
+            <div id="regForm" class="hidden">
+                <input type="text" id="rNama" placeholder="Nama Lengkap">
+                <input type="text" id="rID" placeholder="Buat ID">
+                <input type="password" id="rPW" placeholder="Password">
+                <select id="rGender">
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                </select>
+                <button class="btn" onclick="handleAuth('reg')">DAFTAR SEKARANG</button>
+                <p align="center" style="margin-top:15px; font-size:0.8rem; cursor:pointer;" onclick="toggleAuth()">Sudah ada akun? Login</p>
+            </div>
         </div>
     </div>
 
     <div id="appUI">
         <div class="sidebar">
-            <div class="sb-header">
-                <img id="myPfp" src="" class="my-pfp" onclick="openProfileSettings()">
-                <button onclick="addNewStory()" style="background:none; border:none; color:var(--primary); cursor:pointer;"><i class="fas fa-plus-circle fa-lg"></i></button>
-            </div>
-            <div class="contact-list" id="contactList">
-                </div>
-            <div style="padding:15px; border-top:1px solid var(--border); text-align:center;">
-                <button onclick="location.reload()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.8rem;">Logout</button>
-            </div>
+            <div style="padding:20px; font-weight:800; border-bottom:1px solid var(--border);">OBROLAN</div>
+            <div id="contactList" style="flex:1; overflow-y:auto;"></div>
         </div>
 
-        <div class="chat-window">
-            <div class="chat-header" id="chatHeader">
-                <i class="fas fa-comments fa-lg" style="color:var(--text-dim)"></i> Pilih teman
-            </div>
-            <div class="msg-area" id="msgBox">
-                </div>
+        <div class="chat-main">
+            <div class="chat-header" id="chatHeader">Pilih teman chat...</div>
+            <div class="msg-area" id="msgBox"></div>
             <div class="input-bar">
                 <input type="text" id="msgInput" placeholder="Ketik pesan..." style="margin:0; flex:1;">
-                <button id="vnBtn" class="vn-btn" onmousedown="startVN()" onmouseup="stopVN()"><i class="fas fa-microphone"></i></button>
-                <button class="btn" onclick="sendText()" style="width:80px; margin:0;"><i class="fas fa-paper-plane"></i></button>
+                <button id="vnBtn" class="vn-btn" onmousedown="startVN()" onmouseup="stopVN()" ontouchstart="startVN()" ontouchend="stopVN()">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button class="btn" onclick="sendText()" style="width:60px; margin:0;"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
 
         <div class="theme-panel">
-            <div class="panel-section" style="text-align:center;">
-                <img id="panelPfp" src="" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--primary); object-fit:cover;">
-                <h3 id="panelNama" style="margin-top:10px;">Nama User</h3>
-                <p id="panelID" style="color:var(--text-dim); font-size:0.8rem;">@iduser</p>
-                <button class="btn" style="padding:8px; font-size:0.8rem; margin-top:10px;" onclick="openProfileSettings()">Edit Profil</button>
+            <div class="theme-card" align="center">
+                <img id="myPfp" src="" class="avatar" style="width:80px; height:80px; margin-bottom:10px; border:2px solid var(--primary);">
+                <h3 id="myNama">User</h3>
+                <small id="myIDDisplay">@id</small>
             </div>
-
-            <div class="panel-section">
-                <h4><i class="fas fa-palette"></i> Tema Aplikasi</h4>
-                <div class="theme-grid">
-                    <div class="theme-opt active" id="th_malam" style="background-image:url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?q=80&w=200');" onclick="changeTheme('malam')">Malam</div>
-                    <div class="theme-opt" id="th_romantis" style="background-image:url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=200'); color:#f472b6;" onclick="changeTheme('romantis')">Romantis</div>
-                    <div class="theme-opt" id="th_galau" style="background-image:url('https://images.unsplash.com/photo-1499341030469-9595b204c146?q=80&w=200'); color:#60a5fa;" onclick="changeTheme('galau')">Galau</div>
-                </div>
-                <div style="margin-top:15px;">
-                    <label style="font-size:0.8rem; color:var(--text-dim);">Pakai Foto Galeri:</label>
-                    <input type="file" id="customBgInput" accept="image/*" style="font-size:0.7rem; padding:8px;">
-                </div>
+            <div class="theme-card">
+                <h4 style="margin-bottom:15px;">TEMA APLIKASI</h4>
+                <div class="theme-opt active" id="th_malam" style="background-image:url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?q=80&w=200');" onclick="changeTheme('malam')">Malam</div>
+                <div class="theme-opt" id="th_romantis" style="background-image:url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=200');" onclick="changeTheme('romantis')">Romantis</div>
+                <div class="theme-opt" id="th_galau" style="background-image:url('https://images.unsplash.com/photo-1499341030469-9595b204c146?q=80&w=200');" onclick="changeTheme('galau')">Galau</div>
+                <hr style="border:0; border-top:1px solid var(--border); margin:15px 0;">
+                <label style="font-size:0.7rem;">Ganti dari Galeri:</label>
+                <input type="file" id="bgInput" accept="image/*" style="font-size:0.7rem; padding:5px;">
             </div>
         </div>
-    </div>
-
-    <div id="profileSettingsUI" class="auth-container glass-card hidden" style="position:fixed; z-index:100; max-width:350px;">
-        <h3 align="center">Pengaturan Profil</h3>
-        <div style="text-align:center; margin:15px 0;">
-            <img id="editPfpPrev" src="" style="width:90px; height:90px; border-radius:50%; object-fit:cover; border:2px solid var(--primary);">
-            <input type="file" id="editPfpFile" accept="image/*" style="font-size:0.7rem;">
-        </div>
-        <input type="text" id="editNama" placeholder="Nama Lengkap">
-        <button class="btn" onclick="saveProfileChanges()">Simpan</button>
-        <button class="btn" style="background:#475569; margin-top:5px;" onclick="closeProfileSettings()">Batal</button>
     </div>
 
 <script>
-    // --- FIREBASE CONFIG (WAJIB DIISI) ---
-    const firebaseConfig = { /* COPY PASTE CONFIG ANDA DISINI */ };
+    // --- KONFIGURASI FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
+        authDomain: "fotobooth-e36ab.firebaseapp.com",
+        databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
+        projectId: "fotobooth-e36ab",
+        storageBucket: "fotobooth-e36ab.firebasestorage.app",
+        messagingSenderId: "1040239629485",
+        appId: "1:1040239629485:web:254a7b50a4243b6c5d6224"
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const storage = firebase.storage();
 
-    let myID = "", partnerID = "", capCode = "", mediaRec, chunks = [];
+    let myID = "", partnerID = "", mediaRec, chunks = [];
 
-    // --- NAVIGATION & AUTH ---
-    function switchAuth(to) {
-        if(to === 'reg') {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('regForm').classList.remove('hidden');
-            document.getElementById('authDesc').innerText = "Daftar untuk memulai.";
-            capCode = Math.random().toString(36).substring(2, 7).toUpperCase();
-            document.getElementById('capBox').innerText = capCode;
-        } else {
-            document.getElementById('regForm').classList.add('hidden');
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('authDesc').innerText = "Selamat datang kembali!";
-        }
+    // --- AUTH ---
+    function toggleAuth() {
+        document.getElementById('loginForm').classList.toggle('hidden');
+        document.getElementById('regForm').classList.toggle('hidden');
     }
 
     function handleAuth(type) {
         if(type === 'reg') {
             const id = document.getElementById('rID').value.trim().toLowerCase();
-            const pw = document.getElementById('rPW').value;
-            const nama = document.getElementById('rNama').value;
-            if(document.getElementById('capInp').value.toUpperCase() !== capCode) return alert("Captcha Salah!");
-            
-            db.ref('users/' + id).set({ pw, nama, gender: document.getElementById('rGender').value, pfp: '' })
-            .then(() => { alert("Sukses!"); switchAuth('login'); });
+            const data = { 
+                nama: document.getElementById('rNama').value,
+                pw: document.getElementById('rPW').value,
+                gender: document.getElementById('rGender').value,
+                pfp: '' 
+            };
+            db.ref('users/'+id).set(data).then(() => alert("Berhasil! Silahkan Login"));
         } else {
             const id = document.getElementById('lID').value.trim().toLowerCase();
             const pw = document.getElementById('lPW').value;
-            db.ref('users/' + id).once('value', snap => {
+            db.ref('users/'+id).once('value', snap => {
                 if(snap.exists() && snap.val().pw === pw) {
                     myID = id;
-                    loginSuccess(snap.val());
-                } else alert("Gagal!");
+                    document.getElementById('authUI').style.display = 'none';
+                    document.getElementById('appUI').style.display = 'grid';
+                    document.getElementById('myNama').innerText = snap.val().nama;
+                    document.getElementById('myIDDisplay').innerText = '@'+id;
+                    document.getElementById('myPfp').src = snap.val().pfp || 'https://via.placeholder.com/150';
+                    loadContacts();
+                } else alert("ID atau Password salah!");
             });
         }
     }
 
-    function loginSuccess(data) {
-        document.getElementById('authUI').style.display = 'none';
-        document.getElementById('appUI').style.display = 'grid';
-        const pfpUrl = data.pfp || 'https://via.placeholder.com/150';
-        document.getElementById('myPfp').src = pfpUrl;
-        document.getElementById('panelPfp').src = pfpUrl;
-        document.getElementById('editPfpPrev').src = pfpUrl;
-        document.getElementById('panelNama').innerText = data.nama;
-        document.getElementById('editNama').value = data.nama;
-        document.getElementById('panelID').innerText = '@' + myID;
-        loadContacts();
-    }
-
-    // --- PROFIL SETTINGS ---
-    function openProfileSettings() { document.getElementById('profileSettingsUI').classList.remove('hidden'); }
-    function closeProfileSettings() { document.getElementById('profileSettingsUI').classList.add('hidden'); }
-    async function saveProfileChanges() {
-        const file = document.getElementById('editPfpFile').files[0];
-        let url = document.getElementById('myPfp').src;
-        if(file) {
-            const ref = storage.ref(`pfps/${myID}`);
-            await ref.put(file);
-            url = await ref.getDownloadURL();
-        }
-        db.ref('users/' + myID).update({ nama: document.getElementById('editNama').value, pfp: url })
-        .then(() => { location.reload(); });
-    }
-
-    // --- CHAT LOGIC ---
+    // --- CONTACTS ---
     function loadContacts() {
-        db.ref(`contacts/${myID}`).on('value', snap => {
-            const list = document.getElementById('contactList'); list.innerHTML = "";
-            snap.forEach(c => {
-                list.innerHTML += `<div class="contact-item" onclick="startChat('${c.key}', '${c.val().nama}', '${c.val().pfp}')">
-                    <img src="${c.val().pfp || 'https://via.placeholder.com/150'}" class="avatar-sm">
-                    <div><b>${c.val().nama}</b><br><small style="color:var(--text-dim)">${c.key}</small></div></div>`;
+        db.ref('users').on('value', snap => {
+            const list = document.getElementById('contactList');
+            list.innerHTML = "";
+            snap.forEach(u => {
+                if(u.key !== myID) {
+                    list.innerHTML += `
+                        <div class="contact-item" onclick="openChat('${u.key}', '${u.val().nama}', '${u.val().pfp}')">
+                            <img src="${u.val().pfp || 'https://via.placeholder.com/150'}" class="avatar">
+                            <div><b>${u.val().nama}</b><br><small>${u.val().gender}</small></div>
+                        </div>`;
+                }
             });
         });
     }
 
-    function startChat(id, nama, pfp) {
+    // --- CHAT ---
+    function openChat(id, nama, pfp) {
         partnerID = id;
-        document.getElementById('chatHeader').innerHTML = `<img src="${pfp || 'https://via.placeholder.com/150'}" class="avatar-sm" style="width:30px; height:30px;"> ${nama}`;
+        document.getElementById('chatHeader').innerHTML = `Chat dengan: ${nama}`;
         const room = [myID, partnerID].sort().join("_");
-        db.ref('messages/' + room).on('value', snap => {
-            const box = document.getElementById('msgBox'); box.innerHTML = "";
+        
+        db.ref('messages/'+room).on('value', snap => {
+            const box = document.getElementById('msgBox');
+            box.innerHTML = "";
             snap.forEach(m => {
-                const d = m.val(); const cls = d.sender === myID ? 'sent' : 'received';
-                if(d.type === 'vn') box.innerHTML += `<div class="bubble ${cls}"><audio controls src="${d.url}"></audio></div>`;
-                else box.innerHTML += `<div class="bubble ${cls}">${d.text}</div>`;
+                const d = m.val();
+                const cls = d.sender === myID ? 'sent' : 'received';
+                if(d.type === 'vn') {
+                    box.innerHTML += `<div class="bubble ${cls}"><audio controls src="${d.url}"></audio></div>`;
+                } else {
+                    box.innerHTML += `<div class="bubble ${cls}">${d.text}</div>`;
+                }
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
     function sendText() {
-        const text = document.getElementById('msgInput').value; if(!text || !targetID) return;
-        const room = [myID, targetID].sort().join("_");
-        db.ref('messages/' + room).push({ sender: myID, text, type: 'text' });
+        const text = document.getElementById('msgInput').value;
+        if(!text || !partnerID) return;
+        const room = [myID, partnerID].sort().join("_");
+        db.ref('messages/'+room).push({ sender: myID, text: text, type: 'text' });
         document.getElementById('msgInput').value = "";
     }
 
-    // --- VN ---
+    // --- VOICE NOTE (VN) ---
     async function startVN() {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRec = new MediaRecorder(stream); mediaRec.start(); chunks = [];
-        document.getElementById('vnBtn').classList.add('recording');
-        mediaRec.ondataavailable = e => chunks.push(e.data);
+        if(!partnerID) return alert("Pilih teman chat dulu!");
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRec = new MediaRecorder(stream);
+            mediaRec.start();
+            chunks = [];
+            document.getElementById('vnBtn').classList.add('recording');
+            mediaRec.ondataavailable = e => chunks.push(e.data);
+        } catch (e) { alert("Mic tidak diizinkan!"); }
     }
-    async function stopVN() {
+
+    function stopVN() {
+        if(!mediaRec) return;
         document.getElementById('vnBtn').classList.remove('recording');
-        mediaRec.stop(); mediaRec.onstop = async () => {
-            const blob = new Blob(chunks, { type: 'audio/mp3' });
-            const ref = storage.ref(`vns/${Date.now()}`);
-            await ref.put(blob); const url = await ref.getDownloadURL();
-            const room = [myID, targetID].sort().join("_");
-            db.ref('messages/' + room).push({ sende
+        mediaRec.stop();
+        mediaRec.onstop = async () => {
+            const blob = new Blob(chunks, { type: 'audio/webm' });
+            const room = [myID, partnerID].sort().join("_");
+            const fileName = `vn_${Date.now()}.webm`;
+            const ref = storage.ref(`vns/${room}/${fileName}`);
+            
+            // Upload ke Firebase Storage
+            await ref.put(blob);
+            const url = await ref.getDownloadURL();
+            
+            // Kirim link ke Database
+            db.ref('messages/'+room).push({ sender: myID, url: url, type: 'vn' });
+        };
+    }
+
+    // --- THEME ENGINE ---
+    const r = document.querySelector(':root');
+    function changeTheme(theme) {
+        document.querySelectorAll('.theme-opt').forEach(el => el.classList.remove('active'));
+        document.getElementById('th_'+theme).classList.add('active');
+        const eff = document.getElementById('effectLayer');
+        eff.innerHTML = ""; eff.style.animation = "none"; eff.style.background = "none";
+
+        if(theme === 'malam') {
+            r.style.setProperty('--theme-bg', "url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?q=80&w=1920')");
+            r.style.setProperty('--primary', '#6366f1');
+            eff.style.background = "url('https://www.transparenttextures.com/patterns/stardust.png') repeat";
+            eff.style.animation = "starsAnim 100s linear infinite";
+        } else if(theme === 'romantis') {
+            r.style.setProperty('--theme-bg', "url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=1920')");
+            r.style.setProperty('--primary', '#f472b6');
+        } else if(theme === 'galau') {
+            r.style.setProperty('--theme-bg', "url('https://images.unsplash.com/photo-1499341030469-9595b204c146?q=80&w=1920')");
+            r.style.setProperty('--primary', '#60a5fa');
+            eff.style.background = "rgba(15, 23, 42, 0.4)";
+        }
+    }
+
+    document.getElementById('bgInput').onchange = function(e) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            r.style.setProperty('--theme-bg', `url('${event.target.result}')`);
+        }
+        reader.readAsDataURL(e.target.files[0]);
+    };
+</script>
+</body>
+</html>
