@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ConnectPro - Chat & Story</title>
+    <title>ConnectPro - Ultimate</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
         .hide-scroll::-webkit-scrollbar { display: none; }
-        .story-ring { padding: 2px; border: 2px solid #3b82f6; cursor: pointer; transition: transform 0.2s; }
-        .story-ring:active { transform: scale(0.9); }
-        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); }
+        #main-app { height: 100dvh; }
+        .page-content { display: none; height: 100%; overflow-y: auto; }
+        .page-content.active { display: block; }
+        .nav-active { color: #2563eb !important; transform: scale(1.1); }
+        .story-ring { padding: 2px; border: 2px solid #3b82f6; cursor: pointer; border-radius: 18px; }
         .progress-container { display: flex; gap: 4px; position: absolute; top: 12px; left: 10px; right: 10px; z-index: 100; }
         .progress-track { height: 2px; background: rgba(255,255,255,0.3); flex: 1; border-radius: 10px; overflow: hidden; }
         .progress-fill { height: 100%; background: #fff; width: 0%; transition: width linear; }
-        
-        /* Memastikan aplikasi selalu full height di mobile */
-        #main-app { height: 100dvh; }
     </style>
 </head>
 <body class="bg-slate-100">
@@ -27,10 +27,10 @@
         <div class="bg-white w-full max-w-md rounded-[40px] shadow-2xl p-8 border border-white">
             <div id="login-container">
                 <h2 class="text-3xl font-black mb-2 text-slate-800">ConnectPro 👋</h2>
-                <p class="text-slate-500 mb-8 text-sm">Masuk untuk melihat update story.</p>
+                <p class="text-slate-500 mb-8 text-sm">Masuk untuk melihat update teman.</p>
                 <div class="space-y-4">
-                    <input type="text" id="login-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition">
-                    <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    <input type="text" id="login-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
                     <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-extrabold py-4 rounded-2xl shadow-lg active:scale-95 transition">Masuk</button>
                 </div>
                 <p class="text-center mt-8 text-slate-500 text-sm">Belum punya akun? <a href="#" onclick="toggleAuth(true)" class="text-blue-600 font-bold">Daftar</a></p>
@@ -38,10 +38,10 @@
             <div id="register-container" class="hidden">
                 <h2 class="text-3xl font-black mb-6 text-emerald-500">Daftar Akun</h2>
                 <div class="space-y-3">
-                    <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-4 bg-slate-100 rounded-2xl outline-none transition">
-                    <input type="text" id="reg-id" placeholder="ID User (indra123)" class="w-full p-4 bg-slate-100 rounded-2xl outline-none transition">
-                    <input type="password" id="reg-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none transition">
-                    <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg mt-4 active:scale-95 transition">Buat Akun Sekarang</button>
+                    <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-4 bg-slate-100 rounded-2xl outline-none">
+                    <input type="text" id="reg-id" placeholder="ID User" class="w-full p-4 bg-slate-100 rounded-2xl outline-none">
+                    <input type="password" id="reg-pass" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl outline-none">
+                    <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg mt-4 active:scale-95 transition">Buat Akun</button>
                 </div>
                 <p class="text-center mt-6 text-sm"><a href="#" onclick="toggleAuth(false)" class="text-blue-600 font-bold">Kembali ke Login</a></p>
             </div>
@@ -49,48 +49,61 @@
     </div>
 
     <div id="main-app" class="hidden flex flex-col max-w-lg mx-auto bg-white shadow-2xl relative overflow-hidden">
-        
         <header class="p-6 flex justify-between items-center border-b bg-white z-20">
-            <h1 class="text-2xl font-black text-blue-600 leading-none">ConnectPro</h1>
+            <h1 id="page-title" class="text-2xl font-black text-blue-600 leading-none">ConnectPro</h1>
             <div class="flex items-center gap-3">
-                <img id="my-photo" src="" class="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover">
+                <img id="my-photo" src="" class="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover bg-slate-200">
                 <button onclick="logout()" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-power-off"></i></button>
             </div>
         </header>
 
-        <div class="p-4 flex gap-4 overflow-x-auto hide-scroll border-b bg-white z-20">
-            <div onclick="openStoryModal()" class="flex flex-col items-center gap-1 min-w-[70px] cursor-pointer group">
-                <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 border-2 border-dashed border-blue-200 group-hover:bg-blue-100 transition">
-                    <i class="fa-solid fa-plus"></i>
+        <div class="flex-1 relative overflow-hidden bg-slate-50">
+            <div id="page-home" class="page-content active">
+                <div class="p-4 flex gap-4 overflow-x-auto hide-scroll border-b bg-white z-20">
+                    <div onclick="openStoryModal()" class="flex flex-col items-center gap-1 min-w-[70px] cursor-pointer">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 border-2 border-dashed border-blue-200 hover:bg-blue-100 transition">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Story</span>
+                    </div>
+                    <div id="online-list" class="flex gap-4"></div>
                 </div>
-                <span class="text-[10px] font-bold text-slate-500">Story</span>
+                <div class="p-10 text-center text-slate-300 mt-20">
+                    <i class="fa-solid fa-house-user text-6xl mb-4 opacity-10"></i>
+                    <p class="text-sm font-bold opacity-40">Selamat Datang, <span id="welcome-name">User</span>!</p>
+                </div>
             </div>
-            <div id="online-list" class="flex gap-4"></div>
-        </div>
 
-        <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 pb-24">
-            <div class="p-10 text-center text-slate-300 mt-20">
-                <i class="fa-solid fa-comments text-5xl mb-4 opacity-10"></i>
-                <p class="text-sm font-bold opacity-50">Belum ada aktivitas baru.</p>
+            <div id="page-history" class="page-content p-4">
+                <h3 class="font-black text-slate-800 text-lg mb-4 px-2 uppercase tracking-tight">Riwayat Panggilan</h3>
+                <div id="history-list" class="space-y-3 pb-24">
+                    </div>
+            </div>
+
+            <div id="page-chat" class="page-content p-10 text-center opacity-20">
+                <i class="fa-solid fa-comments text-7xl mb-4"></i><p class="font-bold uppercase">Chat Page</p>
+            </div>
+            <div id="page-profile" class="page-content p-10 text-center opacity-20">
+                <i class="fa-solid fa-circle-user text-7xl mb-4"></i><p class="font-bold uppercase">Profile Page</p>
             </div>
         </div>
 
         <nav class="fixed bottom-0 left-0 right-0 max-w-lg mx-auto glass border-t flex justify-around items-center p-3 h-16 md:p-6 md:h-20 bg-white/95 z-50">
-            <button class="flex flex-col items-center justify-center transition-all hover:scale-110 group">
-                <i class="fa-solid fa-house text-xl md:text-2xl text-blue-600"></i>
-                <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1 text-blue-600">Beranda</span>
+            <button onclick="navigate('home', 'ConnectPro', this)" class="nav-item nav-active flex flex-col items-center justify-center">
+                <i class="fa-solid fa-house text-xl md:text-2xl"></i>
+                <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1">Beranda</span>
             </button>
-            <button class="flex flex-col items-center justify-center transition-all hover:scale-110 group">
-                <i class="fa-solid fa-clock-rotate-left text-xl md:text-2xl text-slate-400 group-hover:text-blue-500"></i>
-                <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1 text-slate-400 group-hover:text-blue-500">History</span>
+            <button onclick="navigate('history', 'History', this)" class="nav-item text-slate-400 flex flex-col items-center justify-center">
+                <i class="fa-solid fa-clock-rotate-left text-xl md:text-2xl"></i>
+                <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1">History</span>
             </button>
-            <button class="flex flex-col items-center justify-center transition-all hover:scale-110 group text-slate-400">
-                <i class="fa-solid fa-comment-dots text-xl md:text-2xl group-hover:text-blue-500"></i>
-                <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1 group-hover:text-blue-500">Chat</span>
+            <button onclick="navigate('chat', 'Chat', this)" class="nav-item text-slate-400 flex flex-col items-center justify-center">
+                <i class="fa-solid fa-comment-dots text-xl md:text-2xl"></i>
+                <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1">Chat</span>
             </button>
-            <button class="flex flex-col items-center justify-center transition-all hover:scale-110 group text-slate-400">
-                <i class="fa-solid fa-user-gear text-xl md:text-2xl group-hover:text-blue-500"></i>
-                <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1 group-hover:text-blue-500">Profil</span>
+            <button onclick="navigate('profile', 'Profil', this)" class="nav-item text-slate-400 flex flex-col items-center justify-center">
+                <i class="fa-solid fa-user-gear text-xl md:text-2xl"></i>
+                <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1">Profil</span>
             </button>
         </nav>
     </div>
@@ -98,61 +111,51 @@
     <div id="story-view-screen" class="hidden fixed inset-0 z-[200] flex flex-col items-center justify-center bg-black">
         <div class="w-full max-w-lg h-full relative">
             <div id="progress-container" class="progress-container"></div>
-            
             <div class="absolute top-8 left-0 right-0 px-4 flex justify-between items-center z-[110]">
                 <div class="flex items-center gap-3">
                     <img id="viewer-avatar" src="" class="w-10 h-10 rounded-full border border-white">
                     <span id="viewer-name" class="text-white font-bold text-sm"></span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button id="btn-delete-story" onclick="deleteCurrentStory()" class="hidden text-white/50 hover:text-red-500 p-2 transition">
-                        <i class="fa-solid fa-trash-can text-lg"></i>
-                    </button>
+                    <button id="btn-delete-story" onclick="deleteCurrentStory()" class="hidden text-white/50 hover:text-red-500 p-2"><i class="fa-solid fa-trash-can"></i></button>
                     <button onclick="closeStoryViewer()" class="text-white p-2"><i class="fa-solid fa-xmark text-3xl"></i></button>
                 </div>
             </div>
-
             <div class="absolute inset-0 flex z-[105]">
                 <div class="w-1/3 h-full" onclick="prevSlide()"></div>
                 <div class="w-2/3 h-full" onclick="nextSlide()"></div>
             </div>
-
             <div class="h-full flex items-center justify-center bg-zinc-900">
                 <img id="view-img" class="hidden max-w-full max-h-full object-contain">
                 <video id="view-vid" class="hidden max-w-full max-h-full" playsinline></video>
-                <div id="view-audio" class="hidden text-white text-center">
-                    <i class="fa-solid fa-music text-6xl text-blue-400 mb-4 animate-bounce"></i>
-                    <audio id="view-audio-tag"></audio>
-                </div>
                 <div id="view-text" class="hidden text-white text-3xl font-black text-center px-10"></div>
             </div>
-
             <div class="absolute bottom-12 left-0 right-0 px-6 text-center z-[110]">
                 <p id="view-caption" class="text-white text-sm bg-black/50 backdrop-blur-lg p-4 rounded-3xl inline-block max-w-[80%]"></p>
             </div>
         </div>
     </div>
 
-    <div id="story-modal" class="hidden fixed inset-0 z-[150] bg-black/70 backdrop-blur-sm flex items-end justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-[35px] p-6 shadow-2xl">
+    <div id="story-modal" class="hidden fixed inset-0 z-[150] bg-black/70 flex items-end justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-[35px] p-6">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-black">Bagikan Momen</h3>
-                <button onclick="closeStoryModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <h3 class="text-xl font-black uppercase tracking-tighter">Post Story</h3>
+                <button onclick="closeStoryModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <label class="w-full flex flex-col items-center justify-center py-10 border-2 border-dashed border-slate-200 rounded-3xl cursor-pointer hover:bg-slate-50 transition">
+            <label class="w-full flex flex-col items-center justify-center py-10 border-2 border-dashed border-slate-200 rounded-3xl cursor-pointer">
                 <i class="fa-solid fa-cloud-arrow-up text-4xl text-blue-500 mb-2"></i>
-                <p id="preview-text" class="text-xs font-bold text-slate-500">Pilih Foto, Video, atau Audio</p>
-                <input type="file" id="story-file" accept="image/*,video/*,audio/*" class="hidden" onchange="handleFilePreview(this)">
+                <p id="preview-text" class="text-xs font-bold text-slate-500 uppercase">Pilih Media</p>
+                <input type="file" id="story-file" accept="image/*,video/*" class="hidden" onchange="handleFilePreview(this)">
             </label>
-            <textarea id="story-caption" placeholder="Tulis caption di sini..." class="w-full p-4 bg-slate-100 rounded-2xl outline-none min-h-[100px] mt-4 text-sm"></textarea>
-            <button id="btn-upload" onclick="uploadStory()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl mt-4 shadow-lg active:scale-95 transition">Post Sekarang</button>
+            <textarea id="story-caption" placeholder="Tulis sesuatu..." class="w-full p-4 bg-slate-100 rounded-2xl outline-none min-h-[100px] mt-4 text-sm"></textarea>
+            <button id="btn-upload" onclick="uploadStory()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl mt-4">Bagikan Sekarang</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, deleteDoc, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, where, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
@@ -172,112 +175,114 @@
         let myData = null, selectedFile = null, storyTimer = null;
         let activeSlides = [], currentSlideIndex = 0;
 
+        // --- NAVIGASI ---
+        window.navigate = (page, title, el) => {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            document.getElementById('page-title').innerText = title;
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('nav-active', 'text-blue-600'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.add('text-slate-400'));
+            el.classList.add('nav-active'); el.classList.remove('text-slate-400');
+            if(page === 'history') loadHistory();
+        };
+
+        // --- AUTH ---
+        window.handleLogin = async () => {
+            const id = document.getElementById('login-id').value.trim().toLowerCase(), p = document.getElementById('login-pass').value;
+            try { await signInWithEmailAndPassword(auth, id + "@chat.com", p); } catch (e) { alert("ID/Password Salah"); }
+        };
+
         window.handleRegister = async () => {
             const n = document.getElementById('reg-nama').value, id = document.getElementById('reg-id').value.trim().toLowerCase(), p = document.getElementById('reg-pass').value;
-            if(!n || !id || !p) return alert("Data tidak boleh kosong!");
             try {
                 const c = await createUserWithEmailAndPassword(auth, id + "@chat.com", p);
                 await setDoc(doc(db, "users", c.user.uid), { nama: n, id: id, uid: c.user.uid, photo: `https://ui-avatars.com/api/?name=${n}&bg=3b82f6&color=fff` });
-            } catch (e) { alert("Pendaftaran Gagal: " + e.message); }
-        };
-
-        window.handleLogin = async () => {
-            const id = document.getElementById('login-id').value.trim().toLowerCase(), p = document.getElementById('login-pass').value;
-            try { await signInWithEmailAndPassword(auth, id + "@chat.com", p); } catch (e) { alert("ID atau Password salah!"); }
+            } catch (e) { alert(e.message); }
         };
 
         window.logout = () => signOut(auth);
         window.toggleAuth = (is) => { document.getElementById('register-container').classList.toggle('hidden', !is); document.getElementById('login-container').classList.toggle('hidden', is); };
 
+        // --- STORY LOGIC ---
         window.openStoryModal = () => document.getElementById('story-modal').classList.remove('hidden');
-        window.closeStoryModal = () => { document.getElementById('story-modal').classList.add('hidden'); selectedFile = null; document.getElementById('preview-text').innerText = "Pilih Media"; };
+        window.closeStoryModal = () => { document.getElementById('story-modal').classList.add('hidden'); selectedFile = null; };
         window.handleFilePreview = (i) => { selectedFile = i.files[0]; if(selectedFile) document.getElementById('preview-text').innerText = "✅ " + selectedFile.name; };
 
         window.uploadStory = async () => {
             const cap = document.getElementById('story-caption').value, u = auth.currentUser;
-            const btn = document.getElementById('btn-upload'); 
-            if(!selectedFile && !cap) return alert("Pilih media atau isi caption!");
-            btn.disabled = true; btn.innerText = "Mengunggah...";
+            const btn = document.getElementById('btn-upload'); btn.disabled = true;
             try {
                 let url = "", type = "text";
                 if(selectedFile) {
-                    const r = ref(storage, `stories/${Date.now()}_${selectedFile.name}`);
+                    const r = ref(storage, `stories/${Date.now()}`);
                     await uploadBytes(r, selectedFile);
                     url = await getDownloadURL(r);
                     type = selectedFile.type.split('/')[0];
                 }
                 await addDoc(collection(db, "stories"), { uid: u.uid, nama: myData.nama, photo: myData.photo, caption: cap, url, type, createdAt: serverTimestamp() });
                 closeStoryModal();
-                document.getElementById('story-caption').value = "";
             } catch (e) { alert(e.message); }
-            btn.disabled = false; btn.innerText = "Post Sekarang";
+            btn.disabled = false;
         };
 
-        window.openStoryGroup = (userStories) => {
-            activeSlides = userStories; currentSlideIndex = 0;
-            document.getElementById('story-view-screen').classList.remove('hidden');
-            renderSlide();
-        };
-
+        // --- STORY VIEWER ---
+        window.openStoryGroup = (gs) => { activeSlides = gs; currentSlideIndex = 0; document.getElementById('story-view-screen').classList.remove('hidden'); renderSlide(); };
         function renderSlide() {
             const data = activeSlides[currentSlideIndex];
-            const img = document.getElementById('view-img'), vid = document.getElementById('view-vid'), aud = document.getElementById('view-audio'), audTag = document.getElementById('view-audio-tag'), txt = document.getElementById('view-text');
-            const del = document.getElementById('btn-delete-story');
-
-            del.classList.toggle('hidden', data.uid !== auth.currentUser.uid);
-            
+            const img = document.getElementById('view-img'), vid = document.getElementById('view-vid'), txt = document.getElementById('view-text');
+            document.getElementById('btn-delete-story').classList.toggle('hidden', data.uid !== auth.currentUser.uid);
             const prog = document.getElementById('progress-container');
             prog.innerHTML = activeSlides.map((_, i) => `<div class="progress-track"><div id="fill-${i}" class="progress-fill" style="width: ${i < currentSlideIndex ? '100%' : '0%'}"></div></div>`).join('');
-
-            [img, vid, aud, txt].forEach(el => el.classList.add('hidden'));
-            vid.pause(); audTag.pause();
+            [img, vid, txt].forEach(el => el.classList.add('hidden')); vid.pause();
             document.getElementById('viewer-avatar').src = data.photo;
             document.getElementById('viewer-name').innerText = data.nama;
             document.getElementById('view-caption').innerText = data.caption || "";
-
             let ms = 5000;
-            if(data.type === "image") { img.src = data.url; img.classList.remove('hidden'); }
-            else if(data.type === "video") { vid.src = data.url; vid.classList.remove('hidden'); vid.play(); ms = 15000; }
-            else if(data.type === "audio") { audTag.src = data.url; aud.classList.remove('hidden'); audTag.play(); ms = 15000; }
+            if(data.type === 'image') { img.src = data.url; img.classList.remove('hidden'); }
+            else if(data.type === 'video') { vid.src = data.url; vid.classList.remove('hidden'); vid.play(); ms = 15000; }
             else { txt.innerText = data.caption; txt.classList.remove('hidden'); }
-
             setTimeout(() => { const f = document.getElementById(`fill-${currentSlideIndex}`); if(f){ f.style.transitionDuration = `${ms}ms`; f.style.width = '100%'; } }, 50);
             clearTimeout(storyTimer); storyTimer = setTimeout(nextSlide, ms);
         }
-
         window.nextSlide = () => { if(currentSlideIndex < activeSlides.length - 1) { currentSlideIndex++; renderSlide(); } else { closeStoryViewer(); } };
         window.prevSlide = () => { if(currentSlideIndex > 0) { currentSlideIndex--; renderSlide(); } };
-        window.closeStoryViewer = () => { document.getElementById('story-view-screen').classList.add('hidden'); document.getElementById('view-vid').pause(); document.getElementById('view-audio-tag').pause(); clearTimeout(storyTimer); };
+        window.closeStoryViewer = () => { document.getElementById('story-view-screen').classList.add('hidden'); document.getElementById('view-vid').pause(); clearTimeout(storyTimer); };
+        window.deleteCurrentStory = async () => { if(confirm("Hapus?")) { await deleteDoc(doc(db, "stories", activeSlides[currentSlideIndex].id)); closeStoryViewer(); } };
 
-        window.deleteCurrentStory = async () => {
-            if(confirm("Hapus story ini?")) {
-                await deleteDoc(doc(db, "stories", activeSlides[currentSlideIndex].id));
-                closeStoryViewer();
-            }
-        };
+        // --- HISTORY LOGIC ---
+        function loadHistory() {
+            const list = document.getElementById('history-list');
+            const q = query(collection(db, "call_history"), where("uid", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
+            onSnapshot(q, (snap) => {
+                list.innerHTML = snap.empty ? `<div class="text-center py-20 opacity-20 font-bold">Kosong.</div>` : "";
+                snap.forEach(d => {
+                    const h = d.data();
+                    const date = h.timestamp?.toDate() || new Date();
+                    const item = document.createElement('div');
+                    item.className = "bg-white p-4 rounded-[28px] flex items-center justify-between shadow-sm border border-slate-50";
+                    item.innerHTML = `<div class="flex items-center gap-4"><div class="w-12 h-12 ${h.type === 'missed' ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-500'} rounded-2xl flex items-center justify-center text-lg"><i class="fa-solid ${h.type === 'missed' ? 'fa-phone-slash' : 'fa-phone-flip'}"></i></div><div><h4 class="font-bold text-sm text-slate-800">${h.callerName}</h4><p class="text-[9px] font-black uppercase text-slate-400">${h.status}</p></div></div><div class="text-right"><p class="text-[11px] font-black">${date.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</p><p class="text-[8px] font-bold text-slate-400 uppercase">${date.toLocaleDateString([],{weekday:'short'})}</p></div>`;
+                    list.appendChild(item);
+                });
+            });
+        }
 
+// --- GLOBAL APP STATE ---
         onAuthStateChanged(auth, async (u) => {
             if(u) {
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
-                const s = await getDoc(doc(db, "users", u.uid)); 
-                myData = s.data();
+                const s = await getDoc(doc(db, "users", u.uid)); myData = s.data();
                 document.getElementById('my-photo').src = myData.photo;
+                document.getElementById('welcome-name').innerText = myData.nama;
                 onSnapshot(query(collection(db, "stories"), orderBy("createdAt", "asc")), (snap) => {
                     const groups = {};
-                    snap.forEach(d => {
-                        const data = d.data(); data.id = d.id;
-                        if(!groups[data.uid]) groups[data.uid] = [];
-                        groups[data.uid].push(data);
-                    });
+                    snap.forEach(d => { const data = d.data(); data.id = d.id; if(!groups[data.uid]) groups[data.uid] = []; groups[data.uid].push(data); });
                     const list = document.getElementById('online-list'); list.innerHTML = "";
                     Object.values(groups).forEach(gs => {
                         const last = gs[gs.length - 1];
-                        const div = document.createElement('div');
-                        div.className = "flex flex-col items-center gap-1 min-w-[70px]";
-                        div.innerHTML = `<img src="${last.photo}" class="w-14 h-14 rounded-2xl story-ring object-cover shadow-sm"><span class="text-[9px] font-bold text-slate-400">${last.nama.split(' ')[0]}</span>`;
-                        div.onclick = () => openStoryGroup(gs);
-                        list.appendChild(div);
+                        const div = document.createElement('div'); div.className = "flex flex-col items-center gap-1 min-w-[70px]";
+                        div.innerHTML = `<img src="${last.photo}" class="w-14 h-14 story-ring object-cover"><span class="text-[9px] font-bold text-slate-400">${last.nama.split(' ')[0]}</span>`;
+                        div.onclick = () => openStoryGroup(gs); list.appendChild(div);
                     });
                 });
             } else {
@@ -285,6 +290,6 @@
                 document.getElementById('main-app').classList.add('hidden');
             }
         });
-    </script>
+        </script>
 </body>
-            </html>
+</html>
