@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undangan pernikahan Lamhot & Ika</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* CSS VARIABLES - The Foundation of Luxury */
+        :root {
+            /* Palette: Deep Gold, Cream, and Deep Shadows for Depth */
+            --base-cream: #FDFBF5;
+            --gold-light: #E9DCC1;
+            --gold-mid: #D4AF37; /* Metallic Gold */
+            --gold-dark: #A6832F;
+            --text-dark: #3A352F;
+            --text-light: #F9F7F2;
+            
+            /* Neumorphic 3D Shadow Shadows */
+            --3d-shadow-out: 10px 10px 20px #e0d9c8, -10px -10px 20px #ffffff;
+            --3d-shadow-in: inset 5px 5px 10px #e0d9c8, inset -5px -5px 10px #ffffff;
+            --3d-text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            
+            --transition-slow: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* RESET & BASE STYLES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--base-cream);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            perspective: 1000px; /* Essential for 3D effects */
+        }
+
+        h1, h2, h3 {
+            font-family: 'Cinzel', serif; /* Cinematic, Royal Font */
+            font-weight: 700;
+        }
+
+        .cursive {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        /* PRELOADER 3D */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--base-cream);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        .cube-loader {
+            width: 50px;
+            height: 50px;
+            transform-style: preserve-3d;
+            animation: rotateCube 2s infinite linear;
+            margin-bottom: 20px;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--gold-mid);
+            border: 2px solid var(--gold-dark);
+            opacity: 0.8;
+        }
+
+        /* Cube faces positions */
+        .front  { transform: translateZ(25px); }
+        .back   { transform: rotateY(180deg) translateZ(25px); }
+        .left   { transform: rotateY(-90deg) translateZ(25px); }
+        .right  { transform: rotateY(90deg) translateZ(25px); }
+        .top    { transform: rotateX(90deg) translateZ(25px); }
+        .bottom { transform: rotateX(-90deg) translateZ(25px); }
+
+        @keyframes rotateCube {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* HERO SECTION - 3D Parallax Effect */
+        .hero {
+            height: 100vh;
+            background: 
+                linear-gradient(135deg, rgba(253,251,245,0.9) 0%, rgba(233,220,193,0.5) 100%),
+                url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070') no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            transform-style: preserve-3d;
+            overflow: hidden;
+        }
+
+        /* Floating 3D Elements (Visual Renders) */
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--gold-light);
+            box-shadow: var(--3d-shadow-out);
+            opacity: 0.6;
+            filter: blur(1px);
+        }
+
+        .el-1 { width: 100px; height: 100px; top: 15%; left: 10%; transform: translateZ(50px); }
+        .el-2 { width: 150px; height: 150px; bottom: 20%; right: 15%; transform: translateZ(100px); animation: float 6s infinite ease-in-out; }
+        .el-3 { width: 70px; height: 70px; top: 60%; left: 25%; transform: translateZ(30px); }
+
+        .hero-content {
+            transform: translateZ(150px); /* Pushes content forward */
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            color: var(--gold-dark);
+            letter-spacing: 8px;
+            text-shadow: var(--3d-text-shadow);
+            margin-bottom: 15px;
+            animation: fadeInDown 1.5s ease;
+        }
+
+        .hero p {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 10px;
+            color: var(--text-dark);
+            margin-bottom: 40px;
+        }
+
+        /* 3D Glassmorphism Card for "Save the Date" */
+        .save-date-card {
+            display: inline-block;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(166, 131, 47, 0.2);
+            transform: translateZ(200px);
+        }
+
+        /* SECTION CONTAINERS */
+        section {
+            padding: 120px 10%;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        /* HOLY VERSE - Isometric Depth */
+        .verse-container {
+            background: var(--base-cream);
+            text-align: center;
+            transform: rotateX(5deg); /* Slight isometric tilt */
+            box-shadow: var(--3d-shadow-out);
+            border-radius: 30px;
+            margin: -50px 10% 50px 10%;
+            z-index: 20;
+        }
+
+        .verse-container::before {
+            content: "†";
+            font-size: 3rem;
+            color: var(--gold-mid);
+            display: block;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .verse-text {
+            font-style: italic;
+            font-size: 1.6rem;
+            max-width: 900px;
+            margin: 0 auto;
+            color: var(--text-dark);
+            line-height: 2;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* THE COUPLE - Neumorphic Cards with Hover Effect */
+        .couple-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 50px;
+        }
+
+        .couple-card-3d {
+            flex: 1;
+            min-width: 320px;
+            max-width: 450px;
+            background: var(--base-cream);
+            padding: 50px;
+            border-radius: 40px;
+            box-shadow: var(--3d-shadow-out);
+            text-align: center;
+            transition: var(--transition-slow);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .couple-card-3d:hover {
+            transform: translateY(-15px) rotateY(5deg);
+            box-shadow: 15px 15px 30px #e0d9c8, -15px -15px 30px #ffffff;
+        }
+
+        .couple-img-container {
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 30px auto;
+            border-radius: 50%;
+            background: var(--base-cream);
+            padding: 10px;
+            box-shadow: var(--3d-shadow-in); /* Inset shadow for depth */
+            transform: translateZ(30px);
+        }
+
+        .couple-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--gold-light);
+        }
+
+        .couple-card-3d h3 {
+            color: var(--gold-dark);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            transform: translateZ(50px);
+        }
+
+        .ampersand-3d {
+            font-size: 6rem;
+            color: var(--gold-mid);
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            animation: pulse 3s infinite;
+        }
+
+        /* EVENT DETAILS - Extruded "Block" style */
+        .events {
+            background: var(--text-dark); /* Dark background for contrast */
+            color: var(--text-light);
+            border-radius: 50px;
+            margin: 50px 0;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 50px;
+            margin-top: 60px;
+        }
+
+        .event-block-3d {
+            background: #423d37;
+            padding: 50px;
+            border-radius: 20px;
+            position: relative;
+            transition: var(--transition-slow);
+            border-bottom: 10px solid var(--gold-dark); /* Extrusion effect */
+            transform: translateZ(0deg);
+        }
+
+        .event-block-3d:hover {
+            transform: scale(1.03) translateY(-10px);
+            background: #4a443e;
+        }
+
+        .event-block-3d h3 {
+            color: var(--gold-light);
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        /* 3D BUTTONS */
+        .btn-3d-gold {
+            display: inline-block;
+            padding: 18px 45px;
+            background: linear-gradient(135deg, var(--gold-mid) 0%, var(--gold-dark) 100%);
+            color: var(--text-light);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 700;
+            border-radius: 50px;
+            border: none;
+            box-shadow: 0 8px 0 var(--gold-dark), 0 15px 20px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            margin-top: 30px;
+        }
+
+        .btn-3d-gold:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 var(--gold-dark), 0 8px 10px rgba(0,0,0,0.3);
+        }
+
+        /* GALLERY - 3D Perspective Grid */
+        .gallery-grid-3d {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            transform: rotateX(10deg); /* Perspective view */
+        }
+
+        .gallery-item-3d {
+            height: 350px;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: var(--3d-shadow-out);
+            transition: var(--transition-slow);
+        }
+
+        .gallery-item-3d img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1s ease;
+        }
+
+        .gallery-item-3d:hover {
+            transform: translateZ(50px) scale(1.05);
+            z-index: 10;
+        }
+
+        /* RSVP FORM - Neumorphic Inset Fields */
+        .rsvp-section {
+            background: var(--base-cream);
+        }
+
+        .rsvp-form-3d {
+            max-width: 700px;
+            margin: 60px auto;
+            background: var(--base-cream);
+            padding: 60px;
+            border-radius: 40px;
+            box-shadow: var(--3d-shadow-out);
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            background: var(--base-cream);
+            color: var(--text-dark);
+            font-family: inherit;
+            box-shadow: var(--3d-shadow-in); /* Inset shadow for 3D field */
+        }
+
+        input:focus {
+            box-shadow: inset 2px 2px 5px #e0d9c8, inset -2px -2px 5px #ffffff;
+        }
+
+        /* ANIMATIONS */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateZ(100px); }
+            50% { transform: translateY(-30px) translateZ(120px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px) translateZ(150px); }
+            to { opacity: 1; transform: translateY(0) translateZ(150px); }
+        }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.8rem; letter-spacing: 4px; }
+            .couple-section { flex-direction: column; }
+            .verse-text { font-size: 1.2rem; }
+            section { padding: 80px 5%; }
+            .rsvp-form-3d { padding: 30px; }
+        }
+        .gift-info-box {
+        margin-top: 20px;
+        padding: 20px;
+        background: var(--3d-shadow-in);
+        border-radius: 15px;
+        display: none; /* Hidden by default */
+        animation: fadeIn 0.5s ease;
+        border: 1px solid var(--gold-light);
+    }
+
+    .message-board {
+        margin-top: 80px;
+        text-align: left;
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 20px;
+        background: var(--base-cream);
+        box-shadow: var(--3d-shadow-in);
+        border-radius: 20px;
+    }
+
+    .msg-card {
+        background: white;
+        padding: 15px;
+        border-radius: 15px;
+        margin-bottom: 15px;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+        border-left: 4px solid var(--gold-mid);
+    }
+
+    .msg-name { font-weight: 700; color: var(--gold-dark); margin-bottom: 5px; }
+    .msg-text { font-size: 0.9rem; font-style: italic; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="cube-loader">
+            <div class="cube-face front"></div>
+            <div class="cube-face back"></div>
+            <div class="cube-face left"></div>
+            <div class="cube-face right"></div>
+            <div class="cube-face top"></div>
+            <div class="cube-face bottom"></div>
+        </div>
+        <h2 class="cursive" style="color: var(--gold-dark); font-size: 1.8rem;">Preparing the Grace...</h2>
+    </div>
+
+    <section class="hero" id="home">
+        <div class="floating-element el-1"></div>
+        <div class="floating-element el-2"></div>
+        <div class="floating-element el-3"></div>
+
+        <div class="hero-content">
+            <p>Undangan Pernikahan</p>
+            <h1>Lamhot<br>&<br>Ika</h1>
+            <div class="save-date-card">
+                <h3 style="color: white; font-size: 1.5rem; letter-spacing: 3px; font-family: 'Montserrat', sans-serif;">16 | Mei | 2026</h3>
+            </div>
+        </div>
+    </section>
+
+    <section class="verse-container">
+        <div class="verse-text">
+            "Karena itu, apa yang telah dipersatukan Allah, tidak boleh diceraikan manusia."
+        </div>
+        <div class="verse-ref" style="margin-top: 25px; font-weight: 700; color: var(--gold-dark); letter-spacing: 3px;">MATIUS 19:6</div>
+    </section>
+
+    <section id="couple" style="padding-top: 50px;">
+        <h2 style="text-align: center; color: var(--gold-dark); font-size: 3rem; margin-bottom: 60px;">The Beloved</h2>
+        <div class="couple-section">
+            
+            <div class="couple-card-3d">
+                <div class="couple-img-container">
+                    <img src="cowo.jpg" alt="Groom" class="couple-img">
+                </div>
+                <h3>Lamhot Pardamean Manurung S.I</h3>
+                <p>Keluarga Manurung/Dumaria br.Panjaitan</p>
+            </div>
+
+            <div class="ampersand-3d cursive">&</div>
+
+            <div class="couple-card-3d">
+                <div class="couple-img-container">
+                    <img src="cewe.jpg" alt="Bride" class="couple-img">
+                </div>
+                <h3>Mei Ika Dormauli Sihombing S.E</h3>
+                <p>Keluarga Aman Sihombing/Ernawati Br Tamba (A. Meika)</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="events" id="events">
+        <h2 style="text-align: center; color: var(--gold-light); font-size: 3rem;">The Holy Ceremony</h2>
+        <p style="text-align: center; letter-spacing: 5px; color: white;">BY GOD'S GRACE</p>
+
+        <div class="event-grid">
+            <div class="event-block-3d">
+                <i class="fas fa-church" style="font-size: 2.5rem; color: var(--gold-mid); margin-bottom: 25px; display: block; text-align: center;"></i>
+                <h3>Pemberkatan Pernikahan Kudus</h3>
+                <p><i class="far fa-calendar-alt"></i> Sabtu, 16 Mei 2026</p>
+                <p><i class="far fa-clock"></i> 09.00 WIB - Selesai</p>
+                <hr style="margin: 25px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
+                <p><strong>Gereja HKBP SOLAGRATIA Kayumas</strong></p>
+                <p>Jl. Kayu Mas Selatan IV Kav.Polri Blok G/85-87, Pulo Gadung, Jakarta Timur</p>
+                <a href="#" class="btn-3d-gold">Buka Peta</a>
+            </div>
+
+            <div class="event-block-3d">
+                <i class="fas fa-glass-cheers" style="font-size: 2.5rem; color: var(--gold-mid); margin-bottom: 25px; display: block; text-align: center;"></i>
+                <h3>Resepsi Pernikahan & Upacara Adat</h3>
+                <p><i class="far fa-calendar-alt"></i> Sabtu, 16 Mei 2026</p>
+                <p><i class="far fa-clock"></i> 11.00 WIB - Selesai</p>
+                <hr style="margin: 25px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
+                <p><strong>Gedung Pertemuan "Rumah Gorga Mangampu Tua 2"</strong></p>
+                <p>Jl.H.Kamat No.14, Pondok Bambu, Jakarta Timur</p>
+                <a href="#" class="btn-3d-gold">Buka Peta</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery">
+        <h2 style="text-align: center; color: var(--gold-dark); font-size: 3rem; margin-bottom: 60px;">Our Journey</h2>
+        <div class="gallery-grid-3d">
+            <div class="gallery-item-3d"><img src="1.jpg" alt="1"></div>
+            <div class="gallery-item-3d"><img src="1.jpg" alt="2"></div>
+            <div class="gallery-item-3d"><img src="1.jpg" alt="3"></div>
+            <div class="gallery-item-3d"><img src="1.jpg" alt="4"></div>
+            <div class="gallery-item-3d"><img src="1.jpg" alt="5"></div>
+            
+        </div>
+    </section>
+        <section class="rsvp-section" id="rsvp">
+    <h2 class="cursive" style="text-align: center; font-size: 4rem; color: var(--gold-dark);">Form Kehadiran</h2>
+    <p style="text-align: center; margin-bottom: 50px;">Bagikan kebahagiaan dan konfirmasi kehadiran Anda</p>
+    
+    <div class="rsvp-form-3d">
+        <form id="weddingForm">
+            <div class="form-group">
+                <input type="text" id="guestName" placeholder="Nama Lengkap Anda" required>
+            </div>
+            <div class="form-group">
+                <select id="attendance" required>
+                    <option value="" disabled selected>Apakah Anda akan hadir?</option>
+                    <option value="Hadir">Saya Akan Hadir</option>
+                    <option value="Tidak Hadir">Maaf, Tidak Bisa Hadir</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <select id="giftToggle" onchange="toggleGiftDetails()">
+                    <option value="no">Tidak Memberi Hadiah</option>
+                    <option value="yes">Berikan Tanda Kasih (Digital Gift)</option>
+                </select>
+            </div>
+
+            <div id="giftSelection" class="form-group" style="display: none;">
+                <select id="bankType" onchange="showBankNumber()">
+                    <option value="" disabled selected>Pilih Metode Pembayaran</option>
+                    <option value="BCA">Bank BCA</option>
+                    <option value="BRI">Bank BRI</option>
+                    <option value="Mandiri">Bank Mandiri</option>
+                    <option value="Dana">E-Wallet DANA</option>
+                    <option value="Cash">Cash (Angpao di Lokasi)</option>
+                </select>
+                
+                <div id="bankDisplay" class="gift-info-box">
+                    <p id="bankLabel" style="font-weight: bold; margin-bottom: 5px;"></p>
+                    <p id="bankAccount" style="font-size: 1.4rem; color: var(--gold-dark); letter-spacing: 2px;"></p>
+                    <p>a/n Jonathan Wijaya</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <textarea id="wishMessage" rows="4" placeholder="Tuliskan doa dan ucapan hangat Anda..." required></textarea>
+            </div>
+            
+            <button type="submit" class="btn-3d-gold" style="width: 100%;">Kirim Ucapan & Konfirmasi</button>
+        </form>
+
+        <div class="message-board" id="messageBoard">
+            <h3 style="font-family: 'Cinzel'; margin-bottom: 20px; font-size: 1.2rem;">Ucapan Tamu Undangan:</h3>
+            <div id="messagesList">
+                <p style="text-align: center; opacity: 0.5;">Memuat ucapan...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+   <footer style="padding: 40px; text-align: center; background: #2c2925; color: #ffffff; border-top: 1px solid var(--gold-dark);">
+    <a href="https://wa.me/6283849997221?text=assalamualaikum%20admin" style="text-decoration: none; color: #ffffff;">
+        <p>&copy; Website By Indra</p><br>
+    </a>
+</footer>
+
+    <script>
+        // 3D Preloader Logic
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                }, 600);
+            }, 2500); // Give loader time to rotate
+        });
+
+        // Hero Parallax Mouse Effect
+        const hero = document.querySelector('.hero');
+        const heroContent = document.querySelector('.hero-content');
+        const elements = document.querySelectorAll('.floating-element');
+
+        hero.addEventListener('mousemove', (e) => {
+            let xAxis = (window.innerWidth / 2 - e.pageX) / 25; // Speed adjustment
+            let yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+
+            heroContent.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg) translateZ(150px)`;
+            
+            // Move floating elements differently for parallax
+            elements.forEach((el, index) => {
+                const speed = (index + 1) * 10;
+                el.style.transform = `translateX(${xAxis * speed}px) translateY(${yAxis * speed}px)`;
+            });
+        });
+
+        // Reset Hero on Mouse Leave
+        hero.addEventListener('mouseleave', () => {
+            heroContent.style.transition = 'all 0.5s ease';
+            heroContent.style.transform = `rotateY(0deg) rotateX(0deg) translateZ(150px)`;
+        });
+
+        hero.addEventListener('mouseenter', () => {
+            heroContent.style.transition = 'none';
+        });
+
+
+        // --- 1. FIREBASE CONFIGURATION ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyDtUHbNKcml-KNuTyhjMbIOXmvP1Xs67zc",
+    authDomain: "undanganpernikahan1-e3931.firebaseapp.com",
+    databaseURL: "https://undanganpernikahan1-e3931-default-rtdb.firebaseio.com", // Cek link ini di tab Realtime Database
+    projectId: "undanganpernikahan1-e3931",
+    storageBucket: "undanganpernikahan1-e3931.firebasestorage.app",
+    messagingSenderId: "268610709310",
+    appId: "1:268610709310:web:8ccfd2cb4f4802c68eee6f",
+    measurementId: "G-1ZHTZXGYZP"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // --- 2. DYNAMIC GIFT LOGIC ---
+    function toggleGiftDetails() {
+        const giftToggle = document.getElementById('giftToggle').value;
+        const giftSelection = document.getElementById('giftSelection');
+        giftSelection.style.display = (giftToggle === 'yes') ? 'block' : 'none';
+    }
+
+    // Variable global untuk menyimpan data bank dari database
+let currentBankData = {};
+
+// Sinkronisasi nomor rekening dari Firebase secara otomatis
+database.ref('settings/banks').on('value', (snapshot) => {
+    currentBankData = snapshot.val();
+});
+
+function showBankNumber() {
+    const bank = document.getElementById('bankType').value;
+    const display = document.getElementById('bankDisplay');
+    const label = document.getElementById('bankLabel');
+    const acc = document.getElementById('bankAccount');
+
+    if (bank === 'Cash') {
+        display.style.display = 'block';
+        label.innerText = 'Metode:';
+        acc.innerText = 'Silakan masukkan ke kotak di lokasi';
+    } else if (currentBankData && currentBankData[bank]) {
+        display.style.display = 'block';
+        label.innerText = 'Nomor Rekening ' + bank + ':';
+        acc.innerText = currentBankData[bank];
+    } else {
+        // Jika data bank belum diatur di admin
+        display.style.display = 'block';
+        label.innerText = 'Informasi ' + bank + ':';
+        acc.innerText = 'Belum diatur oleh Admin';
+    }
+}
+
+    // --- 3. FIREBASE READ/WRITE LOGIC ---
+    const weddingForm = document.getElementById('weddingForm');
+    const messagesList = document.getElementById('messagesList');
+
+    // Submit Data
+    weddingForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const newWish = {
+            name: document.getElementById('guestName').value,
+            attendance: document.getElementById('attendance').value,
+            message: document.getElementById('wishMessage').value,
+            timestamp: Date.now()
+        };
+
+        // Push ke Firebase
+        database.ref('wishes').push(newWish).then(() => {
+            alert('Terima kasih atas ucapannya!');
+            weddingForm.reset();
+            toggleGiftDetails(); // Reset gift display
+        });
+    });
+
+    // Listen to Data (Realtime)
+    database.ref('wishes').orderByChild('timestamp').on('value', (snapshot) => {
+        messagesList.innerHTML = ''; // Clear board
+        snapshot.forEach((childSnapshot) => {
+            const data = childSnapshot.val();
+            const msgHtml = `
+                <div class="msg-card">
+                    <div class="msg-name">${data.name} <span style="font-size: 0.7rem; font-weight: 300; color: #888;">• ${data.attendance}</span></div>
+                    <div class="msg-text">"${data.message}"</div>
+                </div>
+            `;
+            messagesList.insertAdjacentHTML('afterbegin', msgHtml);
+        });
+    });
+    </script>
+</body>
+</html>
