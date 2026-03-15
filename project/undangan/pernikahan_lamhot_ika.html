@@ -326,7 +326,9 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
-            transform: rotateX(10deg); /* Perspective view */
+            transform: rotateX(10deg); 
+    margin-bottom: 100px; 
+    transform-origin: top; 
         }
 
         .gallery-item-3d {
@@ -351,8 +353,11 @@
 
         /* RSVP FORM - Neumorphic Inset Fields */
         .rsvp-section {
-            background: var(--base-cream);
-        }
+    background: var(--base-cream);
+    padding-top: 150px; /* Tambahkan padding atas lebih banyak */
+    position: relative;
+    z-index: 1; /* Pastikan dia di bawah gallery jika gallery ingin overlay */
+}
 
         .rsvp-form-3d {
             max-width: 700px;
