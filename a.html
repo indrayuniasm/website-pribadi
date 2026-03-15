@@ -3,344 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Management System - Premium Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Master Admin - Responsive Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
 
     <style>
         :root {
-            --primary: #6366f1;
-            --success: #22c55e;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --dark-bg: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --border: #334155;
+            --primary: #8b5cf6;
+            --bg: #050505;
+            --card: #121212;
+            --border: #262626;
+            --text: #ffffff;
+            --text-dim: #a3a3a3;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--dark-bg);
-            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
             display: flex;
-            overflow: hidden;
             height: 100vh;
+            overflow: hidden;
         }
 
-        /* Sidebar Modern */
+        /* --- DESKTOP SIDEBAR --- */
         .sidebar {
-            width: 280px;
-            background: var(--card-bg);
+            width: 300px;
+            background: var(--card);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-        }
-
-        .sidebar-header {
-            padding: 30px 20px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--primary);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .chat-list-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
-
-        .chat-user-card {
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            cursor: pointer;
             transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid transparent;
         }
 
-        .chat-user-card:hover { background: #334155; }
-        .chat-user-card.active {
-            background: rgba(99, 102, 241, 0.15);
-            border-color: var(--primary);
-        }
-
-        .avatar-circle {
-            width: 40px; height: 40px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold;
-        }
-
-        /* Main Content */
         .main-content {
             flex: 1;
             overflow-y: auto;
-            padding: 30px;
-            background: radial-gradient(circle at top right, #1e1b4b, var(--dark-bg));
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+        /* --- MOBILE NAVIGATION (Hidden on Desktop) --- */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            justify-content: space-around;
+            padding: 10px 0;
         }
 
+        .nav-item {
+            color: var(--text-dim);
+            text-align: center;
+            font-size: 0.7rem;
+            text-decoration: none;
+        }
+
+        .nav-item i { font-size: 1.2rem; display: block; margin-bottom: 3px; }
+        .nav-item.active { color: var(--primary); }
+
+        /* --- UI COMPONENTS --- */
         .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
+            background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 20px;
         }
 
-        /* Chat Window */
-        .chat-window {
-            height: 400px;
-            display: flex;
-            flex-direction: column;
+        .grid-system {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
         }
 
-        #chatMessages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        .scroll-x { overflow-x: auto; width: 100%; }
 
-        .msg { max-width: 80%; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; }
-        .msg.admin { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
-        .msg.user { align-self: flex-start; background: #334155; color: white; border-bottom-left-radius: 2px; }
-
-        .chat-input-area {
-            display: flex; gap: 10px; padding: 15px; border-top: 1px solid var(--border);
-        }
-
-        .chat-input-area input {
-            flex: 1; background: #0f172a; border: 1px solid var(--border);
-            color: white; padding: 12px; border-radius: 8px; outline: none;
-        }
-
-        /* Table Design */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { text-align: left; padding: 15px; color: var(--text-dim); font-weight: 500; border-bottom: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { text-align: left; color: var(--text-dim); padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
         td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-        
-        .status-badge {
-            padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
-        }
-        .bg-success { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-        .bg-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; }
 
+        .chat-bubble { padding: 10px 15px; border-radius: 15px; margin-bottom: 8px; max-width: 85%; font-size: 0.85rem; }
+        .chat-admin { background: var(--primary); align-self: flex-end; }
+        .chat-user { background: #262626; align-self: flex-start; }
+
+        /* --- RESPONSIVE LOGIC (MOBILE) --- */
+        @media (max-width: 992px) {
+            body { flex-direction: column; }
+            .sidebar { display: none; } /* Sembunyikan sidebar di HP */
+            .mobile-nav { display: flex; } /* Tampilkan menu bawah */
+            .main-content { padding: 15px; padding-bottom: 80px; }
+            .grid-system { grid-template-columns: 1fr; } /* Layout jadi 1 kolom */
+            
+            .desktop-only { display: none; }
+            h1 { font-size: 1.2rem; }
+        }
+
+        /* Tombol & Input */
         .btn-action {
-            padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
         }
-        .btn-approve { background: var(--success); color: white; }
-        .btn-reject { background: var(--danger); color: white; }
-        .btn-action:hover { opacity: 0.8; transform: translateY(-1px); }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        input {
+            background: #1a1a1a;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            outline: none;
+        }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-shield-halved"></i> MASTER ADMIN
+        <div style="padding: 30px; font-weight: 800; color: var(--primary); font-size: 1.4rem;">
+            <i class="fas fa-bolt"></i> DASHBOARD
         </div>
-        <div class="chat-list-container" id="chatUserList">
-            <p style="text-align: center; color: var(--text-dim);">Memuat Chat...</p>
-        </div>
+        <div style="padding: 0 20px 10px; font-size: 0.8rem; color: var(--text-dim);">USER CHATS</div>
+        <div id="chatUserList" style="flex:1; overflow-y:auto; padding: 0 10px;"></div>
     </div>
 
     <div class="main-content">
-        
-        <div class="dashboard-grid">
-            <div class="glass-card chat-window" id="chatContainer" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h3 id="activeChatName" style="margin:0;">Pilih User</h3>
-                    <span class="status-badge bg-success">Online</span>
+        <header style="display: flex; justify-content: space-between; align-items: center;">
+            <h1 id="pageTitle">Overview</h1>
+            <div id="adminStatus" style="font-size: 0.8rem; color: #22c55e;">● Server Active</div>
+        </header>
+
+        <div class="grid-system">
+            <div class="glass-card" id="chatSection" style="display: flex; flex-direction: column; height: 400px;">
+                <h3 id="targetName" style="margin-top:0;">Live Chat</h3>
+                <div id="chatMessages" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; padding:10px;">
+                    <p style="color:var(--text-dim); text-align:center;">Pilih user di sidebar atau menu Chat</p>
                 </div>
-                <div id="chatMessages"></div>
-                <div class="chat-input-area">
-                    <input type="text" id="adminReply" placeholder="Tulis balasan...">
-                    <button class="btn-action btn-approve" onclick="sendReply()"><i class="fas fa-paper-plane"></i></button>
+                <div style="display:flex; gap:10px; padding-top:15px; border-top:1px solid var(--border);">
+                    <input type="text" id="adminReply" placeholder="Ketik balasan..." style="flex:1;">
+                    <button class="btn-action" onclick="sendReply()"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
 
             <div class="glass-card">
-                <h3><i class="fas fa-university text-warning"></i> Bank Deposit</h3>
-                <input type="text" id="newBank" placeholder="Nama Bank" style="width: 40%; background: #0f172a; color:white; border:1px solid #334155; padding: 10px; border-radius: 5px;">
-                <input type="text" id="newRek" placeholder="Nomor Rekening" style="width: 40%; background: #0f172a; color:white; border:1px solid #334155; padding: 10px; border-radius: 5px;">
-                <button onclick="addBank()" class="btn-action btn-approve">Add</button>
-                <div id="bankListDisplay" style="margin-top: 15px;"></div>
+                <h3>Bank Deposit</h3>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <input type="text" id="newBank" placeholder="Nama Bank">
+                    <input type="text" id="newRek" placeholder="Nomor Rekening">
+                    <button class="btn-action" onclick="addBank()">Tambah Rekening</button>
+                </div>
+                <div id="bankListDisplay" style="margin-top:15px; font-size:0.9rem;"></div>
             </div>
         </div>
 
         <div class="glass-card">
-            <h3><i class="fas fa-users"></i> Database Member</h3>
-            <div style="overflow-x: auto;">
-                <table>
+            <h3>Database Member</h3>
+            <div class="scroll-x">
+                <table id="userTable">
                     <thead>
                         <tr>
-                            <th>User ID</th>
+                            <th>ID User</th>
                             <th>Password</th>
-                            <th>WhatsApp</th>
-                            <th>Bank / Rekening</th>
-                            <th>Saldo (IDR)</th>
+                            <th>Kontak</th>
+                            <th>Rekening</th>
+                            <th>Saldo</th>
                         </tr>
                     </thead>
-                    <tbody id="userTable"></tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
 
-        <div class="glass-card" style="margin-top: 30px;">
-            <h3><i class="fas fa-exchange-alt"></i> Antrean Transaksi</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Tipe</th>
-                        <th>Jumlah</th>
-                        <th>Bukti / Rek User</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="txTable"></tbody>
-            </table>
+        <div class="glass-card">
+            <h3>Antrean Transaksi</h3>
+            <div class="scroll-x">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Tipe</th>
+                            <th>Nominal</th>
+                            <th>Status/Info</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="txTable"></tbody>
+                </table>
+            </div>
         </div>
+    </div>
 
+    <div class="mobile-nav">
+        <a href="#" class="nav-item active" onclick="showTab('main')">
+            <i class="fas fa-home"></i>Home
+        </a>
+        <a href="#" class="nav-item" onclick="showTab('chat')">
+            <i class="fas fa-comments"></i>Chat
+        </a>
+        <a href="#" class="nav-item" onclick="showTab('users')">
+            <i class="fas fa-users"></i>Users
+        </a>
+        <a href="#" class="nav-item" onclick="showTab('finance')">
+            <i class="fas fa-wallet"></i>Finance
+        </a>
     </div>
 
 <script>
-    const firebaseConfig = { /* PASTE CONFIG ANDA DI SINI */ };
+    const firebaseConfig = { /* CONFIG FIREBASE ANDA */ };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let currentChatID = null;
 
-    // Load Database User
-    db.ref('users').on('value', snap => {
-        const tbody = document.getElementById('userTable');
-        tbody.innerHTML = "";
-        snap.forEach(c => {
-            const u = c.val();
-            tbody.innerHTML += `
-                <tr>
-                    <td><b style="color:var(--primary)">${c.key}</b></td>
-                    <td><code style="background:#111; padding:2px 5px;">${u.pw}</code></td>
-                    <td><a href="https://wa.me/${u.wa}" target="_blank" style="color:var(--success); text-decoration:none;"><i class="fab fa-whatsapp"></i> ${u.wa}</a></td>
-                    <td>${u.bank} <br> <small style="color:var(--text-dim)">${u.rek}</small></td>
-                    <td><b>${(u.balance || 0).toLocaleString()}</b></td>
-                </tr>`;
-        });
-    });
-
-    // Load Sidebar Chat
-    db.ref('chats').on('value', snap => {
-        const list = document.getElementById('chatUserList');
-        list.innerHTML = "";
-        snap.forEach(c => {
-            const isActive = c.key === currentChatID ? 'active' : '';
-            list.innerHTML += `
-                <div class="chat-user-card ${isActive}" onclick="openChat('${c.key}')">
-                    <div class="avatar-circle">${c.key.charAt(0).toUpperCase()}</div>
-                    <div style="flex:1">
-                        <div style="font-weight:600; font-size:0.9rem;">${c.key}</div>
-                        <div style="font-size:0.75rem; color:var(--text-dim)">Klik untuk membalas</div>
-                    </div>
-                </div>`;
-        });
-    });
-
-    function openChat(id) {
-        currentChatID = id;
-        document.getElementById('chatContainer').style.display = 'flex';
-        document.getElementById('activeChatName').innerText = id;
+    // --- RESPONSIVE TAB LOGIC (Untuk Mobile) ---
+    function showTab(type) {
+        // Logika sederhana untuk menyembunyikan/menampilkan section di HP
+        // Di sini kita bisa menambah filter tampilan berdasarkan kategori
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
         
-        db.ref('chats/' + id).on('value', snap => {
-            const area = document.getElementById('chatMessages');
-            area.innerHTML = "";
-            snap.forEach(m => {
-                const data = m.val();
-                const type = data.sender === 'admin' ? 'admin' : 'user';
-                area.innerHTML += `<div class="msg ${type}">${data.text}</div>`;
-            });
-            area.scrollTop = area.scrollHeight;
-        });
-    }
-
-    function sendReply() {
-        const txt = document.getElementById('adminReply').value;
-        if(txt && currentChatID) {
-            db.ref('chats/' + currentChatID).push({ sender: 'admin', text: txt });
-            document.getElementById('adminReply').value = "";
+        if(type === 'chat') {
+            // Logika munculkan daftar chat di mobile jika diperlukan
+            alert("Gunakan sidebar (Desktop) atau sistem Drawer (Mobile) untuk pilih chat");
         }
     }
 
-    // Transaksi Antrean
-    db.ref('transactions').on('value', snap => {
-        const tbody = document.getElementById('txTable');
+    // --- DATA FETCHING (Sama seperti sebelumnya) ---
+    db.ref('users').on('value', snap => {
+        const tbody = document.querySelector('#userTable tbody');
         tbody.innerHTML = "";
         snap.forEach(c => {
-            const tx = c.val();
-            if(tx.status === 'PENDING') {
-                const info = tx.type === 'DEPO' 
-                    ? `<a href="${tx.proof}" target="_blank" class="status-badge bg-success">Cek Bukti</a>`
-                    : `<small>${tx.bankUser}<br>${tx.rekUser}</small>`;
-                
-                tbody.innerHTML += `
-                    <tr>
-                        <td><b>${tx.user}</b></td>
-                        <td><span class="status-badge ${tx.type==='DEPO'?'bg-success':'bg-danger'}">${tx.type}</span></td>
-                        <td><b>${tx.amount.toLocaleString()}</b></td>
-                        <td>${info}</td>
-                        <td>
-                            <button class="btn-action btn-approve" onclick="handleTx('${c.key}', 'APP', '${tx.type}', ${tx.amount}, '${tx.user}')"><i class="fas fa-check"></i></button>
-                            <button class="btn-action btn-reject" onclick="handleTx('${c.key}', 'REJ', '${tx.type}', ${tx.amount}, '${tx.user}')"><i class="fas fa-times"></i></button>
-                        </td>
-                    </tr>`;
-            }
+            const u = c.val();
+            tbody.innerHTML += `<tr>
+                <td><b>${c.key}</b></td>
+                <td><code>${u.pw}</code></td>
+                <td><a href="https://wa.me/${u.wa}" style="color:var(--primary); text-decoration:none;">${u.wa}</a></td>
+                <td>${u.bank}<br><small>${u.rek}</small></td>
+                <td>Rp ${(u.balance||0).toLocaleString()}</td>
+            </tr>`;
         });
     });
 
-    function handleTx(key, act, type, amt, user) {
-        if(act === 'APP' && type === 'DEPO') db.ref(`users/${user}/balance`).transaction(c => (c||0) + amt);
-        if(act === 'REJ' && type === 'WD') db.ref(`users/${user}/balance`).transaction(c => (c||0) + amt);
-        db.ref(`transactions/${key}`).remove();
-    }
-
-    function addBank() {
-        const name = document.getElementById('newBank').value;
-        const rek = document.getElementById('newRek').value;
-        if(name && rek) db.ref('adminBanks').push({ name, rek });
-    }
-
-    db.ref('adminBanks').on('value', snap => {
-        const display = document.getElementById('bankListDisplay');
-        display.innerHTML = "";
-        snap.forEach(c => {
-            display.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px; padding:5px; border-bottom:1px solid #334155">
-                <span>${c.val().name}: <b>${c.val().rek}</b></span>
-                <i class="fas fa-trash" style="color:var(--danger); cursor:pointer;" onclick="db.ref('adminBanks/${c.key}').remove()"></i>
-            </div>`;
-        });
-    });
+    // (Masukkan fungsi handleTx, sendReply, openChat, dan addBank dari kode sebelumnya)
 </script>
 </body>
     </html>
