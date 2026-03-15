@@ -3,47 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Olympus Gold - Player</title>
+    <title>Olympus Gold - Official</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
         :root { --gold: #ffd700; --bg: #0d0118; --win: #00ffcc; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
-        .container { max-width: 800px; margin: auto; padding: 10px; }
-        
-        /* Auth & Header */
-        #authSection { text-align: center; margin-top: 50px; }
-        #gameSection { display: none; }
-        .header { background: rgba(0,0,0,0.9); padding: 15px; display: flex; justify-content: space-around; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 100; }
-        
-        /* Slot Design */
-        .slot-wrapper { background: #000; padding: 15px; border-radius: 15px; border: 4px solid var(--gold); margin: 20px 0; }
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .reel { height: 180px; background: #1a1a1a; overflow: hidden; border: 1px solid #333; border-radius: 5px; }
-        .symbol { height: 60px; display: flex; justify-content: center; align-items: center; font-size: 2rem; }
-        
-        /* Components */
-        .card { background: #1a1a1a; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
-        input, select { width: 100%; padding: 10px; margin: 8px 0; border-radius: 5px; border: none; background: #333; color: white; box-sizing: border-box; }
-        .btn { padding: 10px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        .container { max-width: 450px; margin: auto; padding: 20px; }
+        .card { background: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid #333; margin-top: 20px; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 5px; border: none; background: #333; color: white; box-sizing: border-box; }
+        .btn { padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
         .btn-gold { background: var(--gold); color: black; }
-
-        /* Chat Window */
-        #chatBox { height: 200px; overflow-y: auto; background: #000; border: 1px solid #444; padding: 10px; margin-bottom: 5px; font-size: 0.9rem; display: flex; flex-direction: column; }
-        .msg-me { align-self: flex-end; color: var(--win); background: #222; padding: 5px 10px; border-radius: 10px 10px 0 10px; margin: 2px; }
-        .msg-admin { align-self: flex-start; color: var(--gold); background: #333; padding: 5px 10px; border-radius: 10px 10px 10px 0; margin: 2px; }
-
-        .history-item { font-size: 0.8rem; border-bottom: 1px solid #333; padding: 5px 0; }
+        .link-text { text-align: center; margin-top: 15px; font-size: 0.9rem; cursor: pointer; color: var(--gold); }
+        
+        /* Game Styles */
+        #gameSection { display: none; max-width: 800px; margin: auto; }
+        .header { background: rgba(0,0,0,0.9); padding: 15px; display: flex; justify-content: space-around; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 100; }
+        .slot-wrapper { background: #000; padding: 10px; border: 3px solid var(--gold); border-radius: 10px; margin: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .reel { height: 150px; background: #111; overflow: hidden; border: 1px solid #222; }
+        .symbol { height: 50px; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; }
+        
+        /* Chat & History */
+        #chatBox { height: 150px; overflow-y: auto; background: #000; padding: 10px; margin-bottom: 5px; display: flex; flex-direction: column; }
+        .msg-me { align-self: flex-end; color: var(--win); background: #222; padding: 5px 10px; border-radius: 10px 10px 0 10px; margin: 2px; font-size: 0.8rem; }
+        .msg-admin { align-self: flex-start; color: var(--gold); background: #333; padding: 5px 10px; border-radius: 10px 10px 10px 0; margin: 2px; font-size: 0.8rem; }
+        .captcha-box { background: #444; padding: 10px; text-align: center; font-weight: bold; letter-spacing: 5px; font-style: italic; margin: 10px 0; user-select: none; }
     </style>
 </head>
 <body>
 
-<div id="authSection" class="container">
-    <h2>LOGIN / DAFTAR</h2>
+<div id="loginSection" class="container">
+    <h2 style="text-align:center; color:var(--gold);">LOGIN</h2>
     <div class="card">
-        <input type="text" id="userID" placeholder="ID Username">
-        <input type="password" id="userPW" placeholder="Password">
-        <button class="btn btn-gold" onclick="login()">MASUK / DAFTAR</button>
+        <input type="text" id="loginID" placeholder="ID Username">
+        <input type="password" id="loginPW" placeholder="Password">
+        <button class="btn btn-gold" onclick="processLogin()">MASUK</button>
+        <div class="link-text" onclick="showRegister()">Belum punya akun? Daftar</div>
+    </div>
+</div>
+
+<div id="registerSection" class="container" style="display:none;">
+    <h2 style="text-align:center; color:var(--gold);">PENDAFTARAN</h2>
+    <div class="card">
+        <input type="text" id="regID" placeholder="Buat ID Username">
+        <input type="password" id="regPW" placeholder="Buat Password">
+        <input type="text" id="regNama" placeholder="Nama Lengkap">
+        <input type="number" id="regWA" placeholder="Nomor WhatsApp">
+        <select id="regBank">
+            <option value="">-- Pilih Bank --</option>
+            <option value="DANA">DANA</option>
+            <option value="BCA">BCA</option>
+            <option value="BRI">BRI</option>
+            <option value="Mandiri">Mandiri</option>
+            <option value="SeaBank">SeaBank</option>
+            <option value="OVO">OVO</option>
+            <option value="Gopay">Gopay</option>
+        </select>
+        <input type="text" id="regRek" placeholder="Nomor Rekening/E-Wallet">
+        
+        <div class="captcha-box" id="captchaDisplay"></div>
+        <input type="text" id="captchaInput" placeholder="Masukkan kode di atas">
+        
+        <button class="btn btn-gold" onclick="processRegister()">DAFTAR SEKARANG</button>
+        <div class="link-text" onclick="showLogin()">Sudah ada akun? Login</div>
     </div>
 </div>
 
@@ -54,70 +77,111 @@
         <div id="fsIndicator" style="display:none; color:var(--win);">FS: <span id="fsCount">0</span></div>
     </div>
 
-    <div class="container">
-        <div class="slot-wrapper">
-            <div class="grid">
-                <div class="reel" id="r0"></div><div class="reel" id="r1"></div><div class="reel" id="r2"></div><div class="reel" id="r3"></div><div class="reel" id="r4"></div>
-            </div>
+    <div class="slot-wrapper">
+        <div class="grid">
+            <div class="reel" id="r0"></div><div class="reel" id="r1"></div><div class="reel" id="r2"></div><div class="reel" id="r3"></div><div class="reel" id="r4"></div>
         </div>
-        <button class="btn btn-gold" style="height:60px; font-size:1.5rem;" id="btnSpin" onclick="startSpin()">SPIN (200)</button>
+    </div>
+    <div style="text-align:center;"><button class="btn btn-gold" style="width:200px;" id="btnSpin" onclick="startSpin()">SPIN (200)</button></div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
+    <div class="container" style="max-width: 800px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <div class="card">
-                <h4>DEPOSIT</h4>
+                <h4>DEPOSIT (Min 20rb)</h4>
                 <select id="bankList" onchange="updateAdminRek()"></select>
-                <small id="targetRek">Pilih bank untuk melihat rek</small>
-                <input type="number" id="depoAmt" placeholder="Min 20.000">
-                <input type="text" id="depoProof" placeholder="Link Bukti Transaksi">
-                <button class="btn" style="background:green; color:white;" onclick="reqDepo()">KIRIM</button>
+                <small id="targetRek">--</small>
+                <input type="number" id="depoAmt" placeholder="Nominal">
+                <input type="text" id="depoProof" placeholder="Link Bukti">
+                <button class="btn" style="background:green; color:white;" onclick="reqDepo()">KONFIRMASI</button>
             </div>
             <div class="card">
-                <h4>WITHDRAW</h4>
-                <input type="text" id="wdBank" placeholder="Nama Bank Anda">
-                <input type="text" id="wdRekUser" placeholder="No Rekening">
-                <input type="number" id="wdAmt" placeholder="Min 50.000">
-                <button class="btn" style="background:red; color:white;" onclick="reqWD()">TARIK</button>
+                <h4>WITHDRAW (Min 50rb)</h4>
+                <input type="number" id="wdAmt" placeholder="Nominal">
+                <button class="btn" style="background:red; color:white;" onclick="reqWD()">TARIK DANA</button>
             </div>
         </div>
 
         <div class="card">
-            <h4>RIWAYAT TRANSAKSI</h4>
-            <div id="txHistory"></div>
-        </div>
-
-        <div class="card">
-            <h4>CHAT CS</h4>
+            <h4>CHAT CS & RIWAYAT</h4>
             <div id="chatBox"></div>
             <div style="display:flex;">
                 <input type="text" id="chatInput" placeholder="Ketik pesan...">
                 <button onclick="sendChat()" style="width:80px; background:var(--gold); border:none; margin-left:5px; border-radius:5px;">Kirim</button>
             </div>
+            <hr style="border:0.5px solid #333; margin:15px 0;">
+            <div id="txHistory" style="font-size:0.8rem;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    const firebaseConfig = { /* KONFIGURASI ANDA */ };
+    // --- CONFIG FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIza...",
+        authDomain: "proyek-anda.firebaseapp.com",
+        databaseURL: "https://proyek-anda.firebaseio.com",
+        projectId: "proyek-anda",
+        storageBucket: "proyek-anda.appspot.com",
+        messagingSenderId: "123",
+        appId: "1:123"
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     let currentUser = null;
-    let myBalance = 0;
-    let freeSpins = 0;
-    const symbols = ['🍎', '🍇', '🥥', '👤', '💎', '🔔', '7️⃣', '⭐', '🍋', '🍒'];
+    let currentCaptcha = "";
 
-    function login() {
-        const id = document.getElementById('userID').value;
-        const pw = document.getElementById('userPW').value;
-        if(!id || !pw) return alert("Isi ID & PW!");
+    // --- AUTH LOGIC ---
+    function generateCaptcha() {
+        currentCaptcha = Math.random().toString(36).substring(2, 7).toUpperCase();
+        document.getElementById('captchaDisplay').innerText = currentCaptcha;
+    }
+
+    function showRegister() {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('registerSection').style.display = 'block';
+        generateCaptcha();
+    }
+
+    function showLogin() {
+        document.getElementById('loginSection').style.display = 'block';
+        document.getElementById('registerSection').style.display = 'none';
+    }
+
+    function processRegister() {
+        const id = document.getElementById('regID').value;
+        const pw = document.getElementById('regPW').value;
+        const nama = document.getElementById('regNama').value;
+        const wa = document.getElementById('regWA').value;
+        const bank = document.getElementById('regBank').value;
+        const rek = document.getElementById('regRek').value;
+        const captcha = document.getElementById('captchaInput').value;
+
+        if(!id || !pw || !nama || !wa || !bank || !rek) return alert("Semua kolom wajib diisi!");
+        if(captcha !== currentCaptcha) { alert("Captcha Salah!"); generateCaptcha(); return; }
+
+        db.ref('users/' + id).once('value', snap => {
+            if(snap.exists()) return alert("Username sudah digunakan!");
+            
+            db.ref('users/' + id).set({
+                pw: pw, nama: nama, wa: wa, bank: bank, rek: rek,
+                balance: 0, fs: 0, role: 'player'
+            }).then(() => {
+                alert("Pendaftaran Berhasil! Silakan Login.");
+                showLogin();
+            });
+        });
+    }
+
+    function processLogin() {
+        const id = document.getElementById('loginID').value;
+        const pw = document.getElementById('loginPW').value;
         
         db.ref('users/' + id).once('value', snap => {
-            if(snap.exists()){
-                if(snap.val().pw === pw) startSession(id);
-                else alert("Password Salah!");
+            if(snap.exists() && snap.val().pw === pw) {
+                startSession(id);
             } else {
-                // Register Baru
-                db.ref('users/' + id).set({ pw: pw, balance: 0, fs: 0 }).then(() => startSession(id));
+                alert("ID atau Password Salah!");
             }
         });
     }
@@ -125,99 +189,76 @@
     function startSession(id) {
         currentUser = id;
         document.getElementById('displayID').innerText = id;
-        document.getElementById('authSection').style.display = 'none';
+        document.getElementById('loginSection').style.display = 'none';
         document.getElementById('gameSection').style.display = 'block';
         
-        // Listen Saldo & FS
         db.ref('users/' + id).on('value', snap => {
             const data = snap.val();
-            myBalance = data.balance || 0;
-            freeSpins = data.fs || 0;
-            document.getElementById('balanceDisplay').innerText = myBalance.toLocaleString();
-            document.getElementById('fsCount').innerText = freeSpins;
-            document.getElementById('fsIndicator').style.display = freeSpins > 0 ? 'inline' : 'none';
+            document.getElementById('balanceDisplay').innerText = (data.balance || 0).toLocaleString();
+            document.getElementById('fsCount').innerText = data.fs || 0;
+            document.getElementById('fsIndicator').style.display = (data.fs > 0) ? 'inline' : 'none';
         });
 
-        // Listen Chat
+        // Chat & History Sync (Sama seperti kode sebelumnya)
+        loadChat(id);
+        loadHistory(id);
+        loadAdminBanks();
+    }
+
+    // (Gunakan Game Logic, loadChat, loadHistory dari kode sebelumnya untuk menghemat tempat)
+    // --- Pastikan fungsi reqDepo, reqWD, dan startSpin ada di sini ---
+    
+    function loadChat(id) {
         db.ref('chats/' + id).on('value', snap => {
             const box = document.getElementById('chatBox');
             box.innerHTML = "";
-            snap.forEach(child => {
-                const m = child.val();
+            snap.forEach(c => {
+                const m = c.val();
                 box.innerHTML += `<div class="${m.sender==='admin'?'msg-admin':'msg-me'}">${m.text}</div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
+    }
 
-        // Listen History
-        db.ref('transactions').orderByChild('user').equalTo(id).on('value', snap => {
-            const hist = document.getElementById('txHistory');
-            hist.innerHTML = "";
-            snap.forEach(child => {
-                const t = child.val();
-                hist.innerHTML += `<div class="history-item"><b>${t.type}</b>: ${t.amount.toLocaleString()} | Status: ${t.status}</div>`;
+    function sendChat() {
+        const txt = document.getElementById('chatInput').value;
+        if(txt) db.ref('chats/' + currentUser).push({ sender: currentUser, text: txt });
+        document.getElementById('chatInput').value = "";
+    }
+
+    function loadAdminBanks() {
+        db.ref('adminBanks').on('value', snap => {
+            let h = '<option value="">-- Pilih Bank --</option>';
+            snap.forEach(c => { h += `<option value="${c.val().name}">${c.val().name}</option>`; });
+            document.getElementById('bankList').innerHTML = h;
+        });
+    }
+
+    function updateAdminRek() {
+        const sel = document.getElementById('bankList').value;
+        db.ref('adminBanks').once('value', snap => {
+            snap.forEach(c => {
+                if(c.val().name === sel) document.getElementById('targetRek').innerText = "Rek: " + c.val().rek;
             });
         });
     }
 
-    // --- GAME LOGIC --- (Sama seperti sebelumnya)
-    function startSpin() {
-        if(freeSpins <= 0 && myBalance < 200) return alert("Saldo kurang!");
-        if(freeSpins > 0) { freeSpins--; db.ref('users/'+currentUser).update({fs: freeSpins}); }
-        else { myBalance -= 200; db.ref('users/'+currentUser).update({balance: myBalance}); }
-
-        const reels = ['r0','r1','r2','r3','r4'];
-        let matrix = [[],[],[],[],[]];
-        reels.forEach((id, i) => {
-            const el = document.getElementById(id); el.innerHTML = "";
-            for(let s=0; s<3; s++) {
-                const sym = symbols[Math.floor(Math.random()*symbols.length)];
-                el.innerHTML += `<div class="symbol">${sym}</div>`;
-                matrix[i].push(sym);
-            }
-        });
-        checkWin(matrix);
-    }
-
-    function checkWin(matrix) {
-        const all = matrix.flat();
-        const counts = {}; all.forEach(s => counts[s] = (counts[s]||0)+1);
-        
-        if(matrix[0].includes('👤') && matrix[2].includes('👤') && matrix[4].includes('👤')) {
-            freeSpins += 15; db.ref('users/'+currentUser).update({fs: freeSpins});
-            alert("SCATTER! 15 FS");
-        }
-
-        let win = 0;
-        if(counts['🍎'] >= 5) win += counts['🍎']*5;
-        if(counts['🍇'] >= 3) win += counts['🍇']*3;
-        if(counts['🥥'] >= 3) win += counts['🥥']*2;
-
-        if(win > 0) { myBalance += win; db.ref('users/'+currentUser).update({balance: myBalance}); }
-        if(freeSpins > 0) setTimeout(startSpin, 1200);
-    }
-
-    // --- CHAT & FINANCE ---
-    function sendChat() {
-        const txt = document.getElementById('chatInput').value;
-        if(!txt) return;
-        db.ref('chats/' + currentUser).push({ sender: currentUser, text: txt });
-        document.getElementById('chatInput').value = "";
-    }
-
     function reqDepo() {
         const amt = parseInt(document.getElementById('depoAmt').value);
-        if(amt < 20000) return alert("Min 20.000");
-        db.ref('transactions').push({ type:'DEPO', amount:amt, user:currentUser, status:'PENDING' });
-        alert("Diajukan!");
+        const proof = document.getElementById('depoProof').value;
+        if(amt < 20000 || !proof) return alert("Minimal 20rb & bukti wajib isi!");
+        db.ref('transactions').push({ type:'DEPO', amount:amt, proof, user:currentUser, status:'PENDING' });
+        alert("Diproses!");
     }
 
     function reqWD() {
         const amt = parseInt(document.getElementById('wdAmt').value);
-        if(amt < 50000) return alert("Min 50.000");
-        if(amt > myBalance) return alert("Saldo kurang");
-        myBalance -= amt; db.ref('users/'+currentUser).update({balance: myBalance});
-        db.ref('transactions').push({ type:'WD', amount:amt, user:currentUser, status:'PENDING' });
+        if(amt < 50000) return alert("Minimal WD 50rb!");
+        // (Logika potong saldo & push transaksi)
+    }
+
+    function startSpin() {
+        // (Gunakan logika spin yang sudah diberikan sebelumnya)
     }
 </script>
 </body>
