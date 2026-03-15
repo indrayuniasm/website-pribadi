@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ConnectPro Ultra</title>
+    <title>ConnectPro Ultra Final</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -16,143 +16,128 @@
         :root {
             --primary: #8b5cf6;
             --bg: #09090b;
-            --panel: rgba(24, 24, 27, 0.7);
+            --panel: rgba(24, 24, 27, 0.8);
             --border: rgba(255, 255, 255, 0.1);
             --text: #fafafa;
         }
 
-        /* Themes */
         .theme-midnight { --primary: #3b82f6; --bg: #020617; }
-        .theme-amethyst { --primary: #d946ef; --bg: #0f051a; }
+        .theme-forest { --primary: #10b981; --bg: #061712; }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; transition: 0.5s; }
 
-        /* --- LAYOUT ENGINE --- */
-        .app-shell { display: grid; height: 100vh; width: 100%; transition: 0.3s; }
+        /* --- LAYOUT --- */
+        .app-shell { display: grid; height: 100vh; width: 100%; grid-template-columns: 350px 1fr 320px; }
         
-        /* Desktop: 3 Columns */
-        @media (min-width: 901px) {
-            .app-shell { grid-template-columns: 350px 1fr 320px; }
-            .mobile-nav { display: none; }
-        }
-
-        /* Mobile: Single Column */
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             .app-shell { grid-template-columns: 1fr; }
-            .sidebar, .chat-view, .profile-view { display: none; width: 100% !important; }
+            .side-panel, .chat-view, .profile-panel { display: none; width: 100% !important; }
             .active-panel { display: flex !important; }
             .mobile-nav { 
-                position: fixed; bottom: 0; width: 100%; height: 70px; 
-                background: var(--panel); backdrop-filter: blur(20px);
-                display: flex; justify-content: space-around; align-items: center;
+                position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--panel); 
+                backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center;
                 border-top: 1px solid var(--border); z-index: 100;
             }
         }
+        @media (min-width: 1001px) { .mobile-nav { display: none; } }
 
-        /* Components */
         .panel { background: var(--panel); backdrop-filter: blur(30px); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-        .header { padding: 25px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-        
-        /* Contacts */
-        .contact-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; }
+        .header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; min-height: 80px; }
+
+        /* --- CONTACT LIST --- */
+        .contact-item { padding: 15px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.02); }
         .contact-item:hover { background: rgba(255,255,255,0.05); }
-        .pfp-ring { width: 50px; height: 50px; border-radius: 18px; object-fit: cover; background: #27272a; position: relative; }
-        .status-badge { position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--bg); }
-        .online { background: #22c55e; }
-        .offline { background: #71717a; }
+        .avatar { width: 50px; height: 50px; border-radius: 15px; object-fit: cover; background: #27272a; position: relative; }
+        .online-dot { position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #000; background: #71717a; }
+        .online-dot.active { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
 
-        /* Chat Messages */
-        .msg-scroll { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .bubble { padding: 12px 18px; border-radius: 20px; max-width: 70%; font-size: 0.95rem; line-height: 1.5; }
-        .sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        /* --- CHAT BUBBLES --- */
+        .msg-scroll { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { padding: 12px 16px; border-radius: 18px; max-width: 75%; font-size: 0.92rem; position: relative; }
+        .sent { align-self: flex-end; background: var(--primary); border-bottom-right-radius: 4px; }
         .received { align-self: flex-start; background: #27272a; border-bottom-left-radius: 4px; }
+        .msg-meta { font-size: 0.7rem; display: flex; align-items: center; gap: 4px; justify-content: flex-end; margin-top: 4px; opacity: 0.7; }
+        .read-icon { color: #38bdf8; }
 
-        /* Input Area */
-        .input-bar { padding: 20px; display: flex; gap: 12px; align-items: center; background: rgba(0,0,0,0.2); }
-        .main-input { flex: 1; background: #18181b; border: 1px solid var(--border); padding: 14px; border-radius: 15px; color: white; outline: none; }
+        /* --- INPUT --- */
+        .input-bar { padding: 20px; display: flex; gap: 12px; background: rgba(0,0,0,0.2); align-items: center; }
+        .input-bar input { flex: 1; background: #18181b; border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: white; outline: none; }
 
-        /* Profile Editor */
-        .profile-card { text-align: center; padding: 30px; }
-        .editable-pfp { width: 120px; height: 120px; border-radius: 40px; margin-bottom: 20px; cursor: pointer; border: 2px dashed var(--primary); padding: 5px; }
-        .bio-area { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; font-size: 0.9rem; margin-top: 10px; border: 1px solid var(--border); }
-
-        /* Call Overlay */
+        /* --- CALL OVERLAY --- */
         #callUI { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; }
         #remoteVideo { width: 100%; height: 100%; object-fit: cover; }
-        #localVideo { width: 120px; height: 170px; position: absolute; top: 30px; right: 30px; border-radius: 20px; border: 2px solid var(--primary); object-fit: cover; }
+        #localVideo { width: 120px; height: 160px; position: absolute; top: 30px; right: 30px; border-radius: 15px; border: 2px solid var(--primary); object-fit: cover; }
 
-        .btn-round { width: 50px; height: 50px; border-radius: 15px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
-        .btn-primary { background: var(--primary); color: white; }
+        .btn-action { width: 50px; height: 50px; border-radius: 15px; border: none; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-call { background: var(--primary); }
+
+        /* --- AUTH --- */
+        #authScreen { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="authScreen" style="position:fixed; inset:0; background:var(--bg); z-index:10000; display:flex; align-items:center; justify-content:center; padding:20px;">
-        <div class="panel" style="width:100%; max-width:400px; padding:40px; border-radius:30px; border:1px solid var(--border);">
-            <h1 style="text-align:center; margin-bottom:10px; font-weight:800;">ConnectPro</h1>
-            <p style="text-align:center; color:#71717a; margin-bottom:30px;">Premium Real-time Messaging</p>
-            <input type="text" id="loginUsername" placeholder="ID Username" class="main-input" style="width:100%; margin-bottom:15px;">
-            <button onclick="bootApp()" class="btn-round btn-primary" style="width:100%; border-radius:15px; font-weight:bold;">Sign In</button>
+    <div id="authScreen">
+        <div class="panel" style="padding:40px; border-radius:24px; width:340px; text-align:center;">
+            <h2 style="margin-bottom:20px;">ConnectPro</h2>
+            <input type="text" id="loginID" placeholder="ID Username" style="width:100%; padding:12px; background:#000; border:1px solid var(--border); color:white; border-radius:10px; margin-bottom:15px;">
+            <button onclick="login()" style="width:100%; padding:12px; background:var(--primary); border:none; color:white; font-weight:bold; border-radius:10px; cursor:pointer;">Mulai</button>
         </div>
     </div>
 
     <div class="app-shell hidden" id="app">
-        
-        <aside class="panel sidebar active-panel" id="panel-beranda">
+        <aside class="panel side-panel active-panel" id="panel-beranda">
             <div class="header">
-                <h2>Chats</h2>
-                <button class="btn-round" style="background:transparent; color:white;"><i class="fa-solid fa-plus"></i></button>
+                <h2>Pesan</h2>
+                <button onclick="newChat()" class="btn-action" style="background:rgba(255,255,255,0.05)"><i class="fa-solid fa-plus"></i></button>
             </div>
-            <div style="flex:1; overflow-y:auto;" id="contactList"></div>
+            <div id="contactList" style="flex:1; overflow-y:auto;"></div>
         </aside>
 
         <main class="panel chat-view" id="panel-chat">
             <div class="header">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <div id="chatAvatar" class="pfp-ring" style="width:40px; height:40px;"></div>
-                    <div>
-                        <h4 id="chatTitle">Pilih Teman</h4>
-                        <small id="chatStatusText" style="color:#71717a;">Tap to chat</small>
-                    </div>
+                    <button class="btn-action desktop-hidden" onclick="switchPanel('beranda')" style="background:none; width:auto;"><i class="fa-solid fa-arrow-left"></i></button>
+                    <div id="activeAva" class="avatar" style="width:40px; height:40px;"></div>
+                    <b id="activeName">Pilih Chat</b>
                 </div>
-                <div id="callActions" class="hidden" style="display:flex; gap:10px;">
-                    <button onclick="initCall(false)" class="btn-round" style="background:rgba(255,255,255,0.05); color:white;"><i class="fa-solid fa-phone"></i></button>
-                    <button onclick="initCall(true)" class="btn-round" style="background:rgba(255,255,255,0.05); color:white;"><i class="fa-solid fa-video"></i></button>
+                <div id="callTools" class="hidden" style="display:flex; gap:10px;">
+                    <button onclick="startCall(false)" class="btn-action" style="background:rgba(255,255,255,0.05)"><i class="fa-solid fa-phone"></i></button>
+                    <button onclick="startCall(true)" class="btn-action" style="background:rgba(255,255,255,0.05)"><i class="fa-solid fa-video"></i></button>
                 </div>
             </div>
             <div class="msg-scroll" id="msgBox"></div>
             <div class="input-bar">
-                <input type="text" id="msgInput" placeholder="Write something..." class="main-input">
-                <button onclick="send()" class="btn-round btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
+                <input type="text" id="msgInput" placeholder="Ketik pesan...">
+                <button onclick="send()" class="btn-action btn-call"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </main>
 
-        <aside class="panel profile-view" id="panel-profile">
-            <div class="header"><h2>Settings</h2></div>
-            <div class="profile-card">
-                <img id="profilePfp" src="https://ui-avatars.com/api/?name=User" class="editable-pfp" onclick="updateProfileData('pfp')">
-                <h3 id="profileName" onclick="updateProfileData('nama')">Nama User</h3>
-                <p id="profileID" style="color:#71717a;">@id</p>
-                <div class="bio-area" id="profileBio" onclick="updateProfileData('bio')">Click here to edit bio...</div>
+        <aside class="panel profile-panel" id="panel-profile">
+            <div class="header"><h2>Profil</h2></div>
+            <div style="padding:30px; text-align:center;">
+                <img id="myPfp" src="" class="avatar" style="width:120px; height:120px; border-radius:40px; cursor:pointer; margin-bottom:15px;" onclick="edit('pfp')">
+                <h3 id="myName" onclick="edit('nama')">Nama</h3>
+                <p id="myBio" onclick="edit('bio')" style="opacity:0.6; margin:10px 0; font-size:0.9rem;">Klik untuk edit bio...</p>
                 
-                <div style="margin-top:30px; text-align:left;">
-                    <label style="font-size:0.8rem; color:#71717a;">GANTI TEMA</label>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <div onclick="setTheme('default')" style="width:30px; height:30px; background:#8b5cf6; border-radius:8px; cursor:pointer;"></div>
+                <div style="margin-top:40px; text-align:left;">
+                    <small style="opacity:0.5; display:block; margin-bottom:10px;">TEMA APLIKASI</small>
+                    <div style="display:flex; gap:10px;">
+                        <div onclick="setTheme('')" style="width:30px; height:30px; background:#8b5cf6; border-radius:8px; cursor:pointer;"></div>
                         <div onclick="setTheme('midnight')" style="width:30px; height:30px; background:#3b82f6; border-radius:8px; cursor:pointer;"></div>
-                        <div onclick="setTheme('amethyst')" style="width:30px; height:30px; background:#d946ef; border-radius:8px; cursor:pointer;"></div>
+                        <div onclick="setTheme('forest')" style="width:30px; height:30px; background:#10b981; border-radius:8px; cursor:pointer;"></div>
                     </div>
                 </div>
-                <button onclick="location.reload()" style="margin-top:40px; color:#ef4444; background:none; border:none; cursor:pointer;">Sign Out</button>
             </div>
         </aside>
 
         <nav class="mobile-nav">
-            <div class="nav-btn active" onclick="switchPanel('beranda')" id="nav-beranda"><i class="fa-solid fa-house"></i></div>
-            <div class="nav-btn" onclick="switchPanel('chat')" id="nav-chat"><i class="fa-solid fa-comment"></i></div>
-            <div class="nav-btn" onclick="switchPanel('profile')" id="nav-profile"><i class="fa-solid fa-user-gear"></i></div>
+            <div onclick="switchPanel('beranda')"><i class="fa-solid fa-message"></i></div>
+            <div onclick="switchPanel('chat')"><i class="fa-solid fa-comment-dots"></i></div>
+            <div onclick="switchPanel('profile')"><i class="fa-solid fa-user"></i></div>
         </nav>
     </div>
 
@@ -160,8 +145,8 @@
         <video id="remoteVideo" autoplay playsinline></video>
         <video id="localVideo" autoplay muted playsinline></video>
         <div style="position:absolute; bottom:50px; left:50%; transform:translateX(-50%); display:flex; gap:20px;">
-            <button id="btnAnswer" onclick="answer()" style="background:#22c55e;" class="btn-round"><i class="fa-solid fa-phone"></i></button>
-            <button onclick="hangup()" style="background:#ef4444;" class="btn-round"><i class="fa-solid fa-phone-slash"></i></button>
+            <button id="btnAccept" onclick="accept()" style="background:#22c55e;" class="btn-action"><i class="fa-solid fa-phone"></i></button>
+            <button onclick="hangup()" style="background:#ef4444;" class="btn-action"><i class="fa-solid fa-phone-slash"></i></button>
         </div>
     </div>
 
@@ -180,85 +165,95 @@
     const db = firebase.database();
     let myID = "", partnerID = "", peer, currentCall, stream;
 
-    // --- INITIALIZATION ---
-    function bootApp() {
-        myID = document.getElementById('loginUsername').value.trim().toLowerCase();
+    function login() {
+        myID = document.getElementById('loginID').value.trim().toLowerCase();
         if(!myID) return;
 
         peer = new Peer(myID);
         peer.on('open', () => {
-            // Presence Logic
-            const myStatusRef = db.ref('users/' + myID + '/status');
+            const statusRef = db.ref('users/' + myID + '/status');
             db.ref('.info/connected').on('value', snap => {
-                if(snap.val() === true) {
-                    myStatusRef.set('online');
-                    myStatusRef.onDisconnect().set('offline');
-                }
+                if(snap.val()) { statusRef.set('online'); statusRef.onDisconnect().set('offline'); }
             });
 
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
-            syncProfile();
-            loadContacts();
             
+            syncProfile();
+            loadHistory();
+
             peer.on('call', call => {
                 currentCall = call;
                 document.getElementById('callUI').style.display = 'block';
-                document.getElementById('btnAnswer').classList.remove('hidden');
+                document.getElementById('btnAccept').classList.remove('hidden');
             });
         });
     }
 
-    // --- PROFILE ENGINE ---
     function syncProfile() {
         db.ref('users/' + myID).on('value', snap => {
-            const data = snap.val() || {};
-            document.getElementById('profileName').innerText = data.nama || myID;
-            document.getElementById('profileID').innerText = "@" + myID;
-            document.getElementById('profileBio').innerText = data.bio || "No bio yet.";
-            document.getElementById('profilePfp').src = data.pfp || `https://ui-avatars.com/api/?name=${myID}`;
+            const d = snap.val() || {};
+            document.getElementById('myName').innerText = d.nama || myID;
+            document.getElementById('myBio').innerText = d.bio || "No bio yet.";
+            document.getElementById('myPfp').src = d.pfp || `https://ui-avatars.com/api/?name=${myID}`;
         });
     }
 
-    function updateProfileData(type) {
-        const newVal = prompt("Masukkan " + type + " baru:");
-        if(newVal) {
-            let update = {};
-            update[type] = newVal;
-            db.ref('users/' + myID).update(update);
-        }
+    function edit(key) {
+        const v = prompt("Masukkan " + key + " baru:");
+        if(v) db.ref('users/' + myID).update({ [key]: v });
     }
 
-    // --- CHAT ENGINE ---
-    function loadContacts() {
-        db.ref('users').on('value', snap => {
+    function loadHistory() {
+        db.ref('messages').on('value', snap => {
             const list = document.getElementById('contactList');
             list.innerHTML = "";
-            snap.forEach(u => {
-                if(u.key !== myID) {
-                    const isOnline = u.val().status === 'online';
-                    list.innerHTML += `
-                        <div class="contact-item" onclick="openChat('${u.key}', '${u.val().nama || u.key}', '${u.val().pfp}')">
-                            <div class="pfp-ring">
-                                <img src="${u.val().pfp || 'https://ui-avatars.com/api/?name='+u.key}" style="width:100%; height:100%; border-radius:18px;">
-                                <div class="status-badge ${isOnline ? 'online' : 'offline'}"></div>
-                            </div>
-                            <div>
-                                <b>${u.val().nama || u.key}</b><br>
-                                <small style="color:#71717a;">${isOnline ? 'Active Now' : 'Offline'}</small>
-                            </div>
-                        </div>`;
+            let rooms = [];
+
+            snap.forEach(room => {
+                if(room.key.includes(myID)) {
+                    const other = room.key.split("_").find(i => i !== myID);
+                    const msgs = Object.values(room.val());
+                    const last = msgs[msgs.length - 1];
+                    rooms.push({ id: other, last: last.text, time: last.time, unread: (last.sender !== myID && !last.read) });
                 }
+            });
+
+            rooms.sort((a,b) => b.time - a.time).forEach(r => {
+                db.ref('users/' + r.id).once('value', u => {
+                    const data = u.val() || {};
+                    list.innerHTML += `
+                        <div class="contact-item" onclick="openChat('${r.id}')">
+                            <div class="avatar">
+                                <img src="${data.pfp || 'https://ui-avatars.com/api/?name='+r.id}" style="width:100%; height:100%; border-radius:15px;">
+                                <div class="online-dot ${data.status === 'online' ? 'active' : ''}"></div>
+                            </div>
+                            <div style="flex:1">
+                                <div style="display:flex; justify-content:space-between"><b>${data.nama || r.id}</b> <small style="opacity:0.5">${new Date(r.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</small></div>
+                                <p style="font-size:0.8rem; opacity:0.6; overflow:hidden; white-space:nowrap; width:150px;">${r.last}</p>
+                            </div>
+                            ${r.unread ? '<div style="width:8px; height:8px; background:var(--primary); border-radius:50%"></div>' : ''}
+                        </div>`;
+                });
             });
         });
     }
 
-    function openChat(id, nama, pfp) {
+    function newChat() {
+        const id = prompt("ID User:");
+        if(id) openChat(id.toLowerCase());
+    }
+
+    function openChat(id) {
         partnerID = id;
-        document.getElementById('chatTitle').innerText = nama;
-        document.getElementById('chatAvatar').innerHTML = `<img src="${pfp || 'https://ui-avatars.com/api/?name='+id}" style="width:100%; height:100%; border-radius:18px;">`;
-        document.getElementById('callActions').classList.remove('hidden');
-        if(window.innerWidth <= 900) switchPanel('chat');
+        document.getElementById('callTools').classList.remove('hidden');
+        if(window.innerWidth <= 1000) switchPanel('chat');
+
+        db.ref('users/' + id).once('value', snap => {
+            const d = snap.val() || {};
+            document.getElementById('activeName').innerText = d.nama || id;
+            document.getElementById('activeAva').innerHTML = `<img src="${d.pfp || 'https://ui-avatars.com/api/?name='+id}" style="width:100%; height:100%; border-radius:15px;">`;
+        });
 
         const room = [myID, partnerID].sort().join("_");
         db.ref('messages/' + room).on('value', snap => {
@@ -266,37 +261,44 @@
             box.innerHTML = "";
             snap.forEach(m => {
                 const d = m.val();
-                box.innerHTML += `<div class="bubble ${d.sender === myID ? 'sent' : 'received'}">${d.text}</div>`;
+                if(d.sender !== myID && !d.read) db.ref(`messages/${room}/${m.key}`).update({ read: true });
+                
+                box.innerHTML += `
+                    <div class="bubble ${d.sender === myID ? 'sent' : 'received'}">
+                        ${d.text}
+                        <div class="msg-meta">
+                            ${new Date(d.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+                            ${d.sender === myID ? `<i class="fa-solid fa-check-double ${d.read ? 'read-icon' : ''}"></i>` : ''}
+                        </div>
+                    </div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
     function send() {
-        const text = document.getElementById('msgInput').value;
-        if(!text || !partnerID) return;
+        const t = document.getElementById('msgInput').value;
+        if(!t || !partnerID) return;
         const room = [myID, partnerID].sort().join("_");
-        db.ref('messages/' + room).push({ sender: myID, text });
+        db.ref('messages/' + room).push({ sender: myID, text: t, time: Date.now(), read: false });
         document.getElementById('msgInput').value = "";
     }
 
-    // --- CALL SYSTEM ---
-    async function initCall(isVideo) {
-        stream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
+    async function startCall(video) {
+        stream = await navigator.mediaDevices.getUserMedia({ video, audio: true });
         document.getElementById('localVideo').srcObject = stream;
         document.getElementById('callUI').style.display = 'block';
-        document.getElementById('btnAnswer').classList.add('hidden');
-
+        document.getElementById('btnAccept').classList.add('hidden');
         currentCall = peer.call(partnerID, stream);
         currentCall.on('stream', rs => document.getElementById('remoteVideo').srcObject = rs);
     }
 
-    async function answer() {
+    async function accept() {
         stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         document.getElementById('localVideo').srcObject = stream;
         currentCall.answer(stream);
         currentCall.on('stream', rs => document.getElementById('remoteVideo').srcObject = rs);
-        document.getElementById('btnAnswer').classList.add('hidden');
+        document.getElementById('btnAccept').classList.add('hidden');
     }
 
     function hangup() {
@@ -305,15 +307,12 @@
         document.getElementById('callUI').style.display = 'none';
     }
 
-    // --- UI TOOLS ---
-    function switchPanel(name) {
+    function switchPanel(n) {
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-panel'));
-        document.getElementById('panel-' + name).classList.add('active-panel');
+        document.getElementById('panel-' + n).classList.add('active-panel');
     }
 
-    function setTheme(t) {
-        document.body.className = t === 'default' ? '' : 'theme-' + t;
-    }
+    function setTheme(t) { document.body.className = t ? 'theme-' + t : ''; }
 </script>
 </body>
-                    </html>
+            </html>
