@@ -3,207 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ConnectApp - Secure Chat</title>
+    <title>Connect Pro - Chat & Stories</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --primary: #3b82f6;
-            --text: #f8fafc;
-            --border: #334155;
-        }
+        :root { --bg: #0f172a; --card: #1e293b; --primary: #3b82f6; --text: #f8fafc; --border: #334155; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+        /* --- UI COMPONENT --- */
+        #authUI, #profileUI { width: 100%; max-width: 400px; background: var(--card); padding: 30px; border-radius: 20px; margin: auto; display: none; }
+        .active-ui { display: block !important; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: #0f172a; color: white; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; background: var(--primary); border: none; color: white; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 5px; }
+        
+        /* --- MAIN CHAT LAYOUT --- */
+        #chatUI { display: none; width: 100%; height: 100vh; grid-template-columns: 350px 1fr; }
+        
+        /* SIDEBAR */
+        .sidebar { background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .header-sid { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .pfp-small { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #334155; cursor: pointer; }
+        
+        /* CONTACT LIST */
+        .contact-list { flex: 1; overflow-y: auto; }
+        .contact-item { padding: 15px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-bottom: 1px solid #2d3748; }
+        .contact-item:hover { background: #334155; }
 
-        /* --- AUTH SECTION --- */
-        .auth-container {
-            width: 100%;
-            max-width: 400px;
-            background: var(--card);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
+        /* STORY BAR */
+        .story-bar { display: flex; gap: 10px; padding: 15px; overflow-x: auto; border-bottom: 1px solid var(--border); }
+        .story-circle { min-width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--primary); padding: 2px; cursor: pointer; }
+        .story-circle img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: #0f172a;
-            color: white;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary);
-            border: none;
-            color: white;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .captcha-box {
-            background: #334155;
-            padding: 10px;
-            text-align: center;
-            letter-spacing: 8px;
-            font-weight: 800;
-            margin: 10px 0;
-            border-radius: 8px;
-            user-select: none;
-            color: #fbbf24;
-        }
-
-        .switch-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: #94a3b8;
-            cursor: pointer;
-        }
-
-        /* --- CHAT SECTION --- */
-        .chat-app {
-            display: none;
-            width: 100%;
-            height: 100vh;
-            grid-template-columns: 300px 1fr;
-        }
-
-        .sidebar {
-            background: var(--card);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-
-        .main-chat {
-            display: flex;
-            flex-direction: column;
-            background: var(--bg);
-        }
-
-        .chat-header {
-            padding: 20px;
-            background: var(--card);
-            border-bottom: 1px solid var(--border);
-            font-weight: bold;
-        }
-
-        .messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .bubble {
-            padding: 10px 15px;
-            border-radius: 15px;
-            max-width: 70%;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-
-        .me { align-self: flex-end; background: var(--primary); border-bottom-right-radius: 2px; }
-        .them { align-self: flex-start; background: var(--border); border-bottom-left-radius: 2px; }
-
-        .chat-input {
-            padding: 20px;
-            display: flex;
-            gap: 10px;
-            background: var(--card);
-        }
-
-        .user-found {
-            margin-top: 15px;
-            padding: 10px;
-            background: #334155;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .chat-app { grid-template-columns: 1fr; }
-            .sidebar { display: none; } /* Mobile sederhana */
-        }
+        /* CHAT WINDOW */
+        .chat-window { display: flex; flex-direction: column; background: var(--bg); }
+        .messages-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { padding: 10px 15px; border-radius: 15px; max-width: 60%; font-size: 0.9rem; }
+        .sent { align-self: flex-end; background: var(--primary); }
+        .received { align-self: flex-start; background: var(--border); }
+        
+        .vn-btn { background: #ef4444; width: 50px; height: 50px; border-radius: 50%; border: none; color: white; cursor: pointer; }
+        .recording { animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div class="auth-container" id="authUI">
-        <h2 id="title" style="text-align:center; margin-bottom:20px;">Masuk</h2>
-        
-        <div id="regExtra" style="display:none;">
-            <input type="text" id="regNama" placeholder="Nama Lengkap">
-            <input type="number" id="regWA" placeholder="Nomor HP WhatsApp">
-        </div>
-
-        <input type="text" id="userID" placeholder="ID Username">
+    <div id="authUI" class="active-ui">
+        <h2 align="center">Masuk / Daftar</h2>
+        <input type="text" id="userID" placeholder="Username ID">
         <input type="password" id="userPW" placeholder="Password">
-
-        <div id="captchaArea" style="display:none;">
-            <div class="captcha-box" id="captchaDisp"></div>
-            <input type="text" id="captchaInp" placeholder="Masukkan Captcha">
-        </div>
-
-        <button class="btn" onclick="processAuth()" id="btnMain">MASUK</button>
-        <p class="switch-link" onclick="toggleView()" id="btnSwitch">Belum punya akun? Daftar</p>
+        <button class="btn" onclick="handleAuth()">LOGIN / DAFTAR</button>
     </div>
 
-    <div class="chat-app" id="chatUI">
+    <div id="profileUI">
+        <h2 align="center">Edit Profil</h2>
+        <div style="text-align:center;">
+            <img id="pfpPreview" src="" class="pfp-small" style="width:100px; height:100px;">
+            <input type="file" id="pfpInput" accept="image/*" style="font-size: 0.7rem;">
+        </div>
+        <input type="text" id="editNama" placeholder="Nama Lengkap">
+        <select id="editPrivacy">
+            <option value="public">Publik (Bisa dicari)</option>
+            <option value="private">Privat (Hanya lewat link/chat lama)</option>
+        </select>
+        <button class="btn" onclick="saveProfile()">Simpan Profil</button>
+        <button class="btn" style="background:#475569;" onclick="showUI('chatUI')">Batal</button>
+    </div>
+
+    <div id="chatUI" class="chat-app">
         <div class="sidebar">
-            <h3>Cari User</h3>
-            <input type="text" id="findID" placeholder="Masukkan ID teman...">
-            <button class="btn" onclick="searchUser()">Cari ID</button>
-            <div id="searchRes"></div>
-            
-            <div style="margin-top:auto;">
-                <p style="font-size:0.8rem; color:#64748b;">Logged in as: <b id="myIdentity"></b></p>
-                <button onclick="location.reload()" style="background:none; border:none; color:#ef4444; cursor:pointer;">Keluar</button>
+            <div class="header-sid">
+                <img id="myPfp" src="" class="pfp-small" onclick="showUI('profileUI')">
+                <button onclick="addStory()" style="border:none; background:none; color:var(--primary); cursor:pointer;"><i class="fas fa-plus-circle fa-lg"></i> Story</button>
             </div>
+            
+            <div class="story-bar" id="storyBar"></div>
+
+            <div style="padding:15px;">
+                <input type="text" id="searchID" placeholder="Cari ID User..." style="margin:0;">
+                <button class="btn" onclick="findUser()">Cari</button>
+            </div>
+
+            <div class="contact-list" id="contactList"></div>
         </div>
 
-        <div class="main-chat">
-            <div class="chat-header" id="chatHeader">Silakan cari user untuk memulai</div>
-            <div class="messages" id="msgBox"></div>
-            <div class="chat-input">
-                <input type="text" id="msgContent" placeholder="Ketik pesan..." style="margin:0;">
-                <button class="btn" onclick="sendMessage()" style="width:80px; margin:0;"><i class="fas fa-paper-plane"></i></button>
+        <div class="chat-window">
+            <div class="chat-header" id="chatHeader" style="padding:20px; border-bottom: 1px solid var(--border);">Pilih Obrolan</div>
+            <div class="messages-area" id="msgBox"></div>
+            
+            <div style="padding:20px; display:flex; gap:10px; align-items:center; background:var(--card);">
+                <input type="text" id="msgInput" placeholder="Ketik pesan..." style="margin:0;">
+                <button id="vnBtn" class="vn-btn" onmousedown="startVN()" onmouseup="stopVN()"><i class="fas fa-microphone"></i></button>
+                <button class="btn" onclick="sendMsg()" style="width:80px; margin:0;">Kirim</button>
             </div>
         </div>
     </div>
 
 <script>
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
+    // --- FIREBASE CONFIG (WAJIB ISI!) ---
+    const firebaseConfig = {
+apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
   authDomain: "fotobooth-e36ab.firebaseapp.com",
   databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
   projectId: "fotobooth-e36ab",
@@ -211,136 +113,197 @@ const firebaseConfig = {
   messagingSenderId: "1040239629485",
   appId: "1:1040239629485:web:254a7b50a4243b6c5d6224",
   measurementId: "G-SEKNK1YY41"
-};
+        
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const storage = firebase.storage();
 
-    let modeRegister = false;
-    let captchaReal = "";
     let myID = "";
     let partnerID = "";
+    let mediaRecorder;
+    let audioChunks = [];
 
-    // --- LOGIC AUTH ---
-    function toggleView() {
-        modeRegister = !modeRegister;
-        document.getElementById('title').innerText = modeRegister ? "Daftar Akun" : "Masuk";
-        document.getElementById('btnMain').innerText = modeRegister ? "DAFTAR SEKARANG" : "MASUK";
-        document.getElementById('regExtra').style.display = modeRegister ? "block" : "none";
-        document.getElementById('captchaArea').style.display = modeRegister ? "block" : "none";
-        document.getElementById('btnSwitch').innerText = modeRegister ? "Sudah punya akun? Login" : "Belum punya akun? Daftar";
-        if(modeRegister) createCaptcha();
+    // --- HELPER ---
+    function showUI(id) {
+        document.querySelectorAll('body > div').forEach(el => el.classList.remove('active-ui'));
+        document.getElementById(id).classList.add('active-ui');
+        if(id === 'chatUI') document.getElementById(id).style.display = "grid";
     }
 
-    function createCaptcha() {
-        captchaReal = Math.random().toString(36).substring(2, 7).toUpperCase();
-        document.getElementById('captchaDisp').innerText = captchaReal;
-    }
-
-    function processAuth() {
+    // --- AUTH & PROFILE ---
+    function handleAuth() {
         const id = document.getElementById('userID').value.trim().toLowerCase();
         const pw = document.getElementById('userPW').value;
+        if(!id || !pw) return;
 
-        if(!id || !pw) return alert("ID dan Password wajib diisi!");
-
-        if(modeRegister) {
-            const nama = document.getElementById('regNama').value;
-            const wa = document.getElementById('regWA').value;
-            const capInp = document.getElementById('captchaInp').value;
-
-            if(!nama || !wa) return alert("Lengkapi data profil!");
-            if(capInp.toUpperCase() !== captchaReal) {
-                alert("Captcha Salah!");
-                createCaptcha();
-                return;
-            }
-
-            db.ref('users/' + id).once('value', snap => {
-                if(snap.exists()) return alert("ID sudah dipakai orang lain!");
-                db.ref('users/' + id).set({
-                    nama: nama,
-                    wa: wa,
-                    pw: pw,
-                    status: "online"
-                }).then(() => {
-                    alert("Pendaftaran Berhasil! Silakan Login.");
-                    toggleView();
-                });
-            });
-        } else {
-            db.ref('users/' + id).once('value', snap => {
-                if(snap.exists() && snap.val().pw === pw) {
-                    myID = id;
-                    openChatApp();
-                } else {
-                    alert("ID atau Password salah!");
-                }
-            });
-        }
-    }
-
-    // --- LOGIC CHAT ---
-    function openChatApp() {
-        document.getElementById('authUI').style.display = 'none';
-        document.getElementById('chatUI').style.display = 'grid';
-        document.getElementById('myIdentity').innerText = myID;
-    }
-
-    function searchUser() {
-        const target = document.getElementById('findID').value.trim().toLowerCase();
-        if(target === myID) return alert("Tidak bisa chat diri sendiri!");
-        
-        db.ref('users/' + target).once('value', snap => {
+        db.ref('users/' + id).once('value', snap => {
             if(snap.exists()) {
-                const u = snap.val();
-                document.getElementById('searchRes').innerHTML = `
-                    <div class="user-found" onclick="startChatting('${target}')">
-                        <i class="fas fa-user-circle" style="font-size:2rem;"></i>
-                        <div>
-                            <b>${u.nama}</b><br>
-                            <small>ID: ${target}</small>
-                        </div>
-                    </div>
-                `;
+                if(snap.val().pw === pw) loginSuccess(id, snap.val());
+                else alert("Password salah!");
             } else {
-                alert("User ID tidak ditemukan!");
+                db.ref('users/' + id).set({ pw, nama: id, privacy: 'public', pfp: '' })
+                .then(() => loginSuccess(id, { nama: id, pfp: '' }));
             }
         });
     }
 
-    function startChatting(id) {
-        partnerID = id;
-        document.getElementById('chatHeader').innerText = "Chatting dengan: " + id;
-        listenMessages();
+    function loginSuccess(id, data) {
+        myID = id;
+        document.getElementById('myPfp').src = data.pfp || 'https://via.placeholder.com/150';
+        document.getElementById('editNama').value = data.nama;
+        showUI('chatUI');
+        loadContacts();
+        loadStories();
     }
 
-    function listenMessages() {
-        // Buat room ID unik (alfabetis agar ID tetap sama meskipun dibalik)
-        const roomID = [myID, partnerID].sort().join("_");
-        
-        db.ref('chats/' + roomID).on('value', snap => {
+    async function saveProfile() {
+        const file = document.getElementById('pfpInput').files[0];
+        let url = document.getElementById('myPfp').src;
+
+        if(file) {
+            const ref = storage.ref(`pfps/${myID}`);
+            await ref.put(file);
+            url = await ref.getDownloadURL();
+        }
+
+        db.ref('users/' + myID).update({
+            nama: document.getElementById('editNama').value,
+            privacy: document.getElementById('editPrivacy').value,
+            pfp: url
+        }).then(() => {
+            document.getElementById('myPfp').src = url;
+            alert("Profil diperbarui!");
+            showUI('chatUI');
+        });
+    }
+
+    // --- SEARCH ---
+    function findUser() {
+        const tid = document.getElementById('searchID').value.trim().toLowerCase();
+        db.ref('users/' + tid).once('value', snap => {
+            const u = snap.val();
+            if(snap.exists() && u.privacy === 'public') {
+                startChat(tid, u.nama, u.pfp);
+            } else {
+                alert("User tidak ditemukan atau akun privat!");
+            }
+        });
+    }
+
+    // --- CHAT ---
+    function startChat(id, nama, pfp) {
+        partnerID = id;
+        document.getElementById('chatHeader').innerHTML = `<img src="${pfp || 'https://via.placeholder.com/150'}" class="pfp-small" style="width:30px; height:30px;"> ${nama}`;
+        db.ref(`contacts/${myID}/${id}`).set({ nama, pfp });
+        loadMessages();
+    }
+
+    function loadContacts() {
+        db.ref(`contacts/${myID}`).on('value', snap => {
+            const list = document.getElementById('contactList');
+            list.innerHTML = "";
+            snap.forEach(c => {
+                const u = c.val();
+                list.innerHTML += `
+                    <div class="contact-item" onclick="startChat('${c.key}', '${u.nama}', '${u.pfp}')">
+                        <img src="${u.pfp || 'https://via.placeholder.com/150'}" class="pfp-small">
+                        <div><b>${u.nama}</b><br><small>${c.key}</small></div>
+                    </div>`;
+            });
+        });
+    }
+
+    function loadMessages() {
+        const room = [myID, partnerID].sort().join("_");
+        db.ref('msgs/' + room).on('value', snap => {
             const box = document.getElementById('msgBox');
             box.innerHTML = "";
-            snap.forEach(child => {
-                const data = child.val();
-                const className = data.sender === myID ? 'me' : 'them';
-                box.innerHTML += `<div class="bubble ${className}">${data.text}</div>`;
+            snap.forEach(m => {
+                const d = m.val();
+                const type = d.sender === myID ? 'sent' : 'received';
+                if(d.type === 'vn') {
+                    box.innerHTML += `<div class="bubble ${type}"><audio controls src="${d.url}"></audio></div>`;
+                } else {
+                    box.innerHTML += `<div class="bubble ${type}">${d.text}</div>`;
+                }
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
-    function sendMessage() {
-        const text = document.getElementById('msgContent').value;
-        if(!text || !partnerID) return;
+    function sendMsg() {
+        const text = document.getElementById('msgInput').value;
+        if(!text) return;
+        const room = [myID, partnerID].sort().join("_");
+        db.ref('msgs/' + room).push({ sender: myID, text, type: 'text' });
+        document.getElementById('msgInput').value = "";
+    }
 
-        const roomID = [myID, partnerID].sort().join("_");
-        db.ref('chats/' + roomID).push({
-            sender: myID,
-            text: text,
-            time: Date.now()
+    // --- VOICE NOTE (VN) ---
+    async function startVN() {
+        document.getElementById('vnBtn').classList.add('recording');
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.start();
+        audioChunks = [];
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    }
+
+    async function stopVN() {
+        document.getElementById('vnBtn').classList.remove('recording');
+        mediaRecorder.stop();
+        mediaRecorder.onstop = async () => {
+            const blob = new Blob(audioChunks, { type: 'audio/mp3' });
+            const ref = storage.ref(`vns/${Date.now()}`);
+            await ref.put(blob);
+            const url = await ref.getDownloadURL();
+            const room = [myID, partnerID].sort().join("_");
+            db.ref('msgs/' + room).push({ sender: myID, url, type: 'vn' });
+        };
+    }
+
+    // --- STORY ---
+    async function addStory() {
+        const file = document.createElement('input');
+        file.type = 'file';
+        file.accept = 'image/*';
+        file.click();
+        file.onchange = async () => {
+            const ref = storage.ref(`stories/${myID}_${Date.now()}`);
+            await ref.put(file.files[0]);
+            const url = await ref.getDownloadURL();
+            db.ref('stories/' + myID).set({ url, time: Date.now(), viewers: {} });
+            alert("Story berhasil dipasang!");
+        };
+    }
+
+    function loadStories() {
+        db.ref('stories').on('value', snap => {
+            const bar = document.getElementById('storyBar');
+            bar.innerHTML = "";
+            snap.forEach(s => {
+                // Logika hapus otomatis 24 jam bisa ditambahkan di sini
+                bar.innerHTML += `
+                    <div class="story-circle" onclick="viewStory('${s.key}', '${s.val().url}')">
+                        <img src="${s.val().url}">
+                    </div>`;
+            });
         });
-        document.getElementById('msgContent').value = "";
+    }
+
+    function viewStory(ownerID, url) {
+        if(ownerID !== myID) {
+            db.ref(`stories/${ownerID}/viewers/${myID}`).set(true);
+        }
+        window.open(url, '_blank');
+        // Untuk melihat siapa yang lihat (jika owner):
+        if(ownerID === myID) {
+            db.ref(`stories/${myID}/viewers`).once('value', snap => {
+                alert("Penonton: " + Object.keys(snap.val() || {}).join(", "));
+            });
+        }
     }
 </script>
 </body>
-    </html>
+            </html>
