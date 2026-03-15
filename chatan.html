@@ -1,271 +1,320 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Clone Pro - Real Viewers</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WA Clone Simple</title>
 
-    <style>
-        :root {
-            --bg-main: #0b141a;
-            --bg-surface: #121b22;
-            --wa-green: #25d366;
-            --text-primary: #e9edef;
-            --text-secondary: #8696a0;
-            --pill-active: #113f31;
-            --search-bg: #202c33;
-        }
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        
-        body, html { 
-            background: var(--bg-main); 
-            color: var(--text-primary); 
-            height: 100%; 
-            overflow: hidden; 
-            position: fixed; 
-            width: 100%; 
-        }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            max-width: 500px;
-            margin: 0 auto;
-            position: relative;
-        }
+<style>
 
-        /* --- HEADER --- */
-        header {
-            padding: 15px 20px 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-main);
-            z-index: 100;
-        }
-        header h1 { font-size: 1.4rem; font-weight: 500; }
-        .header-icons { display: flex; gap: 22px; font-size: 1.15rem; color: var(--text-primary); }
+body{
+margin:0;
+font-family:Segoe UI;
+background:#0b141a;
+color:white;
+}
 
-        /* --- CONTENT AREA --- */
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            scrollbar-width: none;
-        }
-        .main-content::-webkit-scrollbar { display: none; }
+.app{
+max-width:500px;
+margin:auto;
+height:100vh;
+display:flex;
+flex-direction:column;
+}
 
-        .screen { display: none; }
-        .screen.active { display: block; }
+header{
+background:#202c33;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
 
-        /* Row Styles */
-        .list-row {
-            display: flex;
-            padding: 14px 16px;
-            gap: 15px;
-            align-items: center;
-            cursor: pointer;
-            border-bottom: 0.1px solid rgba(255,255,255,0.03);
-        }
-        .avatar-box { width: 52px; height: 52px; position: relative; }
-        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #3b4a54; }
-        .status-ring { border: 2px solid var(--wa-green); padding: 2px; }
-        
-        .row-info { flex: 1; min-width: 0; }
-        .row-info b { display: block; margin-bottom: 3px; font-size: 1rem; color: #fff; }
-        .row-info p { font-size: 0.9rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        /* --- FOOTER (RAISED SPACE) --- */
-        .footer-nav {
-            background: var(--bg-surface);
-            height: 95px; /* Tinggi ditambah untuk space */
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-start;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            padding-bottom: 30px; /* Menaikkan icon ke atas agar ada space di bawah */
-        }
-        .nav-tab { text-align: center; color: var(--text-secondary); cursor: pointer; flex: 1; }
-        .nav-tab.active { color: #fff; }
-        .nav-tab i {
-            font-size: 1.2rem;
-            padding: 6px 20px;
-            border-radius: 20px;
-            display: block;
-            margin: 0 auto 5px;
-            width: fit-content;
-        }
-        .nav-tab.active i { background: var(--pill-active); }
-        .nav-tab span { font-size: 0.75rem; font-weight: 600; }
+.chat-list{
+flex:1;
+overflow:auto;
+}
 
-        /* --- VIEWER LIST MODAL --- */
-        #viewerModal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            z-index: 1000; display: none; flex-direction: column; padding: 20px;
-        }
-        #viewerModal.active { display: flex; }
+.row{
+display:flex;
+padding:14px;
+gap:10px;
+border-bottom:1px solid rgba(255,255,255,0.05);
+cursor:pointer;
+}
 
-        .hidden { display: none !important; }
-    </style>
+.row img{
+width:50px;
+height:50px;
+border-radius:50%;
+}
+
+.row b{
+display:block;
+}
+
+.chat-room{
+position:fixed;
+inset:0;
+background:#0b141a;
+display:none;
+flex-direction:column;
+}
+
+.chat-header{
+background:#202c33;
+padding:10px;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.chat-messages{
+flex:1;
+overflow:auto;
+padding:10px;
+}
+
+.msg{
+padding:8px 12px;
+border-radius:10px;
+max-width:70%;
+margin-bottom:6px;
+font-size:14px;
+}
+
+.me{
+background:#005c4b;
+margin-left:auto;
+}
+
+.other{
+background:#202c33;
+}
+
+.input-area{
+display:flex;
+background:#202c33;
+padding:8px;
+}
+
+.input-area input{
+flex:1;
+padding:10px;
+border:none;
+border-radius:20px;
+outline:none;
+}
+
+.input-area button{
+background:#25d366;
+border:none;
+border-radius:50%;
+width:40px;
+height:40px;
+margin-left:8px;
+}
+
+.login{
+position:fixed;
+inset:0;
+background:#0b141a;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.login-box{
+width:300px;
+text-align:center;
+}
+
+.login input{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+.login button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:20px;
+background:#25d366;
+font-weight:bold;
+}
+
+</style>
 </head>
 <body>
 
-    <div id="loginPage" style="position:fixed; inset:0; background:var(--bg-main); z-index:9999; display:flex; align-items:center; justify-content:center; padding:30px;">
-        <div style="width:100%; max-width:320px; text-align:center;">
-            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:4.5rem; margin-bottom:30px;"></i>
-            <input type="text" id="userInput" style="width:100%; padding:15px; background:var(--search-bg); border:none; color:white; border-radius:12px; margin-bottom:15px; outline:none;" placeholder="Masukkan ID Kamu">
-            <button onclick="loginApp()" style="width:100%; padding:15px; background:var(--wa-green); border:none; border-radius:30px; font-weight:bold; cursor:pointer;">MASUK</button>
-        </div>
-    </div>
+<div class="login" id="login">
+<div class="login-box">
+<h2>WA Clone</h2>
+<input id="userInput" placeholder="Masukkan ID">
+<button onclick="login()">MASUK</button>
+</div>
+</div>
 
-    <div id="app" class="app-container hidden">
-        <header>
-            <h1>WhatsApp</h1>
-            <div class="header-icons">
-                <i class="fa-solid fa-camera"></i>
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </div>
-        </header>
+<div class="app" id="app" style="display:none">
 
-        <div class="main-content">
-            <div id="tab-chat" class="screen active">
-                <div id="chat-container"></div>
-            </div>
+<header>
+<b>WhatsApp</b>
+<i class="fa fa-ellipsis-vertical"></i>
+</header>
 
-            <div id="tab-status" class="screen">
-                <div style="padding: 15px 16px 5px; font-weight: 600; font-size: 1.1rem;">Status</div>
-                <div id="my-status-box"></div>
-                <div style="color: var(--text-secondary); font-size: 0.85rem; padding: 15px 16px 5px;">Pembaruan terkini</div>
-                <div id="others-status-box"></div>
-            </div>
+<div class="chat-list" id="chatList"></div>
 
-            <div id="tab-call" class="screen">
-                <div style="padding: 15px 16px 5px; color: var(--text-secondary); font-size: 0.85rem;">Terbaru</div>
-                <div id="call-container"></div>
-            </div>
-        </div>
+</div>
 
-        <footer class="footer-nav">
-            <div class="nav-tab active" onclick="switchTab('chat', this)"><i class="fa-solid fa-message"></i><span>Chat</span></div>
-            <div class="nav-tab" onclick="switchTab('status', this)"><i class="fa-solid fa-circle-notch"></i><span>Status</span></div>
-            <div class="nav-tab" onclick="switchTab('call', this)"><i class="fa-solid fa-phone"></i><span>Panggilan</span></div>
-        </footer>
-    </div>
+<div class="chat-room" id="chatRoom">
 
-    <div id="viewerModal">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3>Dilihat oleh</h3>
-            <i class="fa-solid fa-xmark" onclick="closeViewers()" style="font-size:1.5rem;"></i>
-        </div>
-        <div id="viewerList" style="overflow-y:auto;"></div>
-    </div>
+<div class="chat-header">
+<i class="fa fa-arrow-left" onclick="closeChat()"></i>
+<b id="chatUser"></b>
+</div>
+
+<div class="chat-messages" id="messages"></div>
+
+<div class="input-area">
+<input id="msgInput" placeholder="Ketik pesan">
+<button onclick="sendMsg()">
+<i class="fa fa-paper-plane"></i>
+</button>
+</div>
+
+</div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
-        databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
 
-    let myID = "";
+const firebaseConfig={
+apiKey:"AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
+databaseURL:"https://fotobooth-e36ab-default-rtdb.firebaseio.com"
+};
 
-    function loginApp() {
-        const val = document.getElementById('userInput').value.trim().toLowerCase();
-        if(!val) return;
-        myID = val;
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('app').classList.remove('hidden');
-        syncWhatsApp();
-    }
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
 
-    function switchTab(t, el) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
-        document.getElementById('tab-' + t).classList.add('active');
-        el.classList.add('active');
-    }
+let myID="";
+let currentChat="";
 
-    function syncWhatsApp() {
-        // 1. REAL-TIME VIEWERS LOGIC
-        db.ref('status/' + myID + '/viewers').on('value', snap => {
-            const viewersObj = snap.val() || {};
-            const viewerIDs = Object.keys(viewersObj);
-            
-            document.getElementById('my-status-box').innerHTML = `
-                <div class="list-row" onclick="showRealViewers('${viewerIDs.join(',')}')">
-                    <div class="avatar-box"><img src="https://ui-avatars.com/api/?name=${myID}" class="avatar-img status-ring"></div>
-                    <div class="row-info">
-                        <b>Status saya</b>
-                        <p>${viewerIDs.length} penonton real</p>
-                    </div>
-                </div>`;
-        });
+function login(){
 
-        // 2. STATUS LIST & WATCH ACTION
-        db.ref('status').on('value', snap => {
-            const othersBox = document.getElementById('others-status-box');
-            othersBox.innerHTML = "";
-            snap.forEach(s => {
-                if(s.key !== myID) {
-                    othersBox.innerHTML += `
-                        <div class="list-row" onclick="clickStatus('${s.key}')">
-                            <div class="avatar-box"><img src="https://ui-avatars.com/api/?name=${s.key}" class="avatar-img status-ring"></div>
-                            <div class="row-info"><b>${s.key}</b><p>Baru saja</p></div>
-                        </div>`;
-                }
-            });
-        });
+const id=document.getElementById("userInput").value.trim();
 
-        // 3. CHAT LIST
-        db.ref('messages').on('value', snap => {
-            const chatBox = document.getElementById('chat-container');
-            chatBox.innerHTML = "";
-            snap.forEach(room => {
-                if(room.key.includes(myID)) {
-                    const other = room.key.split("_").find(i => i!==myID);
-                    const last = Object.values(room.val()).pop();
-                    chatBox.innerHTML += `
-                        <div class="list-row">
-                            <img src="https://ui-avatars.com/api/?name=${other}" class="avatar-img" style="width:52px;height:52px;border-radius:50%;">
-                            <div class="row-info"><b>${other}</b><p>${last.text}</p></div>
-                        </div>`;
-                }
-            });
-        });
-    }
+if(!id)return;
 
-    // FUNGSI: Mencatat kita sebagai penonton asli di database orang lain
-    function clickStatus(targetID) {
-        alert("Melihat status " + targetID);
-        db.ref('status/' + targetID + '/viewers/' + myID).set({
-            time: Date.now(),
-            name: myID
-        });
-    }
+myID=id;
 
-    function showRealViewers(ids) {
-        if(!ids) return alert("Belum ada penonton");
-        const list = document.getElementById('viewerList');
-        list.innerHTML = "";
-        ids.split(',').forEach(id => {
-            list.innerHTML += `<div class="list-row"><b>${id}</b></div>`;
-        });
-        document.getElementById('viewerModal').classList.add('active');
-    }
+document.getElementById("login").style.display="none";
+document.getElementById("app").style.display="flex";
 
-    function closeViewers() { document.getElementById('viewerModal').classList.remove('active'); }
+loadChats();
+
+}
+
+function loadChats(){
+
+db.ref("messages").on("value",snap=>{
+
+const box=document.getElementById("chatList");
+box.innerHTML="";
+
+snap.forEach(room=>{
+
+if(room.key.includes(myID)){
+
+const other=room.key.split("_").find(x=>x!==myID);
+
+box.innerHTML+=`
+<div class="row" onclick="openChat('${other}')">
+
+<img src="https://ui-avatars.com/api/?name=${other}">
+
+<div>
+<b>${other}</b>
+<span>Buka chat</span>
+</div>
+
+</div>
+`;
+
+}
+
+});
+
+});
+
+}
+
+function openChat(user){
+
+currentChat=user;
+
+document.getElementById("chatRoom").style.display="flex";
+document.getElementById("chatUser").innerText=user;
+
+db.ref("messages/"+roomID()).on("value",snap=>{
+
+const box=document.getElementById("messages");
+box.innerHTML="";
+
+snap.forEach(m=>{
+
+const d=m.val();
+
+box.innerHTML+=`
+<div class="msg ${d.sender==myID?'me':'other'}">
+${d.text}
+</div>
+`;
+
+});
+
+box.scrollTop=box.scrollHeight;
+
+});
+
+}
+
+function closeChat(){
+
+document.getElementById("chatRoom").style.display="none";
+
+}
+
+function sendMsg(){
+
+const text=document.getElementById("msgInput").value;
+
+if(!text)return;
+
+db.ref("messages/"+roomID()).push({
+
+sender:myID,
+text:text,
+time:Date.now()
+
+});
+
+document.getElementById("msgInput").value="";
+
+}
+
+function roomID(){
+
+return [myID,currentChat].sort().join("_");
+
+}
+
 </script>
+
 </body>
-    </html>
+</html>
