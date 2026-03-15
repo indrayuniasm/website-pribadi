@@ -158,8 +158,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
@@ -171,93 +170,112 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // --- DAFTAR (Wajib isi Nomor HP) ---
-    window.handleRegister = async () => {
-        const nama = document.getElementById('reg-nama').value.trim();
-        const idUser = document.getElementById('reg-id').value.trim().toLowerCase(); // Simpan kecil semua agar aman
-        const noHp = document.getElementById('reg-hp').value.trim();
-        const pass = document.getElementById('reg-pass').value;
-        const gender = document.getElementById('reg-gender').value;
-        const umur = document.getElementById('reg-umur').value;
+    // --- 1. LOAD DATA USER SECARA REAL-TIME ---
+    function initAdminPanel() {
+        onSnapshot(collection(db, "users"), (snapshot) => {
+            const userTable = document.getElementById('userTable');
+            const tUser = document.getElementById('tUser');
+            const tMale = document.getElementById('tMale');
+            const tFemale = document.getElementById('tFemale');
 
-        if (!nama || !idUser || !noHp || !pass) return alert("Semua kolom wajib diisi!");
+            let maleCount = 0;
+            let femaleCount = 0;
+            userTable.innerHTML = "";
 
-        try {
-            // 1. Cek apakah ID sudah dipakai di Firestore
-            const q = query(collection(db, "users"), where("id", "==", idUser));
-            const querySnapshot = await getDocs(q);
-            if (!querySnapshot.empty) return alert("ID sudah digunakan, cari ID lain!");
+            tUser.innerText = snapshot.size;
 
-            // 2. Daftar ke Auth (Email bayangan menggunakan ID)
-            const emailBayangan = idUser + "@chat.com";
-            const cred = await createUserWithEmailAndPassword(auth, emailBayangan, pass);
+            snapshot.forEach((uDoc) => {
+                const u = uDoc.data();
+                
+                // Hitung Gender
+                if(u.gender === "Pria") maleCount++;
+                else femaleCount++;
 
-            // 3. Simpan data lengkap ke Firestore
-            await setDoc(doc(db, "users", cred.user.uid), {
-                nama,
-                id: idUser,
-                hp: noHp,
-                gender,
-                umur,
-                uid: cred.user.uid,
-                bio: "Halo, saya baru di sini!",
-                photo: `https://ui-avatars.com/api/?name=${nama}&bg=6366f1&color=fff`
+                // Render Tabel
+                userTable.innerHTML += `
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <img src="${u.photo || 'https://via.placeholder.com/150'}">
+                                <div>
+                                    <div style="font-weight:600; font-size:0.9rem;">${u.nama}</div>
+                                    <div style="font-size:0.75rem; color:#94a3b8;">@${u.id} | ${u.umur} thn</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-family:monospace; font-size:0.8rem; color:#6366f1;">********</td>
+                        <td style="font-size:0.85rem;">${u.hp}</td>
+                        <td>
+                            <span class="badge ${u.gender === 'Pria' ? 'male' : 'female'}">${u.gender}</span>
+                        </td>
+                        <td>
+                            <div style="display:flex; gap:8px;">
+                                <button onclick="spyChat('${u.uid}', '${u.nama}')" class="btn-spy"><i class="fas fa-eye"></i></button>
+                                <button onclick="deleteUser('${u.uid}')" style="background:#ef4444; border:none; color:white; padding:8px 12px; border-radius:10px; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
             });
 
-            alert("Daftar Berhasil! Sekarang silakan Login menggunakan ID Anda.");
-            window.toggleAuth(false); // Pindah ke form login
-        } catch (e) {
-            alert("Gagal Daftar: " + e.message);
-        }
-    };
+            tMale.innerText = maleCount;
+            tFemale.innerText = femaleCount;
+        });
+    }
 
-    // --- LOGIN (Hanya ID dan Password) ---
-    window.handleLogin = async () => {
-        const inputId = document.getElementById('login-id').value.trim().toLowerCase();
-        const pass = document.getElementById('login-pass').value;
-
-        if (!inputId || !pass) return alert("Isi ID dan Password!");
-
-        // Karena kita mendaftar dengan format id@chat.com, login harus sama
-        const emailBayangan = inputId.includes("@") ? inputId : inputId + "@chat.com";
+    // --- 2. FITUR SPY CHAT (Intip Percakapan) ---
+    window.spyChat = async (uid, name) => {
+        const spyOutput = document.getElementById('spyOutput');
+        spyOutput.innerHTML = `<div style="color:var(--primary)">Mengambil data chat ${name}...</div>`;
 
         try {
-            await signInWithEmailAndPassword(auth, emailBayangan, pass);
-            // Autoredirect akan ditangani oleh onAuthStateChanged
+            // Ambil semua dokumen di koleksi "chats"
+            const chatQuery = await getDocs(collection(db, "chats"));
+            let foundAny = false;
+            spyOutput.innerHTML = `<h3 style="color:white; margin-bottom:15px; font-size:1rem;">History: ${name}</h3>`;
+
+            chatQuery.forEach(async (chatDoc) => {
+                // Jika ID chat mengandung UID user ini
+                if (chatDoc.id.includes(uid)) {
+                    foundAny = true;
+                    const msgSnap = await getDocs(collection(db, "chats", chatDoc.id, "messages"));
+                    
+                    let chatHtml = `<div class="chat-row"><div style="font-size:0.7rem; color:#6366f1; margin-bottom:5px;">ROOM: ${chatDoc.id}</div>`;
+                    msgSnap.forEach(m => {
+                        const msg = m.data();
+                        chatHtml += `<div class="chat-bubble"><b>${msg.sender === uid ? 'User' : 'Lawan'}:</b> ${msg.text}</div>`;
+                    });
+                    chatHtml += `</div>`;
+                    spyOutput.innerHTML += chatHtml;
+                }
+            });
+
+            setTimeout(() => {
+                if(!foundAny) spyOutput.innerHTML = "Belum ada history chat untuk user ini.";
+            }, 1000);
+
         } catch (e) {
-            if (e.code === "auth/user-not-found") alert("ID tidak ditemukan!");
-            else if (e.code === "auth/wrong-password") alert("Password salah!");
-            else alert("Login Gagal: " + e.message);
+            spyOutput.innerHTML = "Error mengambil chat: " + e.message;
         }
     };
 
-    // --- MONITOR STATUS LOGIN ---
-    onAuthStateChanged(auth, async (user) => {
-        const authScreen = document.getElementById('auth-screen');
-        const mainApp = document.getElementById('main-app');
-        if (user) {
-            authScreen.classList.add('hidden');
-            mainApp.classList.remove('hidden');
-            // Ambil data user dari Firestore untuk ditampilkan di profil
-            const snap = await getDoc(doc(db, "users", user.uid));
-            if (snap.exists()) {
-                window.currentUserData = snap.data();
-                console.log("Logged in as:", window.currentUserData.nama);
+    // --- 3. FITUR HAPUS USER ---
+    window.deleteUser = async (uid) => {
+        if (confirm("Yakin ingin menghapus user ini dari database?")) {
+            try {
+                await deleteDoc(doc(db, "users", uid));
+                alert("User berhasil dihapus!");
+            } catch (e) {
+                alert("Gagal hapus: " + e.message);
             }
-        } else {
-            authScreen.classList.remove('hidden');
-            mainApp.classList.add('hidden');
         }
-    });
-
-    window.logout = () => signOut(auth);
-    window.toggleAuth = (isReg) => {
-        document.getElementById('register-container').classList.toggle('hidden', !isReg);
-        document.getElementById('login-container').classList.toggle('hidden', isReg);
     };
+
+    // Jalankan saat halaman load
+    initAdminPanel();
+
             </script>
 </body>
     </html>
