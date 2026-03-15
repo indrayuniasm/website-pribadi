@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Ultra - Pro Edition</title>
+    <title>WhatsApp Ultra Pro - Full Integrated</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
@@ -20,73 +20,66 @@
             --wa-muted: #8696a0;
             --wa-search: #202c33;
             --wa-active-pill: #113f31;
-            --wa-bubble-sent: #005c4b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--wa-bg); color: var(--wa-text); height: 100vh; overflow: hidden; width: 100%; position: fixed; }
+        body { background: var(--wa-bg); color: var(--wa-text); height: 100vh; overflow: hidden; position: fixed; width: 100%; }
 
-        .app-wrapper { display: flex; flex-direction: column; height: 100vh; max-width: 500px; margin: 0 auto; background: var(--wa-bg); position: relative; }
+        .app-wrapper { display: flex; flex-direction: column; height: 100vh; max-width: 500px; margin: 0 auto; position: relative; background: var(--wa-bg); }
 
-        /* --- HEADER & MENU --- */
-        header { padding: 15px 20px 5px; display: flex; justify-content: space-between; align-items: center; position: relative; }
-        header h1 { font-size: 1.6rem; font-weight: 500; }
-        .head-icons { display: flex; gap: 22px; font-size: 1.25rem; }
+        /* --- HEADER & DROPDOWN --- */
+        header { padding: 15px 20px 10px; display: flex; justify-content: space-between; align-items: center; position: relative; }
+        header h1 { font-size: 1.5rem; font-weight: 500; }
+        .head-icons { display: flex; gap: 20px; font-size: 1.2rem; cursor: pointer; }
 
-        .dropdown { position: absolute; top: 55px; right: 15px; background: var(--wa-surface); border-radius: 12px; padding: 10px 0; width: 190px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 2000; display: none; }
+        .dropdown { position: absolute; top: 50px; right: 15px; background: var(--wa-surface); border-radius: 12px; padding: 10px 0; width: 180px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 5000; display: none; }
         .dropdown.active { display: block; }
-        .menu-item { padding: 12px 20px; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
+        .menu-item { padding: 12px 20px; font-size: 0.95rem; cursor: pointer; }
         .menu-item:hover { background: rgba(255,255,255,0.05); }
 
-        /* --- SEARCH & LIST --- */
-        .search-area { padding: 10px 16px; }
-        .search-bar { background: var(--wa-search); display: flex; align-items: center; padding: 12px 18px; border-radius: 30px; gap: 12px; }
-        .search-bar i { color: #34b7f1; }
-        .search-bar input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 0.95rem; }
+        /* --- SCREENS --- */
+        .screen { display: none; flex: 1; overflow-y: auto; padding-bottom: 90px; }
+        .screen.active { display: block; }
 
-        .chat-container { flex: 1; overflow-y: auto; padding-bottom: 90px; }
-        .chat-item { display: flex; padding: 12px 16px; gap: 15px; cursor: pointer; }
-        .pfp { width: 55px; height: 55px; border-radius: 50%; background: #3b4a54; object-fit: cover; flex-shrink: 0; }
-        .chat-details { flex: 1; min-width: 0; border-bottom: 0.1px solid rgba(134,150,160,0.05); padding-bottom: 12px; }
-        .chat-row1 { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .chat-row1 b { font-size: 1.05rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .chat-row2 { display: flex; justify-content: space-between; align-items: center; }
-        .chat-row2 p { font-size: 0.9rem; color: var(--wa-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .unread-badge { background: var(--wa-green); width: 10px; height: 10px; border-radius: 50%; }
+        /* List Styling */
+        .row { display: flex; padding: 14px 16px; gap: 15px; cursor: pointer; align-items: center; }
+        .pfp { width: 50px; height: 50px; border-radius: 50%; background: #3b4a54; object-fit: cover; }
+        .pfp-story { border: 2px solid var(--wa-green); padding: 2px; }
+        .info { flex: 1; min-width: 0; border-bottom: 0.1px solid rgba(134,150,160,0.05); padding-bottom: 12px; }
+        .info b { display: block; font-size: 1.05rem; margin-bottom: 2px; }
+        .info p { font-size: 0.9rem; color: var(--wa-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* --- SETTINGS SCREEN --- */
-        .full-page { position: fixed; inset: 0; background: var(--wa-bg); z-index: 3000; transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+        .full-page { position: fixed; inset: 0; background: var(--wa-bg); z-index: 6000; transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
         .full-page.active { transform: translateY(0); }
-        .page-header { padding: 15px 20px; display: flex; align-items: center; gap: 25px; font-size: 1.2rem; }
-        
-        .profile-box { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 25px; }
-        .pfp-wrap { position: relative; margin-bottom: 25px; }
-        .pfp-lg { width: 160px; height: 160px; border-radius: 50%; border: 3px solid var(--wa-green); padding: 5px; object-fit: cover; }
-        .cam-btn { position: absolute; bottom: 8px; right: 8px; background: var(--wa-green); color: #000; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border: 4px solid var(--wa-bg); cursor: pointer; }
-        
-        .input-group { width: 100%; text-align: center; }
-        .input-group h2 { font-size: 1.6rem; margin-bottom: 5px; }
-        .input-group p { color: var(--wa-muted); margin-bottom: 30px; }
-        .wa-input { width: 100%; background: var(--wa-search); border: none; padding: 16px; color: white; border-radius: 12px; outline: none; margin-bottom: 15px; font-size: 1rem; }
-        .wa-btn { width: 100%; background: var(--wa-green); color: #000; border: none; padding: 16px; border-radius: 30px; font-weight: bold; cursor: pointer; }
+        .profile-header { padding: 15px 20px; display: flex; align-items: center; gap: 20px; font-size: 1.2rem; }
+        .profile-content { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+        .pfp-main-wrap { position: relative; margin-bottom: 25px; }
+        .pfp-main { width: 150px; height: 150px; border-radius: 50%; border: 3px solid var(--wa-green); padding: 5px; object-fit: cover; }
+        .cam-overlay { position: absolute; bottom: 5px; right: 5px; background: var(--wa-green); color: black; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 4px solid var(--wa-bg); cursor: pointer; }
+
+        .wa-input { width: 100%; background: var(--wa-search); border: none; padding: 15px; color: white; border-radius: 12px; margin-bottom: 15px; outline: none; }
+        .wa-btn { width: 100%; background: var(--wa-green); color: black; border: none; padding: 15px; border-radius: 30px; font-weight: bold; cursor: pointer; }
 
         /* --- BOTTOM NAV --- */
-        nav.bottom-nav { background: var(--wa-surface); display: flex; height: 85px; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); }
-        .nav-link { text-align: center; color: var(--wa-muted); font-size: 0.8rem; }
-        .nav-link i { font-size: 1.3rem; margin-bottom: 6px; padding: 6px 20px; border-radius: 20px; display: block; }
-        .nav-link.active i { background: var(--wa-active-pill); color: #fff; }
-        .nav-link.active span { color: #fff; font-weight: bold; }
+        nav { background: var(--wa-surface); display: flex; height: 80px; justify-content: space-around; align-items: center; position: absolute; bottom: 0; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); }
+        .nav-tab { text-align: center; color: var(--wa-muted); cursor: pointer; flex: 1; }
+        .nav-tab.active { color: white; }
+        .nav-tab i { font-size: 1.3rem; padding: 6px 20px; border-radius: 20px; display: block; margin: 0 auto 4px; }
+        .nav-tab.active i { background: var(--wa-active-pill); }
+        .nav-tab span { font-size: 0.8rem; }
 
         .hidden { display: none !important; }
+        .unread-dot { background: var(--wa-green); width: 10px; height: 10px; border-radius: 50%; margin-left: auto; }
     </style>
 </head>
 <body>
 
-    <div id="loginScreen" style="position:fixed; inset:0; background:var(--wa-bg); z-index:9999; display:flex; align-items:center; justify-content:center; padding:30px;">
+    <div id="loginPage" style="position:fixed; inset:0; background:var(--wa-bg); z-index:9999; display:flex; align-items:center; justify-content:center; padding:30px;">
         <div style="width:100%; max-width:350px; text-align:center;">
             <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:5rem; margin-bottom:30px;"></i>
-            <input type="text" id="myID" class="wa-input" placeholder="Masukkan ID (contoh: budi)">
-            <button onclick="loginUser()" class="wa-btn">MASUK</button>
+            <input type="text" id="loginID" class="wa-input" placeholder="Masukkan ID">
+            <button onclick="handleLogin()" class="wa-btn">MASUK</button>
         </div>
     </div>
 
@@ -95,47 +88,53 @@
             <h1>WhatsApp</h1>
             <div class="head-icons">
                 <i class="fa-solid fa-camera"></i>
+                <i class="fa-solid fa-magnifying-glass"></i>
                 <i class="fa-solid fa-ellipsis-vertical" onclick="toggleMenu()"></i>
             </div>
-            <div id="menuBox" class="dropdown">
-                <div class="menu-item" onclick="readAllMessages()">Baca semua</div>
-                <div class="menu-item" onclick="openSettings()">Pengaturan</div>
+            <div id="menu" class="dropdown">
+                <div class="menu-item" onclick="readAll()">Baca semua</div>
+                <div class="menu-item" onclick="openProfile()">Pengaturan</div>
             </div>
         </header>
 
-        <div class="search-area">
-            <div class="search-bar">
-                <i class="fa-solid fa-circle-nodes"></i>
-                <input type="text" id="searchInp" placeholder="Tanya Meta AI atau cari..." oninput="searchChat()">
-            </div>
+        <div id="tab-chat" class="screen active">
+            <div id="list-chat"></div>
         </div>
 
-        <div id="chatList" class="chat-container"></div>
+        <div id="tab-story" class="screen">
+            <div style="padding: 15px 16px 5px; font-weight: 600;">Status</div>
+            <div id="my-status-container"></div>
+            <div style="color: var(--wa-muted); font-size: 0.8rem; padding: 15px 16px 5px;">Pembaruan terkini</div>
+            <div id="others-status-container"></div>
+        </div>
 
-        <nav class="bottom-nav">
-            <div class="nav-link active"><i class="fa-solid fa-message"></i><span>Chat</span></div>
-            <div class="nav-link"><i class="fa-solid fa-circle-notch"></i><span>Status</span></div>
-            <div class="nav-link"><i class="fa-solid fa-phone"></i><span>Panggilan</span></div>
+        <div id="tab-call" class="screen">
+            <div style="padding: 15px 16px 5px; color: var(--wa-muted); font-size: 0.8rem;">Terbaru</div>
+            <div id="list-call"></div>
+        </div>
+
+        <nav>
+            <div class="nav-tab active" onclick="switchTab('chat', this)"><i class="fa-solid fa-message"></i><span>Chat</span></div>
+            <div class="nav-tab" onclick="switchTab('story', this)"><i class="fa-solid fa-circle-notch"></i><span>Status</span></div>
+            <div class="nav-tab" onclick="switchTab('call', this)"><i class="fa-solid fa-phone"></i><span>Panggilan</span></div>
         </nav>
     </div>
 
-    <div id="settingsPage" class="full-page">
-        <div class="page-header">
-            <i class="fa-solid fa-arrow-left" onclick="closeSettings()"></i>
+    <div id="profilePage" class="full-page">
+        <div class="profile-header">
+            <i class="fa-solid fa-arrow-left" onclick="closeProfile()"></i>
             <b>Pengaturan</b>
         </div>
-        <div class="profile-box">
-            <div class="pfp-wrap">
-                <img id="profile-img" class="pfp-lg" src="https://ui-avatars.com/api/?name=User">
-                <label for="img-upload" class="cam-btn"><i class="fa-solid fa-camera"></i></label>
-                <input type="file" id="img-upload" class="hidden" accept="image/*" onchange="previewImage(this)">
+        <div class="profile-content">
+            <div class="pfp-main-wrap">
+                <img id="pfp-display" class="pfp-main" src="https://ui-avatars.com/api/?name=User">
+                <label for="pfp-upload" class="cam-overlay"><i class="fa-solid fa-camera"></i></label>
+                <input type="file" id="pfp-upload" class="hidden" accept="image/*" onchange="previewFile(this)">
             </div>
-            <div class="input-group">
-                <h2 id="display-nama">Nama User</h2>
-                <p id="display-id">@id_user</p>
-                <input type="text" id="edit-nama" class="wa-input" placeholder="Masukkan Nama Baru">
-                <button class="wa-btn" onclick="saveProfile()">Simpan Perubahan</button>
-            </div>
+            <h2 id="name-display">Nama User</h2>
+            <p id="id-display" style="color:var(--wa-muted); margin-bottom:30px;">@username</p>
+            <input type="text" id="input-nama" class="wa-input" placeholder="Ganti Nama">
+            <button class="wa-btn" onclick="saveProfile()">Simpan Perubahan</button>
         </div>
     </div>
 
@@ -147,101 +146,103 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let myID = "", masterChats = [];
+    let myID = "", currentChats = [];
 
-    function loginUser() {
-        const id = document.getElementById('myID').value.trim().toLowerCase();
+    function handleLogin() {
+        const id = document.getElementById('loginID').value.trim().toLowerCase();
         if(!id) return;
         myID = id;
-        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('loginPage').classList.add('hidden');
         document.getElementById('app').classList.remove('hidden');
-        startSync();
+        syncAll();
     }
 
-    function toggleMenu() { document.getElementById('menuBox').classList.toggle('active'); }
+    function toggleMenu() { document.getElementById('menu').classList.toggle('active'); }
 
-    function startSync() {
+    function switchTab(tab, el) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+        el.classList.add('active');
+    }
+
+    function syncAll() {
         // Sync Profile Data
-        db.ref('users/' + myID).on('value', snap => {
-            const u = snap.val() || { nama: myID, pfp: '' };
-            document.getElementById('display-nama').innerText = u.nama;
-            document.getElementById('display-id').innerText = '@' + myID;
-            document.getElementById('edit-nama').value = u.nama;
-            if(u.pfp) document.getElementById('profile-img').src = u.pfp;
+        db.ref('users/' + myID).on('value', s => {
+            const d = s.val() || { nama: myID, pfp: '' };
+            document.getElementById('name-display').innerText = d.nama;
+            document.getElementById('id-display').innerText = '@' + myID;
+            document.getElementById('input-nama').value = d.nama;
+            if(d.pfp) document.getElementById('pfp-display').src = d.pfp;
         });
 
-        // Sync Chat List
+        // Sync Chat History
         db.ref('messages').on('value', async snap => {
-            masterChats = [];
-            const tasks = [];
+            currentChats = [];
+            const list = document.getElementById('list-chat');
+            list.innerHTML = "";
+            
+            const promises = [];
             snap.forEach(room => {
                 if(room.key.includes(myID)) {
-                    const otherID = room.key.split("_").find(i => i !== myID);
+                    const other = room.key.split("_").find(i => i!==myID);
                     const last = Object.values(room.val()).pop();
-                    tasks.push(db.ref('users/' + otherID).once('value').then(u => {
-                        const info = u.val() || { nama: otherID };
-                        masterChats.push({ id: otherID, nama: info.nama, msg: last.text, time: last.time, unread: true });
+                    promises.push(db.ref('users/'+other).once('value').then(u => {
+                        const info = u.val() || { nama: other };
+                        currentChats.push({ ...info, id: other, msg: last.text, time: last.time, unread: true });
                     }));
                 }
             });
-            await Promise.all(tasks);
-            renderUI(masterChats);
+            await Promise.all(promises);
+            currentChats.sort((a,b) => b.time - a.time).forEach(c => {
+                list.innerHTML += `
+                    <div class="row">
+                        <img src="${c.pfp || 'https://ui-avatars.com/api/?name='+c.nama}" class="pfp">
+                        <div class="info"><b>${c.nama}</b><p>${c.msg}</p></div>
+                        ${c.unread ? '<div class="unread-dot"></div>' : ''}
+                    </div>`;
+            });
         });
+
+        // Load Story (Simulasi)
+        document.getElementById('my-status-container').innerHTML = `
+            <div class="row">
+                <img src="${document.getElementById('pfp-display').src}" class="pfp pfp-story">
+                <div class="info"><b>Status saya</b><p>Ketuk untuk melihat pembaruan</p></div>
+            </div>`;
+
+        // Load Call (Simulasi)
+        document.getElementById('list-call').innerHTML = `
+            <div class="row">
+                <img src="https://ui-avatars.com/api/?name=Budi" class="pfp">
+                <div class="info"><b>Budi</b><p><i class="fa-solid fa-arrow-up-right" style="color:var(--wa-green)"></i> Kemarin 19.20</p></div>
+                <i class="fa-solid fa-phone" style="color:var(--wa-green)"></i>
+            </div>`;
     }
 
-    function renderUI(data) {
-        const list = document.getElementById('chatList');
-        list.innerHTML = "";
-        data.sort((a,b) => b.time - a.time).forEach(c => {
-            list.innerHTML += `
-                <div class="chat-item">
-                    <img src="https://ui-avatars.com/api/?name=${c.nama}&background=random" class="pfp">
-                    <div class="chat-details">
-                        <div class="chat-row1"><b>${c.nama}</b></div>
-                        <div class="chat-row2">
-                            <p>${c.msg}</p>
-                            ${c.unread ? '<div class="unread-badge"></div>' : ''}
-                        </div>
-                    </div>
-                </div>`;
-        });
-    }
-
-    function searchChat() {
-        const q = document.getElementById('searchInp').value.toLowerCase();
-        const filtered = masterChats.filter(c => c.nama.toLowerCase().includes(q) || c.id.toLowerCase().includes(q));
-        renderUI(filtered);
-    }
-
-    // --- MENU ACTIONS ---
-    function readAllMessages() {
-        masterChats.forEach(c => c.unread = false);
-        renderUI(masterChats);
+    function readAll() {
+        document.querySelectorAll('.unread-dot').forEach(d => d.style.display = 'none');
         toggleMenu();
     }
 
-    function openSettings() {
-        document.getElementById('settingsPage').classList.add('active');
-        toggleMenu();
-    }
+    function openProfile() { document.getElementById('profilePage').classList.add('active'); toggleMenu(); }
+    function closeProfile() { document.getElementById('profilePage').classList.remove('active'); }
 
-    function closeSettings() { document.getElementById('settingsPage').classList.remove('active'); }
-
-    function previewImage(input) {
-        const file = input.files[0];
+    function previewFile(inp) {
+        const file = inp.files[0];
         if(file) {
             const reader = new FileReader();
-            reader.onload = e => document.getElementById('profile-img').src = e.target.result;
+            reader.onload = e => document.getElementById('pfp-display').src = e.target.result;
             reader.readAsDataURL(file);
         }
     }
 
     function saveProfile() {
-        const nameVal = document.getElementById('edit-nama').value;
-        const imgVal = document.getElementById('profile-img').src;
-        db.ref('users/' + myID).update({ nama: nameVal, pfp: imgVal }).then(() => {
-            alert("Profil berhasil diperbarui!");
-            closeSettings();
+        const n = document.getElementById('input-nama').value;
+        const p = document.getElementById('pfp-display').src;
+        db.ref('users/'+myID).update({ nama: n, pfp: p }).then(() => {
+            alert("Profil Disimpan!");
+            closeProfile();
         });
     }
 </script>
