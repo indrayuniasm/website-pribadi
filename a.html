@@ -2,63 +2,234 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - Database & CS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management System - Premium Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
     <style>
-        body { font-family: sans-serif; display: flex; margin: 0; background: #f4f4f4; }
-        .sidebar { width: 250px; background: #2c3e50; color: white; height: 100vh; padding: 10px; }
-        .content { flex: 1; padding: 20px; overflow-y: auto; }
-        .card { background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .chat-item { padding: 10px; border-bottom: 1px solid #444; cursor: pointer; }
-        #chatArea { height: 200px; overflow-y: auto; background: #eee; padding: 10px; margin-bottom: 10px; }
+        :root {
+            --primary: #6366f1;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: #334155;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Sidebar Modern */
+        .sidebar {
+            width: 280px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .chat-list-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .chat-user-card {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid transparent;
+        }
+
+        .chat-user-card:hover { background: #334155; }
+        .chat-user-card.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--primary);
+        }
+
+        .avatar-circle {
+            width: 40px; height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: radial-gradient(circle at top right, #1e1b4b, var(--dark-bg));
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        /* Chat Window */
+        .chat-window {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chatMessages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .msg { max-width: 80%; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; }
+        .msg.admin { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
+        .msg.user { align-self: flex-start; background: #334155; color: white; border-bottom-left-radius: 2px; }
+
+        .chat-input-area {
+            display: flex; gap: 10px; padding: 15px; border-top: 1px solid var(--border);
+        }
+
+        .chat-input-area input {
+            flex: 1; background: #0f172a; border: 1px solid var(--border);
+            color: white; padding: 12px; border-radius: 8px; outline: none;
+        }
+
+        /* Table Design */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: left; padding: 15px; color: var(--text-dim); font-weight: 500; border-bottom: 1px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        
+        .status-badge {
+            padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+        }
+        .bg-success { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .bg-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+        .btn-action {
+            padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;
+        }
+        .btn-approve { background: var(--success); color: white; }
+        .btn-reject { background: var(--danger); color: white; }
+        .btn-action:hover { opacity: 0.8; transform: translateY(-1px); }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <h3>CS - USER CHAT</h3>
-    <div id="chatUserList"></div>
-</div>
-
-<div class="content">
-    <div class="card" id="chatPanel" style="display:none;">
-        <h4 id="chatTitle">Chat</h4>
-        <div id="chatArea"></div>
-        <input type="text" id="replyInput" style="width:70%;">
-        <button onclick="sendReply()">Balas</button>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-shield-halved"></i> MASTER ADMIN
+        </div>
+        <div class="chat-list-container" id="chatUserList">
+            <p style="text-align: center; color: var(--text-dim);">Memuat Chat...</p>
+        </div>
     </div>
 
-    <div class="card">
-        <h3>DATABASE USER (DATA LENGKAP)</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Password</th>
-                    <th>Nama Lengkap</th>
-                    <th>No. WA</th>
-                    <th>Bank/Rekening</th>
-                    <th>Saldo</th>
-                </tr>
-            </thead>
-            <tbody id="userTable"></tbody>
-        </table>
-    </div>
+    <div class="main-content">
+        
+        <div class="dashboard-grid">
+            <div class="glass-card chat-window" id="chatContainer" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 id="activeChatName" style="margin:0;">Pilih User</h3>
+                    <span class="status-badge bg-success">Online</span>
+                </div>
+                <div id="chatMessages"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="adminReply" placeholder="Tulis balasan...">
+                    <button class="btn-action btn-approve" onclick="sendReply()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
 
-    <div class="card">
-        <h3>TRANSAKSI PENDING</h3>
-        <table id="txTable">
-            <thead><tr><th>User</th><th>Tipe</th><th>Jumlah</th><th>Aksi</th></tr></thead>
-            <tbody></tbody>
-        </table>
+            <div class="glass-card">
+                <h3><i class="fas fa-university text-warning"></i> Bank Deposit</h3>
+                <input type="text" id="newBank" placeholder="Nama Bank" style="width: 40%; background: #0f172a; color:white; border:1px solid #334155; padding: 10px; border-radius: 5px;">
+                <input type="text" id="newRek" placeholder="Nomor Rekening" style="width: 40%; background: #0f172a; color:white; border:1px solid #334155; padding: 10px; border-radius: 5px;">
+                <button onclick="addBank()" class="btn-action btn-approve">Add</button>
+                <div id="bankListDisplay" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h3><i class="fas fa-users"></i> Database Member</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Password</th>
+                            <th>WhatsApp</th>
+                            <th>Bank / Rekening</th>
+                            <th>Saldo (IDR)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="glass-card" style="margin-top: 30px;">
+            <h3><i class="fas fa-exchange-alt"></i> Antrean Transaksi</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Tipe</th>
+                        <th>Jumlah</th>
+                        <th>Bukti / Rek User</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="txTable"></tbody>
+            </table>
+        </div>
+
     </div>
-</div>
 
 <script>
-    const firebaseConfig = { /* SAMA DENGAN USER */ };
+    const firebaseConfig = { /* PASTE CONFIG ANDA DI SINI */ };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let currentChatID = null;
@@ -69,48 +240,107 @@
         tbody.innerHTML = "";
         snap.forEach(c => {
             const u = c.val();
-            tbody.innerHTML += `<tr>
-                <td><b>${c.key}</b></td>
-                <td>${u.pw}</td>
-                <td>${u.nama}</td>
-                <td>${u.wa}</td>
-                <td>${u.bank} / ${u.rek}</td>
-                <td>Rp ${u.balance.toLocaleString()}</td>
-            </tr>`;
+            tbody.innerHTML += `
+                <tr>
+                    <td><b style="color:var(--primary)">${c.key}</b></td>
+                    <td><code style="background:#111; padding:2px 5px;">${u.pw}</code></td>
+                    <td><a href="https://wa.me/${u.wa}" target="_blank" style="color:var(--success); text-decoration:none;"><i class="fab fa-whatsapp"></i> ${u.wa}</a></td>
+                    <td>${u.bank} <br> <small style="color:var(--text-dim)">${u.rek}</small></td>
+                    <td><b>${(u.balance || 0).toLocaleString()}</b></td>
+                </tr>`;
         });
     });
 
-    // Load Chat Sidebar
+    // Load Sidebar Chat
     db.ref('chats').on('value', snap => {
         const list = document.getElementById('chatUserList');
         list.innerHTML = "";
         snap.forEach(c => {
-            list.innerHTML += `<div class="chat-item" onclick="openChat('${c.key}')">${c.key}</div>`;
+            const isActive = c.key === currentChatID ? 'active' : '';
+            list.innerHTML += `
+                <div class="chat-user-card ${isActive}" onclick="openChat('${c.key}')">
+                    <div class="avatar-circle">${c.key.charAt(0).toUpperCase()}</div>
+                    <div style="flex:1">
+                        <div style="font-weight:600; font-size:0.9rem;">${c.key}</div>
+                        <div style="font-size:0.75rem; color:var(--text-dim)">Klik untuk membalas</div>
+                    </div>
+                </div>`;
         });
     });
 
     function openChat(id) {
         currentChatID = id;
-        document.getElementById('chatPanel').style.display = 'block';
-        document.getElementById('chatTitle').innerText = "Chat dengan: " + id;
+        document.getElementById('chatContainer').style.display = 'flex';
+        document.getElementById('activeChatName').innerText = id;
+        
         db.ref('chats/' + id).on('value', snap => {
-            const area = document.getElementById('chatArea');
+            const area = document.getElementById('chatMessages');
             area.innerHTML = "";
             snap.forEach(m => {
                 const data = m.val();
-                area.innerHTML += `<div><b>${data.sender}:</b> ${data.text}</div>`;
+                const type = data.sender === 'admin' ? 'admin' : 'user';
+                area.innerHTML += `<div class="msg ${type}">${data.text}</div>`;
             });
             area.scrollTop = area.scrollHeight;
         });
     }
 
     function sendReply() {
-        const txt = document.getElementById('replyInput').value;
+        const txt = document.getElementById('adminReply').value;
         if(txt && currentChatID) {
             db.ref('chats/' + currentChatID).push({ sender: 'admin', text: txt });
-            document.getElementById('replyInput').value = "";
+            document.getElementById('adminReply').value = "";
         }
     }
+
+    // Transaksi Antrean
+    db.ref('transactions').on('value', snap => {
+        const tbody = document.getElementById('txTable');
+        tbody.innerHTML = "";
+        snap.forEach(c => {
+            const tx = c.val();
+            if(tx.status === 'PENDING') {
+                const info = tx.type === 'DEPO' 
+                    ? `<a href="${tx.proof}" target="_blank" class="status-badge bg-success">Cek Bukti</a>`
+                    : `<small>${tx.bankUser}<br>${tx.rekUser}</small>`;
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td><b>${tx.user}</b></td>
+                        <td><span class="status-badge ${tx.type==='DEPO'?'bg-success':'bg-danger'}">${tx.type}</span></td>
+                        <td><b>${tx.amount.toLocaleString()}</b></td>
+                        <td>${info}</td>
+                        <td>
+                            <button class="btn-action btn-approve" onclick="handleTx('${c.key}', 'APP', '${tx.type}', ${tx.amount}, '${tx.user}')"><i class="fas fa-check"></i></button>
+                            <button class="btn-action btn-reject" onclick="handleTx('${c.key}', 'REJ', '${tx.type}', ${tx.amount}, '${tx.user}')"><i class="fas fa-times"></i></button>
+                        </td>
+                    </tr>`;
+            }
+        });
+    });
+
+    function handleTx(key, act, type, amt, user) {
+        if(act === 'APP' && type === 'DEPO') db.ref(`users/${user}/balance`).transaction(c => (c||0) + amt);
+        if(act === 'REJ' && type === 'WD') db.ref(`users/${user}/balance`).transaction(c => (c||0) + amt);
+        db.ref(`transactions/${key}`).remove();
+    }
+
+    function addBank() {
+        const name = document.getElementById('newBank').value;
+        const rek = document.getElementById('newRek').value;
+        if(name && rek) db.ref('adminBanks').push({ name, rek });
+    }
+
+    db.ref('adminBanks').on('value', snap => {
+        const display = document.getElementById('bankListDisplay');
+        display.innerHTML = "";
+        snap.forEach(c => {
+            display.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px; padding:5px; border-bottom:1px solid #334155">
+                <span>${c.val().name}: <b>${c.val().rek}</b></span>
+                <i class="fas fa-trash" style="color:var(--danger); cursor:pointer;" onclick="db.ref('adminBanks/${c.key}').remove()"></i>
+            </div>`;
+        });
+    });
 </script>
 </body>
-</html>
+    </html>
