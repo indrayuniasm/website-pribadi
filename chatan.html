@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ConnectPro Dashboard</title>
+    <title>ConnectPro - Modern Chat</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
@@ -27,19 +28,18 @@
         
         body { background: var(--bg-deep); color: var(--text-high); height: 100vh; overflow: hidden; display: flex; justify-content: center; }
 
-        /* Backgrounds */
+        /* Latar Belakang & Efek Glassmorphism */
         #mainBgLayer { position: fixed; inset: 0; z-index: -2; background-size: cover; background-position: center; transition: 0.8s; }
         .bg-overlay { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent), rgba(3, 7, 18, 0.8); }
 
         .app-wrapper { width: 100%; max-width: 1440px; height: 100vh; display: grid; grid-template-columns: 300px 1fr 300px; gap: 20px; padding: 20px; }
-
         .glass-panel { background: var(--glass-card); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 28px; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
-        /* General Inputs */
+        /* Input & Form Umum */
         input, select { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 14px 16px; border-radius: 16px; color: white; outline: none; width: 100%; margin-bottom: 15px; font-size: 0.95rem; }
         input:focus, select:focus { border-color: var(--primary); }
 
-        /* Beranda / Left Panel */
+        /* Kolom Kiri: Beranda / List Kontak */
         .panel-left { padding: 24px; }
         .logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
         .logo i { color: var(--primary); }
@@ -48,44 +48,51 @@
         .contact-item.active { background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.3); }
         .pfp-img { width: 50px; height: 50px; border-radius: 16px; object-fit: cover; background: #1f2937; }
 
-        /* Chat Area */
+        /* Kolom Tengah: Ruang Chat */
         .chat-header { padding: 20px 24px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 15px; }
         .back-btn { display: none; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
         .msg-area { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+        
+        /* Bubble Chat */
         .bubble { padding: 14px 18px; border-radius: 22px; max-width: 70%; font-size: 0.95rem; line-height: 1.5; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .sent { align-self: flex-end; background: var(--primary); border-bottom-right-radius: 4px; box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3); }
         .received { align-self: flex-start; background: #27272a; border-bottom-left-radius: 4px; }
         
+        /* Bar Input Pesan */
         .input-bar { padding: 20px 24px; display: flex; gap: 12px; border-top: 1px solid var(--glass-border); }
-        .action-circle { width: 48px; height: 48px; border-radius: 16px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; flex-shrink: 0; }
+        .action-circle { width: 48px; height: 48px; border-radius: 16px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; flex-shrink: 0; transition: 0.2s; }
         .btn-vn { background: #3f3f46; color: white; }
         .btn-send { background: var(--primary); color: white; }
         .recording { background: #ef4444 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
-        /* Right Panel & Profile */
+        /* Kolom Kanan: Profil & Settings (Desktop) */
         .panel-right { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
         .profile-card { text-align: center; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 24px; border: 1px solid var(--glass-border); }
         .badge { background: rgba(139, 92, 246, 0.2); color: var(--primary); padding: 4px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; margin-top: 10px; display: inline-block; }
 
-        /* Modal Edit Profile */
+        /* Modal Edit Profil */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { width: 90%; max-width: 400px; padding: 30px; }
         
-        /* Mobile View Rules */
+        /* Logika Responsif Mobile */
         @media (max-width: 900px) {
             .app-wrapper { grid-template-columns: 1fr; padding: 0; }
             .glass-panel { border-radius: 0; border: none; }
-            .panel-right { display: none; } /* Sembunyikan panel kanan di mobile */
-            .chat-area { display: none; } /* Sembunyikan chat saat pertama login */
-            .back-btn { display: block; } /* Tombol kembali di header chat */
+            .panel-right { display: none; } 
+            .chat-area { display: none; } 
+            .back-btn { display: block; } 
+            
+            /* Bottom Navigation (Khusus Mobile) */
             .mobile-bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: var(--glass-card); backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; z-index: 100; border-top: 1px solid var(--glass-border); }
-            .nav-item { color: var(--text-low); font-size: 1.3rem; cursor: pointer; padding: 10px; }
-            .nav-item.active { color: var(--primary); }
-            .panel-left { height: calc(100vh - 65px); } /* Sisakan ruang untuk bottom nav */
+            .nav-item { color: var(--text-low); font-size: 1.3rem; cursor: pointer; padding: 10px; transition: 0.3s; }
+            .nav-item.active { color: var(--primary); transform: translateY(-3px); }
+            .panel-left { height: calc(100vh - 65px); } 
         }
         @media (min-width: 901px) { .mobile-bottom-nav { display: none; } }
 
+        /* UI Otentikasi */
         .auth-overlay { position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .hidden { display: none !important; }
         audio { height: 35px; border-radius: 10px; width: 200px; }
@@ -104,7 +111,7 @@
                 <input type="text" id="lID" placeholder="ID Username (huruf kecil)">
                 <input type="password" id="lPW" placeholder="Password">
                 <button class="btn-send action-circle" style="width: 100%; border-radius: 16px; margin-top: 10px;" onclick="handleAuth('login')">Masuk Beranda</button>
-                <p align="center" style="margin-top:20px; color:var(--text-low); font-size:0.9rem;">Belum punya akun? <span onclick="toggleAuth()" style="color:var(--primary); cursor:pointer;">Daftar</span></p>
+                <p align="center" style="margin-top:20px; color:var(--text-low); font-size:0.9rem;">Belum punya akun? <span onclick="toggleAuth()" style="color:var(--primary); cursor:pointer; font-weight:600;">Daftar</span></p>
             </div>
 
             <div id="regForm" class="hidden">
@@ -112,7 +119,7 @@
                 <input type="text" id="rID" placeholder="Buat ID Username">
                 <input type="password" id="rPW" placeholder="Password">
                 <button class="btn-send action-circle" style="width: 100%; border-radius: 16px; margin-top: 10px;" onclick="handleAuth('reg')">Daftar Akun</button>
-                <p align="center" style="margin-top:20px; color:var(--text-low); font-size:0.9rem;">Punya akun? <span onclick="toggleAuth()" style="color:var(--primary); cursor:pointer;">Login</span></p>
+                <p align="center" style="margin-top:20px; color:var(--text-low); font-size:0.9rem;">Punya akun? <span onclick="toggleAuth()" style="color:var(--primary); cursor:pointer; font-weight:600;">Login</span></p>
             </div>
         </div>
     </div>
@@ -126,7 +133,8 @@
                 <input type="text" id="searchInput" placeholder="Cari teman..." style="padding-left: 45px; margin: 0; border-radius: 20px;" onkeyup="filterContacts()">
             </div>
             <div style="font-size: 0.8rem; color: var(--text-low); margin-bottom: 10px; font-weight: 600;">SEMUA PENGGUNA PUBLIK</div>
-            <div style="flex: 1; overflow-y: auto;" id="contactList"></div>
+            <div style="flex: 1; overflow-y: auto;" id="contactList">
+                </div>
         </div>
 
         <div class="glass-panel chat-area" id="chatPanel">
@@ -197,8 +205,8 @@
             
             <label style="font-size:0.8rem; color:var(--text-low);">Status Akun:</label>
             <select id="editPrivacyInput">
-                <option value="public">Publik (Bisa dicari orang)</option>
-                <option value="private">Private (Hanya yang pernah chat)</option>
+                <option value="public">Publik (Muncul di Beranda orang)</option>
+                <option value="private">Private (Sembunyi dari Beranda)</option>
             </select>
             
             <div style="display:flex; gap:10px; margin-top: 10px;">
@@ -209,7 +217,8 @@
     </div>
 
 <script>
-    // --- FIREBASE CONFIG ---
+    // --- KONFIGURASI FIREBASE ---
+    // (Ganti dengan config milikmu jika ada yang baru)
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         authDomain: "fotobooth-e36ab.firebaseapp.com",
@@ -226,10 +235,10 @@
     let myID = "", partnerID = "", myData = {};
     let mediaRec, chunks = [];
 
-    // --- INIT TEMA BACKGROUND ---
+    // Latar belakang default yang estetik
     document.getElementById('mainBgLayer').style.backgroundImage = "url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1920')";
 
-    // --- AUTHENTICATION ---
+    // --- SISTEM LOGIN & DAFTAR ---
     function toggleAuth() {
         document.getElementById('loginForm').classList.toggle('hidden');
         document.getElementById('regForm').classList.toggle('hidden');
@@ -240,10 +249,10 @@
             const id = document.getElementById('rID').value.trim().toLowerCase();
             const pw = document.getElementById('rPW').value;
             const nama = document.getElementById('rNama').value;
-            if(!id || !pw || !nama) return alert("Lengkapi semua data!");
+            if(!id || !pw || !nama) return alert("Harap lengkapi semua kolom pendaftaran!");
             
             db.ref('users/' + id).set({ nama, pw, pfp: '', privacy: 'public' })
-              .then(() => { alert("Pendaftaran Sukses! Silahkan Login."); toggleAuth(); });
+              .then(() => { alert("Akun berhasil dibuat! Silahkan Login."); toggleAuth(); });
         } else {
             const id = document.getElementById('lID').value.trim().toLowerCase();
             const pw = document.getElementById('lPW').value;
@@ -257,21 +266,19 @@
                     updateProfileUI();
                     loadContacts();
                     
-                    // Di mobile, pastikan tab Beranda yang aktif pertama kali
                     if(window.innerWidth <= 900) switchMobileTab('beranda');
-                } else alert("Username atau Password salah!");
+                } else alert("Username atau Password tidak cocok!");
             });
         }
     }
 
-    // --- BERANDA & KONTAK ---
+    // --- SISTEM BERANDA & KONTAK ---
     function loadContacts() {
         db.ref('users').on('value', snap => {
             const list = document.getElementById('contactList');
             list.innerHTML = "";
             snap.forEach(u => {
                 const data = u.val();
-                // Jangan tampilkan diri sendiri. Jangan tampilkan jika Private (kecuali ada logika tambahan nanti)
                 if(u.key !== myID && data.privacy !== 'private') {
                     list.innerHTML += `
                         <div class="contact-item" onclick="openChat('${u.key}', '${data.nama}', '${data.pfp}')">
@@ -295,17 +302,16 @@
         });
     }
 
-    // --- CHAT SYSTEM ---
+    // --- SISTEM CHAT TERINTEGRASI ---
     function openChat(id, nama, pfp) {
         partnerID = id;
         document.getElementById('activeUserHeader').innerHTML = `
             <img src="${pfp || 'https://via.placeholder.com/150'}" style="width:40px; height:40px; border-radius:12px; object-fit:cover;">
             <div>
                 <div style="font-weight:600; font-size:1.1rem; color:white;">${nama}</div>
-                <div style="font-size:0.75rem; color:#22c55e;">Sedang di ruang obrolan</div>
+                <div style="font-size:0.75rem; color:#22c55e;">Online</div>
             </div>`;
         
-        // Pindah view di Mobile
         if(window.innerWidth <= 900) switchMobileTab('chat');
 
         const room = [myID, partnerID].sort().join("_");
@@ -333,13 +339,9 @@
         document.getElementById('msgInput').value = "";
     }
 
-    // --- VOICE NOTE ---
+    // --- SISTEM VOICE NOTE (VN) ---
     async function startVN() {
-        if(!partnerID) return alert("Pilih teman obrolan dulu!");
+        if(!partnerID) return alert("Pilih teman obrolan dulu di Beranda!");
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRec = new MediaRecorder(stream);
-            mediaRec.start();
-            chunks = [];
-            document.getElementById('vnBtn').classList.add('recording');
-            mediaRec.ondataavailable = e => chunks.push(e
+  
