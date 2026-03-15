@@ -318,16 +318,69 @@
         };
         window.openChat = (uid, nama, photo) => { targetUser = { uid, nama, photo }; document.getElementById('chat-screen').classList.remove('hidden'); document.getElementById('chat-name').innerText = nama; document.getElementById('chat-avatar').src = photo; loadMessages(); };
         window.closeChat = () => document.getElementById('chat-screen').classList.add('hidden');
-        function loadMessages() {
-            const r = [auth.currentUser.uid, targetUser.uid].sort().join("_");
-            onSnapshot(query(collection(db, "chats"), where("room", "==", r), orderBy("time", "asc")), (snap) => {
-                const box = document.getElementById('chat-messages'); box.innerHTML = "";
-                snap.forEach(d => { const m = d.data(), me = m.sender === auth.currentUser.uid; box.innerHTML += `<div class="flex ${me ? 'justify-end' : 'justify-start'}"><div class="max-w-[80%] p-4 text-sm font-bold shadow-sm ${me ? 'chat-bubble-me' : 'chat-bubble-them'}">${m.text}</div></div>`; });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-        window.sendMessage = async () => { const i = document.getElementById('chat-input'); if(!i.value.trim()) return; const r = [auth.currentUser.uid, targetUser.uid].sort().join("_"); await addDoc(collection(db, "chats"), { room: r, sender: auth.currentUser.uid, text: i.value, time: serverTimestamp() }); i.value = ""; };
+        // Fungsi untuk memuat pesan secara real-time
+function loadMessages() {
+    if (!targetUser) return;
+    
+    // Pastikan ID Room konsisten (A_B akan selalu sama dengan B_A)
+    const roomId = [auth.currentUser.uid, targetUser.uid].sort().join("_");
+    const chatBox = document.getElementById('chat-messages');
+    
+    // Query ke koleksi 'chats' berdasarkan room ID tersebut
+    const q = query(
+        collection(db, "chats"), 
+        where("room", "==", roomId), 
+        orderBy("time", "asc")
+    );
 
+    onSnapshot(q, (snap) => {
+        chatBox.innerHTML = "";
+        if (snap.empty) {
+            chatBox.innerHTML = `<p class="text-center text-slate-300 text-xs mt-10">Belum ada pesan. Say hello! 👋</p>`;
+        }
+        
+        snap.forEach(doc => {
+            const m = doc.data();
+            const isMe = m.sender === auth.currentUser.uid;
+            
+            const div = document.createElement('div');
+            div.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
+            div.innerHTML = `
+                <div class="max-w-[80%] p-4 text-sm font-bold shadow-sm ${isMe ? 'chat-bubble-me' : 'chat-bubble-them'}">
+                    ${m.text}
+                </div>
+            `;
+            chatBox.appendChild(div);
+        });
+        // Scroll ke paling bawah setiap ada pesan baru
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, (error) => {
+        console.error("Error loading messages: ", error);
+    });
+}
+
+// Fungsi mengirim pesan
+window.sendMessage = async () => {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    
+    if(!text || !targetUser) return;
+    
+    const roomId = [auth.currentUser.uid, targetUser.uid].sort().join("_");
+    
+    try {
+        await addDoc(collection(db, "chats"), {
+            room: roomId,
+            sender: auth.currentUser.uid,
+            receiver: targetUser.uid, // Tambahan untuk mempermudah tracking
+            text: text,
+            time: serverTimestamp()
+        });
+        input.value = "";
+    } catch (e) {
+        alert("Gagal mengirim pesan: " + e.message);
+    }
+};
         function loadHistory() {
             onSnapshot(query(collection(db, "call_history"), where("uid", "==", auth.currentUser.uid), orderBy("timestamp", "desc")), (snap) => {
                 const list = document.getElementById('history-list'); list.innerHTML = "";
