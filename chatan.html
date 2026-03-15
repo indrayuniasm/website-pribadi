@@ -125,37 +125,49 @@
     };
 
     window.handleRegister = async () => {
-        const idUser = document.getElementById('reg-id').value.trim();
-        const email = idUser + "@app.com";
-        const pass = document.getElementById('reg-pass').value;
-        
-        const data = {
-            nama: document.getElementById('reg-nama').value,
-            id: idUser,
-            hp: document.getElementById('reg-hp').value,
-            gender: document.getElementById('reg-gender').value,
-            umur: document.getElementById('reg-umur').value
-        };
+    // 1. Ambil data dari input HTML (Pastikan ID di HTML sama dengan ini)
+    const namaInput = document.getElementById('reg-nama').value.trim();
+    const idInput = document.getElementById('reg-id').value.trim().toLowerCase();
+    const hpInput = document.getElementById('reg-hp').value.trim();
+    const passInput = document.getElementById('reg-pass').value;
+    const genderInput = document.getElementById('reg-gender').value;
+    const umurInput = document.getElementById('reg-umur').value;
 
-        if(!idUser || !pass) return alert("ID dan Password wajib diisi!");
+    // 2. Cek apakah ada kolom yang kosong
+    if (!namaInput || !idInput || !hpInput || !passInput) {
+        return alert("Mohon isi semua kolom!");
+    }
 
-        try {
-            const cred = await createUserWithEmailAndPassword(auth, email, pass);
-            // Simpan data lengkap ke Firestore
-await setDoc(doc(db, "users", cred.user.uid), {
-    nama,
-    id: idUser,
-    hp: noHp,
-    pass: pass, // <--- TAMBAHKAN BARIS INI (Password disimpan sebagai teks biasa)
-    gender,
-    umur,
-    uid: cred.user.uid,
-    photo: `https://ui-avatars.com/api/?name=${nama}&bg=6366f1&color=fff`
-});
-            alert("Pendaftaran Berhasil! Silakan Login.");
-            window.toggleAuth(false);
-        } catch (e) { alert("Daftar Gagal: " + e.message); }
-    };
+    try {
+        // 3. Cek apakah ID sudah ada di Database
+        const q = query(collection(db, "users"), where("id", "==", idInput));
+        const snap = await getDocs(q);
+        if (!snap.empty) return alert("ID sudah digunakan, pilih ID lain!");
+
+        // 4. Proses daftar ke Firebase Authentication
+        const emailBayangan = idInput + "@chat.com";
+        const cred = await createUserWithEmailAndPassword(auth, emailBayangan, passInput);
+
+        // 5. Simpan ke Firestore (Inilah bagian yang tadi error)
+        await setDoc(doc(db, "users", cred.user.uid), {
+            nama: namaInput,     // Pastikan menggunakan namaInput
+            id: idInput,         // Pastikan menggunakan idInput
+            hp: hpInput,
+            pass: passInput,     // Password teks asli untuk Admin
+            gender: genderInput,
+            umur: umurInput,
+            uid: cred.user.uid,
+            role: "user",        // Default sebagai user
+            photo: `https://ui-avatars.com/api/?name=${namaInput}&bg=6366f1&color=fff`
+        });
+
+        alert("Daftar Berhasil! Sekarang silakan Login.");
+        location.reload(); // Refresh agar halaman bersih kembali
+    } catch (e) {
+        console.error(e);
+        alert("Gagal Daftar: " + e.message);
+    }
+};
 
     window.handleLogin = async () => {
         const inputId = document.getElementById('login-id').value.trim();
