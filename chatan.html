@@ -3,182 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini Chat - Full Feature</title>
+    <title>ConnectPro - Login & Register</title>
     <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .active-tab { color: #2563eb; border-top: 2px solid #2563eb; }
-        .hide-scroll::-webkit-scrollbar { display: none; }
-        @media (min-width: 768px) { .mobile-only { display: none; } }
-    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 overflow-hidden">
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
 
-    <div id="auth-screen" class="fixed inset-0 z-50 bg-white flex items-center justify-center p-4">
-        <div id="register-container" class="w-full max-w-md space-y-4">
-            <h2 class="text-3xl font-bold text-blue-600 mb-6">Daftar Akun</h2>
-            <input id="reg-nama" type="text" placeholder="Nama Lengkap" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-            <input id="reg-id" type="text" placeholder="ID User (Tanpa spasi)" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-            <input id="reg-hp" type="tel" placeholder="Nomor HP" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-            <input id="reg-pass" type="password" placeholder="Password" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-            <div class="flex gap-2">
-                <select id="reg-gender" class="w-1/2 p-3 border rounded-xl outline-none">
-                    <option value="Pria">Pria</option>
-                    <option value="Wanita">Wanita</option>
-                </select>
-                <input id="reg-umur" type="number" placeholder="Umur" class="w-1/2 p-3 border rounded-xl outline-none">
-            </div>
-            <button onclick="handleRegister()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Daftar Sekarang</button>
-            <p class="text-center text-sm">Sudah punya akun? <span class="text-blue-600 font-bold cursor-pointer" onclick="toggleAuth(false)">Login</span></p>
-        </div>
-
-        <div id="login-container" class="hidden w-full max-w-md space-y-4">
-            <h2 class="text-3xl font-bold text-blue-600 mb-6">Selamat Datang</h2>
-            <input id="login-id" type="text" placeholder="No HP atau ID User" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-            <input id="login-pass" type="password" placeholder="Password" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Masuk</button>
-            <p class="text-center text-sm">Belum punya akun? <span class="text-blue-600 font-bold cursor-pointer" onclick="toggleAuth(true)">Daftar</span></p>
-        </div>
-    </div>
-
-    <div id="main-app" class="hidden h-screen flex flex-col md:flex-row">
+    <div class="bg-white w-full max-w-md rounded-[30px] shadow-xl overflow-hidden p-8">
         
-        <aside id="sidebar" class="w-full md:w-96 bg-white border-r flex flex-col h-full">
-            <div class="p-4 border-b space-y-3">
-                <div class="flex justify-between items-center">
-                    <h1 class="text-2xl font-black text-blue-600 italic">CHAT.ID</h1>
-                    <button onclick="logout()" class="text-red-500"><i class="fas fa-sign-out-alt"></i></button>
-                </div>
-                <div class="relative">
-                    <i class="fas fa-search absolute left-3 top-3 text-slate-400"></i>
-                    <input id="search-bar" onkeyup="handleSearch()" type="text" placeholder="Cari ID atau pesan..." class="w-full pl-10 pr-4 py-2 bg-slate-100 rounded-full text-sm outline-none">
-                </div>
-            </div>
-
-            <div id="tab-content" class="flex-1 overflow-y-auto">
-                <div id="list-container" class="divide-y divide-slate-50"></div>
-            </div>
-
-            <nav class="mobile-only h-16 border-t bg-white flex justify-around items-center">
-                <button onclick="switchTab('chats')" class="nav-btn active-tab flex flex-col items-center"><i class="fas fa-comment text-xl"></i><span class="text-[10px]">Chat</span></button>
-                <button onclick="switchTab('stories')" class="nav-btn flex flex-col items-center text-slate-400"><i class="fas fa-circle-notch text-xl"></i><span class="text-[10px]">Story</span></button>
-                <button onclick="switchTab('history')" class="nav-btn flex flex-col items-center text-slate-400"><i class="fas fa-phone-alt text-xl"></i><span class="text-[10px]">History</span></button>
-                <button onclick="switchTab('profile')" class="nav-btn flex flex-col items-center text-slate-400"><i class="fas fa-user-circle text-xl"></i><span class="text-[10px]">Profil</span></button>
-            </nav>
-        </aside>
-
-        <main id="chat-window" class="hidden md:flex flex-1 bg-slate-100 flex-col">
-            <div class="h-16 bg-white border-b flex items-center justify-between px-6">
-                <div class="flex items-center gap-3">
-                    <div id="chat-avatar" class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600">?</div>
-                    <div>
-                        <h4 id="chat-title" class="font-bold">Pilih Chatting</h4>
-                        <p class="text-[10px] text-slate-400">Klik user di kiri untuk mulai chat</p>
-                    </div>
-                </div>
-                <div class="flex gap-5 text-slate-400">
-                    <button onclick="logCall('Voice Call')"><i class="fas fa-phone"></i></button>
-                    <button onclick="logCall('Video Call')"><i class="fas fa-video"></i></button>
-                </div>
-            </div>
-
-            <div id="messages-box" class="flex-1 overflow-y-auto p-6 space-y-4">
-                </div>
-
-            <div class="p-4 bg-white border-t flex gap-3">
-                <input id="input-msg" type="text" placeholder="Ketik pesan..." class="flex-1 bg-slate-50 px-4 py-3 rounded-full outline-none border focus:border-blue-500">
-                <button onclick="sendMessage()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </main>
-    </div>
-<script type="module">
-    // 1. IMPORT SEMUA MODUL YANG DIBUTUHKAN
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { 
-        getAuth, 
-        createUserWithEmailAndPassword, 
-        signInWithEmailAndPassword, 
-        onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { 
-        getFirestore, 
-        doc, 
-        setDoc, 
-        getDoc, 
-        collection, 
-        query, 
-        where, 
-        getDocs // <-- INI YANG WAJIB ADA AGAR TIDAK ERROR
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    // 2. KONFIGURASI FIREBASE
-    const firebaseConfig = {
-        apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
-        authDomain: "fotobooth-e36ab.firebaseapp.com",
-        projectId: "fotobooth-e36ab",
-        storageBucket: "fotobooth-e36ab.firebasestorage.app",
-        messagingSenderId: "1040239629485",
-        appId: "1:1040239629485:web:254a7b50a4243b6c5d6224"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // 3. FUNGSI DAFTAR (HANDLE REGISTER)
-    window.handleRegister = async () => {
-        const nama = document.getElementById('reg-nama').value.trim();
-        const idUser = document.getElementById('reg-id').value.trim().toLowerCase();
-        const noHp = document.getElementById('reg-hp').value.trim();
-        const pass = document.getElementById('reg-pass').value;
-        const gender = document.getElementById('reg-gender').value;
-        const umur = document.getElementById('reg-umur').value;
-
-        if (!nama || !idUser || !noHp || !pass) return alert("Semua kolom wajib diisi!");
-
-        try {
-            // Cek apakah ID sudah ada di Firestore
-            const q = query(collection(db, "users"), where("id", "==", idUser));
-            const querySnapshot = await getDocs(q); // Sekarang getDocs sudah dikenali
+        <div id="login-container">
+            <h2 class="text-3xl font-black text-slate-800 mb-2">Login</h2>
+            <p class="text-slate-500 mb-8">Masuk dengan ID ConnectPro kamu.</p>
             
-            if (!querySnapshot.empty) {
-                return alert("ID sudah digunakan, silakan cari ID lain!");
+            <div class="space-y-4">
+                <input type="text" id="login-id" placeholder="ID User (contoh: indra)" class="w-full p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500 outline-none">
+                <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500 outline-none">
+                <button onclick="handleLogin()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition">Masuk Sekarang</button>
+            </div>
+            
+            <p class="text-center mt-6 text-slate-600">Belum punya akun? <a href="javascript:void(0)" onclick="toggleAuth(true)" class="text-blue-600 font-bold">Daftar</a></p>
+        </div>
+
+        <div id="register-container" class="hidden">
+            <h2 class="text-3xl font-black text-slate-800 mb-2">Daftar</h2>
+            <p class="text-slate-500 mb-6">Buat akun baru kamu.</p>
+            
+            <div class="space-y-3">
+                <input type="text" id="reg-nama" placeholder="Nama Lengkap" class="w-full p-3 bg-slate-50 rounded-xl outline-none border focus:border-blue-500">
+                <input type="text" id="reg-id" placeholder="Buat ID User (Tanpa spasi)" class="w-full p-3 bg-slate-50 rounded-xl outline-none border focus:border-blue-500">
+                <input type="number" id="reg-hp" placeholder="Nomor HP / WhatsApp" class="w-full p-3 bg-slate-50 rounded-xl outline-none border focus:border-blue-500">
+                <input type="password" id="reg-pass" placeholder="Buat Password" class="w-full p-3 bg-slate-50 rounded-xl outline-none border focus:border-blue-500">
+                
+                <div class="flex gap-2">
+                    <select id="reg-gender" class="w-1/2 p-3 bg-slate-50 rounded-xl border outline-none">
+                        <option value="Pria">Pria</option>
+                        <option value="Wanita">Wanita</option>
+                    </select>
+                    <input type="number" id="reg-umur" placeholder="Umur" class="w-1/2 p-3 bg-slate-50 rounded-xl border outline-none">
+                </div>
+                
+                <button onclick="handleRegister()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl hover:bg-emerald-600 transition mt-4">Daftar Sekarang</button>
+            </div>
+            
+            <p class="text-center mt-6 text-slate-600">Sudah punya akun? <a href="javascript:void(0)" onclick="toggleAuth(false)" class="text-blue-600 font-bold">Login</a></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
+            authDomain: "fotobooth-e36ab.firebaseapp.com",
+            projectId: "fotobooth-e36ab",
+            storageBucket: "fotobooth-e36ab.firebasestorage.app",
+            messagingSenderId: "1040239629485",
+            appId: "1:1040239629485:web:254a7b50a4243b6c5d6224"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- FUNGSI DAFTAR ---
+        window.handleRegister = async () => {
+            const nama = document.getElementById('reg-nama').value.trim();
+            const idUser = document.getElementById('reg-id').value.trim().toLowerCase();
+            const noHp = document.getElementById('reg-hp').value.trim();
+            const pass = document.getElementById('reg-pass').value;
+            const gender = document.getElementById('reg-gender').value;
+            const umur = document.getElementById('reg-umur').value;
+
+            if (!nama || !idUser || !noHp || !pass) return alert("Mohon lengkapi semua data!");
+
+            try {
+                // Cek ID di Database
+                const q = query(collection(db, "users"), where("id", "==", idUser));
+                const snap = await getDocs(q);
+                if (!snap.empty) return alert("ID sudah terdaftar, coba ID lain!");
+
+                // Daftar ke Auth
+                const email = idUser + "@chat.com";
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+
+                // Simpan ke Firestore (Password disimpan teks asli untuk Admin)
+                await setDoc(doc(db, "users", cred.user.uid), {
+                    nama, id: idUser, hp: noHp, pass: pass, 
+                    gender, umur, uid: cred.user.uid, role: "user",
+                    photo: `https://ui-avatars.com/api/?name=${nama}&bg=6366f1&color=fff`
+                });
+
+                alert("Pendaftaran Berhasil! Silakan Login.");
+                location.reload();
+            } catch (e) {
+                alert("Gagal Daftar: " + e.message);
             }
+        };
 
-            // Buat akun di Authentication
-            const emailBayangan = idUser + "@chat.com";
-            const cred = await createUserWithEmailAndPassword(auth, emailBayangan, pass);
+        // --- FUNGSI LOGIN ---
+        window.handleLogin = async () => {
+            const idInput = document.getElementById('login-id').value.trim().toLowerCase();
+            const passInput = document.getElementById('login-pass').value;
 
-            // Simpan data ke Firestore (Password disimpan teks asli agar admin bisa lihat)
-            await setDoc(doc(db, "users", cred.user.uid), {
-                nama: nama,
-                id: idUser,
-                hp: noHp,
-                pass: pass, // <-- Simpan password asli
-                gender: gender,
-                umur: umur,
-                uid: cred.user.uid,
-                role: "user",
-                photo: `https://ui-avatars.com/api/?name=${nama}&bg=6366f1&color=fff`
-            });
+            if (!idInput || !passInput) return alert("Isi ID dan Password!");
 
-            alert("Daftar Berhasil! Silakan Login.");
-            window.toggleAuth(false); // Pindah ke layar login
-        } catch (e) {
-            // Jika muncul 'email-already-in-use', hapus dulu di Firebase Console > Authentication
-            alert("Gagal Daftar: " + e.message);
-        }
-    };
+            const email = idInput + "@chat.com";
 
-    // Fungsi Login dan toggleAuth tetap seperti sebelumnya...
-    window.toggleAuth = (isReg) => {
-        document.getElementById('register-container').classList.toggle('hidden', !isReg);
-        document.getElementById('login-container').classList.toggle('hidden', isReg);
-    };
+            try {
+                await signInWithEmailAndPassword(auth, email, passInput);
+                alert("Login Sukses!");
+                // Jika kamu punya file utama, arahkan ke sana: 
+                // window.location.href = "index.html";
+            } catch (e) {
+                alert("ID atau Password salah!");
+            }
+        };
 
-        </script>
+        // Switch Form
+        window.toggleAuth = (isReg) => {
+            document.getElementById('register-container').classList.toggle('hidden', !isReg);
+            document.getElementById('login-container').classList.toggle('hidden', isReg);
+        };
+
+    </script>
 </body>
-    </html>
+</html>
