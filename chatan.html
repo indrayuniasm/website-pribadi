@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ConnectPro X - Adaptive Layout</title>
+    <title>ConnectPro Ultra</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -14,142 +14,145 @@
 
     <style>
         :root {
-            --accent: #8b5cf6;
+            --primary: #8b5cf6;
             --bg: #09090b;
-            --panel: #18181b;
+            --panel: rgba(24, 24, 27, 0.7);
             --border: rgba(255, 255, 255, 0.1);
+            --text: #fafafa;
         }
+
+        /* Themes */
+        .theme-midnight { --primary: #3b82f6; --bg: #020617; }
+        .theme-amethyst { --primary: #d946ef; --bg: #0f051a; }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; transition: 0.5s; }
 
-        /* --- DESKTOP LAYOUT (Default) --- */
-        .app-container {
-            display: grid;
-            grid-template-columns: 350px 1fr 300px;
-            height: 100vh;
-            width: 100%;
+        /* --- LAYOUT ENGINE --- */
+        .app-shell { display: grid; height: 100vh; width: 100%; transition: 0.3s; }
+        
+        /* Desktop: 3 Columns */
+        @media (min-width: 901px) {
+            .app-shell { grid-template-columns: 350px 1fr 320px; }
+            .mobile-nav { display: none; }
         }
 
-        .sidebar, .main-chat, .profile-info {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border);
+        /* Mobile: Single Column */
+        @media (max-width: 900px) {
+            .app-shell { grid-template-columns: 1fr; }
+            .sidebar, .chat-view, .profile-view { display: none; width: 100% !important; }
+            .active-panel { display: flex !important; }
+            .mobile-nav { 
+                position: fixed; bottom: 0; width: 100%; height: 70px; 
+                background: var(--panel); backdrop-filter: blur(20px);
+                display: flex; justify-content: space-around; align-items: center;
+                border-top: 1px solid var(--border); z-index: 100;
+            }
         }
-
-        .sidebar { background: #121214; }
-        .main-chat { background: var(--bg); border-right: none; }
-        .profile-info { background: #121214; border-right: none; border-left: 1px solid var(--border); }
 
         /* Components */
-        .header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; min-height: 70px; }
-        .scroll-area { flex: 1; overflow-y: auto; padding: 15px; }
-        .contact-card { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 15px; cursor: pointer; transition: 0.2s; margin-bottom: 5px; }
-        .contact-card:hover { background: rgba(255,255,255,0.05); }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .online { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-        .offline { background: #52525b; }
+        .panel { background: var(--panel); backdrop-filter: blur(30px); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+        .header { padding: 25px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        
+        /* Contacts */
+        .contact-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; }
+        .contact-item:hover { background: rgba(255,255,255,0.05); }
+        .pfp-ring { width: 50px; height: 50px; border-radius: 18px; object-fit: cover; background: #27272a; position: relative; }
+        .status-badge { position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--bg); }
+        .online { background: #22c55e; }
+        .offline { background: #71717a; }
 
-        /* Chat Bubbles */
-        .bubble { padding: 12px 16px; border-radius: 18px; max-width: 75%; margin-bottom: 10px; font-size: 0.9rem; line-height: 1.4; }
-        .sent { align-self: flex-end; background: var(--accent); border-bottom-right-radius: 4px; }
+        /* Chat Messages */
+        .msg-scroll { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .bubble { padding: 12px 18px; border-radius: 20px; max-width: 70%; font-size: 0.95rem; line-height: 1.5; }
+        .sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
         .received { align-self: flex-start; background: #27272a; border-bottom-left-radius: 4px; }
 
-        .input-bar { padding: 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
-        input { flex: 1; background: #27272a; border: none; border-radius: 12px; padding: 12px 15px; color: #fff; outline: none; }
+        /* Input Area */
+        .input-bar { padding: 20px; display: flex; gap: 12px; align-items: center; background: rgba(0,0,0,0.2); }
+        .main-input { flex: 1; background: #18181b; border: 1px solid var(--border); padding: 14px; border-radius: 15px; color: white; outline: none; }
 
-        /* Mobile Navigation (Hidden on Desktop) */
-        .mobile-nav { display: none; }
+        /* Profile Editor */
+        .profile-card { text-align: center; padding: 30px; }
+        .editable-pfp { width: 120px; height: 120px; border-radius: 40px; margin-bottom: 20px; cursor: pointer; border: 2px dashed var(--primary); padding: 5px; }
+        .bio-area { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; font-size: 0.9rem; margin-top: 10px; border: 1px solid var(--border); }
 
-        /* --- MOBILE LAYOUT (Breakpoint 900px) --- */
-        @media (max-width: 900px) {
-            .app-container {
-                grid-template-columns: 1fr; /* Hanya satu kolom di HP */
-            }
-
-            /* Sembunyikan semua panel secara default */
-            .sidebar, .main-chat, .profile-info {
-                display: none;
-                width: 100% !important;
-                border: none;
-            }
-
-            /* Panel yang aktif akan ditampilkan */
-            .active-panel { display: flex !important; }
-
-            .mobile-nav {
-                display: flex;
-                position: fixed;
-                bottom: 0;
-                width: 100%;
-                height: 70px;
-                background: #121214;
-                border-top: 1px solid var(--border);
-                justify-content: space-around;
-                align-items: center;
-                z-index: 100;
-            }
-
-            .nav-item { color: #71717a; text-align: center; cursor: pointer; font-size: 1.2rem; }
-            .nav-item.active { color: var(--accent); }
-            
-            .main-chat { height: calc(100vh - 70px); } /* Beri ruang untuk nav bawah */
-        }
-
-        /* Call UI */
-        #callUI { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
+        /* Call Overlay */
+        #callUI { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; }
         #remoteVideo { width: 100%; height: 100%; object-fit: cover; }
-        #localVideo { width: 120px; height: 160px; position: absolute; top: 20px; right: 20px; border-radius: 12px; border: 2px solid var(--accent); object-fit: cover; }
+        #localVideo { width: 120px; height: 170px; position: absolute; top: 30px; right: 30px; border-radius: 20px; border: 2px solid var(--primary); object-fit: cover; }
 
+        .btn-round { width: 50px; height: 50px; border-radius: 15px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="authUI" style="position:fixed; inset:0; background:var(--bg); z-index:10000; display:flex; align-items:center; justify-content:center;">
-        <div style="background:var(--panel); padding:40px; border-radius:25px; width:90%; max-width:350px; text-align:center;">
-            <h2 style="margin-bottom:20px;">ConnectPro</h2>
-            <input type="text" id="username" placeholder="Masukkan Username..." style="width:100%; margin-bottom:15px; background:#09090b; border:1px solid var(--border);">
-            <button onclick="initApp()" style="width:100%; padding:12px; background:var(--accent); border:none; border-radius:10px; color:white; font-weight:bold; cursor:pointer;">Masuk</button>
+    <div id="authScreen" style="position:fixed; inset:0; background:var(--bg); z-index:10000; display:flex; align-items:center; justify-content:center; padding:20px;">
+        <div class="panel" style="width:100%; max-width:400px; padding:40px; border-radius:30px; border:1px solid var(--border);">
+            <h1 style="text-align:center; margin-bottom:10px; font-weight:800;">ConnectPro</h1>
+            <p style="text-align:center; color:#71717a; margin-bottom:30px;">Premium Real-time Messaging</p>
+            <input type="text" id="loginUsername" placeholder="ID Username" class="main-input" style="width:100%; margin-bottom:15px;">
+            <button onclick="bootApp()" class="btn-round btn-primary" style="width:100%; border-radius:15px; font-weight:bold;">Sign In</button>
         </div>
     </div>
 
-    <div class="app-container hidden" id="mainApp">
-        <aside class="sidebar active-panel" id="panel-beranda">
-            <div class="header"><h2>Chats</h2></div>
-            <div class="scroll-area" id="contactList"></div>
+    <div class="app-shell hidden" id="app">
+        
+        <aside class="panel sidebar active-panel" id="panel-beranda">
+            <div class="header">
+                <h2>Chats</h2>
+                <button class="btn-round" style="background:transparent; color:white;"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <div style="flex:1; overflow-y:auto;" id="contactList"></div>
         </aside>
 
-        <main class="main-chat" id="panel-chat">
+        <main class="panel chat-view" id="panel-chat">
             <div class="header">
-                <div id="chatTarget">Pilih teman...</div>
-                <div id="callTools" class="hidden">
-                    <button onclick="startCall(false)" style="background:none; border:none; color:white; margin-right:15px; cursor:pointer;"><i class="fa-solid fa-phone"></i></button>
-                    <button onclick="startCall(true)" style="background:none; border:none; color:white; cursor:pointer;"><i class="fa-solid fa-video"></i></button>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div id="chatAvatar" class="pfp-ring" style="width:40px; height:40px;"></div>
+                    <div>
+                        <h4 id="chatTitle">Pilih Teman</h4>
+                        <small id="chatStatusText" style="color:#71717a;">Tap to chat</small>
+                    </div>
+                </div>
+                <div id="callActions" class="hidden" style="display:flex; gap:10px;">
+                    <button onclick="initCall(false)" class="btn-round" style="background:rgba(255,255,255,0.05); color:white;"><i class="fa-solid fa-phone"></i></button>
+                    <button onclick="initCall(true)" class="btn-round" style="background:rgba(255,255,255,0.05); color:white;"><i class="fa-solid fa-video"></i></button>
                 </div>
             </div>
-            <div class="scroll-area" id="msgBox" style="display:flex; flex-direction:column;"></div>
+            <div class="msg-scroll" id="msgBox"></div>
             <div class="input-bar">
-                <input type="text" id="msgInput" placeholder="Ketik pesan...">
-                <button onclick="sendMsg()" style="background:var(--accent); border:none; color:white; padding:10px 15px; border-radius:10px; cursor:pointer;"><i class="fa-solid fa-paper-plane"></i></button>
+                <input type="text" id="msgInput" placeholder="Write something..." class="main-input">
+                <button onclick="send()" class="btn-round btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </main>
 
-        <aside class="profile-info" id="panel-profile">
-            <div class="header"><h2>Profil</h2></div>
-            <div class="scroll-area" style="text-align:center; padding-top:40px;">
-                <div id="myAva" style="width:100px; height:100px; background:var(--accent); border-radius:50%; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:2.5rem; font-weight:800;">?</div>
-                <h3 id="displayMyName">Username</h3>
-                <p style="color:#71717a; margin-top:5px;">Online Everywhere</p>
-                <button onclick="location.reload()" style="margin-top:40px; background:rgba(239,68,68,0.1); color:#ef4444; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">Logout</button>
+        <aside class="panel profile-view" id="panel-profile">
+            <div class="header"><h2>Settings</h2></div>
+            <div class="profile-card">
+                <img id="profilePfp" src="https://ui-avatars.com/api/?name=User" class="editable-pfp" onclick="updateProfileData('pfp')">
+                <h3 id="profileName" onclick="updateProfileData('nama')">Nama User</h3>
+                <p id="profileID" style="color:#71717a;">@id</p>
+                <div class="bio-area" id="profileBio" onclick="updateProfileData('bio')">Click here to edit bio...</div>
+                
+                <div style="margin-top:30px; text-align:left;">
+                    <label style="font-size:0.8rem; color:#71717a;">GANTI TEMA</label>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <div onclick="setTheme('default')" style="width:30px; height:30px; background:#8b5cf6; border-radius:8px; cursor:pointer;"></div>
+                        <div onclick="setTheme('midnight')" style="width:30px; height:30px; background:#3b82f6; border-radius:8px; cursor:pointer;"></div>
+                        <div onclick="setTheme('amethyst')" style="width:30px; height:30px; background:#d946ef; border-radius:8px; cursor:pointer;"></div>
+                    </div>
+                </div>
+                <button onclick="location.reload()" style="margin-top:40px; color:#ef4444; background:none; border:none; cursor:pointer;">Sign Out</button>
             </div>
         </aside>
 
         <nav class="mobile-nav">
-            <div class="nav-item active" onclick="switchPanel('beranda')" id="nav-beranda"><i class="fa-solid fa-house"></i></div>
-            <div class="nav-item" onclick="switchPanel('chat')" id="nav-chat"><i class="fa-solid fa-message"></i></div>
-            <div class="nav-item" onclick="switchPanel('profile')" id="nav-profile"><i class="fa-solid fa-user"></i></div>
+            <div class="nav-btn active" onclick="switchPanel('beranda')" id="nav-beranda"><i class="fa-solid fa-house"></i></div>
+            <div class="nav-btn" onclick="switchPanel('chat')" id="nav-chat"><i class="fa-solid fa-comment"></i></div>
+            <div class="nav-btn" onclick="switchPanel('profile')" id="nav-profile"><i class="fa-solid fa-user-gear"></i></div>
         </nav>
     </div>
 
@@ -157,8 +160,8 @@
         <video id="remoteVideo" autoplay playsinline></video>
         <video id="localVideo" autoplay muted playsinline></video>
         <div style="position:absolute; bottom:50px; left:50%; transform:translateX(-50%); display:flex; gap:20px;">
-            <button id="answerBtn" onclick="answerCall()" style="width:60px; height:60px; border-radius:50%; background:#22c55e; border:none; color:white; font-size:1.5rem; cursor:pointer;"><i class="fa-solid fa-phone"></i></button>
-            <button onclick="endCall()" style="width:60px; height:60px; border-radius:50%; background:#ef4444; border:none; color:white; font-size:1.5rem; cursor:pointer;"><i class="fa-solid fa-phone-slash"></i></button>
+            <button id="btnAnswer" onclick="answer()" style="background:#22c55e;" class="btn-round"><i class="fa-solid fa-phone"></i></button>
+            <button onclick="hangup()" style="background:#ef4444;" class="btn-round"><i class="fa-solid fa-phone-slash"></i></button>
         </div>
     </div>
 
@@ -175,68 +178,86 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let myID = "", partnerID = "", peer, localStream, currentCall;
+    let myID = "", partnerID = "", peer, currentCall, stream;
 
     // --- INITIALIZATION ---
-    function initApp() {
-        myID = document.getElementById('username').value.trim().toLowerCase();
+    function bootApp() {
+        myID = document.getElementById('loginUsername').value.trim().toLowerCase();
         if(!myID) return;
 
         peer = new Peer(myID);
         peer.on('open', () => {
-            db.ref('users/' + myID).update({ status: 'online' });
-            db.ref('users/' + myID + '/status').onDisconnect().set('offline');
-            
-            document.getElementById('authUI').style.display = 'none';
-            document.getElementById('mainApp').classList.remove('hidden');
-            document.getElementById('displayMyName').innerText = myID;
-            document.getElementById('myAva').innerText = myID.charAt(0).toUpperCase();
-            
+            // Presence Logic
+            const myStatusRef = db.ref('users/' + myID + '/status');
+            db.ref('.info/connected').on('value', snap => {
+                if(snap.val() === true) {
+                    myStatusRef.set('online');
+                    myStatusRef.onDisconnect().set('offline');
+                }
+            });
+
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            syncProfile();
             loadContacts();
-            listenForCalls();
-        });
-
-        peer.on('call', call => {
-            currentCall = call;
-            document.getElementById('callUI').style.display = 'flex';
-            document.getElementById('answerBtn').style.display = 'block';
+            
+            peer.on('call', call => {
+                currentCall = call;
+                document.getElementById('callUI').style.display = 'block';
+                document.getElementById('btnAnswer').classList.remove('hidden');
+            });
         });
     }
 
-    // --- RESPONSIVE NAVIGATION ---
-    function switchPanel(panelName) {
-        if(window.innerWidth > 900) return; // Nonaktifkan di desktop
-
-        document.querySelectorAll('.sidebar, .main-chat, .profile-info').forEach(p => p.classList.remove('active-panel'));
-        document.getElementById('panel-' + panelName).classList.add('active-panel');
-
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('nav-' + panelName).classList.add('active');
+    // --- PROFILE ENGINE ---
+    function syncProfile() {
+        db.ref('users/' + myID).on('value', snap => {
+            const data = snap.val() || {};
+            document.getElementById('profileName').innerText = data.nama || myID;
+            document.getElementById('profileID').innerText = "@" + myID;
+            document.getElementById('profileBio').innerText = data.bio || "No bio yet.";
+            document.getElementById('profilePfp').src = data.pfp || `https://ui-avatars.com/api/?name=${myID}`;
+        });
     }
 
-    // --- CORE FEATURES ---
+    function updateProfileData(type) {
+        const newVal = prompt("Masukkan " + type + " baru:");
+        if(newVal) {
+            let update = {};
+            update[type] = newVal;
+            db.ref('users/' + myID).update(update);
+        }
+    }
+
+    // --- CHAT ENGINE ---
     function loadContacts() {
         db.ref('users').on('value', snap => {
             const list = document.getElementById('contactList');
             list.innerHTML = "";
             snap.forEach(u => {
                 if(u.key !== myID) {
-                    const online = u.val().status === 'online';
+                    const isOnline = u.val().status === 'online';
                     list.innerHTML += `
-                        <div class="contact-card" onclick="openChat('${u.key}')">
-                            <div class="status-dot ${online ? 'online' : 'offline'}"></div>
-                            <b>${u.key}</b>
+                        <div class="contact-item" onclick="openChat('${u.key}', '${u.val().nama || u.key}', '${u.val().pfp}')">
+                            <div class="pfp-ring">
+                                <img src="${u.val().pfp || 'https://ui-avatars.com/api/?name='+u.key}" style="width:100%; height:100%; border-radius:18px;">
+                                <div class="status-badge ${isOnline ? 'online' : 'offline'}"></div>
+                            </div>
+                            <div>
+                                <b>${u.val().nama || u.key}</b><br>
+                                <small style="color:#71717a;">${isOnline ? 'Active Now' : 'Offline'}</small>
+                            </div>
                         </div>`;
                 }
             });
         });
     }
 
-    function openChat(id) {
+    function openChat(id, nama, pfp) {
         partnerID = id;
-        document.getElementById('chatTarget').innerText = id;
-        document.getElementById('callTools').classList.remove('hidden');
-        
+        document.getElementById('chatTitle').innerText = nama;
+        document.getElementById('chatAvatar').innerHTML = `<img src="${pfp || 'https://ui-avatars.com/api/?name='+id}" style="width:100%; height:100%; border-radius:18px;">`;
+        document.getElementById('callActions').classList.remove('hidden');
         if(window.innerWidth <= 900) switchPanel('chat');
 
         const room = [myID, partnerID].sort().join("_");
@@ -251,41 +272,48 @@
         });
     }
 
-    function sendMsg() {
+    function send() {
         const text = document.getElementById('msgInput').value;
         if(!text || !partnerID) return;
         const room = [myID, partnerID].sort().join("_");
-        db.ref('messages/' + room).push({ sender: myID, text: text });
+        db.ref('messages/' + room).push({ sender: myID, text });
         document.getElementById('msgInput').value = "";
     }
 
-    // --- VIDEO CALL ---
-    async function startCall(video) {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: video, audio: true });
-        document.getElementById('localVideo').srcObject = localStream;
-        document.getElementById('callUI').style.display = 'flex';
-        document.getElementById('answerBtn').style.display = 'none';
+    // --- CALL SYSTEM ---
+    async function initCall(isVideo) {
+        stream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
+        document.getElementById('localVideo').srcObject = stream;
+        document.getElementById('callUI').style.display = 'block';
+        document.getElementById('btnAnswer').classList.add('hidden');
 
-        currentCall = peer.call(partnerID, localStream);
-        currentCall.on('stream', remote => document.getElementById('remoteVideo').srcObject = remote);
+        currentCall = peer.call(partnerID, stream);
+        currentCall.on('stream', rs => document.getElementById('remoteVideo').srcObject = rs);
     }
 
-    async function answerCall() {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        document.getElementById('localVideo').srcObject = localStream;
-        document.getElementById('answerBtn').style.display = 'none';
-        
-        currentCall.answer(localStream);
-        currentCall.on('stream', remote => document.getElementById('remoteVideo').srcObject = remote);
+    async function answer() {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById('localVideo').srcObject = stream;
+        currentCall.answer(stream);
+        currentCall.on('stream', rs => document.getElementById('remoteVideo').srcObject = rs);
+        document.getElementById('btnAnswer').classList.add('hidden');
     }
 
-    function endCall() {
+    function hangup() {
         if(currentCall) currentCall.close();
-        if(localStream) localStream.getTracks().forEach(t => t.stop());
+        if(stream) stream.getTracks().forEach(t => t.stop());
         document.getElementById('callUI').style.display = 'none';
     }
 
-    function listenForCalls() {} // Handled by peer.on('call')
+    // --- UI TOOLS ---
+    function switchPanel(name) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-panel'));
+        document.getElementById('panel-' + name).classList.add('active-panel');
+    }
+
+    function setTheme(t) {
+        document.body.className = t === 'default' ? '' : 'theme-' + t;
+    }
 </script>
 </body>
-</html>
+                    </html>
