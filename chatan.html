@@ -3,177 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ConnectPro Elite OS</title>
+    <title>WhatsApp Clone - Elite</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
         :root {
-            --primary: #6366f1;
-            --accent: #ec4899;
-            --bg: #0f172a;
-            --surface: rgba(30, 41, 59, 0.7);
-            --border: rgba(255, 255, 255, 0.08);
-            --text: #f8fafc;
-            --chat-bg: #0f172a;
+            --wa-green: #25d366;
+            --wa-dark: #121b22;
+            --wa-bg: #0b141a;
+            --wa-surface: #1f2c33;
+            --wa-text: #e9edef;
+            --wa-muted: #8696a0;
+            --wa-bubble-sent: #005c4b;
+            --wa-bubble-rcvd: #202c33;
         }
 
-        /* Themes */
-        .theme-crimson { --primary: #e11d48; --bg: #1a0a0d; }
-        .theme-emerald { --primary: #10b981; --bg: #061a14; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--wa-bg); color: var(--wa-text); height: 100vh; overflow: hidden; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
-
-        /* --- LAYOUT ENGINE --- */
-        .os-container { display: grid; height: 100vh; width: 100%; transition: 0.4s ease; }
+        /* --- LAYOUT --- */
+        .app-container { display: grid; height: 100vh; width: 100%; grid-template-columns: 400px 1fr; }
         
-        /* Desktop Mode */
-        @media (min-width: 1025px) {
-            .os-container { grid-template-columns: 80px 350px 1fr 300px; }
-            .mobile-nav { display: none; }
-            .nav-rail { display: flex; flex-direction: column; align-items: center; padding: 20px 0; background: rgba(0,0,0,0.3); border-right: 1px solid var(--border); }
-        }
-
-        /* Mobile Mode */
-        @media (max-width: 1024px) {
-            .os-container { grid-template-columns: 1fr; }
-            .nav-rail, .side-list, .chat-area, .extra-panel { display: none; }
+        @media (max-width: 900px) {
+            .app-container { grid-template-columns: 1fr; }
+            .side-bar, .main-chat { display: none; }
             .active-view { display: flex !important; }
-            .mobile-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--surface); backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 100; }
         }
 
-        .panel { background: var(--surface); backdrop-filter: blur(25px); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: relative; }
+        /* --- SIDEBAR --- */
+        .side-bar { background: var(--wa-bg); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; }
+        .side-header { background: var(--wa-surface); padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .search-bar { padding: 8px 16px; background: var(--wa-bg); }
+        .search-inner { background: var(--wa-surface); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 10px; }
+        .search-inner input { background: none; border: none; color: white; outline: none; width: 100%; font-size: 0.9rem; }
 
-        /* --- STORY STRIP --- */
-        .story-container { padding: 15px; display: flex; gap: 12px; overflow-x: auto; border-bottom: 1px solid var(--border); scrollbar-width: none; }
-        .story-circle { min-width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--primary); padding: 3px; cursor: pointer; position: relative; }
-        .story-circle img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .my-story::after { content: '+'; position: absolute; bottom: 0; right: 0; background: var(--primary); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid var(--bg); }
+        /* --- CHAT LIST --- */
+        .chat-list { flex: 1; overflow-y: auto; }
+        .chat-item { padding: 12px 16px; display: flex; gap: 15px; cursor: pointer; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .chat-item:hover { background: var(--wa-surface); }
+        .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #3b4a54; }
 
-        /* --- CHAT COMPONENTS --- */
-        .chat-area { background: var(--chat-bg); position: relative; }
-        .msg-scroll { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 70%; font-size: 0.95rem; line-height: 1.5; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .sent { align-self: flex-end; background: var(--primary); border-bottom-right-radius: 4px; }
-        .received { align-self: flex-start; background: #1e293b; border-bottom-left-radius: 4px; }
-        .blue-tick { color: #38bdf8; margin-left: 5px; font-size: 0.8rem; }
-
-        /* --- PROFILE EDITOR --- */
-        .pfp-large { width: 120px; height: 120px; border-radius: 40px; border: 3px solid var(--primary); margin-bottom: 20px; transition: 0.3s; cursor: pointer; }
-        .pfp-large:hover { transform: scale(1.05); }
-        .edit-input { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 10px; border-radius: 10px; color: white; width: 100%; margin-bottom: 15px; }
-
-        /* --- CALL SYSTEM --- */
-        #callUI { position: fixed; inset: 0; background: #000; z-index: 10001; display: none; }
-        #vRemote { width: 100%; height: 100%; object-fit: cover; }
-        #vLocal { width: 120px; height: 180px; position: absolute; top: 40px; right: 40px; border-radius: 20px; border: 2px solid var(--primary); }
-
-        .btn-circle { width: 55px; height: 55px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; font-size: 1.2rem; }
+        /* --- MAIN CHAT --- */
+        .main-chat { background: #0b141a; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); display: flex; flex-direction: column; }
+        .chat-header { background: var(--wa-surface); padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+        .msg-container { flex: 1; overflow-y: auto; padding: 20px 5%; display: flex; flex-direction: column; gap: 4px; }
         
+        /* Bubbles */
+        .bubble { padding: 8px 12px; border-radius: 8px; max-width: 65%; font-size: 0.9rem; position: relative; color: white; }
+        .sent { align-self: flex-end; background: var(--wa-bubble-sent); border-top-right-radius: 0; margin-bottom: 4px; }
+        .received { align-self: flex-start; background: var(--wa-bubble-rcvd); border-top-left-radius: 0; margin-bottom: 4px; }
+        .msg-time { font-size: 0.7rem; color: rgba(255,255,255,0.6); margin-left: 8px; float: right; margin-top: 4px; }
+        .blue-tick { color: #53bdeb; margin-left: 4px; }
+
+        /* Input */
+        .input-area { background: var(--wa-surface); padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+        .input-inner { flex: 1; background: #2a3942; border-radius: 8px; padding: 9px 12px; color: white; border: none; outline: none; }
+
+        /* --- STATUS (STORY) --- */
+        .status-view { padding: 20px; }
+        .status-item { display: flex; align-items: center; gap: 15px; padding: 12px 0; cursor: pointer; }
+        .ring { width: 54px; height: 54px; border-radius: 50%; border: 2px solid var(--wa-green); padding: 2px; }
+
+        /* --- NAV MOBILE --- */
+        .mobile-nav { position: fixed; bottom: 0; width: 100%; background: var(--wa-surface); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid rgba(255,255,255,0.1); z-index: 100; }
+        .nav-btn { color: var(--wa-muted); text-align: center; font-size: 0.8rem; cursor: pointer; }
+        .nav-btn.active { color: var(--wa-green); }
+
+        /* --- CALL OVERLAY --- */
+        #callUI { position: fixed; inset: 0; background: #0b141a; z-index: 1000; display: none; text-align: center; padding-top: 100px; }
+        #vRemote { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        #vLocal { position: absolute; top: 20px; right: 20px; width: 100px; height: 150px; border-radius: 12px; border: 1px solid var(--wa-green); }
+
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="authScreen" style="position:fixed; inset:0; background:var(--bg); z-index:10000; display:flex; align-items:center; justify-content:center;">
-        <div class="panel" style="padding:40px; border-radius:30px; width:360px; text-align:center; border:1px solid var(--border);">
-            <h1 style="font-weight:800; letter-spacing:-1px; margin-bottom:30px;">ConnectPro<span style="color:var(--primary)">.</span></h1>
-            <input type="text" id="uID" placeholder="ID Username" class="edit-input">
-            <button onclick="initOS()" style="width:100%; padding:15px; background:var(--primary); border:none; color:white; border-radius:15px; font-weight:700; cursor:pointer;">Launch System</button>
+    <div id="authScreen" style="position:fixed; inset:0; background:var(--wa-bg); z-index:2000; display:flex; align-items:center; justify-content:center;">
+        <div style="background:var(--wa-surface); padding:30px; border-radius:16px; width:320px; text-align:center;">
+            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:3rem; margin-bottom:20px;"></i>
+            <input type="text" id="loginID" placeholder="Masukkan Nama/ID" style="width:100%; padding:12px; background:var(--wa-bg); border:none; color:white; border-radius:8px; margin-bottom:15px; outline:none;">
+            <button onclick="startApp()" style="width:100%; padding:12px; background:var(--wa-green); border:none; color:var(--wa-dark); font-weight:bold; border-radius:8px; cursor:pointer;">LANJUT</button>
         </div>
     </div>
 
-    <div class="os-container hidden" id="os">
-        
-        <nav class="nav-rail">
-            <div class="btn-circle" style="background:var(--primary); margin-bottom:40px;"><i class="fa-solid fa-bolt"></i></div>
-            <div onclick="switchView('side-list')" style="margin-bottom:30px; cursor:pointer;"><i class="fa-solid fa-comment-dots"></i></div>
-            <div onclick="switchView('extra-panel')" style="cursor:pointer;"><i class="fa-solid fa-user-gear"></i></div>
-        </nav>
-
-        <aside class="panel side-list active-view" id="view-side-list">
-            <div style="padding:25px 20px 10px;">
-                <h2 style="font-weight:800;">Messages</h2>
+    <div class="app-container hidden" id="app">
+        <aside class="side-bar active-view" id="view-side">
+            <div class="side-header">
+                <img id="myAvatar" class="avatar" style="width:35px; height:35px;" onclick="switchPanel('profile')">
+                <div style="display:flex; gap:20px; color:var(--wa-muted);">
+                    <i class="fa-solid fa-circle-notch" onclick="switchPanel('status')" title="Status"></i>
+                    <i class="fa-solid fa-message" onclick="newChat()" title="Chat Baru"></i>
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </div>
             </div>
-            
-            <div class="story-container" id="storyStrip">
-                <div class="story-circle my-story" onclick="postStory()">
-                    <img id="myStoryImg" src="https://ui-avatars.com/api/?name=Me">
-                </div>
-                </div>
 
-            <div id="chatHistory" style="flex:1; overflow-y:auto; padding-top:10px;"></div>
-        </aside>
-
-        <main class="panel chat-area" id="view-chat">
-            <div style="padding:20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <div id="cAvatar" style="width:45px; height:45px; border-radius:15px; background:var(--primary);"></div>
-                    <div>
-                        <b id="cName">Select Chat</b><br>
-                        <small id="cStatus" style="opacity:0.5">Offline</small>
+            <div id="panel-chats">
+                <div class="search-bar">
+                    <div class="search-inner">
+                        <i class="fa-solid fa-magnifying-glass" style="font-size:0.8rem; color:var(--wa-muted);"></i>
+                        <input type="text" placeholder="Cari atau mulai chat baru">
                     </div>
                 </div>
-                <div id="cTools" class="hidden" style="display:flex; gap:15px;">
-                    <button onclick="makeCall(false)" style="background:none; border:none; color:white; font-size:1.1rem; cursor:pointer;"><i class="fa-solid fa-phone"></i></button>
-                    <button onclick="makeCall(true)" style="background:none; border:none; color:white; font-size:1.1rem; cursor:pointer;"><i class="fa-solid fa-video"></i></button>
+                <div id="chatList" class="chat-list"></div>
+            </div>
+
+            <div id="panel-status" class="hidden">
+                <div class="status-view">
+                    <h3 style="margin-bottom:20px;">Status</h3>
+                    <div class="status-item" onclick="postStory()">
+                        <div class="ring" style="border-color:gray; border-style:dashed;"><img id="myStatusImg" class="avatar" style="width:100%; height:100%;"></div>
+                        <div><b>Status saya</b><br><small style="color:var(--wa-muted);">Ketuk untuk menambah status</small></div>
+                    </div>
+                    <small style="color:var(--wa-muted); display:block; margin:20px 0 10px;">PEMBERITAHUAN TERBARU</small>
+                    <div id="statusList"></div>
                 </div>
             </div>
-            
-            <div class="msg-scroll" id="mBox"></div>
 
-            <div style="padding:20px; display:flex; gap:12px; background:rgba(0,0,0,0.2);">
-                <input type="text" id="mInput" placeholder="Type a message..." class="edit-input" style="margin:0;">
-                <button onclick="sendMsg()" class="btn-circle" style="background:var(--primary); width:50px; height:50px;"><i class="fa-solid fa-paper-plane"></i></button>
+            <div id="panel-profile" class="hidden" style="padding:20px;">
+                <h3 style="margin-bottom:30px;"><i class="fa-solid fa-arrow-left" onclick="switchPanel('chats')" style="margin-right:20px; cursor:pointer;"></i> Profil</h3>
+                <center>
+                    <img id="profileImg" class="avatar" style="width:150px; height:150px; margin-bottom:30px; cursor:pointer;" onclick="editField('pfp')">
+                </center>
+                <div style="margin-bottom:25px;">
+                    <small style="color:var(--wa-green);">Nama Anda</small>
+                    <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                        <b id="profileName">User</b>
+                        <i class="fa-solid fa-pen" style="color:var(--wa-muted);" onclick="editField('nama')"></i>
+                    </div>
+                </div>
+                <div>
+                    <small style="color:var(--wa-green);">Info</small>
+                    <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                        <span id="profileBio">Ada di sana!</span>
+                        <i class="fa-solid fa-pen" style="color:var(--wa-muted);" onclick="editField('bio')"></i>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-chat" id="view-chat">
+            <div class="chat-header">
+                <i class="fa-solid fa-arrow-left desktop-hidden" onclick="switchViewMobile('side')"></i>
+                <img id="headerAvatar" class="avatar" style="width:40px; height:40px;">
+                <div style="flex:1">
+                    <b id="headerName">Pilih Chat</b><br>
+                    <small id="headerStatus" style="color:var(--wa-muted); font-size:0.75rem;"></small>
+                </div>
+                <div style="display:flex; gap:25px; color:var(--wa-muted);">
+                    <i class="fa-solid fa-video" onclick="initCall(true)"></i>
+                    <i class="fa-solid fa-phone" onclick="initCall(false)"></i>
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+            </div>
+
+            <div class="msg-container" id="mBox"></div>
+
+            <div class="input-area">
+                <i class="fa-regular fa-face-smile" style="font-size:1.5rem; color:var(--wa-muted);"></i>
+                <i class="fa-solid fa-plus" style="font-size:1.3rem; color:var(--wa-muted);"></i>
+                <input type="text" id="mInput" class="input-inner" placeholder="Ketik pesan">
+                <i class="fa-solid fa-paper-plane" onclick="send()" style="color:var(--wa-muted); font-size:1.3rem; cursor:pointer;"></i>
             </div>
         </main>
 
-        <aside class="panel extra-panel" id="view-extra-panel">
-            <div style="padding:25px; border-bottom:1px solid var(--border);"><h2>System Settings</h2></div>
-            <div style="padding:30px; text-align:center;">
-                <img id="pPfp" src="" class="pfp-large" onclick="update('pfp')">
-                <h3 id="pName" onclick="update('nama')">User Name</h3>
-                <p id="pID" style="opacity:0.5; margin-bottom:20px;">@username</p>
-                <div id="pBio" class="edit-input" onclick="update('bio')" style="text-align:left; min-height:60px;">Bio loading...</div>
-                
-                <div style="text-align:left; margin-top:20px;">
-                    <label style="font-size:0.8rem; opacity:0.5;">ACCOUNT PRIVACY</label>
-                    <select id="pPrivacy" class="edit-input" onchange="updatePrivacy(this.value)" style="margin-top:10px;">
-                        <option value="public">Public (Discoverable)</option>
-                        <option value="private">Private (Invite Only)</option>
-                    </select>
-                </div>
-
-                <div style="text-align:left; margin-top:20px;">
-                    <label style="font-size:0.8rem; opacity:0.5;">CHAT THEME</label>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <div onclick="setTheme('')" style="width:30px; height:30px; background:#6366f1; border-radius:8px; cursor:pointer;"></div>
-                        <div onclick="setTheme('crimson')" style="width:30px; height:30px; background:#e11d48; border-radius:8px; cursor:pointer;"></div>
-                        <div onclick="setTheme('emerald')" style="width:30px; height:30px; background:#10b981; border-radius:8px; cursor:pointer;"></div>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <nav class="mobile-nav">
-            <div onclick="switchView('side-list')"><i class="fa-solid fa-house"></i></div>
-            <div onclick="switchView('chat')"><i class="fa-solid fa-message"></i></div>
-            <div onclick="switchView('extra-panel')"><i class="fa-solid fa-user-astronaut"></i></div>
+        <nav class="mobile-nav desktop-hidden">
+            <div class="nav-btn active" onclick="switchPanel('chats')"><i class="fa-solid fa-message"></i><br>Chat</div>
+            <div class="nav-btn" onclick="switchPanel('status')"><i class="fa-solid fa-circle-notch"></i><br>Status</div>
+            <div class="nav-btn" onclick="switchPanel('profile')"><i class="fa-solid fa-user"></i><br>Profil</div>
         </nav>
     </div>
 
     <div id="callUI">
         <video id="vRemote" autoplay playsinline></video>
         <video id="vLocal" autoplay muted playsinline></video>
-        <div style="position:absolute; bottom:60px; left:50%; transform:translateX(-50%); display:flex; gap:30px;">
-            <button id="btnAns" onclick="ansCall()" style="background:#22c55e;" class="btn-circle"><i class="fa-solid fa-phone"></i></button>
-            <button onclick="endCall()" style="background:#ef4444;" class="btn-circle"><i class="fa-solid fa-phone-slash"></i></button>
+        <div style="position:relative; z-index:10; color:white;">
+            <h2 id="callTargetName">Calling...</h2>
+            <p id="callStatusText">End-to-end encrypted</p>
+        </div>
+        <div style="position:absolute; bottom:50px; left:0; width:100%; display:flex; justify-content:center; gap:40px; z-index:10;">
+            <button id="btnAccept" onclick="acceptCall()" style="background:#22c55e; border:none; width:60px; height:60px; border-radius:50%; color:white; font-size:1.5rem;"><i class="fa-solid fa-phone"></i></button>
+            <button onclick="endCall()" style="background:#ea4335; border:none; width:60px; height:60px; border-radius:50%; color:white; font-size:1.5rem;"><i class="fa-solid fa-phone-slash"></i></button>
         </div>
     </div>
 
@@ -190,119 +206,84 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let myID = "", partnerID = "", peer, callConn, stream;
+    let myID = "", partnerID = "", peer, currentCall, stream;
 
-    // --- SYSTEM INIT ---
-    function initOS() {
-        myID = document.getElementById('uID').value.trim().toLowerCase();
+    function startApp() {
+        myID = document.getElementById('loginID').value.trim().toLowerCase();
         if(!myID) return;
 
         peer = new Peer(myID);
         peer.on('open', () => {
-            const statusRef = db.ref('users/' + myID + '/status');
-            db.ref('.info/connected').on('value', s => {
-                if(s.val()) { statusRef.set('online'); statusRef.onDisconnect().set('offline'); }
+            const sRef = db.ref('users/' + myID + '/status');
+            db.ref('.info/connected').on('value', snap => {
+                if(snap.val()) { sRef.set('online'); sRef.onDisconnect().set('offline'); }
             });
 
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('os').classList.remove('hidden');
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
             
-            syncMe();
+            syncProfile();
             loadChats();
             loadStories();
 
-            peer.on('call', c => {
-                callConn = c;
+            peer.on('call', call => {
+                currentCall = call;
                 document.getElementById('callUI').style.display = 'block';
-                document.getElementById('btnAns').classList.remove('hidden');
+                document.getElementById('btnAccept').classList.remove('hidden');
             });
         });
     }
 
-    // --- PROFILE ENGINE ---
-    function syncMe() {
+    // --- LOGIKA PROFIL ---
+    function syncProfile() {
         db.ref('users/' + myID).on('value', snap => {
             const d = snap.val() || {};
-            document.getElementById('pName').innerText = d.nama || myID;
-            document.getElementById('pID').innerText = "@" + myID;
-            document.getElementById('pBio').innerText = d.bio || "Click to set bio";
-            document.getElementById('pPfp').src = d.pfp || `https://ui-avatars.com/api/?name=${myID}`;
-            document.getElementById('myStoryImg').src = d.pfp || `https://ui-avatars.com/api/?name=${myID}`;
-            document.getElementById('pPrivacy').value = d.privacy || 'public';
+            const pfp = d.pfp || `https://ui-avatars.com/api/?name=${myID}&background=random`;
+            document.getElementById('myAvatar').src = pfp;
+            document.getElementById('profileImg').src = pfp;
+            document.getElementById('myStatusImg').src = pfp;
+            document.getElementById('profileName').innerText = d.nama || myID;
+            document.getElementById('profileBio').innerText = d.bio || "Ada di sana!";
         });
     }
 
-    function update(key) {
-        const val = prompt("Enter new " + key + ":");
+    function editField(key) {
+        const val = prompt("Masukkan " + key + " baru:");
         if(val) db.ref('users/' + myID).update({ [key]: val });
     }
 
-    function updatePrivacy(val) {
-        db.ref('users/' + myID).update({ privacy: val });
-    }
-
-    // --- STORY SYSTEM ---
-    function postStory() {
-        const txt = prompt("What's on your mind? (Story Text)");
-        if(!txt) return;
-        db.ref('stories/' + myID).set({
-            sender: myID,
-            text: txt,
-            time: Date.now(),
-            views: {}
-        });
-        alert("Story posted!");
-    }
-
-    function loadStories() {
-        db.ref('stories').on('value', snap => {
-            const strip = document.getElementById('storyStrip');
-            strip.innerHTML = '<div class="story-circle my-story" onclick="postStory()"><img id="myStoryImg" src="'+document.getElementById('pPfp').src+'"></div>';
-            
-            snap.forEach(s => {
-                if(s.key !== myID) {
-                    strip.innerHTML += `
-                        <div class="story-circle" onclick="viewStory('${s.key}', '${s.val().text}')">
-                            <img src="https://ui-avatars.com/api/?name=${s.key}">
-                        </div>`;
-                }
-            });
-        });
-    }
-
-    function viewStory(id, text) {
-        // Record view
-        db.ref(`stories/${id}/views/${myID}`).set(true);
-        alert(id + " says: " + text);
-    }
-
-    // --- CHAT SYSTEM ---
+    // --- LOGIKA CHAT & HISTORY ---
     function loadChats() {
         db.ref('messages').on('value', snap => {
-            const list = document.getElementById('chatHistory');
+            const list = document.getElementById('chatList');
             list.innerHTML = "";
-            let items = [];
+            let rooms = [];
 
             snap.forEach(room => {
                 if(room.key.includes(myID)) {
                     const other = room.key.split("_").find(i => i !== myID);
                     const msgs = Object.values(room.val());
                     const last = msgs[msgs.length - 1];
-                    items.push({ id: other, last: last.text, time: last.time, unread: (last.sender !== myID && !last.read) });
+                    rooms.push({ id: other, text: last.text, time: last.time, unread: (last.sender !== myID && !last.read) });
                 }
             });
 
-            items.sort((a,b) => b.time - a.time).forEach(i => {
-                db.ref('users/' + i.id).once('value', u => {
+            rooms.sort((a,b) => b.time - a.time).forEach(r => {
+                db.ref('users/' + r.id).once('value', u => {
                     const d = u.val() || {};
                     list.innerHTML += `
-                        <div style="padding:15px; display:flex; gap:12px; cursor:pointer;" onclick="openChat('${i.id}')">
-                            <img src="${d.pfp || 'https://ui-avatars.com/api/?name='+i.id}" style="width:50px; height:50px; border-radius:15px;">
+                        <div class="chat-item" onclick="openChat('${r.id}')">
+                            <img src="${d.pfp || 'https://ui-avatars.com/api/?name='+r.id}" class="avatar">
                             <div style="flex:1">
-                                <div style="display:flex; justify-content:space-between"><b>${d.nama || i.id}</b> <small style="opacity:0.4">${new Date(i.time).getHours()}:${new Date(i.time).getMinutes()}</small></div>
-                                <p style="font-size:0.85rem; opacity:0.6;">${i.last}</p>
+                                <div style="display:flex; justify-content:space-between">
+                                    <b>${d.nama || r.id}</b>
+                                    <small style="color:${r.unread ? 'var(--wa-green)' : 'var(--wa-muted)'}">${new Date(r.time).getHours()}:${new Date(r.time).getMinutes()}</small>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-top:3px;">
+                                    <p style="color:var(--wa-muted); font-size:0.85rem; overflow:hidden; white-space:nowrap; width:200px;">${r.text}</p>
+                                    ${r.unread ? '<div style="background:var(--wa-green); color:var(--wa-dark); font-size:0.7rem; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center; font-weight:bold;">1</div>' : ''}
+                                </div>
                             </div>
-                            ${i.unread ? '<div style="width:10px; height:10px; background:var(--primary); border-radius:50%; align-self:center;"></div>' : ''}
                         </div>`;
                 });
             });
@@ -311,14 +292,13 @@
 
     function openChat(id) {
         partnerID = id;
-        document.getElementById('cTools').classList.remove('hidden');
-        if(window.innerWidth <= 1024) switchView('chat');
+        if(window.innerWidth <= 900) switchViewMobile('chat');
 
         db.ref('users/' + id).on('value', s => {
             const d = s.val() || {};
-            document.getElementById('cName').innerText = d.nama || id;
-            document.getElementById('cStatus').innerText = d.status || 'offline';
-            document.getElementById('cAvatar').innerHTML = `<img src="${d.pfp || 'https://ui-avatars.com/api/?name='+id}" style="width:100%; height:100%; border-radius:15px;">`;
+            document.getElementById('headerName').innerText = d.nama || id;
+            document.getElementById('headerStatus').innerText = d.status || 'offline';
+            document.getElementById('headerAvatar').src = d.pfp || 'https://ui-avatars.com/api/?name='+id;
         });
 
         const room = [myID, partnerID].sort().join("_");
@@ -332,17 +312,17 @@
                 box.innerHTML += `
                     <div class="bubble ${d.sender === myID ? 'sent' : 'received'}">
                         ${d.text}
-                        <div style="font-size:0.7rem; text-align:right; margin-top:5px; opacity:0.6;">
-                            ${new Date(d.time).getHours()}:${new Date(d.time).getMinutes()}
+                        <span class="msg-time">
+                            ${new Date(d.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
                             ${d.sender === myID ? `<i class="fa-solid fa-check-double ${d.read ? 'blue-tick' : ''}"></i>` : ''}
-                        </div>
+                        </span>
                     </div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
-    function sendMsg() {
+    function send() {
         const t = document.getElementById('mInput').value;
         if(!t || !partnerID) return;
         const room = [myID, partnerID].sort().join("_");
@@ -350,37 +330,76 @@
         document.getElementById('mInput').value = "";
     }
 
-    // --- CALL SYSTEM ---
-    async function makeCall(video) {
-        stream = await navigator.mediaDevices.getUserMedia({ video, audio: true });
-        document.getElementById('vLocal').srcObject = stream;
-        document.getElementById('callUI').style.display = 'block';
-        document.getElementById('btnAns').classList.add('hidden');
-        callConn = peer.call(partnerID, stream);
-        callConn.on('stream', rs => document.getElementById('vRemote').srcObject = rs);
+    function newChat() {
+        const id = prompt("Masukkan ID teman:");
+        if(id) openChat(id.toLowerCase());
     }
 
-    async function ansCall() {
+    // --- LOGIKA STATUS ---
+    function postStory() {
+        const txt = prompt("Apa yang kamu pikirkan?");
+        if(txt) db.ref('stories/' + myID).set({ text: txt, time: Date.now() });
+    }
+
+    function loadStories() {
+        db.ref('stories').on('value', snap => {
+            const list = document.getElementById('statusList');
+            list.innerHTML = "";
+            snap.forEach(s => {
+                if(s.key !== myID) {
+                    list.innerHTML += `
+                        <div class="status-item" onclick="alert('${s.key}: ${s.val().text}')">
+                            <div class="ring"><img src="https://ui-avatars.com/api/?name=${s.key}" class="avatar" style="width:100%; height:100%;"></div>
+                            <div><b>${s.key}</b><br><small style="color:var(--wa-muted);">Baru saja</small></div>
+                        </div>`;
+                }
+            });
+        });
+    }
+
+// --- LOGIKA PANGGILAN ---
+    async function initCall(video) {
+        stream = await navigator.mediaDevices.getUserMedia({ video, audio: true });
+        document.getElementById('callUI').style.display = 'block';
+        document.getElementById('vLocal').srcObject = stream;
+        document.getElementById('btnAccept').classList.add('hidden');
+        currentCall = peer.call(partnerID, stream);
+        currentCall.on('stream', rs => { document.getElementById('vRemote').srcObject = rs; });
+    }
+
+    async function acceptCall() {
         stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         document.getElementById('vLocal').srcObject = stream;
-        callConn.answer(stream);
-        callConn.on('stream', rs => document.getElementById('vRemote').srcObject = rs);
-        document.getElementById('btnAns').classList.add('hidden');
+        currentCall.answer(stream);
+        currentCall.on('stream', rs => { document.getElementById('vRemote').srcObject = rs; });
+        document.getElementById('btnAccept').classList.add('hidden');
     }
 
     function endCall() {
-        if(callConn) callConn.close();
+        if(currentCall) currentCall.close();
         if(stream) stream.getTracks().forEach(t => t.stop());
         document.getElementById('callUI').style.display = 'none';
     }
 
-    // --- UI ENGINE ---
-    function switchView(id) {
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-view'));
-        document.getElementById('view-' + id).classList.add('active-view');
+    // --- NAVIGATION ---
+    function switchPanel(name) {
+        document.getElementById('panel-chats').classList.add('hidden');
+        document.getElementById('panel-status').classList.add('hidden');
+        document.getElementById('panel-profile').classList.add('hidden');
+        document.getElementById('panel-' + name).classList.remove('hidden');
+        
+        // Mobile Nav Color
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        if(name === 'chats') document.querySelectorAll('.nav-btn')[0].classList.add('active');
+        if(name === 'status') document.querySelectorAll('.nav-btn')[1].classList.add('active');
+        if(name === 'profile') document.querySelectorAll('.nav-btn')[2].classList.add('active');
     }
 
-    function setTheme(t) { document.body.className = t ? 'theme-' + t : ''; }
+    function switchViewMobile(view) {
+        document.getElementById('view-side').classList.remove('active-view');
+        document.getElementById('view-chat').classList.remove('active-view');
+        document.getElementById('view-' + view).classList.add('active-view');
+    }
 </script>
 </body>
-    </html>
+</html>
