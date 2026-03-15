@@ -2,194 +2,236 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ConnectPro - Next Gen Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ConnectPro Dashboard</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
         :root {
-            --accent: #8b5cf6;
-            --accent-glow: rgba(139, 92, 246, 0.5);
-            --bg-dark: #09090b;
-            --glass: rgba(24, 24, 27, 0.7);
-            --border: rgba(255, 255, 255, 0.08);
-            --text: #fafafa;
-            --text-muted: #a1a1aa;
+            --primary: #8b5cf6;
+            --primary-light: #a78bfa;
+            --bg-deep: #030712;
+            --glass-card: rgba(17, 24, 39, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-high: #f9fafb;
+            --text-low: #9ca3af;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg-dark); color: var(--text); height: 100vh; overflow: hidden; }
-
-        /* Background Visual */
-        .bg-gradient {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% -20%, #2e1065, transparent),
-                        radial-gradient(circle at 0% 100%, #020617, transparent);
-            z-index: -2;
-        }
-
-        #mainBgLayer { position: fixed; inset: 0; background-size: cover; background-position: center; z-index: -1; opacity: 0.4; transition: 0.5s; pointer-events: none; }
-
-        /* Desktop Layout */
-        .app-container { display: none; height: 100vh; grid-template-columns: 280px 1fr 320px; position: relative; }
-
-        /* SIDEBAR (Desktop Only) */
-        .sidebar { background: var(--glass); backdrop-filter: blur(20px); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .sidebar-header { padding: 24px; font-weight: 700; font-size: 1.25rem; letter-spacing: -0.5px; border-bottom: 1px solid var(--border); }
+        /* Base & Scrollbar */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
         
-        .contact-list { flex: 1; overflow-y: auto; padding: 12px; }
-        .contact-card {
-            display: flex; align-items: center; gap: 12px; padding: 12px;
-            border-radius: 12px; cursor: pointer; transition: 0.2s; margin-bottom: 4px;
+        body { 
+            background: var(--bg-deep); 
+            color: var(--text-high); 
+            height: 100vh; 
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
         }
-        .contact-card:hover { background: rgba(255, 255, 255, 0.05); }
-        .contact-card.active { background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.2); }
-        .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #27272a; }
 
-        /* CHAT AREA */
-        .chat-area { display: flex; flex-direction: column; position: relative; background: rgba(0,0,0,0.2); }
-        .chat-header { 
-            padding: 16px 24px; background: var(--glass); backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;
+        /* Dynamic Background */
+        #mainBgLayer {
+            position: fixed; inset: 0; z-index: -2;
+            background-size: cover; background-position: center;
+            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        .msg-container { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
-        .bubble { 
-            max-width: 70%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.5;
-            position: relative; animation: fadeIn 0.3s ease;
+        .bg-overlay {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent),
+                        linear-gradient(to bottom, transparent, var(--bg-deep));
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .sent { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px var(--accent-glow); }
-        .received { align-self: flex-start; background: #27272a; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
 
-        /* INPUT BAR */
-        .input-wrapper { padding: 20px 24px; background: var(--glass); border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; }
-        .input-box { flex: 1; background: #18181b; border: 1px solid var(--border); padding: 12px 20px; border-radius: 24px; color: white; outline: none; transition: 0.2s; }
-        .input-box:focus { border-color: var(--accent); background: #09090b; }
+        /* Container & Grid System */
+        .app-wrapper {
+            width: 100%; max-width: 1440px; height: 100vh;
+            display: grid; grid-template-columns: 280px 1fr 320px;
+            gap: 20px; padding: 20px;
+        }
+
+        /* Common Glass Card */
+        .glass-panel {
+            background: var(--glass-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Left Panel: Navigation & Contacts */
+        .panel-left { padding: 24px; }
+        .logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+        .logo i { color: var(--primary); }
+
+        .search-box {
+            background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border);
+            padding: 12px 16px; border-radius: 16px; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .search-box input { background: none; border: none; color: white; outline: none; width: 100%; }
+
+        .contact-scroll { flex: 1; overflow-y: auto; }
+        .contact-item {
+            display: flex; align-items: center; gap: 14px; padding: 12px;
+            border-radius: 18px; cursor: pointer; transition: 0.3s; margin-bottom: 8px;
+        }
+        .contact-item:hover, .contact-item.active { background: rgba(139, 92, 246, 0.1); }
+        .pfp-wrap { position: relative; }
+        .pfp-img { width: 48px; height: 48px; border-radius: 15px; object-fit: cover; }
+        .online-dot { width: 12px; height: 12px; background: #22c55e; border: 2px solid var(--bg-deep); position: absolute; bottom: -2px; right: -2px; border-radius: 50%; }
+
+        /* Center Panel: Chat Experience */
+        .chat-header { padding: 20px 28px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+        .msg-area { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
         
-        .action-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .btn-send { background: var(--accent); color: white; }
+        .bubble { padding: 14px 18px; border-radius: 22px; max-width: 65%; font-size: 0.95rem; line-height: 1.5; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4); }
+        .received { align-self: flex-start; background: #27272a; border-bottom-left-radius: 4px; }
+
+        .input-bar-container { padding: 20px 28px; }
+        .input-bar { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: 20px; display: flex; align-items: center; gap: 12px; }
+        .input-bar input { flex: 1; background: none; border: none; color: white; outline: none; padding: 8px; }
+        
+        .action-circle { width: 44px; height: 44px; border-radius: 15px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .btn-vn { background: #3f3f46; color: white; }
-        .btn-vn.recording { background: #ef4444; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { transform: scale(1); } }
+        .btn-send { background: var(--primary); color: white; font-size: 1.1rem; }
+        .recording { background: #ef4444 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* RIGHT PANEL */
-        .right-panel { background: var(--glass); border-left: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-        .theme-section { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 16px; border: 1px solid var(--border); }
-        .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
-        .theme-dot { height: 40px; border-radius: 8px; cursor: pointer; background-size: cover; border: 2px solid transparent; }
-        .theme-dot.active { border-color: var(--accent); }
+        /* Right Panel: Bento Profile & Themes */
+        .panel-right { padding: 24px; gap: 20px; display: flex; flex-direction: column; }
+        .bento-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 22px; padding: 20px; }
+        
+        .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .theme-node { height: 45px; border-radius: 12px; cursor: pointer; border: 2px solid transparent; transition: 0.3s; background-size: cover; }
+        .theme-node.active { border-color: var(--primary); transform: scale(1.05); }
 
-        /* MOBILE NAVIGATION */
-        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--glass); backdrop-filter: blur(20px); border-top: 1px solid var(--border); padding: 12px 24px; justify-content: space-around; z-index: 100; }
-        .nav-link { color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
-        .nav-link.active { color: var(--accent); }
-
-        /* AUTH SCREEN */
-        .auth-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
-        .auth-card { width: 100%; max-width: 380px; padding: 40px; border-radius: 28px; text-align: center; }
-
-        /* RESPONSIVE LOGIC */
-        @media (max-width: 850px) {
-            .app-container { grid-template-columns: 1fr; }
-            .sidebar, .right-panel { display: none; } /* Mobile hanya lihat chat */
-            .mobile-nav { display: flex; }
-            .chat-area { height: 100vh; padding-bottom: 70px; }
-            .sidebar.active-mobile { display: flex; position: fixed; inset: 0; z-index: 150; width: 100%; }
+        /* Mobile Adjustments */
+        @media (max-width: 1024px) {
+            .app-wrapper { grid-template-columns: 1fr; padding: 0; gap: 0; }
+            .panel-left, .panel-right { display: none; }
+            .glass-panel { border-radius: 0; border: none; }
+            .mobile-bottom-nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--glass-card); backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; z-index: 100; border-top: 1px solid var(--glass-border); }
+            .nav-item { color: var(--text-low); font-size: 1.4rem; }
+            .nav-item.active { color: var(--primary); }
+            .chat-area { height: calc(100vh - 70px); }
         }
 
+        .auth-overlay { position: fixed; inset: 0; background: var(--bg-deep); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .hidden { display: none !important; }
-        audio { filter: invert(1) hue-rotate(180deg); height: 35px; width: 200px; }
+        audio { height: 35px; border-radius: 10px; width: 220px; }
     </style>
 </head>
 <body>
 
-    <div class="bg-gradient"></div>
     <div id="mainBgLayer"></div>
+    <div class="bg-overlay"></div>
 
-    <div id="authUI" class="auth-screen">
-        <div class="auth-card glass-card">
-            <h1 style="font-size: 1.75rem; margin-bottom: 8px;">ConnectPro</h1>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 32px;">The future of private messaging.</p>
-            
+    <div id="authUI" class="auth-overlay">
+        <div class="glass-panel" style="width: 100%; max-width: 400px; padding: 40px;">
+            <div class="logo" style="justify-content: center;"><i class="fa-solid fa-bolt"></i> CONNECTPRO</div>
             <div id="loginForm">
-                <input type="text" id="lID" class="input-box" style="margin-bottom:12px; width:100%;" placeholder="Username">
-                <input type="password" id="lPW" class="input-box" style="margin-bottom:24px; width:100%;" placeholder="Password">
-                <button class="btn-send action-btn" style="width:100%; border-radius:12px;" onclick="handleAuth('login')">Login</button>
-                <p style="margin-top:16px; font-size:0.85rem; color:var(--text-muted)">Belum ada akun? <span onclick="toggleAuth()" style="color:var(--accent); cursor:pointer;">Daftar</span></p>
+                <input type="text" id="lID" placeholder="ID Username">
+                <input type="password" id="lPW" placeholder="Password">
+                <button class="btn-send action-circle" style="width: 100%; margin-top: 20px; border-radius: 16px;" onclick="handleAuth('login')">Masuk</button>
+                <p align="center" style="margin-top:20px; color:var(--text-low); font-size:0.9rem;">Belum punya akun? <span onclick="toggleAuth()" style="color:var(--primary); cursor:pointer;">Daftar</span></p>
             </div>
-
             <div id="regForm" class="hidden">
-                <input type="text" id="rNama" class="input-box" style="margin-bottom:12px; width:100%;" placeholder="Nama Lengkap">
-                <input type="text" id="rID" class="input-box" style="margin-bottom:12px; width:100%;" placeholder="ID User">
-                <input type="password" id="rPW" class="input-box" style="margin-bottom:12px; width:100%;" placeholder="Password">
-                <select id="rGender" class="input-box" style="margin-bottom:24px; width:100%;">
-                    <option value="Laki-laki">Laki-laki</option>
-                    <option value="Perempuan">Perempuan</option>
-                </select>
-                <button class="btn-send action-btn" style="width:100%; border-radius:12px;" onclick="handleAuth('reg')">Daftar</button>
-                <p style="margin-top:16px; font-size:0.85rem; color:var(--text-muted)">Sudah punya akun? <span onclick="toggleAuth()" style="color:var(--accent); cursor:pointer;">Login</span></p>
+                <input type="text" id="rNama" placeholder="Nama Lengkap">
+                <input type="text" id="rID" placeholder="Buat ID">
+                <input type="password" id="rPW" placeholder="Password">
+                <button class="btn-send action-circle" style="width: 100%; margin-top: 20px; border-radius: 16px;" onclick="handleAuth('reg')">Daftar</button>
+                <p align="center" style="margin-top:20px; color:var(--text-low); font-size:0.9rem;">Punya akun? <span onclick="toggleAuth()" style="color:var(--primary); cursor:pointer;">Login</span></p>
             </div>
         </div>
     </div>
 
-    <div id="appUI" class="app-container">
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">Messages</div>
-            <div class="contact-list" id="contactList"></div>
+    <div id="appUI" class="app-wrapper hidden">
+        <div class="glass-panel panel-left">
+            <div class="logo"><i class="fa-solid fa-bolt"></i> ConnectPro</div>
+            <div class="search-box">
+                <i class="fa-solid fa-search" style="color:var(--text-low)"></i>
+                <input type="text" placeholder="Cari orang...">
+            </div>
+            <div class="contact-scroll" id="contactList">
+                </div>
         </div>
 
-        <div class="chat-area">
+        <div class="glass-panel chat-area">
             <div class="chat-header">
-                <div id="activeUser" style="display:flex; align-items:center; gap:10px;">Pilih Pesan</div>
-                <i class="fa-solid fa-ellipsis-vertical" style="color:var(--text-muted); cursor:pointer;"></i>
+                <div id="activeUserHeader" style="display:flex; align-items:center; gap:12px;">
+                    <div style="font-weight:600">Pilih Percakapan</div>
+                </div>
+                <div style="display:flex; gap:15px; color:var(--text-low)">
+                    <i class="fa-solid fa-phone cursor-pointer"></i>
+                    <i class="fa-solid fa-video cursor-pointer"></i>
+                </div>
             </div>
             
-            <div class="msg-container" id="msgBox"></div>
+            <div class="msg-area" id="msgBox">
+                <div style="margin: auto; text-align: center; color: var(--text-low);">
+                    <i class="fa-solid fa-message-dots" style="font-size: 3rem; margin-bottom: 10px; display: block;"></i>
+                    Mulai obrolan baru
+                </div>
+            </div>
 
-            <div class="input-wrapper">
-                <button id="vnBtn" class="action-btn btn-vn" onmousedown="startVN()" onmouseup="stopVN()" ontouchstart="startVN()" ontouchend="stopVN()">
-                    <i class="fa-solid fa-microphone"></i>
-                </button>
-                <input type="text" id="msgInput" class="input-box" placeholder="Ketik pesan...">
-                <button class="action-btn btn-send" onclick="sendText()">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
+            <div class="input-bar-container">
+                <div class="input-bar">
+                    <button id="vnBtn" class="action-circle btn-vn" 
+                        onmousedown="startVN()" onmouseup="stopVN()"
+                        ontouchstart="startVN()" ontouchend="stopVN()">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    <input type="text" id="msgInput" placeholder="Tulis sesuatu...">
+                    <button class="action-circle btn-send" onclick="sendText()">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="right-panel">
-            <div class="theme-section" align="center">
-                <img id="myPfp" src="" class="avatar" style="width:80px; height:80px; border:3px solid var(--accent);">
-                <h3 id="myNama" style="margin-top:12px;">Username</h3>
-                <p id="myIDDisplay" style="color:var(--text-muted); font-size:0.8rem;">@iduser</p>
+        <div class="panel-right">
+            <div class="glass-panel" style="padding: 24px; align-items: center; text-align: center;">
+                <div class="pfp-wrap">
+                    <img id="myPfp" src="" class="pfp-img" style="width:100px; height:100px; border:4px solid var(--primary);">
+                    <div class="online-dot" style="width:18px; height:18px; border-width:3px;"></div>
+                </div>
+                <h2 id="myNama" style="margin-top:15px;">Username</h2>
+                <p id="myIDDisplay" style="color:var(--text-low)">@iduser</p>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button class="action-circle" style="background:rgba(255,255,255,0.05); color:white; flex:1;"><i class="fa-solid fa-user-pen"></i></button>
+                    <button class="action-circle" style="background:rgba(239, 68, 68, 0.1); color:#ef4444; flex:1;" onclick="location.reload()"><i class="fa-solid fa-power-off"></i></button>
+                </div>
             </div>
 
-            <div class="theme-section">
-                <h4 style="font-size:0.9rem;">Appearance</h4>
+            <div class="glass-panel" style="padding: 20px; flex: 1;">
+                <h4 style="font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-low)">Personalisasi</h4>
                 <div class="theme-grid">
-                    <div class="theme-dot active" id="th_malam" style="background-image:url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?q=80&w=100');" onclick="changeTheme('malam')"></div>
-                    <div class="theme-dot" id="th_romantis" style="background-image:url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=100');" onclick="changeTheme('romantis')"></div>
-                    <div class="theme-dot" id="th_galau" style="background-image:url('https://images.unsplash.com/photo-1499341030469-9595b204c146?q=80&w=100');" onclick="changeTheme('galau')"></div>
+                    <div class="theme-node active" id="th_malam" style="background-image:url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=100');" onclick="changeTheme('malam')"></div>
+                    <div class="theme-node" id="th_romantis" style="background-image:url('https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?q=80&w=100');" onclick="changeTheme('romantis')"></div>
+                    <div class="theme-node" id="th_galau" style="background-image:url('https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?q=80&w=100');" onclick="changeTheme('galau')"></div>
                 </div>
-                <div style="margin-top:12px;">
-                    <label style="font-size:0.75rem; color:var(--text-muted);">Custom BG:</label>
-                    <input type="file" id="bgInput" accept="image/*" style="width:100%; margin-top:5px; font-size:0.7rem;">
+                <div style="margin-top:20px;">
+                    <label style="font-size:0.8rem; display:block; margin-bottom:10px;">Ganti Background:</label>
+                    <input type="file" id="bgInput" accept="image/*" style="font-size:0.7rem; color:var(--text-low)">
                 </div>
             </div>
-            <button onclick="location.reload()" style="background:none; border:1px solid #ef4444; color:#ef4444; padding:10px; border-radius:12px; cursor:pointer; font-size:0.85rem;">Sign Out</button>
         </div>
     </div>
 
-    <div class="mobile-nav" id="mobileNav">
-        <div class="nav-link active" onclick="showSection('chat')"><i class="fa-solid fa-message"></i></div>
-        <div class="nav-link" onclick="showSection('contacts')"><i class="fa-solid fa-users"></i></div>
-        <div class="nav-link" onclick="showSection('settings')"><i class="fa-solid fa-gear"></i></div>
+    <div class="mobile-bottom-nav">
+        <div class="nav-item active"><i class="fa-solid fa-comment-dots"></i></div>
+        <div class="nav-item"><i class="fa-solid fa-user-group"></i></div>
+        <div class="nav-item"><i class="fa-solid fa-palette"></i></div>
+        <div class="nav-item"><i class="fa-solid fa-circle-user"></i></div>
     </div>
 
 <script>
@@ -209,38 +251,19 @@
 
     let myID = "", partnerID = "", mediaRec, chunks = [];
 
-    // --- NAVIGATION LOGIC ---
+    // --- AUTH ---
     function toggleAuth() {
         document.getElementById('loginForm').classList.toggle('hidden');
         document.getElementById('regForm').classList.toggle('hidden');
     }
 
-    function showSection(section) {
-        // Mobile Navigation Switcher
-        const sidebar = document.getElementById('sidebar');
-        const links = document.querySelectorAll('.nav-link');
-        links.forEach(l => l.classList.remove('active'));
-
-        if(section === 'contacts') {
-            sidebar.classList.add('active-mobile');
-            links[1].classList.add('active');
-        } else if (section === 'chat') {
-            sidebar.classList.remove('active-mobile');
-            links[0].classList.add('active');
-        } else {
-            alert("Settings Mode: Kamu bisa ganti tema di panel kanan (Desktop)!");
-        }
-    }
-
-    // --- AUTH ---
     function handleAuth(type) {
         if(type === 'reg') {
             const id = document.getElementById('rID').value.trim().toLowerCase();
             const pw = document.getElementById('rPW').value;
             const nama = document.getElementById('rNama').value;
-            const gender = document.getElementById('rGender').value;
-            if(!id || !pw) return alert("Isi semua bidang.");
-            db.ref('users/' + id).set({ nama, pw, gender, pfp: '' }).then(() => { alert("Sukses!"); toggleAuth(); });
+            if(!id || !pw) return alert("Lengkapi data!");
+            db.ref('users/' + id).set({ nama, pw, pfp: '' }).then(() => { alert("Sukses!"); toggleAuth(); });
         } else {
             const id = document.getElementById('lID').value.trim().toLowerCase();
             const pw = document.getElementById('lPW').value;
@@ -248,17 +271,17 @@
                 if(snap.exists() && snap.val().pw === pw) {
                     myID = id;
                     document.getElementById('authUI').classList.add('hidden');
-                    document.getElementById('appUI').style.display = 'grid';
+                    document.getElementById('appUI').classList.remove('hidden');
                     document.getElementById('myNama').innerText = snap.val().nama;
                     document.getElementById('myIDDisplay').innerText = '@' + id;
                     document.getElementById('myPfp').src = snap.val().pfp || 'https://via.placeholder.com/150';
                     loadContacts();
-                } else alert("Invalid credentials.");
+                } else alert("Username/Password salah!");
             });
         }
     }
 
-    // --- CORE FEATURES ---
+    // --- CORE LOGIC ---
     function loadContacts() {
         db.ref('users').on('value', snap => {
             const list = document.getElementById('contactList');
@@ -266,11 +289,14 @@
             snap.forEach(u => {
                 if(u.key !== myID) {
                     list.innerHTML += `
-                        <div class="contact-card" onclick="openChat('${u.key}', '${u.val().nama}', '${u.val().pfp}')">
-                            <img src="${u.val().pfp || 'https://via.placeholder.com/150'}" class="avatar">
+                        <div class="contact-item" onclick="openChat('${u.key}', '${u.val().nama}', '${u.val().pfp}')">
+                            <div class="pfp-wrap">
+                                <img src="${u.val().pfp || 'https://via.placeholder.com/150'}" class="pfp-img">
+                                <div class="online-dot"></div>
+                            </div>
                             <div style="flex:1">
                                 <div style="font-weight:600; font-size:0.95rem;">${u.val().nama}</div>
-                                <div style="color:var(--text-muted); font-size:0.75rem;">${u.val().gender}</div>
+                                <div style="color:var(--text-low); font-size:0.75rem;">Online</div>
                             </div>
                         </div>`;
                 }
@@ -280,12 +306,13 @@
 
     function openChat(id, nama, pfp) {
         partnerID = id;
-        document.getElementById('activeUser').innerHTML = `<img src="${pfp || 'https://via.placeholder.com/150'}" style="width:32px; height:32px; border-radius:50%;"> ${nama}`;
+        document.getElementById('activeUserHeader').innerHTML = `
+            <img src="${pfp || 'https://via.placeholder.com/150'}" style="width:35px; height:35px; border-radius:10px; object-fit:cover;">
+            <div>
+                <div style="font-weight:600; font-size:0.95rem;">${nama}</div>
+                <div style="font-size:0.7rem; color:#22c55e;">sedang mengetik...</div>
+            </div>`;
         
-        // Mobile auto-close sidebar
-        document.getElementById('sidebar').classList.remove('active-mobile');
-        document.querySelectorAll('.nav-link')[0].classList.add('active');
-
         const room = [myID, partnerID].sort().join("_");
         db.ref('messages/' + room).on('value', snap => {
             const box = document.getElementById('msgBox');
@@ -307,11 +334,11 @@
         const text = document.getElementById('msgInput').value;
         if(!text || !partnerID) return;
         const room = [myID, partnerID].sort().join("_");
-        db.ref('messages/' + room).push({ sender: myID, text: text, type: 'text' });
+        db.ref('messages/' + room).push({ sender: myID, text: text, type: 'text', time: Date.now() });
         document.getElementById('msgInput').value = "";
     }
 
-    // --- VOICE NOTE LOGIC ---
+    // --- VOICE NOTE ---
     async function startVN() {
         if(!partnerID) return;
         try {
@@ -321,7 +348,7 @@
             chunks = [];
             document.getElementById('vnBtn').classList.add('recording');
             mediaRec.ondataavailable = e => chunks.push(e.data);
-        } catch (e) { console.error(e); }
+        } catch (e) { alert("Izinkan mic!"); }
     }
 
     function stopVN() {
@@ -340,23 +367,23 @@
 
     // --- THEME ENGINE ---
     function changeTheme(theme) {
-        document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
+        document.querySelectorAll('.theme-node').forEach(n => n.classList.remove('active'));
         document.getElementById('th_'+theme).classList.add('active');
         const bg = document.getElementById('mainBgLayer');
 
         if(theme === 'malam') {
-            bg.style.backgroundImage = "url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?q=80&w=1920')";
-            document.documentElement.style.setProperty('--accent', '#8b5cf6');
+            bg.style.backgroundImage = "url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1920')";
+            document.documentElement.style.setProperty('--primary', '#8b5cf6');
         } else if(theme === 'romantis') {
-            bg.style.backgroundImage = "url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=1920')";
-            document.documentElement.style.setProperty('--accent', '#ec4899');
+            bg.style.backgroundImage = "url('https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?q=80&w=1920')";
+            document.documentElement.style.setProperty('--primary', '#ec4899');
         } else if(theme === 'galau') {
-            bg.style.backgroundImage = "url('https://images.unsplash.com/photo-1499341030469-9595b204c146?q=80&w=1920')";
-            document.documentElement.style.setProperty('--accent', '#3b82f6');
+            bg.style.backgroundImage = "url('https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?q=80&w=1920')";
+            document.documentElement.style.setProperty('--primary', '#3b82f6');
         }
     }
 
-    document.getElementById('bgInput').onchange = function(e) {
+    document.getElementById('bgInput').onchange = (e) => {
         const reader = new FileReader();
         reader.onload = (ev) => document.getElementById('mainBgLayer').style.backgroundImage = `url('${ev.target.result}')`;
         reader.readAsDataURL(e.target.files[0]);
