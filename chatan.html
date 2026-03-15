@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
         .hide-scroll::-webkit-scrollbar { display: none; }
@@ -144,6 +145,29 @@
             <button id="btn-upload" onclick="uploadStory()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl mt-4 shadow-lg active:scale-95 transition">Bagikan Sekarang</button>
         </div>
     </div>
+
+    <nav class="glass border-t flex justify-around items-center p-3 h-16 md:p-6 md:h-20 bg-white/90">
+    <button class="flex flex-col items-center justify-center transition-all hover:scale-110 group">
+        <i class="fa-solid fa-house text-xl md:text-2xl text-blue-600"></i>
+        <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1 text-blue-600">Beranda</span>
+    </button>
+    
+    <button class="flex flex-col items-center justify-center transition-all hover:scale-110 group">
+        <i class="fa-solid fa-phone-history text-xl md:text-2xl text-slate-400 group-hover:text-blue-400"></i>
+        <i class="fa-solid fa-clock-rotate-left text-xl md:text-2xl text-slate-400 group-hover:text-blue-400"></i>
+        <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1 text-slate-400 group-hover:text-blue-400">History</span>
+    </button>
+    
+    <button class="flex flex-col items-center justify-center transition-all hover:scale-110 group">
+        <i class="fa-solid fa-comment-dots text-xl md:text-2xl text-slate-400 group-hover:text-blue-400"></i>
+        <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1 text-slate-400 group-hover:text-blue-400">Chat</span>
+    </button>
+    
+    <button class="flex flex-col items-center justify-center transition-all hover:scale-110 group">
+        <i class="fa-solid fa-user-gear text-xl md:text-2xl text-slate-400 group-hover:text-blue-400"></i>
+        <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1 text-slate-400 group-hover:text-blue-400">Profil</span>
+    </button>
+    </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
