@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Pro - Elite Edition</title>
+    <title>WhatsApp Pro - Final Identity & Security</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -23,50 +23,50 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--wa-bg); color: var(--wa-text); height: 100vh; overflow: hidden; }
+        body { background: var(--wa-bg); color: var(--wa-text); height: 100vh; overflow: hidden; position: fixed; width: 100%; }
 
-        /* --- AUTH --- */
-        .auth-container { position: fixed; inset: 0; background: var(--wa-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { background: var(--wa-surface); padding: 30px; border-radius: 15px; width: 100%; max-width: 380px; text-align: center; }
-        .auth-input { width: 100%; padding: 12px; background: #2a3942; border: 1px solid transparent; color: white; border-radius: 8px; margin-bottom: 12px; outline: none; }
-        .auth-btn { width: 100%; padding: 12px; background: var(--wa-green); border: none; color: #000; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; }
+        /* --- AUTH SCREENS --- */
+        .auth-container { position: fixed; inset: 0; background: var(--wa-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
+        .auth-card { background: var(--wa-surface); padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .auth-input, .auth-select { width: 100%; padding: 12px; background: #2a3942; border: 1px solid transparent; color: white; border-radius: 8px; margin-bottom: 10px; outline: none; font-size: 14px; }
+        .auth-btn { width: 100%; padding: 12px; background: var(--wa-green); border: none; color: #000; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; font-size: 1rem; }
+        .captcha-box { background: #0b141a; padding: 10px; border-radius: 8px; color: var(--wa-green); font-weight: bold; letter-spacing: 8px; margin-bottom: 10px; font-size: 24px; user-select: none; border: 1px dashed var(--wa-muted); }
 
-        /* --- LAYOUT --- */
-        .app-container { display: flex; height: 100vh; width: 100%; position: relative; }
-        .side-bar { width: 400px; background: var(--wa-bg); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; }
-        .header { background: #202c33; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
+        /* --- MAIN LAYOUT --- */
+        .app-container { display: flex; height: 100vh; width: 100%; }
+        .side-bar { width: 400px; background: var(--wa-bg); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; flex-shrink: 0; }
         
-        /* --- TABS --- */
-        .tabs { display: flex; background: #202c33; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .tab-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; color: var(--wa-muted); font-weight: 600; font-size: 0.9rem; }
-        .tab-btn.active { color: var(--wa-green); border-bottom: 3px solid var(--wa-green); }
+        .header { background: #202c33; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header-icons { display: flex; gap: 25px; color: var(--wa-muted); cursor: pointer; align-items: center; }
 
-        /* --- LISTS --- */
-        .list-container { flex: 1; overflow-y: auto; }
-        .item { padding: 12px 16px; display: flex; gap: 15px; cursor: pointer; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .list-container { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .item { padding: 15px 16px; display: flex; gap: 15px; cursor: pointer; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
         .item:hover { background: #2a3942; }
-        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #3b4a54; }
-        .ring { border: 2px solid var(--wa-green); padding: 2px; }
+        .avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: #3b4a54; flex-shrink: 0; }
+        
+        .user-info { flex: 1; min-width: 0; }
+        .user-info b { font-size: 0.95rem; color: #fff; display: flex; align-items: center; gap: 6px; }
+        .badge-id { font-size: 0.65rem; background: #3b4a54; padding: 2px 6px; border-radius: 4px; color: var(--wa-green); font-weight: normal; }
+        .user-info p { font-size: 0.75rem; color: var(--wa-muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-meta { font-size: 0.7rem; color: var(--wa-green); margin-top: 2px; display: flex; gap: 10px; opacity: 0.8; }
 
         /* --- CHAT AREA --- */
-        .main-chat { flex: 1; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); display: flex; flex-direction: column; }
-        .chat-head { background: #202c33; padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
-        .msg-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 5px; }
-        .bubble { padding: 8px 12px; border-radius: 8px; max-width: 70%; font-size: 0.9rem; }
-        .sent { align-self: flex-end; background: var(--wa-bubble-sent); }
-        .received { align-self: flex-start; background: var(--wa-bubble-rcvd); }
-
-        /* --- PROFILE EDIT --- */
-        .profile-pane { padding: 20px; text-align: center; }
-        .p-img-box { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; }
-        .p-img-box i { position: absolute; bottom: 0; right: 0; background: var(--wa-green); padding: 10px; border-radius: 50%; color: #000; cursor: pointer; }
-
-        /* Mobile Overlay */
+        .main-chat { flex: 1; display: flex; flex-direction: column; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); position: relative; background-color: #0b141a; }
+        
         @media (max-width: 900px) {
             .side-bar { width: 100%; }
-            .main-chat { position: absolute; inset: 0; z-index: 100; transform: translateX(100%); transition: 0.3s; }
+            .main-chat { position: fixed; inset: 0; z-index: 100; transform: translateX(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
             .main-chat.active { transform: translateX(0); }
         }
+
+        .chat-head { background: #202c33; padding: 10px 18px; display: flex; align-items: center; gap: 15px; }
+        .msg-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+        .bubble { padding: 8px 14px; border-radius: 10px; max-width: 80%; font-size: 0.95rem; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .sent { align-self: flex-end; background: var(--wa-bubble-sent); border-top-right-radius: 0; }
+        .received { align-self: flex-start; background: var(--wa-bubble-rcvd); border-top-left-radius: 0; }
+
+        .input-area { background: #202c33; padding: 10px 15px; display: flex; align-items: center; gap: 15px; }
+        .m-input { flex: 1; background: #2a3942; border: none; padding: 12px 18px; color: white; border-radius: 25px; outline: none; font-size: 16px; }
 
         .hidden { display: none !important; }
     </style>
@@ -75,122 +75,142 @@
 
     <div id="loginPage" class="auth-container">
         <div class="auth-card">
-            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:3rem; margin-bottom:15px;"></i>
-            <h2>Masuk</h2>
-            <input type="text" id="l-id" class="auth-input" placeholder="ID">
+            <i class="fa-brands fa-whatsapp" style="color:var(--wa-green); font-size:4rem;"></i>
+            <h2 style="margin: 20px 0;">WhatsApp Login</h2>
+            <input type="text" id="l-id" class="auth-input" placeholder="ID Pengguna">
             <input type="password" id="l-pass" class="auth-input" placeholder="Password">
-            <button onclick="auth('login')" class="auth-btn">MASUK</button>
-            <p style="margin-top:15px; font-size:0.8rem;">Belum punya akun? <span onclick="toggleAuth('reg')" style="color:var(--wa-green); cursor:pointer;">Daftar</span></p>
+            <button onclick="auth('login')" class="auth-btn">LOG IN</button>
+            <p style="margin-top:20px; font-size:0.85rem;">Belum punya akun? <span onclick="toggleAuth('reg')" style="color:var(--wa-green); cursor:pointer; font-weight:bold;">Daftar</span></p>
         </div>
     </div>
 
     <div id="regPage" class="auth-container hidden">
         <div class="auth-card">
-            <h2>Daftar Akun</h2>
-            <input type="text" id="r-id" class="auth-input" placeholder="ID Baru">
+            <h2 style="margin-bottom: 15px;">Buat Akun Baru</h2>
+            <input type="text" id="r-nama" class="auth-input" placeholder="Nama Lengkap">
+            <input type="text" id="r-id" class="auth-input" placeholder="Pilih ID (Contoh: budi12)">
+            <input type="number" id="r-hp" class="auth-input" placeholder="Nomor HP (08xx...)">
+            <select id="r-gender" class="auth-select">
+                <option value="">Pilih Jenis Kelamin</option>
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+            </select>
             <input type="password" id="r-pass" class="auth-input" placeholder="Password">
-            <button onclick="auth('reg')" class="auth-btn">DAFTAR</button>
-            <p style="margin-top:15px; font-size:0.8rem;">Sudah punya akun? <span onclick="toggleAuth('login')" style="color:var(--wa-green); cursor:pointer;">Masuk</span></p>
+            
+            <div style="margin: 10px 0;">
+                <p style="font-size: 0.75rem; color: var(--wa-muted); margin-bottom: 8px;">Verifikasi Keamanan (Captcha):</p>
+                <div id="captchaCode" class="captcha-box">0000</div>
+                <input type="text" id="r-captcha" class="auth-input" placeholder="Ketik angka di atas">
+            </div>
+
+            <button onclick="auth('reg')" class="auth-btn">DAFTAR SEKARANG</button>
+            <p style="margin-top:15px; font-size:0.85rem;">Sudah punya akun? <span onclick="toggleAuth('login')" style="color:var(--wa-green); cursor:pointer; font-weight:bold;">Masuk</span></p>
         </div>
     </div>
 
     <div id="app" class="app-container hidden">
         <aside class="side-bar">
             <div class="header">
-                <img id="myAvatar" class="avatar" style="width:35px; height:35px;" onclick="showTab('profile')">
-                <div style="display:flex; gap:15px; color:var(--wa-muted); cursor:pointer;">
-                    <i class="fa-solid fa-circle-notch" onclick="showTab('story')"></i>
-                    <i class="fa-solid fa-plus" onclick="startChat()"></i>
-                    <i class="fa-solid fa-phone" onclick="showTab('calls')"></i>
+                <img id="myAvatar" class="avatar" style="width:40px; height:40px; cursor:pointer;" title="Profil Saya">
+                <div class="header-icons">
+                    <i class="fa-solid fa-circle-notch" onclick="document.getElementById('storyInput').click()" title="Post Story"></i>
+                    <i class="fa-solid fa-message" onclick="startChat()" title="Tambah Chat"></i>
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
                 </div>
             </div>
-
-            <div class="tabs">
-                <div class="tab-btn active" id="btn-chats" onclick="showTab('chats')">CHATS</div>
-                <div class="tab-btn" id="btn-story" onclick="showTab('story')">STORY</div>
-                <div class="tab-btn" id="btn-calls" onclick="showTab('calls')">CALLS</div>
-            </div>
+            
+            <input type="file" id="storyInput" accept="image/*" class="hidden" onchange="postStory(this)">
 
             <div id="pane-chats" class="list-container"></div>
-            
-            <div id="pane-story" class="list-container hidden">
-                <div class="item" onclick="uploadStory()">
-                    <div style="position:relative"><img id="sAvatar" class="avatar"><div style="position:absolute; bottom:0; right:0; background:var(--wa-green); border-radius:50%; font-size:10px; padding:2px; color:#000;">+</div></div>
-                    <div><b>Status Saya</b><br><small id="storyViewerCount">Ketuk untuk update</small></div>
-                </div>
-                <div id="otherStories"></div>
-            </div>
-
-            <div id="pane-calls" class="list-container hidden"></div>
-
-            <div id="pane-profile" class="list-container hidden profile-pane">
-                <div class="p-img-box">
-                    <img id="p-img" class="avatar" style="width:120px; height:120px;">
-                    <i class="fa-solid fa-camera" onclick="edit('pfp')"></i>
-                </div>
-                <h3 id="p-nama" onclick="edit('nama')">Nama</h3>
-                <p id="p-id" style="color:var(--wa-muted); margin-bottom:10px;">@id</p>
-                <p id="p-bio" onclick="edit('bio')">Bio...</p>
-                <div style="margin-top:20px; background:#2a3942; padding:15px; border-radius:10px;">
-                    <label>Privasi Akun:</label>
-                    <select id="p-priv" onchange="updatePrivacy(this.value)" style="background:none; color:var(--wa-green); border:none; font-weight:bold; cursor:pointer;">
-                        <option value="public">Publik</option>
-                        <option value="private">Privat</option>
-                    </select>
-                </div>
-                <button onclick="showTab('chats')" class="auth-btn" style="margin-top:20px;">Kembali</button>
-            </div>
         </aside>
 
         <main id="chatWindow" class="main-chat">
-            <div id="noChat" style="margin:auto; text-align:center; color:var(--wa-muted);"><i class="fa-brands fa-whatsapp" style="font-size:5rem; opacity:0.1;"></i><p>Pilih chat untuk memulai</p></div>
+            <div id="noChat" style="margin:auto; text-align:center; color:var(--wa-muted); opacity:0.4;">
+                <i class="fa-brands fa-whatsapp" style="font-size:8rem;"></i>
+                <p style="margin-top: 15px; font-size: 1.1rem;">Pilih pengguna untuk mulai chatting</p>
+            </div>
+
             <div id="chatActive" class="hidden" style="display:flex; flex-direction:column; height:100%;">
                 <div class="chat-head">
-                    <i class="fa-solid fa-arrow-left" onclick="closeChat()"></i>
+                    <i class="fa-solid fa-arrow-left" onclick="closeChat()" style="cursor:pointer; color:var(--wa-muted);"></i>
                     <img id="hAvatar" class="avatar" style="width:40px; height:40px;">
                     <div style="flex:1">
                         <b id="hName">...</b><br>
                         <small id="hStatus" style="font-size:0.7rem;"></small>
                     </div>
-                    <div style="display:flex; gap:20px; color:var(--wa-muted);"><i class="fa-solid fa-video" onclick="makeCall('video')"></i><i class="fa-solid fa-phone" onclick="makeCall('voice')"></i></div>
+                    <div class="header-icons">
+                        <i class="fa-solid fa-video"></i>
+                        <i class="fa-solid fa-phone"></i>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
                 </div>
                 <div id="mBox" class="msg-box"></div>
                 <div class="input-area">
+                    <i class="fa-regular fa-face-smile" style="font-size:1.5rem; color:var(--wa-muted);"></i>
                     <input type="text" id="mInput" class="m-input" placeholder="Ketik pesan">
-                    <i class="fa-solid fa-paper-plane" onclick="send()"></i>
+                    <i class="fa-solid fa-paper-plane" onclick="send()" style="color:var(--wa-green); cursor:pointer; font-size: 1.3rem;"></i>
                 </div>
             </div>
         </main>
     </div>
 
 <script>
+    // --- FIREBASE SETUP ---
     const firebaseConfig = {
         apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
         databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let myID = "", partnerID = "";
+    
+    let myID = "", partnerID = "", currentCaptcha = "";
+
+    // --- CAPTCHA GENERATOR ---
+    function genCaptcha() {
+        currentCaptcha = Math.floor(1000 + Math.random() * 9000).toString();
+        const box = document.getElementById('captchaCode');
+        if(box) box.innerText = currentCaptcha;
+    }
+    genCaptcha();
 
     function toggleAuth(m) {
         document.getElementById('loginPage').classList.toggle('hidden', m!=='login');
         document.getElementById('regPage').classList.toggle('hidden', m!=='reg');
+        if(m === 'reg') genCaptcha();
     }
 
+    // --- AUTH LOGIC ---
     async function auth(mode) {
-        const id = document.getElementById(mode==='login'?'l-id':'r-id').value.trim().toLowerCase();
-        const pass = document.getElementById(mode==='login'?'l-pass':'r-pass').value.trim();
-        const ref = db.ref('accounts/'+id);
-        const snap = await ref.once('value');
+        if(mode === 'login') {
+            const id = document.getElementById('l-id').value.trim().toLowerCase();
+            const pass = document.getElementById('l-pass').value.trim();
+            if(!id || !pass) return;
 
-        if(mode==='login') {
+            const snap = await db.ref('accounts/'+id).once('value');
             if(snap.exists() && snap.val().password === pass) launch(id);
-            else alert("Gagal Login!");
+            else alert("ID atau Password salah!");
         } else {
-            if(snap.exists()) alert("ID sudah ada!");
+            const nama = document.getElementById('r-nama').value.trim();
+            const id = document.getElementById('r-id').value.trim().toLowerCase();
+            const hp = document.getElementById('r-hp').value.trim();
+            const gender = document.getElementById('r-gender').value;
+            const pass = document.getElementById('r-pass').value.trim();
+            const cap = document.getElementById('r-captcha').value.trim();
+
+            if(!nama || !id || !hp || !gender || !pass) return alert("Lengkapi data!");
+            if(cap !== currentCaptcha) {
+                alert("Captcha salah!");
+                genCaptcha();
+                return;
+            }
+
+            const check = await db.ref('accounts/'+id).once('value');
+            if(check.exists()) alert("ID sudah terdaftar!");
             else {
-                await ref.set({password: pass});
-                await db.ref('users/'+id).set({nama: id, bio: "Available", pfp: "", privacy: "public", status: "online"});
+                await db.ref('accounts/'+id).set({password: pass});
+                await db.ref('users/'+id).set({
+                    nama: nama, id: id, hp: hp, gender: gender, pfp: "", status: "online"
+                });
                 launch(id);
             }
         }
@@ -204,45 +224,47 @@
         
         db.ref('users/'+id+'/status').set('online');
         db.ref('users/'+id+'/status').onDisconnect().set('offline');
-
-        syncProfile();
-        loadHistory();
-        loadStories();
-        loadCalls();
+        
+        document.getElementById('myAvatar').src = `https://ui-avatars.com/api/?name=${id}&background=random`;
+        loadChatList();
     }
 
-    function syncProfile() {
-        db.ref('users/'+myID).on('value', s => {
-            const d = s.val() || {};
-            const img = d.pfp || `https://ui-avatars.com/api/?name=${myID}`;
-            document.getElementById('myAvatar').src = document.getElementById('sAvatar').src = document.getElementById('p-img').src = img;
-            document.getElementById('p-nama').innerText = d.nama;
-            document.getElementById('p-id').innerText = "@"+myID;
-            document.getElementById('p-bio').innerText = d.bio;
-            document.getElementById('p-priv').value = d.privacy;
-        });
-    }
-
-    function loadHistory() {
+    // --- CHAT LIST & INFO ---
+    function loadChatList() {
         db.ref('messages').on('value', snap => {
             const list = document.getElementById('pane-chats');
             list.innerHTML = "";
+            let rooms = [];
+            
             snap.forEach(room => {
                 if(room.key.includes(myID)) {
                     const other = room.key.split("_").find(i => i!==myID);
                     const last = Object.values(room.val()).pop();
-                    db.ref('users/'+other).once('value', u => {
-                        const ud = u.val();
-                        list.innerHTML += `<div class="item" onclick="openChat('${other}')">
-                            <img src="${ud.pfp || 'https://ui-avatars.com/api/?name='+other}" class="avatar">
-                            <div><b>${ud.nama}</b><br><small style="color:var(--wa-muted)">${last.text}</small></div>
-                        </div>`;
-                    });
+                    rooms.push({id: other, msg: last.text, time: last.time});
                 }
+            });
+
+            rooms.sort((a,b) => b.time - a.time).forEach(r => {
+                db.ref('users/'+r.id).once('value', u => {
+                    const d = u.val() || {};
+                    list.innerHTML += `
+                        <div class="item" onclick="openChat('${r.id}')">
+                            <img src="${d.pfp || 'https://ui-avatars.com/api/?name='+r.id}" class="avatar">
+                            <div class="user-info">
+                                <b>${d.nama || r.id} <span class="badge-id">@${r.id}</span></b>
+                                <div class="user-meta">
+                                    <span><i class="fa-solid fa-phone"></i> ${d.hp}</span>
+                                    <span><i class="fa-solid fa-venus-mars"></i> ${d.gender}</span>
+                                </div>
+                                <p>"${r.msg}"</p>
+                            </div>
+                        </div>`;
+                });
             });
         });
     }
 
+    // --- CHAT SYSTEM ---
     function openChat(id) {
         partnerID = id;
         document.getElementById('noChat').classList.add('hidden');
@@ -250,10 +272,10 @@
         document.getElementById('chatWindow').classList.add('active');
 
         db.ref('users/'+id).on('value', s => {
-            const d = s.val();
-            document.getElementById('hName').innerText = d.nama;
+            const d = s.val() || {};
+            document.getElementById('hName').innerText = d.nama || id;
             document.getElementById('hAvatar').src = d.pfp || `https://ui-avatars.com/api/?name=${id}`;
-            document.getElementById('hStatus').innerText = d.status;
+            document.getElementById('hStatus').innerText = d.status || 'offline';
             document.getElementById('hStatus').style.color = d.status === 'online' ? 'var(--wa-green)' : 'var(--wa-muted)';
         });
 
@@ -262,8 +284,8 @@
             const box = document.getElementById('mBox');
             box.innerHTML = "";
             snap.forEach(m => {
-                const d = m.val();
-                box.innerHTML += `<div class="bubble ${d.sender===myID?'sent':'received'}">${d.text}</div>`;
+                const data = m.val();
+                box.innerHTML += `<div class="bubble ${data.sender===myID?'sent':'received'}">${data.text}</div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
@@ -277,84 +299,30 @@
         document.getElementById('mInput').value = "";
     }
 
-    // --- STORY ---
-    function uploadStory() {
-        const txt = prompt("Ketik isi story kamu:");
-        if(txt) db.ref('stories/'+myID).set({text: txt, time: Date.now(), viewers: {}});
-    }
-
-    function loadStories() {
-        db.ref('stories').on('value', snap => {
-            const list = document.getElementById('otherStories');
-            list.innerHTML = "";
-            snap.forEach(s => {
-                if(s.key === myID) {
-                    const views = s.val().viewers ? Object.keys(s.val().viewers).length : 0;
-                    document.getElementById('storyViewerCount').innerText = views + " Dilihat";
-                } else {
-                    list.innerHTML += `<div class="item" onclick="viewStory('${s.key}','${s.val().text}')">
-                        <img src="https://ui-avatars.com/api/?name=${s.key}" class="avatar ring">
-                        <div><b>${s.key}</b><br><small>Baru saja</small></div>
-                    </div>`;
-                }
+    // --- STORY FEATURE ---
+    function postStory(input) {
+        const file = input.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            db.ref('stories/'+myID).set({
+                img: e.target.result,
+                time: Date.now()
             });
-        });
+            alert("Story foto berhasil diposting!");
+        };
+        reader.readAsDataURL(file);
     }
 
-    function viewStory(id, txt) {
-        db.ref(`stories/${id}/viewers/${myID}`).set(true);
-        alert("Story " + id + ":\n\n" + txt);
-    }
-
-    // --- CALL HISTORY ---
-    function makeCall(type) {
-        db.ref('calls').push({from: myID, to: partnerID, type: type, time: Date.now()});
-        alert("Memulai " + type + " call ke " + partnerID);
-    }
-
-    function loadCalls() {
-        db.ref('calls').on('value', snap => {
-            const list = document.getElementById('pane-calls');
-            list.innerHTML = "";
-            snap.forEach(c => {
-                const d = c.val();
-                if(d.from === myID || d.to === myID) {
-                    const target = d.from === myID ? d.to : d.from;
-                    list.innerHTML += `<div class="item">
-                        <i class="fa-solid fa-phone" style="color:var(--wa-muted)"></i>
-                        <div><b>${target}</b><br><small>${d.type} - ${new Date(d.time).toLocaleString()}</small></div>
-                    </div>`;
-                }
-            });
-        });
-    }
-
-    // --- UTILS ---
     async function startChat() {
-        const id = prompt("Cari ID teman:").toLowerCase();
+        const id = prompt("Masukkan ID teman:").toLowerCase();
+        if(!id) return;
         const u = await db.ref('users/'+id).once('value');
-        if(u.exists()) {
-            if(u.val().privacy === 'private') alert("User ini memprivat akunnya!");
-            else openChat(id);
-        } else alert("User tidak ditemukan!");
+        if(u.exists()) openChat(id);
+        else alert("User tidak ditemukan!");
     }
 
-    function showTab(t) {
-        ['chats', 'story', 'calls', 'profile'].forEach(p => {
-            document.getElementById('pane-'+p).classList.add('hidden');
-            if(document.getElementById('btn-'+p)) document.getElementById('btn-'+p).classList.remove('active');
-        });
-        document.getElementById('pane-'+t).classList.remove('hidden');
-        if(document.getElementById('btn-'+t)) document.getElementById('btn-'+t).classList.add('active');
-    }
-
-    function edit(field) {
-        const val = prompt("Masukkan " + field + " baru:");
-        if(val) db.ref('users/'+myID).update({[field]: val});
-    }
-
-    function updatePrivacy(v) { db.ref('users/'+myID).update({privacy: v}); }
     function closeChat() { document.getElementById('chatWindow').classList.remove('active'); }
 </script>
 </body>
-                    </html>
+    </html>
