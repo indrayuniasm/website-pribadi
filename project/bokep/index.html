@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S4NG3 3UY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: white; overflow-x: hidden; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .active-category { background: #3b82f6 !important; color: white !important; border-color: #3b82f6 !important; }
+        .glass-footer { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px); border-top: 1px solid rgba(255,255,255,0.05); }
+        .video-card:active { scale: 0.98; }
+        
+        /* Animasi Modal Player */
+        #player-modal { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+                       /* Warna Custom untuk Search Bar */
+:root {
+    --search-bg: rgba(15, 23, 42, 0.6); /* Slate 900 dengan transparansi */
+    --search-border: rgba(255, 255, 255, 0.08);
+    --search-focus-ring: rgba(59, 130, 246, 0.5); /* Blue 500 dengan transparansi */
+}
+
+.search-container {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-container:focus-within {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: #ffffff;
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.5);
+}
+
+/* Desktop: Header satu baris */
+#category-bar {
+    top: 72px; 
+}
+
+/* Mobile: Header dua baris (Logo atas, Search bawah) */
+@media (max-width: 768px) {
+    #category-bar {
+        top: 135px; /* Sesuaikan dengan tinggi header saat menumpuk */
+    }
+}
+
+/* Posisi Tombol X agar benar-benar di tengah vertikal */
+.clear-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%) scale(0.8); /* Menengahkannya secara vertikal */
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Munculkan saat ada class .show */
+.clear-btn.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) scale(1); /* Tetap jaga translateY agar tidak turun */
+}
+    </style>
+</head>
+<body class="pb-24">
+<header class="sticky top-0 z-[60] bg-blue-700 px-6 py-4 shadow-2xl">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-4">
+        
+        <div class="flex items-center gap-2 cursor-pointer min-w-max" onclick="location.reload()">
+            <i class="fa-solid fa-play-circle text-2xl text-white"></i>
+            <span class="text-xl font-800 tracking-tighter uppercase text-white">S4NG3<span class="text-blue-200">3UY</span></span>
+        </div>
+
+        <div class="flex-1 w-full max-w-2xl mx-auto md:mx-4">
+            <div class="search-container relative flex items-center rounded-2xl overflow-hidden bg-slate-950/20 border border-white/10 backdrop-blur-md">
+    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-blue-200/60 text-sm"></i>
+    
+    <input type="text" id="search-input" oninput="window.handleSearch()" placeholder="Cari Judul atau Kategori..." 
+           class="w-full bg-transparent py-3 pl-11 pr-12 outline-none text-xs font-bold uppercase tracking-widest text-white placeholder:text-blue-200/40">
+    
+    <button id="clear-search" onclick="window.clearSearch()" class="clear-btn w-7 h-7 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-slate-700 hover:text-white transition-all">
+        <i class="fa-solid fa-xmark text-xs"></i>
+    </button>
+</div>
+        </div>
+
+        <div id="auth-header-area" class="min-w-max">
+            <div class="h-8 w-20 bg-blue-800 rounded-full animate-pulse"></div>
+        </div>
+    </div>
+</header>
+
+    <div class="flex gap-3 p-4 overflow-x-auto no-scrollbar bg-slate-950 sticky top-[135px] z-50 border-b border-white/5" id="category-bar">
+        <button onclick="window.filterVideo('semua', event)" class="cat-btn active-category border border-slate-700 bg-slate-800 px-6 py-2 rounded-2xl text-[10px] font-black uppercase whitespace-nowrap transition-all">Semua</button>
+        <button onclick="window.filterVideo('stepmom', event)" class="cat-btn border border-slate-700 bg-slate-800 text-slate-400 px-6 py-2 rounded-2xl text-[10px] font-black uppercase whitespace-nowrap transition-all">stepmom</button>
+        <button onclick="window.filterVideo('colmek', event)" class="cat-btn border border-slate-700 bg-slate-800 text-slate-400 px-6 py-2 rounded-2xl text-[10px] font-black uppercase whitespace-nowrap transition-all">colmek</button>
+        <button onclick="window.filterVideo('squirt', event)" class="cat-btn border border-slate-700 bg-slate-800 text-slate-400 px-6 py-2 rounded-2xl text-[10px] font-black uppercase whitespace-nowrap transition-all">squirt</button>
+        <button onclick="window.filterVideo('lesbian', event)" class="cat-btn border border-slate-700 bg-slate-800 text-slate-400 px-6 py-2 rounded-2xl text-[10px] font-black uppercase whitespace-nowrap transition-all">lesbian</button>
+        
+    </div>
+
+    <main class="p-6 max-w-7xl mx-auto">
+        <div id="welcome-user" class="hidden mb-6">
+            <h1 class="text-2xl font-800">Halo, <span id="user-display-name" class="text-blue-400">User</span>! 👋</h1>
+            <p class="text-slate-500 text-xs font-bold uppercase mt-1">Siap menonton konten premium hari ini?</p>
+        </div>
+
+        <h2 id="section-title" class="text-lg font-800 mb-8 uppercase flex items-center gap-2 italic">
+            <i class="fa-solid fa-bolt text-yellow-400"></i> Rekomendasi
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="video-grid">
+            <div class="animate-pulse space-y-4">
+                <div class="bg-slate-800 aspect-video rounded-3xl"></div>
+                <div class="h-4 bg-slate-800 rounded w-3/4"></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="player-modal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/95 backdrop-blur-md p-4">
+    <div class="w-full max-w-4xl relative">
+
+        <div id="player-container" class="w-full aspect-video bg-black rounded-[32px] overflow-hidden shadow-2xl border border-white/10"></div>
+        
+        <div class="mt-6 px-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h3 id="player-title" class="text-xl font-800 uppercase italic text-white line-clamp-1">Judul Video</h3>
+                    <p id="player-stats" class="text-slate-500 text-[10px] mt-1 font-black uppercase tracking-widest">0 Views</p>
+                </div>
+                <div id="player-like-area"></div>
+                <button onclick="window.closePlayer()" class="flex items-center gap-3 px-6 py-3 rounded-2xl bg-slate-800 text-white hover:bg-slate-700 transition-all border border-white/10">
+                    <i class="fa-solid fa-arrow-left text-lg"></i>
+                    <span class="text-xs font-black uppercase tracking-widest">Kembali</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div id="auth-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/95 backdrop-blur-md p-6">
+        <div class="bg-white w-full max-w-sm p-8 rounded-[40px] text-slate-900 relative shadow-2xl">
+            <button onclick="window.closeAuth()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-900"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h2 id="auth-title" class="text-3xl font-900 mb-2 text-blue-700 uppercase italic">Halo!</h2>
+            <div id="auth-msg" class="hidden mb-4 p-3 rounded-xl text-[10px] font-black text-center uppercase"></div>
+            <div class="space-y-4">
+                <div id="register-fields" class="hidden space-y-4">
+                    <input type="text" id="reg-name" placeholder="NAMA LENGKAP" class="w-full p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm border-2 border-transparent focus:border-blue-500 transition-all">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="reg-age" placeholder="UMUR" class="p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm border-2 border-transparent focus:border-blue-500 transition-all">
+                        <select id="reg-gender" class="p-4 bg-slate-100 rounded-2xl outline-none font-bold text-xs border-2 border-transparent focus:border-blue-500 transition-all uppercase">
+                            <option value="" disabled selected>GENDER</option>
+                            <option value="Laki-laki">Pria</option>
+                            <option value="Perempuan">Wanita</option>
+                        </select>
+                    </div>
+                </div>
+                <input type="tel" id="auth-phone" placeholder="NOMOR WHATSAPP (08...)" class="w-full p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm border-2 border-transparent focus:border-blue-500 transition-all">
+                <div class="relative">
+                    <input type="password" id="auth-pass" placeholder="PASSWORD" class="w-full p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm border-2 border-transparent focus:border-blue-500 transition-all">
+                    <button onclick="window.toggleShowPass()" class="absolute right-4 top-4 text-slate-400 hover:text-blue-600 transition-colors">
+                        <i id="pass-icon" class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                <button onclick="window.handleAuthAction()" id="auth-submit-btn" class="w-full bg-blue-600 text-white py-5 rounded-3xl font-900 shadow-xl hover:bg-blue-700 transition-all active:scale-95 uppercase tracking-widest mt-2">
+                    <span id="btn-text">MASUK</span>
+                </button>
+            </div>
+            <p class="mt-8 text-center text-[10px] text-slate-400 font-black uppercase">
+                <span id="auth-switch-text">Belum punya akun?</span> 
+                <button onclick="window.toggleAuthMode()" id="auth-switch-btn" class="text-blue-600 ml-1 underline">Daftar yuk</button>
+            </p>
+        </div>
+    </div>
+
+    <footer class="fixed bottom-0 w-full glass-footer p-4 flex justify-around items-center z-[60]">
+        <button onclick="window.filterVideo('semua')" class="nav-btn flex flex-col items-center text-blue-500 transition-all">
+            <i class="fa-solid fa-house text-xl"></i>
+            <span class="text-[9px] mt-1 font-800 uppercase">Home</span>
+        </button>
+        <button onclick="window.loadTrending(event)" class="nav-btn flex flex-col items-center text-slate-500 transition-all">
+            <i class="fa-solid fa-fire text-xl"></i>
+            <span class="text-[9px] mt-1 font-800 uppercase">Trending</span>
+        </button>
+        <button onclick="window.loadFavorites(event)" class="nav-btn flex flex-col items-center text-slate-500 transition-all">
+            <i class="fa-solid fa-heart text-xl"></i>
+            <span class="text-[9px] mt-1 font-800 uppercase">Favorit</span>
+        </button>
+    </footer>
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        
+    // 1. TAMBAHKAN increment DI SINI
+    import { getFirestore, collection, doc, setDoc, getDoc, query, orderBy, onSnapshot, updateDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCLTHkDtSmn6ICpq4o-xWWUPrl3a_VaT3c",
+        authDomain: "pricelist-23ec2.firebaseapp.com",
+        projectId: "pricelist-23ec2",
+        storageBucket: "pricelist-23ec2.firebasestorage.app",
+        messagingSenderId: "546085857444",
+        appId: "1:546085857444:web:e1fe997ddb9feb912ede31"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let allVideos = [];
+    let authMode = 'login';
+    let currentUser = null;
+
+    // --- SESSION ---
+    async function checkUser() {
+        const savedPhone = localStorage.getItem('active_user_phone');
+        if (savedPhone) {
+            const snap = await getDoc(doc(db, "users", savedPhone));
+            if (snap.exists()) {
+                currentUser = snap.data();
+                document.getElementById('welcome-user').classList.remove('hidden');
+                document.getElementById('user-display-name').innerText = currentUser.name.split(' ')[0];
+            }
+        }
+        updateHeaderUI();
+    }
+
+        // Fungsi untuk mengacak urutan array (Fisher-Yates Shuffle)
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+        
+    function updateHeaderUI() {
+        const area = document.getElementById('auth-header-area');
+        if (currentUser) {
+            area.innerHTML = `
+            <div class="flex items-center gap-3">
+                <div class="text-right hidden sm:block">
+                    <div class="text-[10px] font-black uppercase text-blue-200">Member</div>
+                    <div class="text-xs font-bold uppercase">${currentUser.name.split(' ')[0]}</div>
+                </div>
+                <button onclick="window.handleLogout()" class="bg-red-500/20 text-red-100 border border-red-500/50 px-4 py-2 rounded-full text-[10px] font-900 uppercase">Keluar</button>
+            </div>`;
+        } else {
+            area.innerHTML = `<button onclick="window.openAuth('login')" class="bg-white text-blue-700 px-6 py-2 rounded-full text-xs font-800 shadow-lg active:scale-95 transition-all">MASUK</button>`;
+        }
+    }
+
+    // --- AUTH LOGIC ---
+    window.openAuth = (m) => { authMode = m; document.getElementById('auth-modal').classList.replace('hidden', 'flex'); updateAuthUI(); };
+    window.closeAuth = () => document.getElementById('auth-modal').classList.replace('flex', 'hidden');
+    window.toggleAuthMode = () => { authMode = (authMode === 'login' ? 'register' : 'login'); updateAuthUI(); };
+    function updateAuthUI() {
+        const isReg = (authMode === 'register');
+        document.getElementById('register-fields').classList.toggle('hidden', !isReg);
+        document.getElementById('auth-title').innerText = isReg ? "Daftar Akun" : "Halo!";
+        document.getElementById('btn-text').innerText = isReg ? "DAFTAR SEKARANG" : "MASUK SEKARANG";
+    }
+    window.toggleShowPass = () => {
+        const input = document.getElementById('auth-pass');
+        input.type = input.type === "password" ? "text" : "password";
+        document.getElementById('pass-icon').classList.toggle('fa-eye'); 
+        document.getElementById('pass-icon').classList.toggle('fa-eye-slash');
+    };
+
+    window.handleAuthAction = async () => {
+        const phone = document.getElementById('auth-phone').value;
+        const pass = document.getElementById('auth-pass').value;
+        if(!phone || !pass) return showMsg("Lengkapi data!");
+        const userRef = doc(db, "users", phone);
+        try {
+            if (authMode === 'register') {
+                const name = document.getElementById('reg-name').value;
+                const age = document.getElementById('reg-age').value;
+                const gender = document.getElementById('reg-gender').value;
+                if(!name || !age || !gender) throw new Error("Lengkapi data!");
+                await setDoc(userRef, { name, phone, age, gender, password: pass, likedVideos: [], createdAt: new Date().toISOString() });
+                showMsg("Berhasil Daftar!", false);
+                setTimeout(() => window.toggleAuthMode(), 1500);
+            } else {
+                const snap = await getDoc(userRef);
+                if(!snap.exists() || snap.data().password !== pass) throw new Error("Salah Password!");
+                localStorage.setItem('active_user_phone', phone);
+                location.reload();
+            }
+        } catch (e) { showMsg(e.message); }
+    };
+
+    window.handleLogout = () => { localStorage.removeItem('active_user_phone'); location.reload(); };
+
+    function showMsg(t, err = true) {
+        const el = document.getElementById('auth-msg');
+        el.innerText = t.toUpperCase();
+        el.className = `block mb-4 p-3 rounded-xl text-[10px] font-black text-center ${err ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`;
+        setTimeout(() => el.className = 'hidden', 4000);
+    }
+
+    // --- PLAYER LOGIC (VIEWS + LIKE) ---
+    window.openPlayer = async (id) => {
+        const video = allVideos.find(v => v.id === id);
+        if (!video) return;
+
+        // Update Views +1 Realtime
+        const videoRef = doc(db, "videos", id);
+        await updateDoc(videoRef, { viewers: increment(1) });
+
+        document.getElementById('player-title').innerText = video.title;
+        document.getElementById('player-stats').innerText = `${(video.viewers || 0) + 1} VIEWS • INDRATUBE PREMIUM`;
+        
+        // Panggil render tombol like
+        renderLikeButton(id);
+
+        const container = document.getElementById('player-container');
+        const url = video.videoUrl;
+        if(url.includes('youtube') || url.includes('youtu.be')) {
+            let vidId = url.split('v=')[1] || url.split('/').pop();
+            container.innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${vidId}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
+        } else {
+            container.innerHTML = `<video class="w-full h-full" controls autoplay><source src="${url}" type="video/mp4"></video>`;
+        }
+        document.getElementById('player-modal').classList.replace('hidden', 'flex');
+        document.body.style.overflow = 'hidden';
+    };
+
+    // Fungsi Render Tombol Like (Dibuat di luar agar bisa dipanggil ulang)
+    function renderLikeButton(id) {
+        const area = document.getElementById('player-like-area');
+        const isLiked = currentUser?.likedVideos?.includes(id);
+        area.innerHTML = `
+            <button onclick="window.toggleLike('${id}')" class="flex items-center gap-3 px-6 py-3 rounded-2xl transition-all ${isLiked ? 'bg-pink-600 text-white shadow-lg shadow-pink-500/20' : 'bg-white/5 text-slate-400 hover:bg-white/10'}">
+                <i class="fa-${isLiked ? 'solid' : 'regular'} fa-heart text-lg"></i>
+                <span class="text-xs font-black uppercase tracking-widest">${isLiked ? 'Disukai' : 'Suka Video Ini'}</span>
+            </button>`;
+    }
+
+    window.toggleLike = async (id) => {
+        if(!currentUser) { window.openAuth('login'); return; }
+        const userRef = doc(db, "users", currentUser.phone);
+        const isLiked = currentUser.likedVideos.includes(id);
+        
+        if(isLiked) {
+            currentUser.likedVideos = currentUser.likedVideos.filter(x => x !== id);
+            await updateDoc(userRef, { likedVideos: arrayRemove(id) });
+        } else {
+            currentUser.likedVideos.push(id);
+            await updateDoc(userRef, { likedVideos: arrayUnion(id) });
+        }
+        renderLikeButton(id); // Update tampilan tombol di modal
+        renderVideos(allVideos); // Update ikon hati di halaman depan
+    };
+
+    window.closePlayer = () => {
+        document.getElementById('player-modal').classList.replace('flex', 'hidden');
+        document.getElementById('player-container').innerHTML = '';
+        document.body.style.overflow = 'auto';
+    };
+
+    // --- RENDER ENGINE ---
+    onSnapshot(collection(db, "videos"), (s) => {
+    // Ambil data asli
+    const rawData = s.docs.map(d => ({id: d.id, ...d.data()}));
+    // Simpan ke variabel global
+    allVideos = rawData;
+    // Acak datanya khusus untuk tampilan Home (awal)
+    const randomizedVideos = shuffleArray([...rawData]); 
+    renderVideos(randomizedVideos);
+});
+
+    function renderVideos(data) {
+        const container = document.getElementById('video-grid');
+        if(data.length === 0) {
+            container.innerHTML = `<div class="col-span-full py-20 text-center opacity-30 font-black italic uppercase text-sm">Kosong</div>`;
+            return;
+        }
+        container.innerHTML = data.map(v => {
+            const isLiked = currentUser?.likedVideos?.includes(v.id);
+            return `
+            <div class="video-card group cursor-pointer transition-all duration-300">
+                <div onclick="window.openPlayer('${v.id}')" class="relative overflow-hidden rounded-[28px] aspect-video bg-slate-900 border border-white/5 shadow-xl">
+                    <img src="${v.thumbnailUrl}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-80 group-hover:opacity-100">
+                    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <i class="fa-solid fa-play text-3xl text-white"></i>
+                    </div>
+                    <div class="absolute bottom-3 left-3 flex gap-1 z-10">
+    ${Array.isArray(v.category) 
+        ? v.category.map(c => `<span class="bg-blue-600 text-[9px] font-black px-2 py-1 rounded-full uppercase">${c}</span>`).join('')
+        : `<span class="bg-blue-600 text-[9px] font-black px-3 py-1 rounded-full uppercase">${v.category}</span>`
+    }
+</div>
+                </div>
+                <div class="mt-4 flex gap-4">
+                    <div class="flex-1" onclick="window.openPlayer('${v.id}')">
+                        <h3 class="font-bold text-sm text-slate-100 line-clamp-2 leading-tight group-hover:text-blue-400 uppercase">${v.title}</h3>
+                        <p class="text-slate-500 text-[10px] mt-1 font-bold uppercase italic">${v.viewers || 0} Penonton</p>
+                    </div>
+                    <button onclick="window.toggleLike('${v.id}')" class="w-10 h-10 rounded-full flex items-center justify-center transition-all ${isLiked ? 'bg-pink-500/10 text-pink-500' : 'text-slate-600 hover:bg-white/5'}">
+                        <i class="fa-${isLiked ? 'solid' : 'regular'} fa-heart"></i>
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+
+window.filterVideo = (cat, e) => {
+    // Reset kolom search saat kategori diklik
+    document.getElementById('search-input').value = ''; 
+    
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active-category'));
+    if(e) e.currentTarget.classList.add('active-category');
+
+    if (cat === 'semua') {
+        renderVideos(allVideos);
+    } else {
+        const filtered = allVideos.filter(v => {
+            if (Array.isArray(v.category)) {
+                return v.category.some(c => c.toLowerCase() === cat.toLowerCase());
+            }
+            return v.category.toLowerCase() === cat.toLowerCase();
+        });
+        renderVideos(filtered);
+    }
+};
+
+    window.loadTrending = (e) => {
+        renderVideos([...allVideos].sort((a,b) => (b.viewers || 0) - (a.viewers || 0)));
+        updateNavIcons(e.currentTarget);
+    };
+
+    window.loadFavorites = (e) => {
+        if(!currentUser) { window.openAuth('login'); return; }
+        renderVideos(allVideos.filter(v => currentUser.likedVideos.includes(v.id)));
+        updateNavIcons(e.currentTarget);
+    };
+
+    function updateNavIcons(btn) {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-blue-500', 'text-slate-500'));
+        btn.classList.replace('text-slate-500', 'text-blue-500');
+    }
+
+        // Biar bisa back pakai tombol HP
+window.addEventListener('popstate', function() {
+    window.closePlayer();
+});
+    checkUser();
+
+     // --- JAVASCRIPT LOGIC UNTUK SEARCH BAR KEREN ---
+
+// 1. Fungsi Utama Search
+window.handleSearch = () => {
+    const searchInput = document.getElementById('search-input');
+    const clearBtn = document.getElementById('clear-search');
+    const keyword = searchInput.value.toLowerCase().trim();
+    
+    // Tampilkan tombol X
+    keyword.length > 0 ? clearBtn.classList.add('show') : clearBtn.classList.remove('show');
+
+    // Reset Visual Kategori (Agar fokus ke hasil pencarian)
+    if(keyword.length > 0) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active-category'));
+        // Opsional: highlight kategori "Semua" sebagai indikator reset
+        const allBtn = document.querySelector('.cat-btn[onclick*="semua"]');
+        if(allBtn) allBtn.classList.add('active-category');
+    }
+
+    if (!keyword) {
+        renderVideos(allVideos);
+        return;
+    }
+
+    const filtered = allVideos.filter(v => {
+        const matchTitle = v.title.toLowerCase().includes(keyword);
+        const matchCategory = Array.isArray(v.category) 
+            ? v.category.some(c => c.toLowerCase().includes(keyword))
+            : v.category.toLowerCase().includes(keyword);
+        return matchTitle || matchCategory;
+    });
+
+    renderVideos(filtered);
+};
+
+// 2. Fungsi untuk Tombol Clear (X) - Baru!
+window.clearSearch = () => {
+    const searchInput = document.getElementById('search-input');
+    searchInput.value = ''; // Kosongkan input
+    window.handleSearch(); // Trigger fungsi search agar render semua video kembali
+    searchInput.focus(); // Kembalikan fokus ke input
+};
+</script>
+</body>
+</html>

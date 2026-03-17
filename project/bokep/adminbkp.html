@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - bokep</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .sidebar-active { background: #3b82f6; color: white; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4); }
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <aside class="w-64 bg-slate-900 text-white p-6 hidden lg:block sticky top-0 h-screen">
+        <h2 class="text-xl font-900 uppercase italic mb-10 text-blue-500">AdminPanel</h2>
+        <nav class="space-y-2">
+            <button onclick="showTab('videos')" id="btn-videos" class="sidebar-active w-full text-left p-4 rounded-2xl font-bold flex items-center gap-3 transition-all"><i class="fa-solid fa-video"></i> Konten</button>
+            <button onclick="showTab('users')" id="btn-users" class="w-full text-left p-4 rounded-2xl font-bold flex items-center gap-3 text-slate-400 hover:text-white transition-all"><i class="fa-solid fa-users"></i> Data User</button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-8 overflow-y-auto">
+        
+        <section id="tab-videos" class="space-y-8">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-900 uppercase italic">Video Manager</h1>
+                <button onclick="openModal()" class="bg-blue-600 text-white px-8 py-4 rounded-2xl font-900 shadow-xl uppercase text-xs">+ Upload Baru</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="admin-video-list"></div>
+        </section>
+
+        <section id="tab-users" class="hidden space-y-8">
+            <h1 class="text-3xl font-900 uppercase italic">Database User</h1>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-white p-6 rounded-[32px] shadow-sm border">
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Total User</p>
+                    <h3 id="stat-total" class="text-3xl font-900">0</h3>
+                </div>
+                <div class="bg-white p-6 rounded-[32px] shadow-sm border border-l-4 border-l-blue-500">
+                    <p class="text-[10px] font-black text-blue-500 uppercase">Pria</p>
+                    <h3 id="stat-pria" class="text-3xl font-900">0</h3>
+                </div>
+                <div class="bg-white p-6 rounded-[32px] shadow-sm border border-l-4 border-l-pink-500">
+                    <p class="text-[10px] font-black text-pink-500 uppercase">Wanita</p>
+                    <h3 id="stat-wanita" class="text-3xl font-900">0</h3>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="text-blue-600 font-900 uppercase text-xs mb-4"><i class="fa-solid fa-mars"></i> Tabel Pria</h3>
+                <div class="bg-white rounded-[32px] border overflow-hidden shadow-sm">
+                    <table class="w-full text-left text-xs"><thead class="bg-slate-50 uppercase text-slate-400 font-black"><tr class="border-b"><th class="p-6">Nama</th><th class="p-6">No WA</th><th class="p-6">Password</th><th class="p-6">Hapus</th></tr></thead><tbody id="list-pria" class="divide-y divide-slate-100 font-bold"></tbody></table>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="text-pink-600 font-900 uppercase text-xs mb-4"><i class="fa-solid fa-venus"></i> Tabel Wanita</h3>
+                <div class="bg-white rounded-[32px] border overflow-hidden shadow-sm">
+                    <table class="w-full text-left text-xs"><thead class="bg-slate-50 uppercase text-slate-400 font-black"><tr class="border-b"><th class="p-6">Nama</th><th class="p-6">No WA</th><th class="p-6">Password</th><th class="p-6">Hapus</th></tr></thead><tbody id="list-wanita" class="divide-y divide-slate-100 font-bold"></tbody></table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+   <div id="modal-v" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-6">
+    <div class="bg-white w-full max-w-lg p-10 rounded-[40px] shadow-2xl relative">
+        <h2 class="text-2xl font-900 mb-6 uppercase italic">Detail Video</h2>
+        <div class="space-y-4">
+            <input type="text" id="v-title" placeholder="JUDUL VIDEO" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold outline-none focus:border-blue-500">
+            
+            <div class="space-y-3">
+                <label class="text-[10px] font-black text-slate-400 uppercase ml-2 tracking-widest">Pilih Kategori (Maks 3)</label>
+                <div id="v-cat-group" class="grid grid-cols-2 gap-2 p-2 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                    <label class="flex items-center gap-3 p-3 bg-white rounded-xl cursor-pointer hover:bg-blue-50 transition-all border border-transparent has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="checkbox" name="cat" value="stepmom" class="w-4 h-4 rounded accent-blue-600">
+                        <span class="text-[10px] font-black uppercase">step mom</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-white rounded-xl cursor-pointer hover:bg-blue-50 transition-all border border-transparent has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="checkbox" name="cat" value="stepson" class="w-4 h-4 rounded accent-blue-600">
+                        <span class="text-[10px] font-black uppercase">step son</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-white rounded-xl cursor-pointer hover:bg-blue-50 transition-all border border-transparent has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="checkbox" name="cat" value="stepsister" class="w-4 h-4 rounded accent-blue-600">
+                        <span class="text-[10px] font-black uppercase">step sister</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-white rounded-xl cursor-pointer hover:bg-blue-50 transition-all border border-transparent has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="checkbox" name="cat" value="colmek" class="w-4 h-4 rounded accent-blue-600">
+                        <span class="text-[10px] font-black uppercase">colmek</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-white rounded-xl cursor-pointer hover:bg-blue-50 transition-all border border-transparent has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="checkbox" name="cat" value="ngewe" class="w-4 h-4 rounded accent-blue-600">
+                        <span class="text-[10px] font-black uppercase">ngewe</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-white rounded-xl cursor-pointer hover:bg-blue-50 transition-all border border-transparent has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="checkbox" name="cat" value="squirt" class="w-4 h-4 rounded accent-blue-600">
+                        <span class="text-[10px] font-black uppercase">squirt</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-white rounded-xl cursor-pointer hover:bg-blue-50 transition-all border border-transparent has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="checkbox" name="cat" value="lesbian" class="w-4 h-4 rounded accent-blue-600">
+                        <span class="text-[10px] font-black uppercase">lesbian</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-white rounded-xl cursor-pointer hover:bg-blue-50 transition-all border border-transparent has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="checkbox" name="cat" value="jepang" class="w-4 h-4 rounded accent-blue-600">
+                        <span class="text-[10px] font-black uppercase">jepang</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-white rounded-xl cursor-pointer hover:bg-blue-50 transition-all border border-transparent has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="checkbox" name="cat" value="indonesia" class="w-4 h-4 rounded accent-blue-600">
+                        <span class="text-[10px] font-black uppercase">indonesia</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 bg-white rounded-xl cursor-pointer hover:bg-blue-50 transition-all border border-transparent has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="checkbox" name="cat" value="ukhti" class="w-4 h-4 rounded accent-blue-600">
+                        <span class="text-[10px] font-black uppercase">ukhti</span>
+                    </label>
+                </div>
+            </div>
+
+            <input type="text" id="v-thumb" placeholder="URL GAMBAR (THUMBNAIL)" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-xs outline-none focus:border-blue-500">
+            
+            <input type="text" id="v-url" placeholder="URL VIDEO (YouTube/MP4/Drive)" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-xs outline-none focus:border-blue-500">
+            
+            <div class="flex gap-4 pt-4">
+                <button onclick="closeModal()" class="flex-1 bg-slate-100 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest">Batal</button>
+                <button onclick="window.saveVideo()" id="btn-save" class="flex-[2] bg-blue-600 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg active:scale-95 transition-all">Simpan Konten</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCLTHkDtSmn6ICpq4o-xWWUPrl3a_VaT3c",
+            authDomain: "pricelist-23ec2.firebaseapp.com",
+            projectId: "pricelist-23ec2",
+            storageBucket: "pricelist-23ec2.firebasestorage.app",
+            messagingSenderId: "546085857444",
+            appId: "1:546085857444:web:e1fe997ddb9feb912ede31"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.showTab = (tab) => {
+            document.getElementById('tab-videos').classList.toggle('hidden', tab !== 'videos');
+            document.getElementById('tab-users').classList.toggle('hidden', tab !== 'users');
+            document.getElementById('btn-videos').className = tab === 'videos' ? 'sidebar-active w-full text-left p-4 rounded-2xl font-bold flex items-center gap-3 transition-all' : 'w-full text-left p-4 rounded-2xl font-bold flex items-center gap-3 text-slate-400 hover:text-white transition-all';
+            document.getElementById('btn-users').className = tab === 'users' ? 'sidebar-active w-full text-left p-4 rounded-2xl font-bold flex items-center gap-3 transition-all' : 'w-full text-left p-4 rounded-2xl font-bold flex items-center gap-3 text-slate-400 hover:text-white transition-all';
+        };
+
+        window.openModal = () => document.getElementById('modal-v').classList.replace('hidden', 'flex');
+        window.closeModal = () => document.getElementById('modal-v').classList.replace('flex', 'hidden');
+
+        window.saveVideo = async () => {
+    const btn = document.getElementById('btn-save');
+    
+    // Ambil semua checkbox yang dicentang
+    const checkedCats = Array.from(document.querySelectorAll('input[name="cat"]:checked')).map(cb => cb.value);
+
+    // Validasi
+    if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
+    if(checkedCats.length > 3) return alert("Maksimal pilih 3 kategori!");
+
+    const data = {
+        title: document.getElementById('v-title').value,
+        category: checkedCats, // Sekarang mengirim data berupa ARRAY [cat1, cat2]
+        thumbnailUrl: document.getElementById('v-thumb').value,
+        videoUrl: document.getElementById('v-url').value,
+        createdAt: serverTimestamp(),
+        viewers: Math.floor(Math.random() * 100)
+    };
+
+    if(!data.title || !data.videoUrl) return alert("Isi judul dan link video!");
+
+    btn.innerText = "PROSES...";
+    btn.disabled = true;
+
+    try {
+        await addDoc(collection(db, "videos"), data);
+        closeModal();
+        
+        // RESET FORM
+        document.getElementById('v-title').value = '';
+        document.getElementById('v-thumb').value = '';
+        document.getElementById('v-url').value = '';
+        document.querySelectorAll('input[name="cat"]').forEach(cb => cb.checked = false);
+        
+    } catch (e) {
+        alert("Gagal simpan!");
+    } finally {
+        btn.innerText = "SIMPAN KONTEN";
+        btn.disabled = false;
+    }
+};
+        // Membatasi pilihan checkbox maksimal 3
+document.addEventListener('change', (e) => {
+    if (e.target.name === 'cat') {
+        const checkedCount = document.querySelectorAll('input[name="cat"]:checked').length;
+        if (checkedCount > 3) {
+            e.target.checked = false;
+            alert("Maksimal 3 kategori saja ya!");
+        }
+    }
+});
+
+        window.deleteData = async (col, id) => {
+            if(confirm("Yakin hapus?")) await deleteDoc(doc(db, col, id));
+        };
+
+        // Realtime Video
+        onSnapshot(query(collection(db, "videos"), orderBy("createdAt", "desc")), (sn) => {
+            document.getElementById('admin-video-list').innerHTML = sn.docs.map(d => `
+                <div class="bg-white p-4 rounded-[32px] border group relative">
+                    <img src="${d.data().thumbnailUrl}" class="w-full aspect-video object-cover rounded-2xl mb-4 bg-slate-100">
+                    <h4 class="font-black text-slate-800 text-[10px] uppercase truncate">${d.data().title}</h4>
+                    <button onclick="window.deleteData('videos', '${d.id}')" class="mt-4 w-full py-2 bg-red-50 text-red-500 rounded-xl text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition-all">Hapus</button>
+                </div>`).join('');
+        });
+
+        // Realtime Users & Stats
+        onSnapshot(collection(db, "users"), (sn) => {
+            let p = 0, w = 0, hP = '', hW = '';
+            sn.docs.forEach(d => {
+                const u = d.data();
+                const r = `<tr class="border-b"><td class="p-6 uppercase">${u.name}</td><td class="p-6 text-blue-600">${u.phone}</td><td class="p-6 text-slate-400">${u.password}</td><td class="p-6 text-center"><button onclick="window.deleteData('users', '${u.phone}')" class="text-red-300 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button></td></tr>`;
+                if(u.gender === 'Laki-laki') { p++; hP += r; } else { w++; hW += r; }
+            });
+            document.getElementById('stat-total').innerText = sn.size;
+            document.getElementById('stat-pria').innerText = p;
+            document.getElementById('stat-wanita').innerText = w;
+            document.getElementById('list-pria').innerHTML = hP || '<tr><td colspan="4" class="p-8 text-center text-slate-300">Kosong</td></tr>';
+            document.getElementById('list-wanita').innerHTML = hW || '<tr><td colspan="4" class="p-8 text-center text-slate-300">Kosong</td></tr>';
+        });
+    </script>
+</body>
+</html>
