@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IYM all in one download</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        body { 
+            background: #0f172a; 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            cursor: default !important; /* Kursor Asli */
+        }
+
+        button, a { cursor: pointer; }
+
+        .tg-card { background: #1e293b; border: 1px solid rgba(255,255,255,0.05); }
+        .sticker-item { background: rgba(255,255,255,0.03); transition: all 0.3s ease; }
+        .sticker-item:hover { transform: translateY(-5px); background: rgba(255,255,255,0.08); }
+        .btn-tg { background: #24A1DE; }
+        .loader { border-top-color: #24A1DE; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+:root {
+    --gold-light: #f9e29d;
+    --gold-mid: #d4af37;
+    --gold-dark: #a67c00;
+}
+
+/* Kunci scroll saat loading */
+body.loading-active {
+    overflow: hidden !important;
+    height: 100vh;
+    min-height: 100vh;
+}
+
+#preloader {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #0f0e0d; /* Background gelap khas mewah */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10002;
+    perspective: 1000px;
+    transition: opacity 1s ease, visibility 1s ease;
+}
+
+.luxury-loader {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    transform-style: preserve-3d;
+}
+
+.luxury-loader .ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid transparent;
+    border-top: 4px solid var(--gold-mid);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+    .cursive {
+            font-family: 'Great Vibes', cursive;
+        }
+
+/* Animasi Cincin 1, 2, 3 sesuai struktur kamu */
+.luxury-loader .ring:nth-child(1) {
+    animation: rotate3D_1 2s linear infinite;
+}
+
+.luxury-loader .ring:nth-child(2) {
+    animation: rotate3D_2 2s linear infinite;
+    border-top: 4px solid var(--gold-light);
+    width: 90%; height: 90%; top: 5%; left: 5%;
+}
+
+.luxury-loader .ring:nth-child(3) {
+    animation: rotate3D_3 2s linear infinite;
+    border-top: 4px solid var(--gold-dark);
+    width: 80%; height: 80%; top: 10%; left: 10%;
+}
+
+.loading-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+    z-index: 10;
+}
+
+.loading-text span {
+    display: block;
+    font-size: 3rem;
+    color: var(--gold-mid);
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+.loading-text p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: white;
+    margin-top: 10px;
+    opacity: 0.8;
+    animation: pulseText 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate3D_1 {
+    0% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg); }
+    100% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg); }
+}
+
+@keyframes rotate3D_2 {
+    0% { transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg); }
+    100% { transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg); }
+}
+
+@keyframes rotate3D_3 {
+    0% { transform: rotateX(-35deg) rotateY(55deg) rotateZ(0deg); }
+    100% { transform: rotateX(-35deg) rotateY(55deg) rotateZ(360deg); }
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+    
+</style>
+</head>
+<body>
+    <div class="flex flex-col min-h-screen"> <main class="flex-grow p-4 md:p-10 flex flex-col items-center">
+<div id="preloader">
+    <div class="luxury-loader">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="loading-text">
+            <span class="cursive" style="font-size: 3rem; color: var(--gold-mid); display: block;">dra</span>
+                <p style="color: white; font-size: 0.6rem; letter-spacing: 5px; text-transform: uppercase; margin-top: 10px; opacity: 0.8;">Welcome To My site</p>
+        </div>
+    </div>
+</div>
+<!--isian web-->
+    <div class="text-center mt-10 md:mt-16 mb-8 md:mb-12">
+        <h1 class="text-4xl md:text-7xl font-black gradient-text tracking-tighter uppercase leading-none">IYM Downloader</h1>
+        <p class="text-gray-500 mt-4 text-sm md:text-base font-medium tracking-wide px-4">YT, TikTok, IG, Twitter, Pinterest</p>
+    </div>
+
+    <div class="w-full max-w-2xl glass p-2 rounded-[2rem] shadow-2xl flex flex-col sm:flex-row gap-2 border border-white/5 transition-all focus-within:border-red-500/30">
+        <input id="inputUrl" type="text" placeholder="Tempel link di sini..." 
+               class="bg-transparent flex-1 p-4 md:p-5 outline-none text-white placeholder-gray-600 text-base md:text-lg">
+        <button onclick="handleDownload()" id="btnAction" class="bg-white text-black hover:bg-gray-200 px-8 md:px-10 py-4 rounded-[1.5rem] font-bold transition-all flex items-center justify-center active:scale-95">
+            <span>Ambil</span>
+        </button>
+    </div>
+
+    <div id="loading" class="hidden mt-10 flex flex-col items-center">
+        <div class="loader w-10 h-10 border-4 border-white/10 rounded-full"></div>
+        <p class="text-xs text-gray-500 mt-4 tracking-widest uppercase font-bold">Sedang Mengambil Data...</p>
+    </div>
+
+    <div id="resultCard" class="hidden mt-8 md:mt-12 w-full max-w-4xl glass rounded-[2rem] md:rounded-[2.5rem] overflow-hidden p-6 md:p-10 animate-fade shadow-2xl">
+        <div class="flex flex-col md:flex-row gap-6 md:gap-12">
+            
+            <div class="w-full md:w-72 shrink-0">
+                <div class="relative group">
+                    <img id="prevImg" src="" class="w-full h-auto rounded-2xl md:rounded-3xl shadow-xl border border-white/10 aspect-video md:aspect-[9/16] object-cover bg-gray-900 transition-transform duration-500 group-hover:scale-[1.02]">
+                    <div id="platformIndicator" class="absolute -top-2 -left-2 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-lg shadow-lg uppercase tracking-tighter">
+                        Live Preview
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col justify-center flex-1">
+                <div class="mb-6 text-center md:text-left">
+                    <span id="platformTag" class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-white/10 text-white mb-4 inline-block">Platform</span>
+                    <h2 id="authorName" class="text-2xl md:text-4xl font-extrabold tracking-tight truncate">@Creator</h2>
+                    <p id="mediaTitle" class="text-gray-400 mt-3 text-sm md:text-base leading-relaxed line-clamp-3 md:line-clamp-5 font-light italic"></p>
+                </div>
+
+                <div id="downloadContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                    </div>
+            </div>
+        </div>
+    </div>
+        </div>
+<footer class="bg-transparent border-t border-white/5 py-10 mt-auto">
+    <div class="max-w-6xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="order-2 md:order-1 text-center md:text-left">
+            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                &copy; 2026 <span class="text-[#24A1DE]">-Indra Y.M</span>
+            </p>
+        </div>
+
+        <div class="flex items-center gap-6 order-1 md:order-2">
+            <a href="https://wa.me/6283849997221" target="_blank" class="text-gray-500 hover:text-green-500 transition-colors">
+                <i class="fa-brands fa-whatsapp text-xl"></i>
+            </a>
+            <a href="https://instagram.com/asmarabot" target="_blank" class="text-gray-500 hover:text-pink-500 transition-colors">
+                <i class="fa-brands fa-instagram text-xl"></i>
+            </a>
+            <a href="https://www.tiktok.com/@apaan_oy" target="_blank" class="text-gray-500 hover:text-[#24A1DE] transition-colors">
+                <i class="fa-brands fa-tiktok text-xl"></i>
+            </a>
+        </div>
+    </div>
+</footer>
+    </main>
+<script>
+    async function handleDownload() {
+            const url = document.getElementById('inputUrl').value;
+            const btn = document.getElementById('btnAction');
+            const loader = document.getElementById('loading');
+            const resultCard = document.getElementById('resultCard');
+
+            if (!url) return alert("Masukkan link dulu!");
+
+            // Reset UI
+            resultCard.classList.add('hidden');
+            loader.classList.remove('hidden');
+            btn.disabled = true;
+
+            try {
+                if (url.includes("youtube.com") || url.includes("youtu.be")) {
+                    const [resVideo, resAudio] = await Promise.all([
+                        fetch(`https://api.nexray.web.id/downloader/ytmp4?url=${encodeURIComponent(url)}&resolusi=1080`).then(r => r.json()),
+                        fetch(`https://api.nexray.web.id/downloader/v1/ytmp3?url=${encodeURIComponent(url)}`).then(r => r.json())
+                    ]);
+                    displayYouTube(resVideo, resAudio);
+                } else {
+                    let apiUrl = "";
+                    let platform = "";
+
+                    if (url.includes("tiktok.com")) {
+                        apiUrl = `https://api.nexray.web.id/downloader/tiktok?url=${encodeURIComponent(url)}`;
+                        platform = "TIKTOK";
+                    } else if (url.includes("instagram.com")) {
+                        apiUrl = `https://api.nexray.web.id/downloader/v2/instagram?url=${encodeURIComponent(url)}`;
+                        platform = "INSTAGRAM";
+                    } else if (url.includes("twitter.com") || url.includes("x.com")) {
+                        apiUrl = `https://api.nexray.web.id/downloader/twitter?url=${encodeURIComponent(url)}`;
+                        platform = "TWITTER";
+                    } else if (url.includes("pinterest.com") || url.includes("pin.it")) {
+                        apiUrl = `https://api.nexray.web.id/downloader/pinterest?url=${encodeURIComponent(url)}`;
+                        platform = "PINTEREST";
+                    }
+
+                    if (!apiUrl) throw new Error("Platform tidak didukung.");
+
+                    const response = await fetch(apiUrl);
+                    const data = await response.json();
+                    if (data.status) {
+                        displayOther(data.result, platform);
+                    } else {
+                        throw new Error("Gagal mengambil data dari API.");
+                    }
+                }
+            } catch (e) {
+                alert("Kesalahan: " + e.message);
+            } finally {
+                loader.classList.add('hidden');
+                btn.disabled = false;
+            }
+        }
+
+        function displayYouTube(v, a) {
+            const container = document.getElementById('downloadContainer');
+            container.innerHTML = '';
+            
+            const data = v.status ? v.result : a.result;
+            document.getElementById('platformTag').innerText = "YOUTUBE";
+            document.getElementById('prevImg').src = data.thumbnail;
+            document.getElementById('authorName').innerText = data.author || "YouTube Video";
+            document.getElementById('mediaTitle').innerText = data.title;
+
+            if (v.status) createBtn(v.result.url, `VIDEO MP4 (${v.result.resolusi}P)`, "fa-video");
+            if (a.status) createBtn(a.result.url, `AUDIO MP3 (${a.result.quality})`, "fa-music");
+
+            document.getElementById('resultCard').classList.remove('hidden');
+        }
+
+        function displayOther(res, type) {
+            const container = document.getElementById('downloadContainer');
+            container.innerHTML = '';
+            
+            document.getElementById('platformTag').innerText = type;
+            document.getElementById('prevImg').src = res.thumbnail || res.cover || res.image || "";
+            document.getElementById('mediaTitle').innerText = res.title || res.desc || "Media Content";
+
+            if (type === "TWITTER") {
+                document.getElementById('authorName').innerText = "X User";
+                res.download_url.forEach(item => createBtn(item.url, item.name, item.type === 'mp3' ? 'fa-music' : 'fa-video'));
+            } else if (type === "TIKTOK") {
+                document.getElementById('authorName').innerText = res.author?.nickname || "TikTok User";
+                if (res.data) createBtn(res.data, "VIDEO NO WM", "fa-video");
+                if (res.music_info?.url) createBtn(res.music_info.url, "MP3 AUDIO", "fa-music");
+            } else if (type === "INSTAGRAM") {
+                document.getElementById('authorName').innerText = res.username || "IG User";
+                res.media.forEach((m, i) => createBtn(m.url, `MEDIA ${i+1}`, m.type === 'mp4' ? 'fa-video' : 'fa-image'));
+            } else if (type === "PINTEREST") {
+                document.getElementById('authorName').innerText = res.author || "Pinterest User";
+                createBtn(res.image, "DOWNLOAD IMAGE", "fa-image");
+            }
+
+            document.getElementById('resultCard').classList.remove('hidden');
+        }
+
+        function createBtn(link, label, icon) {
+            const btn = document.createElement('button');
+            btn.className = "bg-white/10 hover:bg-white text-white hover:text-black p-4 rounded-2xl font-bold text-[10px] transition-all flex items-center justify-center border border-white/10 active:scale-95";
+            btn.innerHTML = `<i class="fa-solid ${icon} mr-3"></i> ${label}`;
+            // Memasukkan event ke dalam function
+            btn.onclick = (event) => downloadFile(link, label, event);
+            document.getElementById('downloadContainer').appendChild(btn);
+        }
+
+        async function downloadFile(url, name, event) {
+            const btn = event.currentTarget;
+            const oldHtml = btn.innerHTML;
+            try {
+                btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin mr-3"></i> MENGUNDUH...`;
+                btn.disabled = true;
+
+                const r = await fetch(url);
+                const b = await r.blob();
+                const u = window.URL.createObjectURL(b);
+                
+                const a = document.createElement('a');
+                a.href = u;
+                a.download = `IYM_Downloader_${Date.now()}`;
+                document.body.appendChild(a);
+                a.click();
+                
+                window.URL.revokeObjectURL(u);
+                document.body.removeChild(a);
+            } catch (e) {
+                // Jika CORS error, buka di tab baru sebagai cadangan
+                window.open(url, '_blank');
+            } finally {
+                btn.innerHTML = oldHtml;
+                btn.disabled = false;
+            }
+        }
+
+    
+    document.body.classList.add('loading-active');
+    window.addEventListener('load', () => {
+        const preloader = document.getElementById('preloader');
+        setTimeout(() => {
+            preloader.style.opacity = '0';
+            preloader.style.visibility = 'hidden';
+            document.body.classList.remove('loading-active');
+        }, 3000); 
+    });
+</script>
+</body>
+</html>

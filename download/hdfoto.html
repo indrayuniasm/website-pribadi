@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IYM Remini - AI Photo Enhancer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        body { 
+            background: #0f172a; 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            cursor: default !important; /* Kursor Asli */
+        }
+
+        button, a { cursor: pointer; }
+
+        .tg-card { background: #1e293b; border: 1px solid rgba(255,255,255,0.05); }
+        .sticker-item { background: rgba(255,255,255,0.03); transition: all 0.3s ease; }
+        .sticker-item:hover { transform: translateY(-5px); background: rgba(255,255,255,0.08); }
+        .btn-tg { background: #24A1DE; }
+        .loader { border-top-color: #24A1DE; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+:root {
+    --gold-light: #f9e29d;
+    --gold-mid: #d4af37;
+    --gold-dark: #a67c00;
+}
+
+/* Kunci scroll saat loading */
+body.loading-active {
+    overflow: hidden !important;
+    height: 100vh;
+    min-height: 100vh;
+}
+
+#preloader {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #0f0e0d; /* Background gelap khas mewah */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10002;
+    perspective: 1000px;
+    transition: opacity 1s ease, visibility 1s ease;
+}
+
+.luxury-loader {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    transform-style: preserve-3d;
+}
+
+.luxury-loader .ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid transparent;
+    border-top: 4px solid var(--gold-mid);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+    .cursive {
+            font-family: 'Great Vibes', cursive;
+        }
+
+/* Animasi Cincin 1, 2, 3 sesuai struktur kamu */
+.luxury-loader .ring:nth-child(1) {
+    animation: rotate3D_1 2s linear infinite;
+}
+
+.luxury-loader .ring:nth-child(2) {
+    animation: rotate3D_2 2s linear infinite;
+    border-top: 4px solid var(--gold-light);
+    width: 90%; height: 90%; top: 5%; left: 5%;
+}
+
+.luxury-loader .ring:nth-child(3) {
+    animation: rotate3D_3 2s linear infinite;
+    border-top: 4px solid var(--gold-dark);
+    width: 80%; height: 80%; top: 10%; left: 10%;
+}
+
+.loading-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+    z-index: 10;
+}
+
+.loading-text span {
+    display: block;
+    font-size: 3rem;
+    color: var(--gold-mid);
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+.loading-text p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: white;
+    margin-top: 10px;
+    opacity: 0.8;
+    animation: pulseText 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate3D_1 {
+    0% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg); }
+    100% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg); }
+}
+
+@keyframes rotate3D_2 {
+    0% { transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg); }
+    100% { transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg); }
+}
+
+@keyframes rotate3D_3 {
+    0% { transform: rotateX(-35deg) rotateY(55deg) rotateZ(0deg); }
+    100% { transform: rotateX(-35deg) rotateY(55deg) rotateZ(360deg); }
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+    .remini-glow { box-shadow: 0 0 30px rgba(59, 130, 246, 0.2); }
+        .btn-blue { background: linear-gradient(135deg, #2563eb, #7c3aed); }
+        
+        .loader { border-top-color: #3b82f6; animation: spinner 0.8s linear infinite; }
+        @keyframes spinner { to { transform: rotate(360deg); } }
+        
+        #resultImg { transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; filter: blur(10px); }
+        #resultImg.show { opacity: 1; filter: blur(0); }
+        
+        /* Preview Thumbnail */
+        #thumbPreview { width: 60px; height: 60px; object-fit: cover; border-radius: 12px; display: none; border: 2px solid #3b82f6; }
+</style>
+</head>
+<body>
+    <div class="flex flex-col min-h-screen"> <main class="flex-grow p-4 md:p-10 flex flex-col items-center">
+<div id="preloader">
+    <div class="luxury-loader">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="loading-text">
+            <span class="cursive" style="font-size: 3rem; color: var(--gold-mid); display: block;">dra</span>
+                <p style="color: white; font-size: 0.6rem; letter-spacing: 5px; text-transform: uppercase; margin-top: 10px; opacity: 0.8;">Welcome To My site</p>
+        </div>
+    </div>
+</div>
+<!--isian web-->
+<div class="text-center mt-12 mb-10">
+        <h1 class="text-5xl font-black tracking-tighter uppercase italic bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">IYM Remini</h1>
+        <p class="text-gray-500 mt-2 text-[10px] font-bold tracking-[0.4em] uppercase opacity-70">AI Photo Upscaler & Enhancer</p>
+    </div>
+
+    <div class="w-full max-w-lg glass p-8 rounded-[2.5rem] remini-glow border-t border-white/10 shadow-2xl">
+        <div class="space-y-6 text-center">
+            <div class="flex flex-col items-center gap-4">
+                <input id="fileInput" type="file" accept="image/*" class="hidden">
+                
+                <div onclick="document.getElementById('fileInput').click()" 
+                     class="w-full border-2 border-dashed border-white/10 hover:border-blue-500/50 p-10 rounded-3xl transition-all cursor-pointer bg-white/5 group">
+                    <div id="uploadIcon" class="mb-4 text-4xl text-gray-600 group-hover:text-blue-500 transition-colors">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <img id="thumbPreview" class="mx-auto mb-4 shadow-lg shadow-blue-500/20">
+                    <p id="fileName" class="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">Pilih foto dari galeri...</p>
+                </div>
+            </div>
+
+            <button onclick="processRemini()" id="btnProcess" class="w-full btn-blue hover:brightness-110 text-white py-5 rounded-2xl font-black uppercase tracking-widest transition-all shadow-xl active:scale-95">
+                Jernihkan Foto (HD)
+            </button>
+        </div>
+    </div>
+
+    <div id="loading" class="hidden mt-12 flex flex-col items-center">
+        <div class="loader w-12 h-12 border-4 border-white/5 rounded-full"></div>
+        <p id="loadText" class="text-[10px] text-blue-400 mt-5 tracking-[0.3em] uppercase font-black animate-pulse">Memulai Proses...</p>
+    </div>
+
+    <div id="resultWrapper" class="hidden mt-12 w-full max-w-4xl flex flex-col items-center pb-20">
+        <div class="relative glass p-2 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+            <div class="absolute top-4 left-4 bg-blue-600/80 backdrop-blur-md text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest z-10 shadow-lg">
+                HD Result
+            </div>
+            <img id="resultImg" src="" alt="Remini Result" class="w-full h-auto rounded-[2rem]">
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4 mt-10 w-full max-w-md">
+            <button onclick="window.location.reload()" class="bg-white/5 text-white p-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 border border-white/10 hover:bg-white/10 transition-all">
+                <i class="fa-solid fa-rotate-left"></i> Reset
+            </button>
+        </div>
+    </div>
+        </div>
+        
+ <footer class="bg-transparent border-t border-white/5 py-10">
+            <div class="max-w-6xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                    &copy; 2026 <span class="text-[#24A1DE]">-Indra Y.M</span>
+                </p>
+                <div class="flex gap-6 text-gray-500">
+                    <a href="https://wa.me/6283849997221" target="_blank" class="hover:text-green-500 transition-colors"><i class="fa-brands fa-whatsapp text-xl"></i></a>
+                    <a href="https://instagram.com/asmarabot" target="_blank" class="hover:text-pink-500 transition-colors"><i class="fa-brands fa-instagram text-xl"></i></a>
+                    <a href="https://www.tiktok.com/@apaan_oy" target="_blank" class="hover:text-white transition-colors"><i class="fa-brands fa-tiktok text-xl"></i></a>
+                </div>
+            </div>
+        </footer>
+    </main>
+<script>
+    const IMGBB_KEY = "a1acd30065ad15688fe2643dce1dbdbc";
+
+        // Preview File
+        document.getElementById('fileInput').onchange = function() {
+            const file = this.files[0];
+            if (file) {
+                document.getElementById('fileName').innerText = file.name;
+                document.getElementById('uploadIcon').style.display = 'none';
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const thumb = document.getElementById('thumbPreview');
+                    thumb.src = e.target.result;
+                    thumb.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        };
+
+        async function processRemini() {
+            const fileInput = document.getElementById('fileInput');
+            const btn = document.getElementById('btnProcess');
+            const loader = document.getElementById('loading');
+            const loadText = document.getElementById('loadText');
+            const wrapper = document.getElementById('resultWrapper');
+            const imgElement = document.getElementById('resultImg');
+
+            if (!fileInput.files[0]) return alert("Pilih foto dulu, Bos!");
+
+            // UI Reset
+            wrapper.classList.add('hidden');
+            imgElement.classList.remove('show');
+            loader.classList.remove('hidden');
+            btn.disabled = true;
+
+            try {
+                // STEP 1: Upload ke ImgBB
+                loadText.innerText = "Mengunggah Foto...";
+                const formData = new FormData();
+                formData.append("image", fileInput.files[0]);
+                
+                const upload = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
+                    method: "POST",
+                    body: formData
+                });
+                const uploadRes = await upload.json();
+                
+                if (!uploadRes.success) throw new Error("Gagal mengunggah gambar.");
+                const imageUrl = uploadRes.data.url;
+
+                // STEP 2: Jernihkan via API NexRay
+                loadText.innerText = "Meningkatkan Kualitas (AI)...";
+                const reminiUrl = `https://api.nexray.web.id/tools/v4/upscale?url=${encodeURIComponent(imageUrl)}&resolusi=4`;
+
+                // Load image di background agar transisi halus
+                const tempImg = new Image();
+                tempImg.src = reminiUrl;
+                
+                tempImg.onload = function() {
+                    imgElement.src = reminiUrl;
+                    loader.classList.add('hidden');
+                    wrapper.classList.remove('hidden');
+                    btn.disabled = false;
+                    
+                    setTimeout(() => {
+                        imgElement.classList.add('show');
+                        // Otomatis download setelah 1.5 detik
+                        setTimeout(() => downloadResult(), 1500);
+                    }, 200);
+                };
+
+                tempImg.onerror = function() {
+                    throw new Error("API Remini sedang sibuk.");
+                };
+
+            } catch (error) {
+                alert("Oops! " + error.message);
+                loader.classList.add('hidden');
+                btn.disabled = false;
+            }
+        }
+
+        async function downloadResult() {
+            const imgSrc = document.getElementById('resultImg').src;
+            if (!imgSrc || imgSrc === "") return;
+
+            try {
+                const response = await fetch(imgSrc);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `IYM_Remini_HD_${Date.now()}.png`;
+                document.body.appendChild(a);
+                a.click();
+                
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (e) {
+                window.open(imgSrc, '_blank');
+            }
+        }
+    
+    document.body.classList.add('loading-active');
+    window.addEventListener('load', () => {
+        const preloader = document.getElementById('preloader');
+        setTimeout(() => {
+            preloader.style.opacity = '0';
+            preloader.style.visibility = 'hidden';
+            document.body.classList.remove('loading-active');
+        }, 3000); 
+    });
+</script>
+</body>
+</html>
