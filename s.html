@@ -1,265 +1,164 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Olympus Gold - Official</title>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <title>tes doang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
-        :root { --gold: #ffd700; --bg: #0d0118; --win: #00ffcc; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; }
-        .container { max-width: 450px; margin: auto; padding: 20px; }
-        .card { background: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid #333; margin-top: 20px; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 5px; border: none; background: #333; color: white; box-sizing: border-box; }
-        .btn { padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
-        .btn-gold { background: var(--gold); color: black; }
-        .link-text { text-align: center; margin-top: 15px; font-size: 0.9rem; cursor: pointer; color: var(--gold); }
-        
-        /* Game Styles */
-        #gameSection { display: none; max-width: 800px; margin: auto; }
-        .header { background: rgba(0,0,0,0.9); padding: 15px; display: flex; justify-content: space-around; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 100; }
-        .slot-wrapper { background: #000; padding: 10px; border: 3px solid var(--gold); border-radius: 10px; margin: 15px; }
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .reel { height: 150px; background: #111; overflow: hidden; border: 1px solid #222; }
-        .symbol { height: 50px; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; }
-        
-        /* Chat & History */
-        #chatBox { height: 150px; overflow-y: auto; background: #000; padding: 10px; margin-bottom: 5px; display: flex; flex-direction: column; }
-        .msg-me { align-self: flex-end; color: var(--win); background: #222; padding: 5px 10px; border-radius: 10px 10px 0 10px; margin: 2px; font-size: 0.8rem; }
-        .msg-admin { align-self: flex-start; color: var(--gold); background: #333; padding: 5px 10px; border-radius: 10px 10px 10px 0; margin: 2px; font-size: 0.8rem; }
-        .captcha-box { background: #444; padding: 10px; text-align: center; font-weight: bold; letter-spacing: 5px; font-style: italic; margin: 10px 0; user-select: none; }
+        .glass {
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .custom-scroll::-webkit-scrollbar { width: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #1d4ed8; border-radius: 10px; }
+        .file-item { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body>
+<body class="bg-[#020406] text-gray-400 min-h-screen flex items-center justify-center p-4">
 
-<div id="loginSection" class="container">
-    <h2 style="text-align:center; color:var(--gold);">LOGIN</h2>
-    <div class="card">
-        <input type="text" id="loginID" placeholder="ID Username">
-        <input type="password" id="loginPW" placeholder="Password">
-        <button class="btn btn-gold" onclick="processLogin()">MASUK</button>
-        <div class="link-text" onclick="showRegister()">Belum punya akun? Daftar</div>
+    <div class="max-w-3xl w-full glass p-10 rounded-[3rem] shadow-2xl">
+        <header class="text-center mb-12">
+            <h1 class="text-3xl font-bold text-white tracking-tight">Bulk Cache <span class="text-blue-500">Recovery</span></h1>
+            <p class="text-gray-500 text-sm mt-2">Deteksi format biner & preview instan secara massal</p>
+        </header>
+
+        <div id="dropZone" class="group border-2 border-dashed border-gray-800 rounded-3xl p-16 text-center hover:border-blue-500 transition-all cursor-pointer bg-white/[0.01]">
+            <input type="file" id="fileInput" class="hidden" multiple>
+            <div class="space-y-4">
+                <div class="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                    <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                </div>
+                <p class="text-gray-400 font-medium text-lg">Klik atau seret banyak file ke sini</p>
+            </div>
+        </div>
+
+        <div id="fileListContainer" class="mt-10 hidden">
+            <div class="flex justify-between items-center mb-5">
+                <span id="fileCount" class="text-xs font-bold text-blue-400 uppercase tracking-widest">0 Files Processed</span>
+                <div class="flex gap-4 items-center">
+                    <button id="clearBtn" class="text-xs text-red-500 hover:text-red-400">Clear All</button>
+                    <button id="downloadZipBtn" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-5 py-2 rounded-lg transition-all flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Download (.ZIP)
+                    </button>
+                </div>
+            </div>
+
+            <div id="fileList" class="max-h-[400px] overflow-y-auto custom-scroll space-y-3 pr-2">
+                </div>
+        </div>
     </div>
-</div>
 
-<div id="registerSection" class="container" style="display:none;">
-    <h2 style="text-align:center; color:var(--gold);">PENDAFTARAN</h2>
-    <div class="card">
-        <input type="text" id="regID" placeholder="Buat ID Username">
-        <input type="password" id="regPW" placeholder="Buat Password">
-        <input type="text" id="regNama" placeholder="Nama Lengkap">
-        <input type="number" id="regWA" placeholder="Nomor WhatsApp">
-        <select id="regBank">
-            <option value="">-- Pilih Bank --</option>
-            <option value="DANA">DANA</option>
-            <option value="BCA">BCA</option>
-            <option value="BRI">BRI</option>
-            <option value="Mandiri">Mandiri</option>
-            <option value="SeaBank">SeaBank</option>
-            <option value="OVO">OVO</option>
-            <option value="Gopay">Gopay</option>
-        </select>
-        <input type="text" id="regRek" placeholder="Nomor Rekening/E-Wallet">
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const fileCount = document.getElementById('fileCount');
+        const downloadZipBtn = document.getElementById('downloadZipBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const fileListContainer = document.getElementById('fileListContainer');
         
-        <div class="captcha-box" id="captchaDisplay"></div>
-        <input type="text" id="captchaInput" placeholder="Masukkan kode di atas">
-        
-        <button class="btn btn-gold" onclick="processRegister()">DAFTAR SEKARANG</button>
-        <div class="link-text" onclick="showLogin()">Sudah ada akun? Login</div>
-    </div>
-</div>
+        let processedFiles = [];
 
-<div id="gameSection">
-    <div class="header">
-        <div>ID: <b id="displayID">-</b></div>
-        <div style="color:var(--gold)">💰 <span id="balanceDisplay">0</span></div>
-        <div id="fsIndicator" style="display:none; color:var(--win);">FS: <span id="fsCount">0</span></div>
-    </div>
+        dropZone.onclick = () => fileInput.click();
+        clearBtn.onclick = () => { location.reload(); };
 
-    <div class="slot-wrapper">
-        <div class="grid">
-            <div class="reel" id="r0"></div><div class="reel" id="r1"></div><div class="reel" id="r2"></div><div class="reel" id="r3"></div><div class="reel" id="r4"></div>
-        </div>
-    </div>
-    <div style="text-align:center;"><button class="btn btn-gold" style="width:200px;" id="btnSpin" onclick="startSpin()">SPIN (200)</button></div>
+        fileInput.onchange = (e) => handleFiles(Array.from(e.target.files));
 
-    <div class="container" style="max-width: 800px;">
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div class="card">
-                <h4>DEPOSIT (Min 20rb)</h4>
-                <select id="bankList" onchange="updateAdminRek()"></select>
-                <small id="targetRek">--</small>
-                <input type="number" id="depoAmt" placeholder="Nominal">
-                <input type="text" id="depoProof" placeholder="Link Bukti">
-                <button class="btn" style="background:green; color:white;" onclick="reqDepo()">KONFIRMASI</button>
-            </div>
-            <div class="card">
-                <h4>WITHDRAW (Min 50rb)</h4>
-                <input type="number" id="wdAmt" placeholder="Nominal">
-                <button class="btn" style="background:red; color:white;" onclick="reqWD()">TARIK DANA</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <h4>CHAT CS & RIWAYAT</h4>
-            <div id="chatBox"></div>
-            <div style="display:flex;">
-                <input type="text" id="chatInput" placeholder="Ketik pesan...">
-                <button onclick="sendChat()" style="width:80px; background:var(--gold); border:none; margin-left:5px; border-radius:5px;">Kirim</button>
-            </div>
-            <hr style="border:0.5px solid #333; margin:15px 0;">
-            <div id="txHistory" style="font-size:0.8rem;"></div>
-        </div>
-    </div>
-</div>
-
-<script>
-    // --- CONFIG FIREBASE ---
-    const firebaseConfig = {
-        apiKey: "AIza...",
-        authDomain: "proyek-anda.firebaseapp.com",
-        databaseURL: "https://proyek-anda.firebaseio.com",
-        projectId: "proyek-anda",
-        storageBucket: "proyek-anda.appspot.com",
-        messagingSenderId: "123",
-        appId: "1:123"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    let currentUser = null;
-    let currentCaptcha = "";
-
-    // --- AUTH LOGIC ---
-    function generateCaptcha() {
-        currentCaptcha = Math.random().toString(36).substring(2, 7).toUpperCase();
-        document.getElementById('captchaDisplay').innerText = currentCaptcha;
-    }
-
-    function showRegister() {
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('registerSection').style.display = 'block';
-        generateCaptcha();
-    }
-
-    function showLogin() {
-        document.getElementById('loginSection').style.display = 'block';
-        document.getElementById('registerSection').style.display = 'none';
-    }
-
-    function processRegister() {
-        const id = document.getElementById('regID').value;
-        const pw = document.getElementById('regPW').value;
-        const nama = document.getElementById('regNama').value;
-        const wa = document.getElementById('regWA').value;
-        const bank = document.getElementById('regBank').value;
-        const rek = document.getElementById('regRek').value;
-        const captcha = document.getElementById('captchaInput').value;
-
-        if(!id || !pw || !nama || !wa || !bank || !rek) return alert("Semua kolom wajib diisi!");
-        if(captcha !== currentCaptcha) { alert("Captcha Salah!"); generateCaptcha(); return; }
-
-        db.ref('users/' + id).once('value', snap => {
-            if(snap.exists()) return alert("Username sudah digunakan!");
+        async function handleFiles(files) {
+            fileListContainer.classList.remove('hidden');
             
-            db.ref('users/' + id).set({
-                pw: pw, nama: nama, wa: wa, bank: bank, rek: rek,
-                balance: 0, fs: 0, role: 'player'
-            }).then(() => {
-                alert("Pendaftaran Berhasil! Silakan Login.");
-                showLogin();
-            });
-        });
-    }
+            for (let file of files) {
+                // Jangan proses file yang sama dua kali (jika user tambah file lagi)
+                if (processedFiles.some(pf => pf.file.name === file.name && pf.file.size === file.size)) continue;
 
-    function processLogin() {
-        const id = document.getElementById('loginID').value;
-        const pw = document.getElementById('loginPW').value;
-        
-        db.ref('users/' + id).once('value', snap => {
-            if(snap.exists() && snap.val().pw === pw) {
-                startSession(id);
-            } else {
-                alert("ID atau Password Salah!");
+                const result = await processFile(file);
+                processedFiles.push(result);
+                
+                renderFileItem(result);
             }
-        });
-    }
+            fileCount.innerText = `${processedFiles.length} Files Processed`;
+        }
 
-    function startSession(id) {
-        currentUser = id;
-        document.getElementById('displayID').innerText = id;
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('gameSection').style.display = 'block';
-        
-        db.ref('users/' + id).on('value', snap => {
-            const data = snap.val();
-            document.getElementById('balanceDisplay').innerText = (data.balance || 0).toLocaleString();
-            document.getElementById('fsCount').innerText = data.fs || 0;
-            document.getElementById('fsIndicator').style.display = (data.fs > 0) ? 'inline' : 'none';
-        });
+        async function processFile(file) {
+            // Baca 50 byte pertama untuk deteksi format
+            const buffer = await file.slice(0, 50).arrayBuffer();
+            const uint = new Uint8Array(buffer);
+            let bytes = [];
+            uint.forEach((byte) => bytes.push(byte.toString(16).padStart(2, '0').toUpperCase()));
+            const hex = bytes.join(' ');
 
-        // Chat & History Sync (Sama seperti kode sebelumnya)
-        loadChat(id);
-        loadHistory(id);
-        loadAdminBanks();
-    }
+            let extension = ".bin";
+            let type = "image"; // Default untuk preview
 
-    // (Gunakan Game Logic, loadChat, loadHistory dari kode sebelumnya untuk menghemat tempat)
-    // --- Pastikan fungsi reqDepo, reqWD, dan startSpin ada di sini ---
-    
-    function loadChat(id) {
-        db.ref('chats/' + id).on('value', snap => {
-            const box = document.getElementById('chatBox');
-            box.innerHTML = "";
-            snap.forEach(c => {
-                const m = c.val();
-                box.innerHTML += `<div class="${m.sender==='admin'?'msg-admin':'msg-me'}">${m.text}</div>`;
+            if (hex.startsWith("FF D8 FF")) { extension = ".jpg"; type="image"; }
+            else if (hex.startsWith("89 50 4E 47")) { extension = ".png"; type="image"; }
+            else if (hex.includes("66 74 79 70")) { extension = ".mp4"; type="video"; } // MP4 Signature "ftyp"
+            else if (hex.startsWith("52 49 46 46") && hex.includes("57 45 42 50")) { extension = ".webp"; type="image"; }
+            else if (hex.startsWith("47 49 46 38")) { extension = ".gif"; type="image"; }
+            else { type = "unknown"; }
+
+            // Buat Object URL untuk Live Preview (Hemat memori karena kita gak load seluruh file ke JS)
+            const previewUrl = (type === 'image' || type === 'video') ? URL.createObjectURL(file) : null;
+
+            return { file, extension, type, previewUrl };
+        }
+
+        function renderFileItem(result) {
+            const item = document.createElement('div');
+            item.className = "file-item flex items-center gap-4 p-3 bg-white/5 rounded-xl border border-white/5 text-sm";
+            
+            let previewElement = `<div class="w-12 h-12 bg-gray-900 rounded-md flex items-center justify-center text-xs text-gray-700 font-mono">BIN</div>`;
+            
+            if (result.type === 'image') {
+                previewElement = `<img src="${result.previewUrl}" class="w-12 h-12 rounded-md object-cover hover:scale-150 transition-transform cursor-pointer" />`;
+            } else if (result.type === 'video') {
+                previewElement = `
+                    <video class="w-12 h-12 rounded-md object-cover">
+                        <source src="${result.previewUrl}" type="video/mp4">
+                    </video>`;
+            }
+
+            item.innerHTML = `
+                ${previewElement}
+                <div class="flex-1 min-w-0">
+                    <span class="truncate block text-gray-300 font-mono text-xs">${result.file.name}</span>
+                    <span class="text-gray-600 text-[11px]">${(result.file.size / 1024 / 1024).toFixed(2)} MB</span>
+                </div>
+                <span class="text-blue-400 font-mono text-xs font-bold px-3 py-1 bg-blue-500/10 rounded-full">${result.extension.toUpperCase()}</span>
+            `;
+            fileList.appendChild(item);
+        }
+
+        downloadZipBtn.onclick = async () => {
+            const zip = new JSZip();
+            downloadZipBtn.innerText = "Zipping... ⏳";
+            downloadZipBtn.disabled = true;
+
+            processedFiles.forEach(item => {
+                // Pertahankan nama file asli tapi tambah ekstensi jika belum ada
+                const newFileName = item.file.name.includes('.') ? item.file.name : item.file.name + item.extension;
+                zip.file(newFileName, item.file);
             });
-            box.scrollTop = box.scrollHeight;
-        });
-    }
 
-    function sendChat() {
-        const txt = document.getElementById('chatInput').value;
-        if(txt) db.ref('chats/' + currentUser).push({ sender: currentUser, text: txt });
-        document.getElementById('chatInput').value = "";
-    }
+            // Buat ZIP file di client-side
+            const content = await zip.generateAsync({ type: "blob" });
+            const url = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Recovery_Media_${new Date().toISOString().slice(0,10)}.zip`;
+            a.click();
+            
+            // Bersihkan memori dari previewUrls
+            processedFiles.forEach(item => { if(item.previewUrl) URL.revokeObjectURL(item.previewUrl); });
 
-    function loadAdminBanks() {
-        db.ref('adminBanks').on('value', snap => {
-            let h = '<option value="">-- Pilih Bank --</option>';
-            snap.forEach(c => { h += `<option value="${c.val().name}">${c.val().name}</option>`; });
-            document.getElementById('bankList').innerHTML = h;
-        });
-    }
-
-    function updateAdminRek() {
-        const sel = document.getElementById('bankList').value;
-        db.ref('adminBanks').once('value', snap => {
-            snap.forEach(c => {
-                if(c.val().name === sel) document.getElementById('targetRek').innerText = "Rek: " + c.val().rek;
-            });
-        });
-    }
-
-    function reqDepo() {
-        const amt = parseInt(document.getElementById('depoAmt').value);
-        const proof = document.getElementById('depoProof').value;
-        if(amt < 20000 || !proof) return alert("Minimal 20rb & bukti wajib isi!");
-        db.ref('transactions').push({ type:'DEPO', amount:amt, proof, user:currentUser, status:'PENDING' });
-        alert("Diproses!");
-    }
-
-    function reqWD() {
-        const amt = parseInt(document.getElementById('wdAmt').value);
-        if(amt < 50000) return alert("Minimal WD 50rb!");
-        // (Logika potong saldo & push transaksi)
-    }
-
-    function startSpin() {
-        // (Gunakan logika spin yang sudah diberikan sebelumnya)
-    }
-</script>
+            downloadZipBtn.innerText = "Download All as .ZIP";
+            downloadZipBtn.disabled = false;
+        };
+    </script>
 </body>
 </html>
