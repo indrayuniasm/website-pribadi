@@ -3,130 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Testimonial Hub</title>
+    <title>Elite Review Hub | Modern UI</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #ec4899;
+            --dark-bg: #030712;
+        }
+
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: #05070a;
-            color: #e2e8f0;
+            font-family: 'Space Grotesk', sans-serif; 
+            background-color: var(--dark-bg);
+            color: #f8fafc;
+            overflow-x: hidden;
         }
 
-        /* Background Animasi Halus */
-        .bg-gradient-custom {
-            background: radial-gradient(circle at 0% 0%, rgba(79, 70, 229, 0.15) 0%, transparent 40%),
-                        radial-gradient(circle at 100% 100%, rgba(219, 39, 119, 0.1) 0%, transparent 40%);
+        /* Animated Mesh Background */
+        .mesh-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 40%);
         }
 
-        /* Efek Kaca (Glassmorphism) */
+        /* Glassmorphism Ultra */
         .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
-        .glass:hover {
-            border-color: rgba(99, 102, 241, 0.4);
-            background: rgba(255, 255, 255, 0.05);
+        /* Gradient Border Card */
+        .gradient-card {
+            position: relative;
+            border-radius: 1.5rem;
+            background: rgba(15, 23, 42, 0.6);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .gradient-card::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: 1.5rem;
+            padding: 1px;
+            background: linear-gradient(45deg, var(--primary), transparent, var(--secondary));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.3;
+            transition: opacity 0.4s;
+        }
+        .gradient-card:hover::before { opacity: 1; }
 
-        /* Input Bintang Custom */
-        .star-rating {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: flex-end;
+        /* Floating Animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
-        .star-rating input { display: none; }
-        .star-rating label {
+        .float-anim { animation: float 6s ease-in-out infinite; }
+
+        /* Star Styling */
+        .star-input input { display: none; }
+        .star-input label {
             cursor: pointer;
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: #1e293b;
-            transition: color 0.2s ease-in-out;
+            transition: all 0.3s;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
-        .star-rating label:hover,
-        .star-rating label:hover ~ label,
-        .star-rating input:checked ~ label {
+        .star-input input:checked ~ label,
+        .star-input label:hover,
+        .star-input label:hover ~ label {
             color: #fbbf24;
+            transform: scale(1.1);
+            text-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
         }
 
-        /* Animasi Muncul */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .active-filter {
+            background: linear-gradient(45deg, var(--primary), var(--secondary)) !important;
+            border: none !important;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
         }
-        .animate-card { animation: fadeInUp 0.5s ease forwards; }
     </style>
 </head>
-<body class="bg-gradient-custom min-h-screen">
+<body class="p-4 md:p-10">
+    <div class="mesh-bg"></div>
 
-    <div class="max-w-6xl mx-auto px-6 py-12">
-        <div class="text-center mb-16">
-            <h1 class="text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
-                Testimoni Pelanggan
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-16 float-anim">
+            <h1 class="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-white to-pink-400 mb-4 tracking-tighter">
+                Customer Voices
             </h1>
-            <p class="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
-                Kami sangat menghargai setiap masukan. Bagikan pengalaman Anda dan bantu kami menjadi lebih baik lagi.
-            </p>
-        </div>
+            <p class="text-gray-400 text-lg">Kejujuran Anda adalah kompas kami untuk menjadi lebih baik.</p>
+        </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             <div class="lg:col-span-4">
-                <div class="glass p-8 rounded-3xl sticky top-8 shadow-2xl">
-                    <h2 class="text-2xl font-bold mb-6 text-white tracking-wide">Beri Rating</h2>
+                <div class="glass p-8 rounded-[2rem] border-white/10 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-600/10 blur-3xl -mr-16 -mt-16"></div>
                     
+                    <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
+                        <span class="w-2 h-8 bg-indigo-500 rounded-full"></span>
+                        Tulis Ulasan
+                    </h2>
+
                     <div class="space-y-6">
-                        <div>
-                            <label class="block text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2">Nama Lengkap</label>
-                            <input type="text" id="userName" placeholder="Contoh: Budi Santoso" 
-                                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition text-white">
+                        <div class="group">
+                            <label class="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-2 block ml-1">Nama Anda</label>
+                            <input type="text" id="userName" placeholder="Ex: Alex Rivera" 
+                                class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-indigo-500/50 transition-all text-white">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2">Rating Pelayanan</label>
-                            <div class="star-rating bg-white/5 p-3 rounded-xl border border-white/10">
-                                <input type="radio" id="s5" name="rating" value="5" checked><label for="s5">★</label>
-                                <input type="radio" id="s4" name="rating" value="4"><label for="s4">★</label>
-                                <input type="radio" id="s3" name="rating" value="3"><label for="s3">★</label>
-                                <input type="radio" id="s2" name="rating" value="2"><label for="s2">★</label>
-                                <input type="radio" id="s1" name="rating" value="1"><label for="s1">★</label>
+                            <label class="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-2 block ml-1">Rating Anda</label>
+                            <div class="star-input flex flex-row-reverse justify-end gap-1 bg-white/5 p-4 rounded-2xl border border-white/5">
+                                <input type="radio" id="st5" name="rating" value="5" checked><label for="st5">★</label>
+                                <input type="radio" id="st4" name="rating" value="4"><label for="st4">★</label>
+                                <input type="radio" id="st3" name="rating" value="3"><label for="st3">★</label>
+                                <input type="radio" id="st2" name="rating" value="2"><label for="st2">★</label>
+                                <input type="radio" id="st1" name="rating" value="1"><label for="st1">★</label>
                             </div>
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2">Pesan Anda</label>
-                            <textarea id="userMsg" rows="4" placeholder="Apa yang Anda rasakan tentang layanan kami?" 
-                                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition text-white resize-none"></textarea>
+                        <div class="group">
+                            <label class="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-2 block ml-1">Kesan Pelayanan</label>
+                            <textarea id="userMsg" rows="4" placeholder="Apa yang paling berkesan?" 
+                                class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-indigo-500/50 transition-all text-white resize-none"></textarea>
                         </div>
 
-                        <button onclick="sendReview()" id="btnSubmit" 
-                            class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
-                            Kirim Ulasan
+                        <button onclick="sendReview()" id="btnSend" 
+                            class="w-full py-5 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-800 hover:shadow-[0_0_30px_rgba(79,70,229,0.4)] text-white font-bold tracking-widest transition-all active:scale-[0.98]">
+                            PUBLIKASIKAN ULASAN
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-8">
-                <div class="glass p-3 rounded-2xl mb-8 flex flex-wrap justify-center sm:justify-start gap-2 overflow-x-auto">
-                    <button onclick="applyFilter(0)" id="f-0" class="btn-f active-f px-5 py-2 rounded-xl text-sm font-medium transition-all">Semua</button>
-                    <button onclick="applyFilter(5)" id="f-5" class="btn-f px-5 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/5">5 ★</button>
-                    <button onclick="applyFilter(4)" id="f-4" class="btn-f px-5 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/5">4 ★</button>
-                    <button onclick="applyFilter(3)" id="f-3" class="btn-f px-5 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/5">3 ★</button>
-                    <button onclick="applyFilter(2)" id="f-2" class="btn-f px-5 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/5">2 ★</button>
-                    <button onclick="applyFilter(1)" id="f-1" class="btn-f px-5 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/5">1 ★</button>
+            <div class="lg:col-span-8 space-y-8">
+                
+                <div class="glass p-4 rounded-3xl flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
+                        <button onclick="setFilter(0)" id="f-0" class="f-btn active-filter px-6 py-2.5 rounded-xl border border-white/10 text-sm font-bold transition-all whitespace-nowrap">Semua</button>
+                        <button onclick="setFilter(5)" id="f-5" class="f-btn px-5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold hover:bg-white/10 transition-all">5 ★</button>
+                        <button onclick="setFilter(4)" id="f-4" class="f-btn px-5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold hover:bg-white/10 transition-all">4 ★</button>
+                        <button onclick="setFilter(3)" id="f-3" class="f-btn px-5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold hover:bg-white/10 transition-all">3 ★</button>
+                        <button onclick="setFilter(2)" id="f-2" class="f-btn px-5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold hover:bg-white/10 transition-all">2 ★</button>
+                        <button onclick="setFilter(1)" id="f-1" class="f-btn px-5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold hover:bg-white/10 transition-all">1 ★</button>
+                    </div>
                 </div>
 
-                <div id="listContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div id="reviewGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     </div>
 
-                <div id="moreBox" class="mt-12 text-center hidden">
-                    <button onclick="enableShowAll()" class="glass px-10 py-3 rounded-full hover:bg-indigo-600 hover:text-white font-semibold transition-all shadow-xl">
-                        Lihat Semua Ulasan
+                <div id="showMore" class="hidden text-center pt-4">
+                    <button onclick="loadAll()" class="px-12 py-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 font-bold transition-all tracking-widest text-sm shadow-xl">
+                        MUAT SEMUA DATA
                     </button>
                 </div>
             </div>
@@ -138,101 +180,102 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, where, onSnapshot, serverTimestamp, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ==========================================
-        // CONFIG FIREBASE (WAJIB GANTI)
+        // GANTI DENGAN CONFIG FIREBASE ANDA
         const firebaseConfig = {
             apiKey: "AIzaSy...",
-            authDomain: "projek-anda.firebaseapp.com",
-            projectId: "projek-anda",
-            storageBucket: "projek-anda.appspot.com",
+            authDomain: "your-app.firebaseapp.com",
+            projectId: "your-app",
+            storageBucket: "your-app.appspot.com",
             messagingSenderId: "12345",
             appId: "1:12345:web:abcd"
         };
-        // ==========================================
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const colRef = collection(db, "testimonials");
+        const reviewsCol = collection(db, "testimonials");
 
-        let activeRating = 0; 
-        let isFullView = false;
-        let stopListen = null;
+        let currentRating = 0;
+        let showingAll = false;
+        let unsubscribe = null;
 
-        // --- Core: Load Data ---
-        const fetchReviews = () => {
-            if (stopListen) stopListen();
+        // Render Cards
+        const render = (snapshot) => {
+            const grid = document.getElementById('reviewGrid');
+            const moreBtn = document.getElementById('showMore');
+            grid.innerHTML = '';
+
+            if (snapshot.empty) {
+                grid.innerHTML = `<div class="col-span-full py-32 text-center text-gray-600 font-medium italic">Tidak ada ulasan ditemukan...</div>`;
+                moreBtn.classList.add('hidden');
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const stars = "★".repeat(data.rating) + "☆".repeat(5 - data.rating);
+                const date = data.createdAt ? data.createdAt.toDate().toLocaleDateString('id-ID', {day:'numeric', month:'short'}) : 'Just now';
+                
+                grid.innerHTML += `
+                    <div class="gradient-card p-7 group hover:-translate-y-2">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center font-bold text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] text-xl rotate-3 group-hover:rotate-0 transition-transform">
+                                    ${data.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-lg text-white group-hover:text-indigo-400 transition-colors">${data.name}</h3>
+                                    <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">${date}</span>
+                                </div>
+                            </div>
+                            <div class="px-3 py-1 bg-amber-500/10 rounded-full border border-amber-500/20 text-amber-500 text-xs font-black">
+                                ${data.rating}.0
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <p class="text-gray-400 leading-relaxed italic pr-4 relative z-10">"${data.message}"</p>
+                            <span class="absolute -bottom-4 -right-2 text-6xl text-white/5 font-serif select-none pointer-events-none">”</span>
+                        </div>
+                        <div class="mt-6 pt-6 border-t border-white/5 flex gap-0.5 text-amber-400 text-sm">
+                            ${stars}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Logic button show more
+            if (snapshot.size >= 10 && !showingAll) moreBtn.classList.remove('hidden');
+            else moreBtn.classList.add('hidden');
+        };
+
+        // Fetch Data
+        const getReviews = () => {
+            if (unsubscribe) unsubscribe();
 
             let constraints = [orderBy("createdAt", "desc")];
-            
-            if (activeRating > 0) constraints.push(where("rating", "==", activeRating));
-            if (!isFullView) constraints.push(limit(10));
+            if (currentRating > 0) constraints.push(where("rating", "==", currentRating));
+            if (!showingAll) constraints.push(limit(10));
 
-            const q = query(colRef, ...constraints);
-
-            stopListen = onSnapshot(q, (snap) => {
-                const container = document.getElementById('listContainer');
-                const moreBtn = document.getElementById('moreBox');
-                container.innerHTML = '';
-
-                if (snap.empty) {
-                    container.innerHTML = `<div class="col-span-full py-20 text-center text-gray-600 italic">Belum ada ulasan untuk kategori ini.</div>`;
-                    moreBtn.classList.add('hidden');
-                    return;
-                }
-
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    container.innerHTML += buildCard(data);
-                });
-
-                // Logic Tampilkan tombol "Lihat Semua"
-                if (snap.size >= 10 && !isFullView) {
-                    moreBtn.classList.remove('hidden');
-                } else {
-                    moreBtn.classList.add('hidden');
-                }
+            const q = query(reviewsCol, ...constraints);
+            unsubscribe = onSnapshot(q, render, (err) => {
+                console.error("Index needed?", err);
+                alert("Cek konsol browser, mungkin butuh membuat Index di Firebase!");
             });
         };
 
-        // --- UI: Template Card ---
-        const buildCard = (d) => {
-            const stars = "★".repeat(d.rating) + "☆".repeat(5 - d.rating);
-            const initial = d.name ? d.name.charAt(0).toUpperCase() : '?';
-            const date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('id-ID') : 'Baru saja';
-
-            return `
-                <div class="glass p-6 rounded-3xl animate-card">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg">
-                            ${initial}
-                        </div>
-                        <div>
-                            <h4 class="text-white font-semibold leading-none">${d.name}</h4>
-                            <span class="text-[10px] text-gray-500 uppercase tracking-tighter">${date}</span>
-                        </div>
-                        <div class="ml-auto text-amber-500 text-sm font-bold bg-amber-500/10 px-2 py-1 rounded-lg">
-                            ${d.rating} ★
-                        </div>
-                    </div>
-                    <p class="text-gray-400 text-sm italic leading-relaxed">"${d.message}"</p>
-                </div>
-            `;
-        };
-
-        // --- Logic: Submit ---
+        // Functions for Buttons
         window.sendReview = async () => {
             const name = document.getElementById('userName').value;
             const msg = document.getElementById('userMsg').value;
             const rating = document.querySelector('input[name="rating"]:checked').value;
-            const btn = document.getElementById('btnSubmit');
+            const btn = document.getElementById('btnSend');
 
-            if (!name || !msg) return alert("Lengkapi nama dan pesan Anda!");
+            if (!name || !msg) return alert("Lengkapi data!");
 
             btn.disabled = true;
-            btn.innerHTML = "Mengirim...";
+            btn.innerHTML = `<span class="animate-pulse">MENGIRIM...</span>`;
 
             try {
-                await addDoc(colRef, {
+                await addDoc(reviewsCol, {
                     name,
                     message: msg,
                     rating: parseInt(rating),
@@ -240,44 +283,27 @@
                 });
                 document.getElementById('userName').value = '';
                 document.getElementById('userMsg').value = '';
-            } catch (err) {
-                console.error(err);
-                alert("Gagal mengirim ulasan.");
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = "Kirim Ulasan";
+                btn.innerHTML = "PUBLIKASIKAN ULASAN";
             }
         };
 
-        // --- Logic: Filter & View ---
-        window.applyFilter = (r) => {
-            activeRating = r;
-            isFullView = false;
-            
-            // UI Toggle
-            document.querySelectorAll('.btn-f').forEach(b => {
-                b.classList.remove('bg-indigo-600', 'text-white', 'active-f');
-                b.classList.add('hover:bg-white/5');
-            });
-            const activeBtn = document.getElementById(`f-${r}`);
-            activeBtn.classList.add('bg-indigo-600', 'text-white', 'active-f');
-            activeBtn.classList.remove('hover:bg-white/5');
-
-            fetchReviews();
+        window.setFilter = (r) => {
+            currentRating = r;
+            showingAll = false;
+            document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active-filter'));
+            document.getElementById(`f-${r}`).classList.add('active-filter');
+            getReviews();
         };
 
-        window.enableShowAll = () => {
-            isFullView = true;
-            fetchReviews();
+        window.loadAll = () => {
+            showingAll = true;
+            getReviews();
         };
 
-        // CSS Helper for active filter
-        const style = document.createElement('style');
-        style.innerHTML = `.active-f { background: #4f46e5 !important; color: white !important; shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }`;
-        document.head.appendChild(style);
-
-        // Init
-        fetchReviews();
+        // Initialize
+        getReviews();
     </script>
 </body>
 </html>
