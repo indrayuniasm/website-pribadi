@@ -1,164 +1,283 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tes doang</title>
+    <title>Premium Testimonial Hub</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        .glass {
-            background: rgba(255, 255, 255, 0.01);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.04);
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #05070a;
+            color: #e2e8f0;
         }
-        .custom-scroll::-webkit-scrollbar { width: 3px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #1d4ed8; border-radius: 10px; }
-        .file-item { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Background Animasi Halus */
+        .bg-gradient-custom {
+            background: radial-gradient(circle at 0% 0%, rgba(79, 70, 229, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 100% 100%, rgba(219, 39, 119, 0.1) 0%, transparent 40%);
+        }
+
+        /* Efek Kaca (Glassmorphism) */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .glass:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Input Bintang Custom */
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        .star-rating input { display: none; }
+        .star-rating label {
+            cursor: pointer;
+            font-size: 1.8rem;
+            color: #1e293b;
+            transition: color 0.2s ease-in-out;
+        }
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #fbbf24;
+        }
+
+        /* Animasi Muncul */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-card { animation: fadeInUp 0.5s ease forwards; }
     </style>
 </head>
-<body class="bg-[#020406] text-gray-400 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gradient-custom min-h-screen">
 
-    <div class="max-w-3xl w-full glass p-10 rounded-[3rem] shadow-2xl">
-        <header class="text-center mb-12">
-            <h1 class="text-3xl font-bold text-white tracking-tight">Bulk Cache <span class="text-blue-500">Recovery</span></h1>
-            <p class="text-gray-500 text-sm mt-2">Deteksi format biner & preview instan secara massal</p>
-        </header>
-
-        <div id="dropZone" class="group border-2 border-dashed border-gray-800 rounded-3xl p-16 text-center hover:border-blue-500 transition-all cursor-pointer bg-white/[0.01]">
-            <input type="file" id="fileInput" class="hidden" multiple>
-            <div class="space-y-4">
-                <div class="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
-                    <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                </div>
-                <p class="text-gray-400 font-medium text-lg">Klik atau seret banyak file ke sini</p>
-            </div>
+    <div class="max-w-6xl mx-auto px-6 py-12">
+        <div class="text-center mb-16">
+            <h1 class="text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
+                Testimoni Pelanggan
+            </h1>
+            <p class="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
+                Kami sangat menghargai setiap masukan. Bagikan pengalaman Anda dan bantu kami menjadi lebih baik lagi.
+            </p>
         </div>
 
-        <div id="fileListContainer" class="mt-10 hidden">
-            <div class="flex justify-between items-center mb-5">
-                <span id="fileCount" class="text-xs font-bold text-blue-400 uppercase tracking-widest">0 Files Processed</span>
-                <div class="flex gap-4 items-center">
-                    <button id="clearBtn" class="text-xs text-red-500 hover:text-red-400">Clear All</button>
-                    <button id="downloadZipBtn" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-5 py-2 rounded-lg transition-all flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        Download (.ZIP)
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <div class="lg:col-span-4">
+                <div class="glass p-8 rounded-3xl sticky top-8 shadow-2xl">
+                    <h2 class="text-2xl font-bold mb-6 text-white tracking-wide">Beri Rating</h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2">Nama Lengkap</label>
+                            <input type="text" id="userName" placeholder="Contoh: Budi Santoso" 
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition text-white">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2">Rating Pelayanan</label>
+                            <div class="star-rating bg-white/5 p-3 rounded-xl border border-white/10">
+                                <input type="radio" id="s5" name="rating" value="5" checked><label for="s5">★</label>
+                                <input type="radio" id="s4" name="rating" value="4"><label for="s4">★</label>
+                                <input type="radio" id="s3" name="rating" value="3"><label for="s3">★</label>
+                                <input type="radio" id="s2" name="rating" value="2"><label for="s2">★</label>
+                                <input type="radio" id="s1" name="rating" value="1"><label for="s1">★</label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2">Pesan Anda</label>
+                            <textarea id="userMsg" rows="4" placeholder="Apa yang Anda rasakan tentang layanan kami?" 
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition text-white resize-none"></textarea>
+                        </div>
+
+                        <button onclick="sendReview()" id="btnSubmit" 
+                            class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                            Kirim Ulasan
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8">
+                <div class="glass p-3 rounded-2xl mb-8 flex flex-wrap justify-center sm:justify-start gap-2 overflow-x-auto">
+                    <button onclick="applyFilter(0)" id="f-0" class="btn-f active-f px-5 py-2 rounded-xl text-sm font-medium transition-all">Semua</button>
+                    <button onclick="applyFilter(5)" id="f-5" class="btn-f px-5 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/5">5 ★</button>
+                    <button onclick="applyFilter(4)" id="f-4" class="btn-f px-5 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/5">4 ★</button>
+                    <button onclick="applyFilter(3)" id="f-3" class="btn-f px-5 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/5">3 ★</button>
+                    <button onclick="applyFilter(2)" id="f-2" class="btn-f px-5 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/5">2 ★</button>
+                    <button onclick="applyFilter(1)" id="f-1" class="btn-f px-5 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/5">1 ★</button>
+                </div>
+
+                <div id="listContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    </div>
+
+                <div id="moreBox" class="mt-12 text-center hidden">
+                    <button onclick="enableShowAll()" class="glass px-10 py-3 rounded-full hover:bg-indigo-600 hover:text-white font-semibold transition-all shadow-xl">
+                        Lihat Semua Ulasan
                     </button>
                 </div>
             </div>
 
-            <div id="fileList" class="max-h-[400px] overflow-y-auto custom-scroll space-y-3 pr-2">
-                </div>
         </div>
     </div>
 
-    <script>
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const fileList = document.getElementById('fileList');
-        const fileCount = document.getElementById('fileCount');
-        const downloadZipBtn = document.getElementById('downloadZipBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const fileListContainer = document.getElementById('fileListContainer');
-        
-        let processedFiles = [];
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, where, onSnapshot, serverTimestamp, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        dropZone.onclick = () => fileInput.click();
-        clearBtn.onclick = () => { location.reload(); };
-
-        fileInput.onchange = (e) => handleFiles(Array.from(e.target.files));
-
-        async function handleFiles(files) {
-            fileListContainer.classList.remove('hidden');
-            
-            for (let file of files) {
-                // Jangan proses file yang sama dua kali (jika user tambah file lagi)
-                if (processedFiles.some(pf => pf.file.name === file.name && pf.file.size === file.size)) continue;
-
-                const result = await processFile(file);
-                processedFiles.push(result);
-                
-                renderFileItem(result);
-            }
-            fileCount.innerText = `${processedFiles.length} Files Processed`;
-        }
-
-        async function processFile(file) {
-            // Baca 50 byte pertama untuk deteksi format
-            const buffer = await file.slice(0, 50).arrayBuffer();
-            const uint = new Uint8Array(buffer);
-            let bytes = [];
-            uint.forEach((byte) => bytes.push(byte.toString(16).padStart(2, '0').toUpperCase()));
-            const hex = bytes.join(' ');
-
-            let extension = ".bin";
-            let type = "image"; // Default untuk preview
-
-            if (hex.startsWith("FF D8 FF")) { extension = ".jpg"; type="image"; }
-            else if (hex.startsWith("89 50 4E 47")) { extension = ".png"; type="image"; }
-            else if (hex.includes("66 74 79 70")) { extension = ".mp4"; type="video"; } // MP4 Signature "ftyp"
-            else if (hex.startsWith("52 49 46 46") && hex.includes("57 45 42 50")) { extension = ".webp"; type="image"; }
-            else if (hex.startsWith("47 49 46 38")) { extension = ".gif"; type="image"; }
-            else { type = "unknown"; }
-
-            // Buat Object URL untuk Live Preview (Hemat memori karena kita gak load seluruh file ke JS)
-            const previewUrl = (type === 'image' || type === 'video') ? URL.createObjectURL(file) : null;
-
-            return { file, extension, type, previewUrl };
-        }
-
-        function renderFileItem(result) {
-            const item = document.createElement('div');
-            item.className = "file-item flex items-center gap-4 p-3 bg-white/5 rounded-xl border border-white/5 text-sm";
-            
-            let previewElement = `<div class="w-12 h-12 bg-gray-900 rounded-md flex items-center justify-center text-xs text-gray-700 font-mono">BIN</div>`;
-            
-            if (result.type === 'image') {
-                previewElement = `<img src="${result.previewUrl}" class="w-12 h-12 rounded-md object-cover hover:scale-150 transition-transform cursor-pointer" />`;
-            } else if (result.type === 'video') {
-                previewElement = `
-                    <video class="w-12 h-12 rounded-md object-cover">
-                        <source src="${result.previewUrl}" type="video/mp4">
-                    </video>`;
-            }
-
-            item.innerHTML = `
-                ${previewElement}
-                <div class="flex-1 min-w-0">
-                    <span class="truncate block text-gray-300 font-mono text-xs">${result.file.name}</span>
-                    <span class="text-gray-600 text-[11px]">${(result.file.size / 1024 / 1024).toFixed(2)} MB</span>
-                </div>
-                <span class="text-blue-400 font-mono text-xs font-bold px-3 py-1 bg-blue-500/10 rounded-full">${result.extension.toUpperCase()}</span>
-            `;
-            fileList.appendChild(item);
-        }
-
-        downloadZipBtn.onclick = async () => {
-            const zip = new JSZip();
-            downloadZipBtn.innerText = "Zipping... ⏳";
-            downloadZipBtn.disabled = true;
-
-            processedFiles.forEach(item => {
-                // Pertahankan nama file asli tapi tambah ekstensi jika belum ada
-                const newFileName = item.file.name.includes('.') ? item.file.name : item.file.name + item.extension;
-                zip.file(newFileName, item.file);
-            });
-
-            // Buat ZIP file di client-side
-            const content = await zip.generateAsync({ type: "blob" });
-            const url = URL.createObjectURL(content);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Recovery_Media_${new Date().toISOString().slice(0,10)}.zip`;
-            a.click();
-            
-            // Bersihkan memori dari previewUrls
-            processedFiles.forEach(item => { if(item.previewUrl) URL.revokeObjectURL(item.previewUrl); });
-
-            downloadZipBtn.innerText = "Download All as .ZIP";
-            downloadZipBtn.disabled = false;
+        // ==========================================
+        // CONFIG FIREBASE (WAJIB GANTI)
+        const firebaseConfig = {
+            apiKey: "AIzaSy...",
+            authDomain: "projek-anda.firebaseapp.com",
+            projectId: "projek-anda",
+            storageBucket: "projek-anda.appspot.com",
+            messagingSenderId: "12345",
+            appId: "1:12345:web:abcd"
         };
+        // ==========================================
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const colRef = collection(db, "testimonials");
+
+        let activeRating = 0; 
+        let isFullView = false;
+        let stopListen = null;
+
+        // --- Core: Load Data ---
+        const fetchReviews = () => {
+            if (stopListen) stopListen();
+
+            let constraints = [orderBy("createdAt", "desc")];
+            
+            if (activeRating > 0) constraints.push(where("rating", "==", activeRating));
+            if (!isFullView) constraints.push(limit(10));
+
+            const q = query(colRef, ...constraints);
+
+            stopListen = onSnapshot(q, (snap) => {
+                const container = document.getElementById('listContainer');
+                const moreBtn = document.getElementById('moreBox');
+                container.innerHTML = '';
+
+                if (snap.empty) {
+                    container.innerHTML = `<div class="col-span-full py-20 text-center text-gray-600 italic">Belum ada ulasan untuk kategori ini.</div>`;
+                    moreBtn.classList.add('hidden');
+                    return;
+                }
+
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    container.innerHTML += buildCard(data);
+                });
+
+                // Logic Tampilkan tombol "Lihat Semua"
+                if (snap.size >= 10 && !isFullView) {
+                    moreBtn.classList.remove('hidden');
+                } else {
+                    moreBtn.classList.add('hidden');
+                }
+            });
+        };
+
+        // --- UI: Template Card ---
+        const buildCard = (d) => {
+            const stars = "★".repeat(d.rating) + "☆".repeat(5 - d.rating);
+            const initial = d.name ? d.name.charAt(0).toUpperCase() : '?';
+            const date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('id-ID') : 'Baru saja';
+
+            return `
+                <div class="glass p-6 rounded-3xl animate-card">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg">
+                            ${initial}
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold leading-none">${d.name}</h4>
+                            <span class="text-[10px] text-gray-500 uppercase tracking-tighter">${date}</span>
+                        </div>
+                        <div class="ml-auto text-amber-500 text-sm font-bold bg-amber-500/10 px-2 py-1 rounded-lg">
+                            ${d.rating} ★
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm italic leading-relaxed">"${d.message}"</p>
+                </div>
+            `;
+        };
+
+        // --- Logic: Submit ---
+        window.sendReview = async () => {
+            const name = document.getElementById('userName').value;
+            const msg = document.getElementById('userMsg').value;
+            const rating = document.querySelector('input[name="rating"]:checked').value;
+            const btn = document.getElementById('btnSubmit');
+
+            if (!name || !msg) return alert("Lengkapi nama dan pesan Anda!");
+
+            btn.disabled = true;
+            btn.innerHTML = "Mengirim...";
+
+            try {
+                await addDoc(colRef, {
+                    name,
+                    message: msg,
+                    rating: parseInt(rating),
+                    createdAt: serverTimestamp()
+                });
+                document.getElementById('userName').value = '';
+                document.getElementById('userMsg').value = '';
+            } catch (err) {
+                console.error(err);
+                alert("Gagal mengirim ulasan.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Kirim Ulasan";
+            }
+        };
+
+        // --- Logic: Filter & View ---
+        window.applyFilter = (r) => {
+            activeRating = r;
+            isFullView = false;
+            
+            // UI Toggle
+            document.querySelectorAll('.btn-f').forEach(b => {
+                b.classList.remove('bg-indigo-600', 'text-white', 'active-f');
+                b.classList.add('hover:bg-white/5');
+            });
+            const activeBtn = document.getElementById(`f-${r}`);
+            activeBtn.classList.add('bg-indigo-600', 'text-white', 'active-f');
+            activeBtn.classList.remove('hover:bg-white/5');
+
+            fetchReviews();
+        };
+
+        window.enableShowAll = () => {
+            isFullView = true;
+            fetchReviews();
+        };
+
+        // CSS Helper for active filter
+        const style = document.createElement('style');
+        style.innerHTML = `.active-f { background: #4f46e5 !important; color: white !important; shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }`;
+        document.head.appendChild(style);
+
+        // Init
+        fetchReviews();
     </script>
 </body>
 </html>
