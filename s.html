@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Review Hub | Modern UI</title>
+    <title>Customer Experience | Elite Feedback</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -11,123 +11,131 @@
     <style>
         :root {
             --primary: #6366f1;
-            --secondary: #ec4899;
-            --dark-bg: #030712;
+            --secondary: #a855f7;
+            --accent: #ec4899;
+            --dark: #020617;
         }
 
         body { 
             font-family: 'Space Grotesk', sans-serif; 
-            background-color: var(--dark-bg);
-            color: #f8fafc;
+            background-color: var(--dark);
+            color: #f1f5f9;
             overflow-x: hidden;
         }
 
-        /* Animated Mesh Background */
+        /* Animated Mesh Gradient Background */
         .mesh-bg {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
             background: 
-                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 40%);
+                radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 35%),
+                radial-gradient(circle at 100% 100%, rgba(236, 72, 153, 0.08) 0%, transparent 35%);
         }
 
-        /* Glassmorphism Ultra */
+        /* Glassmorphism Effect */
         .glass {
             background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Gradient Border Card */
-        .gradient-card {
+        /* Bento Grid Card Style */
+        .bento-card {
             position: relative;
-            border-radius: 1.5rem;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 2rem;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-5px) scale(1.01);
             background: rgba(15, 23, 42, 0.6);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
         }
-        .gradient-card::before {
-            content: "";
-            position: absolute;
-            inset: -1px;
-            border-radius: 1.5rem;
-            padding: 1px;
-            background: linear-gradient(45deg, var(--primary), transparent, var(--secondary));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0.3;
-            transition: opacity 0.4s;
-        }
-        .gradient-card:hover::before { opacity: 1; }
 
-        /* Floating Animation */
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        .float-anim { animation: float 6s ease-in-out infinite; }
-
-        /* Star Styling */
+        /* Star Rating Input */
         .star-input input { display: none; }
         .star-input label {
             cursor: pointer;
-            font-size: 2rem;
+            font-size: 2.2rem;
             color: #1e293b;
-            transition: all 0.3s;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
         }
         .star-input input:checked ~ label,
         .star-input label:hover,
         .star-input label:hover ~ label {
             color: #fbbf24;
-            transform: scale(1.1);
-            text-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
         }
 
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+
         .active-filter {
-            background: linear-gradient(45deg, var(--primary), var(--secondary)) !important;
+            background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.5);
             border: none !important;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in { animation: fadeIn 0.6s ease forwards; }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-4 md:p-12 lg:p-20">
     <div class="mesh-bg"></div>
 
     <div class="max-w-7xl mx-auto">
-        <header class="text-center mb-16 float-anim">
-            <h1 class="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-white to-pink-400 mb-4 tracking-tighter">
-                Customer Voices
-            </h1>
-            <p class="text-gray-400 text-lg">Kejujuran Anda adalah kompas kami untuk menjadi lebih baik.</p>
-        </header>
+        <div class="mb-16 text-center lg:text-left flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+            <div>
+                <h1 class="text-5xl md:text-7xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-500">
+                    Kesan Pelayanan.
+                </h1>
+                <p class="mt-4 text-gray-400 text-lg max-w-xl">Suara Anda membantu kami berkembang. Bagikan pengalaman jujur Anda hari ini.</p>
+            </div>
+            <div class="flex flex-col items-center lg:items-end">
+                <span class="text-xs uppercase tracking-widest text-indigo-500 font-bold mb-2">Terhubung dengan kami</span>
+                <div class="h-1 w-20 bg-indigo-500 rounded-full"></div>
+            </div>
+        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
             
             <div class="lg:col-span-4">
-                <div class="glass p-8 rounded-[2rem] border-white/10 shadow-2xl relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-600/10 blur-3xl -mr-16 -mt-16"></div>
-                    
+                <div class="glass p-8 rounded-[2.5rem] sticky top-10 border-white/10 shadow-2xl">
                     <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
-                        <span class="w-2 h-8 bg-indigo-500 rounded-full"></span>
-                        Tulis Ulasan
+                        <span class="p-2 bg-indigo-500/20 rounded-lg">
+                            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        </span>
+                        Beri Masukan
                     </h2>
 
                     <div class="space-y-6">
-                        <div class="group">
-                            <label class="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-2 block ml-1">Nama Anda</label>
-                            <input type="text" id="userName" placeholder="Ex: Alex Rivera" 
-                                class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-indigo-500/50 transition-all text-white">
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-gray-500 font-black mb-2 block">Identitas Anda</label>
+                            <input type="text" id="userName" placeholder="Nama Lengkap" 
+                                class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-indigo-500/50 transition-all text-sm">
                         </div>
 
                         <div>
-                            <label class="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-2 block ml-1">Rating Anda</label>
-                            <div class="star-input flex flex-row-reverse justify-end gap-1 bg-white/5 p-4 rounded-2xl border border-white/5">
+                            <label class="text-[10px] uppercase tracking-widest text-pink-500 font-black mb-2 block flex items-center justify-between">
+                                WhatsApp (Privat)
+                                <span class="bg-pink-500/10 px-2 py-0.5 rounded text-[8px]">Hanya Admin</span>
+                            </label>
+                            <input type="tel" id="userPhone" placeholder="08xxxxxxxxx" 
+                                class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-pink-500/50 transition-all text-sm">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-gray-500 font-black mb-2 block">Rating</label>
+                            <div class="star-input flex flex-row-reverse justify-end gap-2 bg-white/5 p-3 rounded-2xl border border-white/5">
                                 <input type="radio" id="st5" name="rating" value="5" checked><label for="st5">★</label>
                                 <input type="radio" id="st4" name="rating" value="4"><label for="st4">★</label>
                                 <input type="radio" id="st3" name="rating" value="3"><label for="st3">★</label>
@@ -136,15 +144,15 @@
                             </div>
                         </div>
 
-                        <div class="group">
-                            <label class="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-2 block ml-1">Kesan Pelayanan</label>
-                            <textarea id="userMsg" rows="4" placeholder="Apa yang paling berkesan?" 
-                                class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-indigo-500/50 transition-all text-white resize-none"></textarea>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-gray-500 font-black mb-2 block">Pesan Singkat</label>
+                            <textarea id="userMsg" rows="4" placeholder="Ceritakan pengalaman Anda..." 
+                                class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-indigo-500/50 transition-all text-sm resize-none"></textarea>
                         </div>
 
-                        <button onclick="sendReview()" id="btnSend" 
-                            class="w-full py-5 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-800 hover:shadow-[0_0_30px_rgba(79,70,229,0.4)] text-white font-bold tracking-widest transition-all active:scale-[0.98]">
-                            PUBLIKASIKAN ULASAN
+                        <button onclick="sendReview()" id="btnSubmit" 
+                            class="w-full py-5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold tracking-widest text-sm transition-all active:scale-[0.97] shadow-lg shadow-indigo-600/20">
+                            PUBLIKASIKAN
                         </button>
                     </div>
                 </div>
@@ -152,158 +160,158 @@
 
             <div class="lg:col-span-8 space-y-8">
                 
-                <div class="glass p-4 rounded-3xl flex flex-wrap items-center justify-between gap-4">
-                    <div class="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
-                        <button onclick="setFilter(0)" id="f-0" class="f-btn active-filter px-6 py-2.5 rounded-xl border border-white/10 text-sm font-bold transition-all whitespace-nowrap">Semua</button>
-                        <button onclick="setFilter(5)" id="f-5" class="f-btn px-5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold hover:bg-white/10 transition-all">5 ★</button>
-                        <button onclick="setFilter(4)" id="f-4" class="f-btn px-5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold hover:bg-white/10 transition-all">4 ★</button>
-                        <button onclick="setFilter(3)" id="f-3" class="f-btn px-5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold hover:bg-white/10 transition-all">3 ★</button>
-                        <button onclick="setFilter(2)" id="f-2" class="f-btn px-5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold hover:bg-white/10 transition-all">2 ★</button>
-                        <button onclick="setFilter(1)" id="f-1" class="f-btn px-5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold hover:bg-white/10 transition-all">1 ★</button>
-                    </div>
+                <div class="glass p-3 rounded-[1.8rem] flex items-center gap-2 overflow-x-auto no-scrollbar">
+                    <button onclick="applyFilter(0)" id="f-0" class="filter-btn active-filter px-6 py-3 rounded-2xl text-xs font-bold transition-all whitespace-nowrap">Semua Cerita</button>
+                    <button onclick="applyFilter(5)" id="f-5" class="filter-btn px-6 py-3 rounded-2xl border border-white/5 bg-white/5 text-xs font-bold hover:bg-white/10 transition-all">5 ★</button>
+                    <button onclick="applyFilter(4)" id="f-4" class="filter-btn px-6 py-3 rounded-2xl border border-white/5 bg-white/5 text-xs font-bold hover:bg-white/10 transition-all">4 ★</button>
+                    <button onclick="applyFilter(3)" id="f-3" class="filter-btn px-6 py-3 rounded-2xl border border-white/5 bg-white/5 text-xs font-bold hover:bg-white/10 transition-all">3 ★</button>
+                    <button onclick="applyFilter(2)" id="f-2" class="filter-btn px-6 py-3 rounded-2xl border border-white/5 bg-white/5 text-xs font-bold hover:bg-white/10 transition-all">2 ★</button>
+                    <button onclick="applyFilter(1)" id="f-1" class="filter-btn px-6 py-3 rounded-2xl border border-white/5 bg-white/5 text-xs font-bold hover:bg-white/10 transition-all">1 ★</button>
                 </div>
 
-                <div id="reviewGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    </div>
+                <div id="reviewContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="col-span-full py-20 text-center text-gray-600 animate-pulse">Menghubungkan ke server...</div>
+                </div>
 
-                <div id="showMore" class="hidden text-center pt-4">
-                    <button onclick="loadAll()" class="px-12 py-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 font-bold transition-all tracking-widest text-sm shadow-xl">
-                        MUAT SEMUA DATA
+                <div id="paginationBox" class="hidden text-center mt-10">
+                    <button onclick="showAll()" class="px-10 py-4 rounded-2xl glass border border-white/10 hover:bg-white/5 font-bold tracking-widest text-xs transition-all">
+                        TAMPILKAN SEMUA ULASAN
                     </button>
                 </div>
             </div>
 
         </div>
+
+        <footer class="mt-20 py-10 border-t border-white/5 text-center text-gray-600 text-[10px] tracking-[0.3em] uppercase">
+            &copy; 2024 YourBrand Service Excellence.
+        </footer>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, where, onSnapshot, serverTimestamp, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // GANTI DENGAN CONFIG FIREBASE ANDA
+        // ==========================================
+        // KONFIGURASI FIREBASE ANDA
         const firebaseConfig = {
             apiKey: "AIzaSy...",
-            authDomain: "your-app.firebaseapp.com",
-            projectId: "your-app",
-            storageBucket: "your-app.appspot.com",
+            authDomain: "projek-anda.firebaseapp.com",
+            projectId: "projek-anda",
+            storageBucket: "projek-anda.appspot.com",
             messagingSenderId: "12345",
             appId: "1:12345:web:abcd"
         };
+        // ==========================================
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const reviewsCol = collection(db, "testimonials");
+        const colRef = collection(db, "testimonials");
 
         let currentRating = 0;
-        let showingAll = false;
+        let isShowingAll = false;
         let unsubscribe = null;
 
-        // Render Cards
-        const render = (snapshot) => {
-            const grid = document.getElementById('reviewGrid');
-            const moreBtn = document.getElementById('showMore');
-            grid.innerHTML = '';
-
-            if (snapshot.empty) {
-                grid.innerHTML = `<div class="col-span-full py-32 text-center text-gray-600 font-medium italic">Tidak ada ulasan ditemukan...</div>`;
-                moreBtn.classList.add('hidden');
-                return;
-            }
-
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const stars = "★".repeat(data.rating) + "☆".repeat(5 - data.rating);
-                const date = data.createdAt ? data.createdAt.toDate().toLocaleDateString('id-ID', {day:'numeric', month:'short'}) : 'Just now';
-                
-                grid.innerHTML += `
-                    <div class="gradient-card p-7 group hover:-translate-y-2">
-                        <div class="flex justify-between items-start mb-6">
-                            <div class="flex items-center gap-4">
-                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center font-bold text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] text-xl rotate-3 group-hover:rotate-0 transition-transform">
-                                    ${data.name.charAt(0).toUpperCase()}
-                                </div>
-                                <div>
-                                    <h3 class="font-bold text-lg text-white group-hover:text-indigo-400 transition-colors">${data.name}</h3>
-                                    <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">${date}</span>
-                                </div>
-                            </div>
-                            <div class="px-3 py-1 bg-amber-500/10 rounded-full border border-amber-500/20 text-amber-500 text-xs font-black">
-                                ${data.rating}.0
-                            </div>
-                        </div>
-                        <div class="relative">
-                            <p class="text-gray-400 leading-relaxed italic pr-4 relative z-10">"${data.message}"</p>
-                            <span class="absolute -bottom-4 -right-2 text-6xl text-white/5 font-serif select-none pointer-events-none">”</span>
-                        </div>
-                        <div class="mt-6 pt-6 border-t border-white/5 flex gap-0.5 text-amber-400 text-sm">
-                            ${stars}
-                        </div>
-                    </div>
-                `;
-            });
-
-            // Logic button show more
-            if (snapshot.size >= 10 && !showingAll) moreBtn.classList.remove('hidden');
-            else moreBtn.classList.add('hidden');
-        };
-
-        // Fetch Data
-        const getReviews = () => {
+        // --- Core: Load Reviews ---
+        const loadData = () => {
             if (unsubscribe) unsubscribe();
 
             let constraints = [orderBy("createdAt", "desc")];
             if (currentRating > 0) constraints.push(where("rating", "==", currentRating));
-            if (!showingAll) constraints.push(limit(10));
+            if (!isShowingAll) constraints.push(limit(10));
 
-            const q = query(reviewsCol, ...constraints);
-            unsubscribe = onSnapshot(q, render, (err) => {
-                console.error("Index needed?", err);
-                alert("Cek konsol browser, mungkin butuh membuat Index di Firebase!");
+            const q = query(colRef, ...constraints);
+            
+            unsubscribe = onSnapshot(q, (snap) => {
+                const container = document.getElementById('reviewContainer');
+                const pBox = document.getElementById('paginationBox');
+                container.innerHTML = '';
+
+                if (snap.empty) {
+                    container.innerHTML = `<div class="col-span-full py-20 text-center text-gray-700 italic">Belum ada ulasan untuk rating ini.</div>`;
+                    pBox.classList.add('hidden');
+                    return;
+                }
+
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const stars = "★".repeat(d.rating) + "☆".repeat(5 - d.rating);
+                    const date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('id-ID', {day:'numeric', month:'short'}) : 'Baru';
+
+                    container.innerHTML += `
+                        <div class="bento-card p-8 animate-in border border-white/[0.03]">
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center font-bold text-white shadow-xl text-xl">
+                                        ${d.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-white text-lg">${d.name}</h3>
+                                        <span class="text-[9px] uppercase tracking-tighter text-gray-500 font-black">${date}</span>
+                                    </div>
+                                </div>
+                                <div class="px-3 py-1 bg-indigo-500/10 rounded-full text-indigo-400 text-[10px] font-black border border-indigo-500/20">
+                                    ${d.rating}.0
+                                </div>
+                            </div>
+                            <p class="text-gray-400 text-sm leading-relaxed italic mb-6">"${d.message}"</p>
+                            <div class="flex gap-0.5 text-amber-500 text-[11px] opacity-80">${stars}</div>
+                        </div>
+                    `;
+                });
+
+                if (snap.size >= 10 && !isShowingAll) pBox.classList.remove('hidden');
+                else pBox.classList.add('hidden');
             });
         };
 
-        // Functions for Buttons
+        // --- Logic: Submit ---
         window.sendReview = async () => {
             const name = document.getElementById('userName').value;
+            const phone = document.getElementById('userPhone').value;
             const msg = document.getElementById('userMsg').value;
             const rating = document.querySelector('input[name="rating"]:checked').value;
-            const btn = document.getElementById('btnSend');
+            const btn = document.getElementById('btnSubmit');
 
-            if (!name || !msg) return alert("Lengkapi data!");
+            if (!name || !msg) return alert("Nama dan Pesan wajib diisi!");
 
             btn.disabled = true;
-            btn.innerHTML = `<span class="animate-pulse">MENGIRIM...</span>`;
+            btn.innerHTML = "MENGIRIM...";
 
             try {
-                await addDoc(reviewsCol, {
+                await addDoc(colRef, {
                     name,
+                    phone, // Data ini masuk ke DB tapi tidak dipanggil di render HTML
                     message: msg,
                     rating: parseInt(rating),
                     createdAt: serverTimestamp()
                 });
                 document.getElementById('userName').value = '';
+                document.getElementById('userPhone').value = '';
                 document.getElementById('userMsg').value = '';
+            } catch (e) {
+                alert("Error: " + e.message);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = "PUBLIKASIKAN ULASAN";
+                btn.innerHTML = "PUBLIKASIKAN";
             }
         };
 
-        window.setFilter = (r) => {
+        // --- Logic: Filter & Pagination ---
+        window.applyFilter = (r) => {
             currentRating = r;
-            showingAll = false;
-            document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active-filter'));
+            isShowingAll = false;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
             document.getElementById(`f-${r}`).classList.add('active-filter');
-            getReviews();
+            loadData();
         };
 
-        window.loadAll = () => {
-            showingAll = true;
-            getReviews();
+        window.showAll = () => {
+            isShowingAll = true;
+            loadData();
         };
 
-        // Initialize
-        getReviews();
+        // Init Load
+        loadData();
     </script>
 </body>
-</html>
+    </html>
