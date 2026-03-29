@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Hub | Customer Service & Reviews</title>
+    <title>Testimoni Pelanggan - IYM Project</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -20,14 +20,15 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="p-6 md:p-12">
 
     <div class="max-w-7xl mx-auto">
         <header class="mb-12 text-center md:text-left">
-            <h1 class="text-5xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-500">Kesan Pelayanan.</h1>
-            <p class="text-gray-500 mt-2">Ulasan Anda rahasia, masukan Anda berharga.</p>
+            <h1 class="text-5xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-500">Testimoni Pelayanan</h1>
+            <p class="text-gray-500 mt-2">Terima kasih telah mempercayai saya dalam pemesanannya.</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -38,7 +39,9 @@
                     </h2>
                     <div class="space-y-5">
                         <input type="text" id="userName" placeholder="Nama Lengkap" class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-sm outline-none focus:border-indigo-500 transition-all">
-                        <input type="tel" id="userPhone" placeholder="No. WhatsApp (Hanya Admin)" class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-sm outline-none focus:border-pink-500 transition-all">
+                        <input type="tel" id="userPhone" placeholder="No. WhatsApp (Hanya Admin)" class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-sm outline-none focus:border-indigo-500 transition-all">
+                        <input type="text" id="motorName" placeholder="Tipe Motor (Contoh: Vario 160)" class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-sm outline-none focus:border-indigo-500 transition-all">
+                        
                         <div class="star-input flex flex-row-reverse justify-end gap-2 bg-white/5 p-3 rounded-xl border border-white/5">
                             <input type="radio" id="st5" name="rating" value="5" checked><label for="st5">★</label>
                             <input type="radio" id="st4" name="rating" value="4"><label for="st4">★</label>
@@ -46,7 +49,11 @@
                             <input type="radio" id="st2" name="rating" value="2"><label for="st2">★</label>
                             <input type="radio" id="st1" name="rating" value="1"><label for="st1">★</label>
                         </div>
-                        <textarea id="userMsg" rows="3" placeholder="Apa pendapat Anda?" class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-sm outline-none resize-none focus:border-indigo-500 transition-all"></textarea>
+
+                        <textarea id="userMsg" rows="3" placeholder="Apa pendapat Anda tentang layanan saya?" class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-sm outline-none resize-none focus:border-indigo-500 transition-all"></textarea>
+                        
+                        <textarea id="adminSuggestion" rows="2" placeholder="Saran/Kritik untuk saya" class="w-full bg-pink-500/5 border border-pink-500/10 rounded-xl px-5 py-3 text-[11px] italic outline-none resize-none focus:border-pink-500 transition-all text-gray-400"></textarea>
+
                         <button onclick="sendReview()" id="btnSubmit" class="w-full py-4 rounded-xl bg-indigo-600 font-bold text-sm hover:bg-indigo-500 transition-all active:scale-95 shadow-lg shadow-indigo-600/20">KIRIM ULASAN</button>
                     </div>
                 </div>
@@ -55,13 +62,15 @@
             <div class="lg:col-span-8 space-y-6">
                 <div class="glass p-2 rounded-2xl flex gap-2 overflow-x-auto no-scrollbar shadow-xl">
                     <button onclick="applyFilter(0)" id="f-0" class="filter-btn active-filter px-6 py-2 rounded-xl text-xs font-bold transition-all">Semua</button>
-                    <button onclick="applyFilter(5)" id="f-5" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl">5 ★</button>
-                    <button onclick="applyFilter(4)" id="f-4" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl">4 ★</button>
-                    <button onclick="applyFilter(3)" id="f-3" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl">3 ★</button>
-                    <button onclick="applyFilter(2)" id="f-2" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl">2 ★</button>
-                    <button onclick="applyFilter(1)" id="f-1" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl">1 ★</button>
+                    <button onclick="applyFilter(5)" id="f-5" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl text-gray-400">5 ★</button>
+                    <button onclick="applyFilter(4)" id="f-4" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl text-gray-400">4 ★</button>
+                    <button onclick="applyFilter(3)" id="f-3" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl text-gray-400">3 ★</button>
+                    <button onclick="applyFilter(2)" id="f-2" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl text-gray-400">2 ★</button>
+                    <button onclick="applyFilter(1)" id="f-1" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl text-gray-400">1 ★</button>
                 </div>
-                <div id="reviewContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[400px]"></div>
+                
+                <div id="reviewContainer" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 items-start content-start"></div>
+                
                 <div id="paginationBox" class="hidden text-center pt-4">
                     <button onclick="showAll()" class="px-8 py-3 glass rounded-xl text-xs font-bold hover:bg-white/5 transition-all">TAMPILKAN SEMUA</button>
                 </div>
@@ -74,20 +83,26 @@
             <svg id="chatIcon" class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
             <svg id="closeChatIcon" class="w-8 h-8 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
+
         <div id="chatBox" class="hidden absolute bottom-20 right-0 w-[320px] glass rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col h-[480px] border border-white/10 animate-in">
             <div class="p-5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
                 <h4 class="font-bold">Chat Support</h4>
                 <p class="text-[9px] opacity-70 uppercase tracking-widest">Balasan secepat kilat</p>
             </div>
-            <div id="chatForm" class="p-6 space-y-4 flex-grow bg-slate-900/50 flex flex-col justify-center">
+            
+            <div id="chatForm" class="p-6 space-y-4 flex-grow bg-slate-900/50 flex flex-col justify-center text-center">
                 <input type="text" id="chatName" placeholder="Nama Anda" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500">
                 <input type="tel" id="chatPhone" placeholder="Nomor WhatsApp" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500">
                 <button onclick="startChatting()" class="w-full py-3 bg-indigo-600 rounded-xl font-bold text-xs hover:bg-indigo-500 transition-all">MULAI PERCAKAPAN</button>
             </div>
+
             <div id="chatMessages" class="hidden flex-grow p-4 overflow-y-auto space-y-3 flex flex-col bg-slate-900/80"></div>
+            
             <div id="chatInputArea" class="hidden p-4 border-t border-white/5 bg-slate-900 flex gap-2">
                 <input type="text" id="msgInput" onkeypress="if(event.key==='Enter')sendMessage()" placeholder="Tulis pesan..." class="flex-grow bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs outline-none">
-                <button onclick="sendMessage()" class="p-2 bg-indigo-600 rounded-xl hover:bg-indigo-500"><svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg></button>
+                <button onclick="sendMessage()" class="p-2 bg-indigo-600 rounded-xl hover:bg-indigo-500">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+                </button>
             </div>
         </div>
     </div>
@@ -96,14 +111,13 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, where, onSnapshot, serverTimestamp, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // GANTI DENGAN CONFIG ANDA
         const firebaseConfig = {
-            apiKey: "ISI_API_KEY_ANDA",
-            authDomain: "ISI_AUTH_DOMAIN_ANDA",
-            projectId: "ISI_PROJECT_ID_ANDA",
-            storageBucket: "ISI_STORAGE_BUCKET_ANDA",
-            messagingSenderId: "ISI_MESSAGING_SENDER_ID_ANDA",
-            appId: "ISI_APP_ID_ANDA"
+            apiKey: "AIzaSyCLTHkDtSmn6ICpq4o-xWWUPrl3a_VaT3c",
+            authDomain: "pricelist-23ec2.firebaseapp.com",
+            projectId: "pricelist-23ec2",
+            storageBucket: "pricelist-23ec2.firebasestorage.app",
+            messagingSenderId: "546085857444",
+            appId: "1:546085857444:web:e1fe997ddb9feb912ede31"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -112,7 +126,7 @@
 
         let curR = 0; let showA = false; let unsubR = null;
 
-        // LOAD REVIEWS SYSTEM
+        // --- REVIEWS SYSTEM ---
         const loadR = () => {
             if(unsubR) unsubR();
             let c = [orderBy("createdAt", "desc")];
@@ -122,66 +136,138 @@
             unsubR = onSnapshot(query(colRef, ...c), snap => {
                 const cont = document.getElementById('reviewContainer');
                 cont.innerHTML = '';
-                if(snap.empty) cont.innerHTML = `<div class="col-span-full py-20 text-center text-gray-700 italic">Belum ada ulasan.</div>`;
+                if(snap.empty) {
+                    cont.innerHTML = `<div class="col-span-full py-20 text-center text-gray-700 italic">Belum ada ulasan.</div>`;
+                    return;
+                }
                 snap.forEach(doc => {
                     const d = doc.data();
                     const stars = "★".repeat(d.rating) + "☆".repeat(5 - d.rating);
-                    cont.innerHTML += `<div class="bento-card p-7 animate-in shadow-xl">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg text-lg">${d.name.charAt(0).toUpperCase()}</div>
-                            <div><h4 class="font-bold text-white leading-tight">${d.name}</h4><p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">${d.createdAt?.toDate().toLocaleDateString('id-ID', {day:'numeric', month:'short'}) || 'Baru'}</p></div>
-                        </div>
-                        <p class="text-sm text-gray-400 leading-relaxed italic mb-4">"${d.message}"</p>
-                        <div class="text-amber-500 text-[10px] tracking-widest">${stars}</div>
-                    </div>`;
+                    cont.innerHTML += `
+                        <div class="bento-card p-5 animate-in shadow-xl h-fit border border-white/5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg text-sm">${d.name.charAt(0).toUpperCase()}</div>
+                                    <div class="overflow-hidden">
+                                        <h4 class="font-bold text-white leading-tight text-sm truncate">${d.name}</h4>
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="text-[8px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded-md font-bold uppercase italic tracking-tighter">${d.motor || 'Motor'}</span>
+                                            <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${d.createdAt?.toDate().toLocaleDateString('id-ID', {day:'numeric', month:'short'}) || 'Baru'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-400 leading-relaxed italic mb-4 break-words">"${d.message}"</p>
+                            </div>
+                            <div class="text-amber-500 text-[9px] tracking-widest border-t border-white/5 pt-3">${stars}</div>
+                        </div>`;
                 });
                 document.getElementById('paginationBox').classList.toggle('hidden', snap.size < 10 || showA);
             });
         };
 
         window.sendReview = async () => {
-            const n = document.getElementById('userName').value, p = document.getElementById('userPhone').value, m = document.getElementById('userMsg').value, r = document.querySelector('input[name="rating"]:checked').value;
-            if(!n || !m) return alert("Mohon lengkapi Nama dan Pesan.");
+            const n = document.getElementById('userName').value, 
+                  p = document.getElementById('userPhone').value, 
+                  motor = document.getElementById('motorName').value,
+                  m = document.getElementById('userMsg').value, 
+                  saran = document.getElementById('adminSuggestion').value,
+                  r = document.querySelector('input[name="rating"]:checked').value;
+
+            if(!n || !m || !motor) return alert("Mohon lengkapi Nama, Tipe Motor, dan Pesan.");
             const btn = document.getElementById('btnSubmit'); btn.disabled = true; btn.innerText = "MENGIRIM...";
             try {
-                await addDoc(colRef, { name: n, phone: p, message: m, rating: parseInt(r), createdAt: serverTimestamp() });
-                document.getElementById('userName').value = ''; document.getElementById('userPhone').value = ''; document.getElementById('userMsg').value = '';
+                await addDoc(colRef, { 
+                    name: n, 
+                    phone: p, 
+                    motor: motor,
+                    message: m, 
+                    suggestion: saran,
+                    rating: parseInt(r), 
+                    createdAt: serverTimestamp() 
+                });
+                document.getElementById('userName').value = ''; 
+                document.getElementById('userPhone').value = ''; 
+                document.getElementById('motorName').value = '';
+                document.getElementById('userMsg').value = '';
+                document.getElementById('adminSuggestion').value = '';
+                alert("Ulasan terkirim!");
             } catch(e) { alert("Error: " + e.message); }
             finally { btn.disabled = false; btn.innerText = "KIRIM ULASAN"; }
         };
 
-        window.applyFilter = (r) => { curR = r; showA = false; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter')); document.getElementById(`f-${r}`).classList.add('active-filter'); loadR(); };
+        window.applyFilter = (r) => { 
+            curR = r; showA = false; 
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('active-filter');
+                b.classList.add('text-gray-400');
+            });
+            const active = document.getElementById(`f-${r}`);
+            active.classList.add('active-filter');
+            active.classList.remove('text-gray-400');
+            loadR(); 
+        };
         window.showAll = () => { showA = true; loadR(); };
         loadR();
 
-        // CHAT SYSTEM LOGIC
-        let cID = localStorage.getItem('chat_id'); let unsubC = null;
-        window.toggleChat = () => { document.getElementById('chatBox').classList.toggle('hidden'); document.getElementById('chatIcon').classList.toggle('hidden'); document.getElementById('closeChatIcon').classList.toggle('hidden'); if(cID) initChat(); };
+        // --- CHAT SYSTEM ---
+        let cID = localStorage.getItem('chat_id'); 
+        let unsubC = null;
+
+        window.toggleChat = () => { 
+            document.getElementById('chatBox').classList.toggle('hidden'); 
+            document.getElementById('chatIcon').classList.toggle('hidden'); 
+            document.getElementById('closeChatIcon').classList.toggle('hidden'); 
+            if(cID) initChat(); 
+        };
+
         window.startChatting = () => { 
             const n = document.getElementById('chatName').value, p = document.getElementById('chatPhone').value; 
             if(!n || !p) return alert("Isi data untuk memulai."); 
-            cID = p + "_" + Date.now(); localStorage.setItem('chat_id', cID); localStorage.setItem('chat_n', n); localStorage.setItem('chat_p', p); 
+            if(!cID) {
+                cID = p + "_" + Date.now(); 
+                localStorage.setItem('chat_id', cID); 
+            }
+            localStorage.setItem('chat_n', n); 
+            localStorage.setItem('chat_p', p); 
             initChat(); 
         };
-        const initChat = () => {
-            document.getElementById('chatForm').classList.add('hidden'); document.getElementById('chatMessages').classList.remove('hidden'); document.getElementById('chatInputArea').classList.remove('hidden');
+
+        window.initChat = () => {
+            document.getElementById('chatForm').classList.add('hidden'); 
+            document.getElementById('chatMessages').classList.remove('hidden'); 
+            document.getElementById('chatInputArea').classList.remove('hidden');
             if(unsubC) unsubC();
-            unsubC = onSnapshot(query(collection(db, "chats"), where("sessionID", "==", cID), orderBy("createdAt", "asc")), snap => {
-                const box = document.getElementById('chatMessages'); box.innerHTML = '';
+            const q = query(collection(db, "chats"), where("sessionID", "==", cID), orderBy("createdAt", "asc"));
+            unsubC = onSnapshot(q, snap => {
+                const box = document.getElementById('chatMessages'); 
+                box.innerHTML = '';
                 snap.forEach(d => { 
                     const msg = d.data(); 
                     const isMe = msg.sender === 'user';
                     box.innerHTML += `<div class="max-w-[85%] p-3 rounded-2xl text-[11px] leading-snug shadow-sm animate-in ${isMe ? 'self-end bg-indigo-600 text-white rounded-tr-none' : 'self-start bg-white/10 text-gray-200 rounded-tl-none'}">${msg.text}</div>`; 
-                });
+                }); 
                 box.scrollTop = box.scrollHeight;
             });
         };
+
         window.sendMessage = async () => { 
-            const i = document.getElementById('msgInput'); if(!i.value) return; 
-            await addDoc(collection(db, "chats"), { sessionID: cID, userName: localStorage.getItem('chat_n'), userPhone: localStorage.getItem('chat_p'), text: i.value, sender: 'user', createdAt: serverTimestamp() }); 
-            i.value = ''; 
+            const i = document.getElementById('msgInput'); 
+            const val = i.value.trim();
+            if(!val) return; 
+            try {
+                await addDoc(collection(db, "chats"), { 
+                    sessionID: cID, 
+                    userName: localStorage.getItem('chat_n'), 
+                    userPhone: localStorage.getItem('chat_p'), 
+                    text: val, 
+                    sender: 'user', 
+                    createdAt: serverTimestamp() 
+                }); 
+                i.value = ''; 
+            } catch(e) { console.error(e); }
         };
+
         if(cID) initChat();
     </script>
 </body>
-                    </html>
+</html>
