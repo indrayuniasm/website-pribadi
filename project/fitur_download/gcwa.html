@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GC WA - IYM Project</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        body { 
+            background: #0f172a; 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            cursor: default !important; /* Kursor Asli */
+        }
+     /* 1. DEFINISI VARIABLE TEMA */
+        :root {
+            --gold: #D4AF37;
+            --bg-color: #FAF7F2; 
+            --text-color: #1A0F0A; 
+            --header-bg: rgba(250, 247, 242, 0.9); /* Header terang */
+            --dropdown-bg: #FAF7F2;
+            --white: #FAF7F2;
+            --dark: #1A0F0A;
+        }
+
+        body.dark-theme {
+            --bg-color: #1A0F0A; 
+            --text-color: #FAF7F2; 
+            --header-bg: rgba(26, 15, 10, 0.9); /* Header gelap */
+            --dropdown-bg: #1A0F0A;
+            --white: #1A0F0A;
+            --dark: #FAF7F2;
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-color);
+            transition: background-color 0.5s, color 0.5s;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* 2. HEADER STYLE */
+        .header {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            background: var(--header-bg);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            z-index: 1000;
+            transition: background 0.5s;
+        }
+
+        .nav {
+            height: 4.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .nav__logo {
+            color: var(--gold);
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* 3. MOBILE VIEW (SIDEBAR) */
+        @media screen and (max-width: 1023px) {
+            .nav__menu {
+                position: fixed;
+                top: 0; left: -100%;
+                width: 80%; height: 100vh;
+                background: var(--bg-color); /* Ikut tema */
+                padding: 5rem 2rem;
+                transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+                overflow-y: auto;
+            }
+            .nav__menu.show-menu { left: 0; }
+            .nav__list { display: flex; flex-direction: column; gap: 2rem; }
+            
+            .dropdown__menu {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.4s ease;
+                background: rgba(212, 175, 55, 0.05);
+                border-radius: 8px;
+            }
+            .dropdown__menu.open-mobile {
+                max-height: 1000px;
+                margin-top: 1rem;
+                padding: 1rem;
+            }
+        }
+
+        /* 4. DESKTOP VIEW */
+        @media screen and (min-width: 1024px) {
+            .nav__toggle { display: none; }
+            .nav__list { display: flex; align-items: center; gap: 3.5rem; }
+            .dropdown__item { position: relative; }
+            
+            .dropdown__menu {
+                position: absolute;
+                top: 150%; left: 50%;
+                transform: translateX(-50%) translateY(20px);
+                background: var(--dropdown-bg);
+                width: 250px;
+                padding: 1.5rem;
+                border: 1px solid var(--gold);
+                border-radius: 15px;
+                opacity: 0;
+                pointer-events: none;
+                transition: 0.4s;
+                box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            }
+            .dropdown__menu.show-desktop {
+                opacity: 1;
+                pointer-events: all;
+                transform: translateX(-50%) translateY(0);
+                top: 120%;
+            }
+        }
+
+        /* 5. SHARED LINKS */
+        .nav__link, .dropdown__title {
+            color: var(--text-color); /* Ikut tema */
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav__link:hover, .active { color: var(--gold); }
+        .dropdown__sublink {
+            color: var(--text-color);
+            opacity: 0.7;
+            font-size: 0.85rem;
+            padding: 0.6rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            transition: 0.3s;
+        }
+        .dropdown__sublink:hover { color: var(--gold); opacity: 1; transform: translateX(5px); }
+        
+        .nav__toggle { color: var(--gold); font-size: 1.8rem; cursor: pointer; }
+        .rotate-icon { transform: rotate(180deg); transition: 0.3s; }
+
+        button, a { cursor: pointer; }
+
+        .tg-card { background: #1e293b; border: 1px solid rgba(255,255,255,0.05); }
+        .sticker-item { background: rgba(255,255,255,0.03); transition: all 0.3s ease; }
+        .sticker-item:hover { transform: translateY(-5px); background: rgba(255,255,255,0.08); }
+        .btn-tg { background: #24A1DE; }
+        .loader { border-top-color: #24A1DE; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+:root {
+    --gold-light: #f9e29d;
+    --gold-mid: #d4af37;
+    --gold-dark: #a67c00;
+}
+
+/* Kunci scroll saat loading */
+body.loading-active {
+    overflow: hidden !important;
+    height: 100vh;
+    min-height: 100vh;
+}
+
+#preloader {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #0f0e0d; /* Background gelap khas mewah */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10002;
+    perspective: 1000px;
+    transition: opacity 1s ease, visibility 1s ease;
+}
+
+.luxury-loader {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    transform-style: preserve-3d;
+}
+
+.luxury-loader .ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid transparent;
+    border-top: 4px solid var(--gold-mid);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+    .cursive {
+            font-family: 'Great Vibes', cursive;
+        }
+
+/* Animasi Cincin 1, 2, 3 sesuai struktur kamu */
+.luxury-loader .ring:nth-child(1) {
+    animation: rotate3D_1 2s linear infinite;
+}
+
+.luxury-loader .ring:nth-child(2) {
+    animation: rotate3D_2 2s linear infinite;
+    border-top: 4px solid var(--gold-light);
+    width: 90%; height: 90%; top: 5%; left: 5%;
+}
+
+.luxury-loader .ring:nth-child(3) {
+    animation: rotate3D_3 2s linear infinite;
+    border-top: 4px solid var(--gold-dark);
+    width: 80%; height: 80%; top: 10%; left: 10%;
+}
+
+.loading-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+    z-index: 10;
+}
+
+.loading-text span {
+    display: block;
+    font-size: 3rem;
+    color: var(--gold-mid);
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+.loading-text p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: white;
+    margin-top: 10px;
+    opacity: 0.8;
+    animation: pulseText 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate3D_1 {
+    0% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg); }
+    100% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg); }
+}
+
+@keyframes rotate3D_2 {
+    0% { transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg); }
+    100% { transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg); }
+}
+
+@keyframes rotate3D_3 {
+    0% { transform: rotateX(-35deg) rotateY(55deg) rotateZ(0deg); }
+    100% { transform: rotateX(-35deg) rotateY(55deg) rotateZ(360deg); }
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+    
+</style>
+</head>
+<body class="light-theme">
+
+    <header class="header">
+        <nav class="nav">
+            <div class="nav__data">
+                <a href="#" class="nav__logo">
+                    <i class="ri-skull-2-line"></i> INDRA
+                </a>
+            </div>
+
+            <div class="nav__toggle" id="nav-toggle">
+                <i class="ri-menu-4-fill"></i>
+            </div>
+
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li><a href="#" class="nav__link active"><i class="ri-home-line"></i> Home</a></li>
+                    <li class="dropdown__item">
+                        <div class="dropdown__title nav__link">
+                            <span><i class="fas fa-diagram-project"></i> Project</span>
+                            <i class="ri-arrow-down-s-line dropdown__arrow"></i>
+                        </div>
+                        <ul class="dropdown__menu">     
+                            <li><a href="alldown.html" class="dropdown__sublink"><i class="ri-download-line"></i> All Download</a></li>
+                            <li><a href="allsearch.html" class="dropdown__sublink"><i class="ri-search-eye-line"></i> All Search</a></li>
+                            <li><a href="tt.html" class="dropdown__sublink"><i class="ri-tiktok-line"></i> Stalking Akun Tiktok</a></li>
+                            <li><a href="github.html" class="dropdown__sublink"><i class="ri-github-line"></i> Stalking Akun Github</a></li>
+                            <li><a href="ff.html" class="dropdown__sublink"><i class="ri-gamepad-line"></i> Stalking Akun FreeFire</a></li>
+                            <li><a href="fakessip.html" class="dropdown__sublink"><i class="ri-screenshot-2-line"></i> Fake Screenshot Iphone</a></li>
+                            <li><a href="fakeml.html" class="dropdown__sublink"><i class="ri-game-line"></i> Fake Loby Mobile Legends</a></li>
+                            <li><a href="fakeff.html" class="dropdown__sublink"><i class="ri-game-line"></i> Fake Loby FreeFire</a></li>
+                            <li><a href="waifu18.html" class="dropdown__sublink"><i class="fas fa-hot-tub-person"></i> Waifu (18+)</a></li>
+                            <li><a href="stikertele.html" class="dropdown__sublink"><i class="ri-download-line"></i> Download Stiker Telegram</a></li>
+                            <li><a href="hdfoto.html" class="dropdown__sublink"><i class="ri-hd-line"></i> Hd Foto</a></li>
+                            <li><a href="hdfoto2.html" class="dropdown__sublink"><i class="ri-hd-line"></i> Super HD</a></li>
+                            <li><a href="gcwa.html" class="dropdown__sublink"><i class="ri-search-eye-line"></i> Search Group Wa</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown__item">
+                        <div class="dropdown__title nav__link">
+                            <span><i class="ri-camera-switch-line"></i> Medsos</span>
+                            <i class="ri-arrow-down-s-line dropdown__arrow"></i>
+                        </div>
+                        <ul class="dropdown__menu">     
+                            <li><a href="https://instagram.com/asmarabot" class="dropdown__sublink"><i class="ri-instagram-line"></i> Instagram</a></li>
+                            <li><a href="https://www.tiktok.com/@apaan_oy" class="dropdown__sublink"><i class="ri-tiktok-line"></i> Tiktok</a></li>
+                            <li><a href="https://wa.me/6283849997221" class="dropdown__sublink"><i class="ri-whatsapp-line"></i> WhatsApp</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav__link cursor-pointer" onclick="toggleTheme()">
+                        <i class="ri-moon-line" id="theme-icon"></i> <span>Ganti Tema</span>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <div class="flex flex-col min-h-screen"> <main class="flex-grow p-4 md:p-10 pt-20 md:pt-32 flex flex-col items-center">
+<div id="preloader">
+    <div class="luxury-loader">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="loading-text">
+            <span class="cursive" style="font-size: 3rem; color: var(--gold-mid); display: block;">dra</span>
+                <p style="color: white; font-size: 0.6rem; letter-spacing: 5px; text-transform: uppercase; margin-top: 10px; opacity: 0.8;">Welcome To My site</p>
+        </div>
+    </div>
+</div>
+<!--isian web-->
+  <header class="relative pt-12 pb-20 px-6 overflow-hidden">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-20 pointer-events-none">
+            <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[60%] bg-yellow-500/20 blur-[120px] rounded-full"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[60%] bg-blue-500/10 blur-[120px] rounded-full"></div>
+        </div>
+
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-4">
+                Group<span class="text-gradient-gold">WhatsApp</span>
+            </h1>
+            <p class="text-gray-400 text-lg md:text-xl font-light max-w-2xl mx-auto">
+                Temukan komunitas impianmu. Jelajahi ribuan grup WhatsApp dalam satu klik.
+            </p>
+
+            <div class="mt-12 max-w-2xl mx-auto relative search-container group">
+                <input type="text" id="searchInput" 
+                    placeholder="Contoh: Belajar Coding, Jual Beli..." 
+                    class="w-full bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl py-5 px-7 pl-14 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 transition-all text-white placeholder:text-gray-500">
+                <i class="fa-solid fa-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-yellow-500 transition-colors"></i>
+                <button onclick="performSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-gold-gradient text-black font-bold px-6 py-2.5 rounded-xl hover:scale-105 active:scale-95 transition-transform">
+                    Cari
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 pb-24">
+        <div id="statusLabel" class="mb-10 text-center text-sm font-medium tracking-widest text-gray-500 uppercase">
+            Silahkan cari kata kunci di atas
+        </div>
+
+        <div id="loading" class="hidden py-20">
+            <div class="flex flex-col items-center">
+                <div class="w-12 h-12 border-4 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin mb-4"></div>
+                <p class="text-yellow-500/80 animate-pulse font-medium">Menyisir database...</p>
+            </div>
+        </div>
+
+        <div id="resultGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+    </main>
+    </main>
+        </main>
+    </div>
+<footer class="bg-transparent border-t border-white/5 py-10 mt-auto">
+    <div class="max-w-6xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="order-2 md:order-1 text-center md:text-left">
+            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                &copy; 2026 <span class="text-[#24A1DE]">-Indra Y.M</span>
+            </p>
+        </div>
+
+        <div class="flex items-center gap-6 order-1 md:order-2">
+            <a href="https://wa.me/6283849997221" target="_blank" class="text-gray-500 hover:text-green-500 transition-colors">
+                <i class="fa-brands fa-whatsapp text-xl"></i>
+            </a>
+            <a href="https://instagram.com/asmarabot" target="_blank" class="text-gray-500 hover:text-pink-500 transition-colors">
+                <i class="fa-brands fa-instagram text-xl"></i>
+            </a>
+            <a href="https://www.tiktok.com/@apaan_oy" target="_blank" class="text-gray-500 hover:text-[#24A1DE] transition-colors">
+                <i class="fa-brands fa-tiktok text-xl"></i>
+            </a>
+        </div>
+    </div>
+</footer>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const resultGrid = document.getElementById('resultGrid');
+        const loading = document.getElementById('loading');
+        const statusLabel = document.getElementById('statusLabel');
+
+        async function performSearch() {
+            const query = searchInput.value.trim();
+            if (!query) return;
+
+            resultGrid.innerHTML = '';
+            loading.classList.remove('hidden');
+            statusLabel.innerText = `Menampilkan hasil untuk: ${query}`;
+
+            try {
+                const response = await fetch(`https://api.nexray.web.id/search/groupsor?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                loading.classList.add('hidden');
+
+                if (data.status && data.result?.length > 0) {
+                    data.result.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = "glass-card rounded-3xl overflow-hidden flex flex-col h-full";
+                        card.innerHTML = `
+                            <div class="relative h-48 overflow-hidden">
+                                <img src="${item.image_url}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" 
+                                     onerror="this.src='https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=400&auto=format&fit=crop'">
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#030712] via-transparent to-transparent"></div>
+                                <div class="absolute bottom-4 left-4 flex gap-2">
+                                    <span class="bg-yellow-500 text-black text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-tighter">
+                                        ${item.category || 'Global'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="text-xl font-bold mb-3 line-clamp-1">${item.name}</h3>
+                                <p class="text-gray-400 text-sm leading-relaxed mb-6 line-clamp-3 flex-grow">
+                                    ${item.description || 'Bergabunglah dengan komunitas ini untuk mendapatkan info terbaru dan diskusi menarik.'}
+                                </p>
+                                <a href="${item.url}" target="_blank" 
+                                   class="w-full py-3.5 rounded-2xl bg-white/5 border border-white/10 text-center font-bold text-sm hover:bg-gold-gradient hover:text-black hover:border-transparent transition-all duration-300">
+                                    GABUNG GRUP
+                                </a>
+                            </div>
+                        `;
+                        resultGrid.appendChild(card);
+                    });
+                } else {
+                    statusLabel.innerText = "Grup tidak ditemukan. Coba kata kunci lain.";
+                    resultGrid.innerHTML = `<div class="col-span-full text-center py-20 opacity-30 text-xl font-light">Tidak ada data ditemukan</div>`;
+                }
+            } catch (error) {
+                loading.classList.add('hidden');
+                statusLabel.innerText = "Gagal memuat data. Periksa koneksi internet.";
+            }
+        }
+
+        searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+
+        // Fitur: Tekan Enter untuk cari
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+        
+    // Loading
+        document.body.classList.add('loading-active');
+    window.addEventListener('load', () => {
+        const preloader = document.getElementById('preloader');
+        setTimeout(() => {
+            preloader.style.opacity = '0';
+            preloader.style.visibility = 'hidden';
+            document.body.classList.remove('loading-active');
+        }, 3000); 
+    });
+
+    // Mematikan Klik Kanan
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Mematikan Shortcut Keyboard (F12, Ctrl+U, Ctrl+I, Ctrl+Shift+I, dll)
+    document.onkeydown = function(e) {
+        if (
+            e.keyCode === 123 || // F12
+            (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 65 || e.keyCode === 70)) || // Ctrl+U, S, A, F
+            (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 75 || e.keyCode === 67)) || // Ctrl+Shift+I, J, K, C
+            (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 85)) // Shortcut Mac (Cmd+Opt+I/U)
+        ) {
+            return false;
+        }
+    };
+
+    // Mematikan Drag Gambar/Elemen
+    document.addEventListener('dragstart', e => e.preventDefault());
+
+    // 1. Mobile Menu Toggle
+        const navToggle = document.getElementById('nav-toggle'),
+              navMenu = document.getElementById('nav-menu')
+
+        if(navToggle) {
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('show-menu')
+                const icon = navToggle.querySelector('i')
+                icon.classList.toggle('ri-menu-4-fill')
+                icon.classList.toggle('ri-close-line')
+            })
+        }
+
+        // 2. Dropdown Logic
+        const dropdownItems = document.querySelectorAll('.dropdown__item')
+        dropdownItems.forEach((item) => {
+            const title = item.querySelector('.dropdown__title')
+            title.addEventListener('click', () => {
+                const isMobile = window.innerWidth < 1024
+                const menu = item.querySelector('.dropdown__menu')
+                const arrow = item.querySelector('.dropdown__arrow')
+
+                dropdownItems.forEach((otherItem) => {
+                    if(otherItem !== item) {
+                        otherItem.querySelector('.dropdown__menu').classList.remove('show-desktop', 'open-mobile')
+                        otherItem.querySelector('.dropdown__arrow').classList.remove('rotate-icon')
+                    }
+                })
+
+                if(isMobile) menu.classList.toggle('open-mobile')
+                else menu.classList.toggle('show-desktop')
+                arrow.classList.toggle('rotate-icon')
+            })
+        })
+
+        // 3. Theme Toggle 100% Working
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            
+            body.classList.toggle('dark-theme');
+            
+            if(body.classList.contains('dark-theme')) {
+                icon.classList.replace('ri-moon-line', 'ri-sun-line');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.replace('ri-sun-line', 'ri-moon-line');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if(savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                const icon = document.getElementById('theme-icon');
+                if(icon) icon.classList.replace('ri-moon-line', 'ri-sun-line');
+            }
+        });
+</script>
+</body>
+</html>

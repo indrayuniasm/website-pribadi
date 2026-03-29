@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>berbagi hadiah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        body { 
+            background: #0f172a; 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            cursor: default !important; /* Kursor Asli */
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        #wheel { transition: transform 5s cubic-bezier(0.1, 0.8, 0.1, 1); }
+
+        .indicator {
+            width: 4px; height: 35px; background: #3b82f6;
+            position: absolute; top: -10px; left: 50%;
+            transform: translateX(-50%); z-index: 50;
+            box-shadow: 0 0 15px #3b82f6; border-radius: 10px;
+        }
+
+        canvas { border-radius: 24px; cursor: crosshair; touch-action: none; z-index: 10; }
+
+        /* MODAL ANIMATION */
+        #win-modal {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0.8); opacity: 0; pointer-events: none;
+        }
+        #win-modal.active {
+            transform: scale(1); opacity: 1; pointer-events: auto;
+        }
+
+        @keyframes slip {
+            0% { transform: rotate(var(--deg)); }
+            50% { transform: rotate(calc(var(--deg) + 2deg)); }
+            100% { transform: rotate(var(--deg)); }
+        }
+        .stop-anim { animation: slip 0.4s ease-out; }
+
+                button, a { cursor: pointer; }
+
+        .tg-card { background: #1e293b; border: 1px solid rgba(255,255,255,0.05); }
+        .sticker-item { background: rgba(255,255,255,0.03); transition: all 0.3s ease; }
+        .sticker-item:hover { transform: translateY(-5px); background: rgba(255,255,255,0.08); }
+        .btn-tg { background: #24A1DE; }
+        .loader { border-top-color: #24A1DE; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+:root {
+    --gold-light: #f9e29d;
+    --gold-mid: #d4af37;
+    --gold-dark: #a67c00;
+}
+
+/* Kunci scroll saat loading */
+body.loading-active {
+    overflow: hidden !important;
+    height: 100vh;
+    min-height: 100vh;
+}
+
+#preloader {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #0f0e0d; /* Background gelap khas mewah */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10002;
+    perspective: 1000px;
+    transition: opacity 1s ease, visibility 1s ease;
+}
+
+.luxury-loader {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    transform-style: preserve-3d;
+}
+
+.luxury-loader .ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid transparent;
+    border-top: 4px solid var(--gold-mid);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+    .cursive {
+            font-family: 'Great Vibes', cursive;
+        }
+
+/* Animasi Cincin 1, 2, 3 sesuai struktur kamu */
+.luxury-loader .ring:nth-child(1) {
+    animation: rotate3D_1 2s linear infinite;
+}
+
+.luxury-loader .ring:nth-child(2) {
+    animation: rotate3D_2 2s linear infinite;
+    border-top: 4px solid var(--gold-light);
+    width: 90%; height: 90%; top: 5%; left: 5%;
+}
+
+.luxury-loader .ring:nth-child(3) {
+    animation: rotate3D_3 2s linear infinite;
+    border-top: 4px solid var(--gold-dark);
+    width: 80%; height: 80%; top: 10%; left: 10%;
+}
+
+.loading-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+    z-index: 10;
+}
+
+.loading-text span {
+    display: block;
+    font-size: 3rem;
+    color: var(--gold-mid);
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+.loading-text p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: white;
+    margin-top: 10px;
+    opacity: 0.8;
+    animation: pulseText 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate3D_1 {
+    0% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg); }
+    100% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg); }
+}
+
+@keyframes rotate3D_2 {
+    0% { transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg); }
+    100% { transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg); }
+}
+
+@keyframes rotate3D_3 {
+    0% { transform: rotateX(-35deg) rotateY(55deg) rotateZ(0deg); }
+    100% { transform: rotateX(-35deg) rotateY(55deg) rotateZ(360deg); }
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+    </style>
+</head>
+<body>
+  <div class="flex flex-col min-h-screen"> <main class="flex-grow p-4 md:p-10 flex flex-col items-center">
+<div id="preloader">
+    <div class="luxury-loader">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="loading-text">
+            <span class="cursive" style="font-size: 3rem; color: var(--gold-mid); display: block;">dra</span>
+                <p style="color: white; font-size: 0.6rem; letter-spacing: 5px; text-transform: uppercase; margin-top: 10px; opacity: 0.8;">Welcome To My site</p>
+        </div>
+    </div>
+</div>
+<!--isian web-->
+
+    <div id="view-menu" class="w-full max-w-sm px-6 flex flex-col items-center h-full justify-center z-10">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-800 tracking-tight text-white">PILIH TANTANGAN</h2>
+            <center>
+        <div class="flex gap-2" id="chance-dots">
+            <div class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"></div>
+            <div class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"></div>
+            <div class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"></div>
+        </div>
+                </center>
+            <p class="text-slate-500 text-sm mt-2">Nyawa terbatas, jangan sampai sia-sia.</p>
+        </div>
+        
+        <div class="w-full space-y-4 mb-16">
+            <button onclick="openGame('spin')" class="glass w-full p-6 rounded-[30px] flex items-center justify-between group transition-all active:scale-95">
+                <div class="text-left">
+                    <div class="font-800 text-lg text-white">spin berhadiah</div>
+                    <div class="text-[10px] text-blue-500 font-bold uppercase tracking-widest">spin dan dapatkan hadiah</div>
+                </div>
+                <i class="fa-solid fa-circle-notch text-2xl group-hover:rotate-180 transition-transform duration-700"></i>
+            </button>
+
+            <button onclick="openGame('scratch')" class="glass w-full p-6 rounded-[30px] flex items-center justify-between group transition-all active:scale-95">
+                <div class="text-left">
+                    <div class="font-800 text-lg text-white">Scratch Card</div>
+                    <div class="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Mystery Box</div>
+                </div>
+                <i class="fa-solid fa-box-open text-2xl group-hover:scale-110 transition-transform"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="view-spin" class="hidden flex-col items-center z-10">
+        <div class="relative w-80 h-80">
+            <div class="indicator"></div>
+            <svg id="wheel" viewBox="0 0 100 100" class="w-full h-full shadow-2xl rounded-full">
+                <path d="M 50 50 L 50 0 A 50 50 0 0 1 93.3 25 Z" fill="#0f172a" />
+                <path d="M 50 50 L 93.3 25 A 50 50 0 0 1 93.3 75 Z" fill="#1e1b4b" />
+                <path d="M 50 50 L 93.3 75 A 50 50 0 0 1 50 100 Z" fill="#0f172a" />
+                <path d="M 50 50 L 50 100 A 50 50 0 0 1 6.7 75 Z" fill="#1e1b4b" />
+                <path d="M 50 50 L 6.7 75 A 50 50 0 0 1 6.7 25 Z" fill="#0f172a" />
+                <path d="M 50 50 L 6.7 25 A 50 50 0 0 1 50 0 Z" fill="#1e1b4b" />
+                <g font-size="4" font-weight="900" text-anchor="middle">
+                    <text x="50" y="15" transform="rotate(30 50 50)" fill="#94a3b8">2.000</text>
+                    <text x="50" y="15" transform="rotate(90 50 50)" fill="#3b82f6">100.000</text>
+                    <text x="50" y="15" transform="rotate(150 50 50)" fill="#94a3b8">5.000</text>
+                    <text x="50" y="15" transform="rotate(210 50 50)" fill="#64748b">50.000</text>
+                    <text x="50" y="15" transform="rotate(270 50 50)" fill="#64748b">20.000</text>
+                    <text x="50" y="15" transform="rotate(330 50 50)" fill="#64748b">1.000.000</text>
+                </g>
+            </svg>
+        </div>
+        <button id="spin-btn" onclick="startInsaneSpin()" class="mt-16 bg-blue-600 px-20 py-5 rounded-full font-800 tracking-[0.2em] active:scale-95 transition-all shadow-lg shadow-blue-500/20">SPIN</button>
+    </div>
+
+    <div id="view-scratch" class="hidden flex-col items-center z-10">
+        <div class="relative glass p-4 rounded-[32px]">
+            <div id="scratch-grid" class="grid grid-cols-3 w-72 h-72 bg-slate-900 rounded-2xl overflow-hidden relative"></div>
+            <canvas id="scratch-canvas" width="288" height="288" class="absolute top-4 left-4"></canvas>
+        </div>
+        <button onclick="claimScratch()" class="mt-12 bg-blue-600 text-white px-16 py-4 rounded-full font-800 active:scale-95 transition-all shadow-lg">KLAIM HADIAH</button>
+    </div>
+
+    <div id="win-modal" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-6">
+        <div class="glass w-full max-w-xs p-8 rounded-[40px] flex flex-col items-center text-center">
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHIybHh6N3Y4eG96eG96eG96eG96eG96eG96eG96eG96JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/kyLYXonQYYItYgTKTZ/giphy.gif" 
+                 alt="Lucky" class="w-32 h-32 mb-4 rounded-2xl object-cover shadow-lg">
+            <h3 class="text-xl font-800 text-white mb-1">Selamat kamu beruntung!</h3>
+            <p class="text-slate-400 text-sm mb-6">Hadiah kamu adalah</p>
+            <div class="bg-blue-600/20 border border-blue-500/30 px-6 py-3 rounded-2xl mb-8">
+                <span class="text-2xl font-black text-blue-400" id="modal-prize-text">Rp 0</span>
+            </div>
+            <button onclick="closeModal()" class="w-full bg-white text-black py-4 rounded-2xl font-800 hover:bg-slate-200 transition-all active:scale-95">AMBIL</button>
+        </div>
+    </div>
+
+    <div id="lock-screen" class="hidden fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center p-10 text-center">
+        <h2 class="text-4xl font-800 mb-4 tracking-tighter text-red-500">SYSTEM LOCKED</h2>
+        <p class="text-slate-500 text-sm mb-10">Limit harian tercapai.</p>
+        <button onclick="resetSystem()" class="opacity-10 text-[8px] uppercase">Admin Reset</button>
+    </div>
+      </main>
+    </div>
+<footer class="bg-transparent border-t border-white/5 py-10 mt-auto">
+    <div class="max-w-6xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="order-2 md:order-1 text-center md:text-left">
+            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                &copy; 2026 <span class="text-[#24A1DE]">-Indra Y.M</span>
+            </p>
+        </div>
+
+        <div class="flex items-center gap-6 order-1 md:order-2">
+            <a href="https://wa.me/6283849997221" target="_blank" class="text-gray-500 hover:text-green-500 transition-colors">
+                <i class="fa-brands fa-whatsapp text-xl"></i>
+            </a>
+            <a href="https://instagram.com/asmarabot" target="_blank" class="text-gray-500 hover:text-pink-500 transition-colors">
+                <i class="fa-brands fa-instagram text-xl"></i>
+            </a>
+            <a href="https://www.tiktok.com/@apaan_oy" target="_blank" class="text-gray-500 hover:text-[#24A1DE] transition-colors">
+                <i class="fa-brands fa-tiktok text-xl"></i>
+            </a>
+        </div>
+    </div>
+</footer>
+
+    <script>
+        let playCount = parseInt(localStorage.getItem('lucky_insane_v6')) || 0;
+        const maxPlay = 3;
+        let spinning = false;
+        let scratchProgres = 0;
+        let currentDeg = 0;
+        let currentWinValue = "";
+
+        function updateDots() {
+            const dots = document.getElementById('chance-dots').children;
+            for(let i=0; i<3; i++) {
+                dots[i].className = i < (3 - playCount) ? "w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" : "w-2 h-2 rounded-full bg-slate-800";
+            }
+            if(playCount >= maxPlay) document.getElementById('lock-screen').classList.remove('hidden');
+        }
+
+        function showWinModal(amount) {
+            document.getElementById('modal-prize-text').innerText = "Rp " + amount;
+            document.getElementById('win-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('win-modal').classList.remove('active');
+            goToMenu();
+        }
+
+        function openGame(mode) {
+            document.getElementById('view-menu').classList.remove('flex');
+            document.getElementById('view-menu').classList.add('hidden');
+            if(mode === 'spin') document.getElementById('view-spin').classList.remove('hidden');
+            else { document.getElementById('view-scratch').classList.remove('hidden'); initScratch(); }
+        }
+
+        function goToMenu() {
+            document.getElementById('view-spin').classList.add('hidden');
+            document.getElementById('view-scratch').classList.add('hidden');
+            const menu = document.getElementById('view-menu');
+            menu.classList.remove('hidden');
+            menu.classList.add('flex');
+        }
+
+        function startInsaneSpin() {
+            if(spinning || playCount >= maxPlay) return;
+            spinning = true;
+            const wheel = document.getElementById('wheel');
+            const winnerIdx = Math.random() > 0.5 ? 0 : 2; 
+            const fakeIdx = 1; 
+            const extraRounds = 360 * 10;
+            const fakeDeg = currentDeg + extraRounds + (fakeIdx * -60) - 30;
+            
+            wheel.style.transition = "transform 5s cubic-bezier(0.1, 0.8, 0.1, 1)";
+            wheel.style.transform = `rotate(${fakeDeg}deg)`;
+
+            setTimeout(() => {
+                wheel.style.transition = "transform 0.8s cubic-bezier(0.2, 0, 0.2, 1)";
+                const finalDeg = currentDeg + extraRounds + (winnerIdx * -60) - 30;
+                wheel.style.transform = `rotate(${finalDeg}deg)`;
+                wheel.classList.add('stop-anim');
+                currentDeg = finalDeg;
+            }, 4600);
+
+            setTimeout(() => {
+                spinning = false;
+                playCount++;
+                localStorage.setItem('lucky_insane_v6', playCount);
+                updateDots();
+                const nominal = winnerIdx === 0 ? "2.000" : "5.000";
+                showWinModal(nominal);
+                wheel.classList.remove('stop-anim');
+            }, 6000);
+        }
+
+        function initScratch() {
+            const grid = document.getElementById('scratch-grid');
+            grid.innerHTML = '';
+            scratchProgres = 0;
+            currentWinValue = Math.random() > 0.5 ? "2.000" : "5.000";
+            let pool = [currentWinValue, currentWinValue, currentWinValue, "100.000", "50.000", "10.000", "20.000", "100.000", "50.000"];
+            pool.sort(() => Math.random() - 0.5);
+
+            pool.forEach(v => {
+                const d = document.createElement('div');
+                d.className = "flex items-center justify-center border border-white/5 font-800 text-sm text-blue-400 bg-slate-900";
+                d.innerText = "Rp " + v;
+                grid.appendChild(d);
+            });
+
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(0,0,288,288);
+            ctx.fillStyle = '#334155';
+            for(let i=0; i<300; i+=10) for(let j=0; j<300; j+=10) ctx.fillRect(i,j,2,2);
+
+            let active = false;
+            const startScratch = () => active = true;
+            const endScratch = () => active = false;
+            const scratching = (e) => {
+                if(!active) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.pageX || e.touches[0].pageX) - rect.left;
+                const y = (e.pageY || e.touches[0].pageY) - rect.top;
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath(); ctx.arc(x, y, 25, 0, Math.PI*2); ctx.fill();
+                scratchProgres++;
+            };
+
+            canvas.onmousedown = canvas.ontouchstart = startScratch;
+            canvas.onmouseup = canvas.ontouchend = endScratch;
+            canvas.onmousemove = canvas.ontouchmove = scratching;
+        }
+
+        function claimScratch() {
+            if(scratchProgres < 100) { alert("Gosok sampai bersih dulu!"); return; }
+            playCount++;
+            localStorage.setItem('lucky_insane_v6', playCount);
+            updateDots();
+            showWinModal(currentWinValue);
+        }
+
+        function resetSystem() { localStorage.clear(); location.reload(); }
+        updateDots();
+
+            document.body.classList.add('loading-active');
+    window.addEventListener('load', () => {
+        const preloader = document.getElementById('preloader');
+        setTimeout(() => {
+            preloader.style.opacity = '0';
+            preloader.style.visibility = 'hidden';
+            document.body.classList.remove('loading-active');
+        }, 3000); 
+    });
+        
+        // Mematikan Klik Kanan
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Mematikan Shortcut Keyboard (F12, Ctrl+U, Ctrl+I, Ctrl+Shift+I, dll)
+    document.onkeydown = function(e) {
+        if (
+            e.keyCode === 123 || // F12
+            (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 65 || e.keyCode === 70)) || // Ctrl+U, S, A, F
+            (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 75 || e.keyCode === 67)) || // Ctrl+Shift+I, J, K, C
+            (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 85)) // Shortcut Mac (Cmd+Opt+I/U)
+        ) {
+            return false;
+        }
+    };
+
+    // Mematikan Drag Gambar/Elemen
+    document.addEventListener('dragstart', e => e.preventDefault());
+    </script>
+</body>
+</html>
