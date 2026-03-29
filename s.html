@@ -3,315 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Experience | Elite Feedback</title>
-    
+    <title>Elite Hub | Customer Service & Reviews</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
-        :root {
-            --primary: #6366f1;
-            --secondary: #a855f7;
-            --accent: #ec4899;
-            --dark: #020617;
-        }
-
-        body { 
-            font-family: 'Space Grotesk', sans-serif; 
-            background-color: var(--dark);
-            color: #f1f5f9;
-            overflow-x: hidden;
-        }
-
-        /* Animated Mesh Gradient Background */
-        .mesh-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            background: 
-                radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 35%),
-                radial-gradient(circle at 100% 100%, rgba(236, 72, 153, 0.08) 0%, transparent 35%);
-        }
-
-        /* Glassmorphism Effect */
-        .glass {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* Bento Grid Card Style */
-        .bento-card {
-            position: relative;
-            background: rgba(15, 23, 42, 0.3);
-            border-radius: 2rem;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            overflow: hidden;
-        }
-
-        .bento-card:hover {
-            transform: translateY(-5px) scale(1.01);
-            background: rgba(15, 23, 42, 0.6);
-            box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
-        }
-
-        /* Star Rating Input */
+        :root { --primary: #6366f1; --dark: #020617; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--dark); color: #f1f5f9; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .bento-card { background: rgba(15, 23, 42, 0.3); border-radius: 2rem; transition: all 0.4s ease; border: 1px solid rgba(255, 255, 255, 0.03); }
+        .bento-card:hover { transform: translateY(-5px); background: rgba(15, 23, 42, 0.6); }
         .star-input input { display: none; }
-        .star-input label {
-            cursor: pointer;
-            font-size: 2.2rem;
-            color: #1e293b;
-            transition: all 0.2s ease;
-        }
-        .star-input input:checked ~ label,
-        .star-input label:hover,
-        .star-input label:hover ~ label {
-            color: #fbbf24;
-            text-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--dark); }
+        .star-input label { cursor: pointer; font-size: 2rem; color: #1e293b; transition: 0.2s; }
+        .star-input input:checked ~ label, .star-input label:hover, .star-input label:hover ~ label { color: #fbbf24; }
+        .active-filter { background: linear-gradient(135deg, #6366f1, #a855f7) !important; border: none !important; }
+        .animate-in { animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
-
-        .active-filter {
-            background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
-            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.5);
-            border: none !important;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-in { animation: fadeIn 0.6s ease forwards; }
     </style>
 </head>
-<body class="p-4 md:p-12 lg:p-20">
-    <div class="mesh-bg"></div>
+<body class="p-6 md:p-12">
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-16 text-center lg:text-left flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-            <div>
-                <h1 class="text-5xl md:text-7xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-500">
-                    Kesan Pelayanan.
-                </h1>
-                <p class="mt-4 text-gray-400 text-lg max-w-xl">Suara Anda membantu kami berkembang. Bagikan pengalaman jujur Anda hari ini.</p>
-            </div>
-            <div class="flex flex-col items-center lg:items-end">
-                <span class="text-xs uppercase tracking-widest text-indigo-500 font-bold mb-2">Terhubung dengan kami</span>
-                <div class="h-1 w-20 bg-indigo-500 rounded-full"></div>
-            </div>
-        </div>
+        <header class="mb-12 text-center md:text-left">
+            <h1 class="text-5xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-500">Kesan Pelayanan.</h1>
+            <p class="text-gray-500 mt-2">Ulasan Anda rahasia, masukan Anda berharga.</p>
+        </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            
             <div class="lg:col-span-4">
-                <div class="glass p-8 rounded-[2.5rem] sticky top-10 border-white/10 shadow-2xl">
-                    <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
-                        <span class="p-2 bg-indigo-500/20 rounded-lg">
-                            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        </span>
-                        Beri Masukan
+                <div class="glass p-8 rounded-[2.5rem] sticky top-10 shadow-2xl">
+                    <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                        <span class="w-2 h-6 bg-indigo-500 rounded-full"></span> Beri Ulasan
                     </h2>
-
-                    <div class="space-y-6">
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-gray-500 font-black mb-2 block">Identitas Anda</label>
-                            <input type="text" id="userName" placeholder="Nama Lengkap" 
-                                class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-indigo-500/50 transition-all text-sm">
+                    <div class="space-y-5">
+                        <input type="text" id="userName" placeholder="Nama Lengkap" class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-sm outline-none focus:border-indigo-500 transition-all">
+                        <input type="tel" id="userPhone" placeholder="No. WhatsApp (Hanya Admin)" class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-sm outline-none focus:border-pink-500 transition-all">
+                        <div class="star-input flex flex-row-reverse justify-end gap-2 bg-white/5 p-3 rounded-xl border border-white/5">
+                            <input type="radio" id="st5" name="rating" value="5" checked><label for="st5">★</label>
+                            <input type="radio" id="st4" name="rating" value="4"><label for="st4">★</label>
+                            <input type="radio" id="st3" name="rating" value="3"><label for="st3">★</label>
+                            <input type="radio" id="st2" name="rating" value="2"><label for="st2">★</label>
+                            <input type="radio" id="st1" name="rating" value="1"><label for="st1">★</label>
                         </div>
-
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-pink-500 font-black mb-2 block flex items-center justify-between">
-                                WhatsApp (Privat)
-                                <span class="bg-pink-500/10 px-2 py-0.5 rounded text-[8px]">Hanya Admin</span>
-                            </label>
-                            <input type="tel" id="userPhone" placeholder="08xxxxxxxxx" 
-                                class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-pink-500/50 transition-all text-sm">
-                        </div>
-
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-gray-500 font-black mb-2 block">Rating</label>
-                            <div class="star-input flex flex-row-reverse justify-end gap-2 bg-white/5 p-3 rounded-2xl border border-white/5">
-                                <input type="radio" id="st5" name="rating" value="5" checked><label for="st5">★</label>
-                                <input type="radio" id="st4" name="rating" value="4"><label for="st4">★</label>
-                                <input type="radio" id="st3" name="rating" value="3"><label for="st3">★</label>
-                                <input type="radio" id="st2" name="rating" value="2"><label for="st2">★</label>
-                                <input type="radio" id="st1" name="rating" value="1"><label for="st1">★</label>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-gray-500 font-black mb-2 block">Pesan Singkat</label>
-                            <textarea id="userMsg" rows="4" placeholder="Ceritakan pengalaman Anda..." 
-                                class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-indigo-500/50 transition-all text-sm resize-none"></textarea>
-                        </div>
-
-                        <button onclick="sendReview()" id="btnSubmit" 
-                            class="w-full py-5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold tracking-widest text-sm transition-all active:scale-[0.97] shadow-lg shadow-indigo-600/20">
-                            PUBLIKASIKAN
-                        </button>
+                        <textarea id="userMsg" rows="3" placeholder="Apa pendapat Anda?" class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-sm outline-none resize-none focus:border-indigo-500 transition-all"></textarea>
+                        <button onclick="sendReview()" id="btnSubmit" class="w-full py-4 rounded-xl bg-indigo-600 font-bold text-sm hover:bg-indigo-500 transition-all active:scale-95 shadow-lg shadow-indigo-600/20">KIRIM ULASAN</button>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-8 space-y-8">
-                
-                <div class="glass p-3 rounded-[1.8rem] flex items-center gap-2 overflow-x-auto no-scrollbar">
-                    <button onclick="applyFilter(0)" id="f-0" class="filter-btn active-filter px-6 py-3 rounded-2xl text-xs font-bold transition-all whitespace-nowrap">Semua Cerita</button>
-                    <button onclick="applyFilter(5)" id="f-5" class="filter-btn px-6 py-3 rounded-2xl border border-white/5 bg-white/5 text-xs font-bold hover:bg-white/10 transition-all">5 ★</button>
-                    <button onclick="applyFilter(4)" id="f-4" class="filter-btn px-6 py-3 rounded-2xl border border-white/5 bg-white/5 text-xs font-bold hover:bg-white/10 transition-all">4 ★</button>
-                    <button onclick="applyFilter(3)" id="f-3" class="filter-btn px-6 py-3 rounded-2xl border border-white/5 bg-white/5 text-xs font-bold hover:bg-white/10 transition-all">3 ★</button>
-                    <button onclick="applyFilter(2)" id="f-2" class="filter-btn px-6 py-3 rounded-2xl border border-white/5 bg-white/5 text-xs font-bold hover:bg-white/10 transition-all">2 ★</button>
-                    <button onclick="applyFilter(1)" id="f-1" class="filter-btn px-6 py-3 rounded-2xl border border-white/5 bg-white/5 text-xs font-bold hover:bg-white/10 transition-all">1 ★</button>
+            <div class="lg:col-span-8 space-y-6">
+                <div class="glass p-2 rounded-2xl flex gap-2 overflow-x-auto no-scrollbar shadow-xl">
+                    <button onclick="applyFilter(0)" id="f-0" class="filter-btn active-filter px-6 py-2 rounded-xl text-xs font-bold transition-all">Semua</button>
+                    <button onclick="applyFilter(5)" id="f-5" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl">5 ★</button>
+                    <button onclick="applyFilter(4)" id="f-4" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl">4 ★</button>
+                    <button onclick="applyFilter(3)" id="f-3" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl">3 ★</button>
+                    <button onclick="applyFilter(2)" id="f-2" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl">2 ★</button>
+                    <button onclick="applyFilter(1)" id="f-1" class="filter-btn px-5 py-2 border border-white/5 bg-white/5 text-xs font-bold rounded-xl">1 ★</button>
                 </div>
-
-                <div id="reviewContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="col-span-full py-20 text-center text-gray-600 animate-pulse">Menghubungkan ke server...</div>
-                </div>
-
-                <div id="paginationBox" class="hidden text-center mt-10">
-                    <button onclick="showAll()" class="px-10 py-4 rounded-2xl glass border border-white/10 hover:bg-white/5 font-bold tracking-widest text-xs transition-all">
-                        TAMPILKAN SEMUA ULASAN
-                    </button>
+                <div id="reviewContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[400px]"></div>
+                <div id="paginationBox" class="hidden text-center pt-4">
+                    <button onclick="showAll()" class="px-8 py-3 glass rounded-xl text-xs font-bold hover:bg-white/5 transition-all">TAMPILKAN SEMUA</button>
                 </div>
             </div>
-
         </div>
+    </div>
 
-        <footer class="mt-20 py-10 border-t border-white/5 text-center text-gray-600 text-[10px] tracking-[0.3em] uppercase">
-            &copy; 2024 YourBrand Service Excellence.
-        </footer>
+    <div class="fixed bottom-6 right-6 z-[100]">
+        <button onclick="toggleChat()" class="w-16 h-16 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-all active:scale-95 group">
+            <svg id="chatIcon" class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+            <svg id="closeChatIcon" class="w-8 h-8 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <div id="chatBox" class="hidden absolute bottom-20 right-0 w-[320px] glass rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col h-[480px] border border-white/10 animate-in">
+            <div class="p-5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+                <h4 class="font-bold">Chat Support</h4>
+                <p class="text-[9px] opacity-70 uppercase tracking-widest">Balasan secepat kilat</p>
+            </div>
+            <div id="chatForm" class="p-6 space-y-4 flex-grow bg-slate-900/50 flex flex-col justify-center">
+                <input type="text" id="chatName" placeholder="Nama Anda" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500">
+                <input type="tel" id="chatPhone" placeholder="Nomor WhatsApp" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500">
+                <button onclick="startChatting()" class="w-full py-3 bg-indigo-600 rounded-xl font-bold text-xs hover:bg-indigo-500 transition-all">MULAI PERCAKAPAN</button>
+            </div>
+            <div id="chatMessages" class="hidden flex-grow p-4 overflow-y-auto space-y-3 flex flex-col bg-slate-900/80"></div>
+            <div id="chatInputArea" class="hidden p-4 border-t border-white/5 bg-slate-900 flex gap-2">
+                <input type="text" id="msgInput" onkeypress="if(event.key==='Enter')sendMessage()" placeholder="Tulis pesan..." class="flex-grow bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs outline-none">
+                <button onclick="sendMessage()" class="p-2 bg-indigo-600 rounded-xl hover:bg-indigo-500"><svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg></button>
+            </div>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, where, onSnapshot, serverTimestamp, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ==========================================
-        // KONFIGURASI FIREBASE ANDA
+        // GANTI DENGAN CONFIG ANDA
         const firebaseConfig = {
-            apiKey: "AIzaSy...",
-            authDomain: "projek-anda.firebaseapp.com",
-            projectId: "projek-anda",
-            storageBucket: "projek-anda.appspot.com",
-            messagingSenderId: "12345",
-            appId: "1:12345:web:abcd"
+            apiKey: "ISI_API_KEY_ANDA",
+            authDomain: "ISI_AUTH_DOMAIN_ANDA",
+            projectId: "ISI_PROJECT_ID_ANDA",
+            storageBucket: "ISI_STORAGE_BUCKET_ANDA",
+            messagingSenderId: "ISI_MESSAGING_SENDER_ID_ANDA",
+            appId: "ISI_APP_ID_ANDA"
         };
-        // ==========================================
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const colRef = collection(db, "testimonials");
 
-        let currentRating = 0;
-        let isShowingAll = false;
-        let unsubscribe = null;
+        let curR = 0; let showA = false; let unsubR = null;
 
-        // --- Core: Load Reviews ---
-        const loadData = () => {
-            if (unsubscribe) unsubscribe();
-
-            let constraints = [orderBy("createdAt", "desc")];
-            if (currentRating > 0) constraints.push(where("rating", "==", currentRating));
-            if (!isShowingAll) constraints.push(limit(10));
-
-            const q = query(colRef, ...constraints);
+        // LOAD REVIEWS SYSTEM
+        const loadR = () => {
+            if(unsubR) unsubR();
+            let c = [orderBy("createdAt", "desc")];
+            if(curR > 0) c.push(where("rating", "==", curR));
+            if(!showA) c.push(limit(10));
             
-            unsubscribe = onSnapshot(q, (snap) => {
-                const container = document.getElementById('reviewContainer');
-                const pBox = document.getElementById('paginationBox');
-                container.innerHTML = '';
-
-                if (snap.empty) {
-                    container.innerHTML = `<div class="col-span-full py-20 text-center text-gray-700 italic">Belum ada ulasan untuk rating ini.</div>`;
-                    pBox.classList.add('hidden');
-                    return;
-                }
-
+            unsubR = onSnapshot(query(colRef, ...c), snap => {
+                const cont = document.getElementById('reviewContainer');
+                cont.innerHTML = '';
+                if(snap.empty) cont.innerHTML = `<div class="col-span-full py-20 text-center text-gray-700 italic">Belum ada ulasan.</div>`;
                 snap.forEach(doc => {
                     const d = doc.data();
                     const stars = "★".repeat(d.rating) + "☆".repeat(5 - d.rating);
-                    const date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('id-ID', {day:'numeric', month:'short'}) : 'Baru';
-
-                    container.innerHTML += `
-                        <div class="bento-card p-8 animate-in border border-white/[0.03]">
-                            <div class="flex justify-between items-start mb-6">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center font-bold text-white shadow-xl text-xl">
-                                        ${d.name.charAt(0).toUpperCase()}
-                                    </div>
-                                    <div>
-                                        <h3 class="font-bold text-white text-lg">${d.name}</h3>
-                                        <span class="text-[9px] uppercase tracking-tighter text-gray-500 font-black">${date}</span>
-                                    </div>
-                                </div>
-                                <div class="px-3 py-1 bg-indigo-500/10 rounded-full text-indigo-400 text-[10px] font-black border border-indigo-500/20">
-                                    ${d.rating}.0
-                                </div>
-                            </div>
-                            <p class="text-gray-400 text-sm leading-relaxed italic mb-6">"${d.message}"</p>
-                            <div class="flex gap-0.5 text-amber-500 text-[11px] opacity-80">${stars}</div>
+                    cont.innerHTML += `<div class="bento-card p-7 animate-in shadow-xl">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg text-lg">${d.name.charAt(0).toUpperCase()}</div>
+                            <div><h4 class="font-bold text-white leading-tight">${d.name}</h4><p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">${d.createdAt?.toDate().toLocaleDateString('id-ID', {day:'numeric', month:'short'}) || 'Baru'}</p></div>
                         </div>
-                    `;
+                        <p class="text-sm text-gray-400 leading-relaxed italic mb-4">"${d.message}"</p>
+                        <div class="text-amber-500 text-[10px] tracking-widest">${stars}</div>
+                    </div>`;
                 });
-
-                if (snap.size >= 10 && !isShowingAll) pBox.classList.remove('hidden');
-                else pBox.classList.add('hidden');
+                document.getElementById('paginationBox').classList.toggle('hidden', snap.size < 10 || showA);
             });
         };
 
-        // --- Logic: Submit ---
         window.sendReview = async () => {
-            const name = document.getElementById('userName').value;
-            const phone = document.getElementById('userPhone').value;
-            const msg = document.getElementById('userMsg').value;
-            const rating = document.querySelector('input[name="rating"]:checked').value;
-            const btn = document.getElementById('btnSubmit');
-
-            if (!name || !msg) return alert("Nama dan Pesan wajib diisi!");
-
-            btn.disabled = true;
-            btn.innerHTML = "MENGIRIM...";
-
+            const n = document.getElementById('userName').value, p = document.getElementById('userPhone').value, m = document.getElementById('userMsg').value, r = document.querySelector('input[name="rating"]:checked').value;
+            if(!n || !m) return alert("Mohon lengkapi Nama dan Pesan.");
+            const btn = document.getElementById('btnSubmit'); btn.disabled = true; btn.innerText = "MENGIRIM...";
             try {
-                await addDoc(colRef, {
-                    name,
-                    phone, // Data ini masuk ke DB tapi tidak dipanggil di render HTML
-                    message: msg,
-                    rating: parseInt(rating),
-                    createdAt: serverTimestamp()
+                await addDoc(colRef, { name: n, phone: p, message: m, rating: parseInt(r), createdAt: serverTimestamp() });
+                document.getElementById('userName').value = ''; document.getElementById('userPhone').value = ''; document.getElementById('userMsg').value = '';
+            } catch(e) { alert("Error: " + e.message); }
+            finally { btn.disabled = false; btn.innerText = "KIRIM ULASAN"; }
+        };
+
+        window.applyFilter = (r) => { curR = r; showA = false; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter')); document.getElementById(`f-${r}`).classList.add('active-filter'); loadR(); };
+        window.showAll = () => { showA = true; loadR(); };
+        loadR();
+
+        // CHAT SYSTEM LOGIC
+        let cID = localStorage.getItem('chat_id'); let unsubC = null;
+        window.toggleChat = () => { document.getElementById('chatBox').classList.toggle('hidden'); document.getElementById('chatIcon').classList.toggle('hidden'); document.getElementById('closeChatIcon').classList.toggle('hidden'); if(cID) initChat(); };
+        window.startChatting = () => { 
+            const n = document.getElementById('chatName').value, p = document.getElementById('chatPhone').value; 
+            if(!n || !p) return alert("Isi data untuk memulai."); 
+            cID = p + "_" + Date.now(); localStorage.setItem('chat_id', cID); localStorage.setItem('chat_n', n); localStorage.setItem('chat_p', p); 
+            initChat(); 
+        };
+        const initChat = () => {
+            document.getElementById('chatForm').classList.add('hidden'); document.getElementById('chatMessages').classList.remove('hidden'); document.getElementById('chatInputArea').classList.remove('hidden');
+            if(unsubC) unsubC();
+            unsubC = onSnapshot(query(collection(db, "chats"), where("sessionID", "==", cID), orderBy("createdAt", "asc")), snap => {
+                const box = document.getElementById('chatMessages'); box.innerHTML = '';
+                snap.forEach(d => { 
+                    const msg = d.data(); 
+                    const isMe = msg.sender === 'user';
+                    box.innerHTML += `<div class="max-w-[85%] p-3 rounded-2xl text-[11px] leading-snug shadow-sm animate-in ${isMe ? 'self-end bg-indigo-600 text-white rounded-tr-none' : 'self-start bg-white/10 text-gray-200 rounded-tl-none'}">${msg.text}</div>`; 
                 });
-                document.getElementById('userName').value = '';
-                document.getElementById('userPhone').value = '';
-                document.getElementById('userMsg').value = '';
-            } catch (e) {
-                alert("Error: " + e.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = "PUBLIKASIKAN";
-            }
+                box.scrollTop = box.scrollHeight;
+            });
         };
-
-        // --- Logic: Filter & Pagination ---
-        window.applyFilter = (r) => {
-            currentRating = r;
-            isShowingAll = false;
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
-            document.getElementById(`f-${r}`).classList.add('active-filter');
-            loadData();
+        window.sendMessage = async () => { 
+            const i = document.getElementById('msgInput'); if(!i.value) return; 
+            await addDoc(collection(db, "chats"), { sessionID: cID, userName: localStorage.getItem('chat_n'), userPhone: localStorage.getItem('chat_p'), text: i.value, sender: 'user', createdAt: serverTimestamp() }); 
+            i.value = ''; 
         };
-
-        window.showAll = () => {
-            isShowingAll = true;
-            loadData();
-        };
-
-        // Init Load
-        loadData();
+        if(cID) initChat();
     </script>
 </body>
-    </html>
+                    </html>
