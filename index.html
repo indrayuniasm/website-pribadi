@@ -224,6 +224,29 @@
             transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
+        @media (max-width: 768px) {
+    .bento-container, .grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem ! md:gap-4;
+    }
+    
+    .bento-item {
+        /* Supaya di HP tingginya pas dengan teks */
+        height: auto !important; 
+        min-height: fit-content !important;
+        padding: 2rem !important;
+        /* Reset span agar tidak error di mode flex */
+        grid-column: span 1 !important;
+    }
+
+    /* Khusus box motivasi agar foto dan teks tidak tumpuk */
+    .bento-item.flex {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
         .card-face {
             position: absolute; inset: 0; border-radius: 20px;
             background: rgba(15, 15, 15, 0.8); backdrop-filter: blur(30px);
@@ -296,6 +319,19 @@
     position: relative;
     /* Memberi ruang sedikit di kanan agar cursor tidak menempel ke huruf terakhir */
     padding-right: 0.15em;
+}
+
+        @media (max-width: 768px) {
+    /* Mencegah box skill memotong konten di HP */
+    .bento-item {
+        height: auto !important;
+        min-height: fit-content;
+    }
+    
+    /* Membuat teks di dalam pill sedikit lebih rapat agar muat banyak */
+    .group\/tool span {
+        letter-spacing: 0.1em;
+    }
 }
 
 /* 2. Style untuk teks yang akan diketik */
@@ -408,8 +444,7 @@
     </section>
 
     <section class="px-6 md:px-[10vw] pb-32">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[160px]">
-            
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:auto-rows-[160px]">  
             <div class="reveal bento-item md:col-span-2 md:row-span-3 bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-10 flex flex-col justify-between overflow-hidden relative group">
                 <div class="relative z-10">
                     <h2 class="text-3xl font-bold font-sync leading-tight">TENTANG<br>SAYA</h2>
@@ -432,43 +467,73 @@
                  </div>
             </div>
 
-            <div class="reveal bento-item md:col-span-2 md:row-span-2 bg-white/[0.01] border border-white/5 rounded-[2.5rem] p-8 flex flex-col">
-    <h3 class="text-xs uppercase tracking-[0.3em] text-gold mb-8 font-sync opacity-70">SKILL SAYA</h3>
+          <div class="reveal bento-item md:col-span-2 md:row-span-2 bg-white/[0.02] border border-white/10 rounded-[2.5rem] p-6 md:p-8 flex flex-col overflow-hidden group">
     
-    <div class="flex flex-wrap gap-3 content-start">
-        <div class="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-2xl border border-white/5 hover:border-gold/30 hover:bg-white/10 transition-all group/tool">
-            <i class="ri-html5-fill text-xl text-orange-500"></i> 
-            <span class="text-[11px] font-bold tracking-wider">HTML</span>
+    <div class="mb-6">
+        <h3 class="text-[10px] md:text-xs uppercase tracking-[0.4em] text-gold font-sync opacity-80 inline-block relative">
+            SKILL SAYA
+            <span class="absolute -bottom-2 left-0 w-1/2 h-[1px] bg-gold/50"></span>
+        </h3>
+    </div>
+    
+    <div class="flex flex-wrap gap-2 md:gap-3 justify-start items-start content-start overflow-y-auto pr-2 custom-scrollbar">
+        
+        <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-white/[0.03] rounded-2xl border border-white/5 hover:border-orange-500/40 hover:bg-orange-500/[0.05] transition-all duration-300 group/skill">
+            <i class="ri-html5-fill text-lg md:text-xl text-orange-500 group-hover/skill:scale-110 transition-transform"></i> 
+            <span class="text-[10px] md:text-[11px] font-bold tracking-wider opacity-80 group-hover/skill:opacity-100">HTML</span>
         </div>
-        <div class="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-2xl border border-white/5 hover:border-gold/30 hover:bg-white/10 transition-all group/tool">
-            <i class="ri-css3-fill text-xl text-blue-500"></i> 
-            <span class="text-[11px] font-bold tracking-wider">CSS</span>
+
+        <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-white/[0.03] rounded-2xl border border-white/5 hover:border-blue-500/40 hover:bg-blue-500/[0.05] transition-all duration-300 group/skill">
+            <i class="ri-css3-fill text-lg md:text-xl text-blue-500 group-hover/skill:scale-110 transition-transform"></i> 
+            <span class="text-[10px] md:text-[11px] font-bold tracking-wider opacity-80 group-hover/skill:opacity-100">CSS</span>
         </div>
-        <div class="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-2xl border border-white/5 hover:border-gold/30 hover:bg-white/10 transition-all group/tool">
-            <i class="ri-javascript-fill text-xl text-yellow-400"></i> 
-            <span class="text-[11px] font-bold tracking-wider">JS</span>
+
+        <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-white/[0.03] rounded-2xl border border-white/5 hover:border-yellow-400/40 hover:bg-yellow-400/[0.05] transition-all duration-300 group/skill">
+            <i class="ri-javascript-fill text-lg md:text-xl text-yellow-400 group-hover/skill:scale-110 transition-transform"></i> 
+            <span class="text-[10px] md:text-[11px] font-bold tracking-wider opacity-80 group-hover/skill:opacity-100">JS</span>
         </div>
-        <div class="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-2xl border border-white/5 hover:border-gold/30 hover:bg-white/10 transition-all group/tool">
-            <i class="ri-windy-fill text-xl text-cyan-400"></i> 
-            <span class="text-[11px] font-bold tracking-wider">Tailwind</span>
+
+        <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-white/[0.03] rounded-2xl border border-white/5 hover:border-[#777BB4]/40 hover:bg-[#777BB4]/[0.05] transition-all duration-300 group/skill">
+            <i class="fa-brands fa-php text-lg md:text-xl text-[#777BB4] group-hover/skill:scale-110 transition-transform"></i> 
+            <span class="text-[10px] md:text-[11px] font-bold tracking-wider opacity-80 group-hover/skill:opacity-100">PHP</span>
         </div>
-        <div class="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-2xl border border-white/5 hover:border-gold/30 hover:bg-white/10 transition-all group/tool">
-            <i class="ri-box-3-fill text-xl text-purple-400"></i> 
-            <span class="text-[11px] font-bold tracking-wider">Three.js</span>
+
+        <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-white/[0.03] rounded-2xl border border-white/5 hover:border-[#3776AB]/40 hover:bg-[#3776AB]/[0.05] transition-all duration-300 group/skill">
+            <i class="fa-brands fa-python text-lg md:text-xl text-[#3776AB] group-hover/skill:scale-110 transition-transform"></i> 
+            <span class="text-[10px] md:text-[11px] font-bold tracking-wider opacity-80 group-hover/skill:opacity-100 uppercase">Python</span>
         </div>
-        <div class="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-2xl border border-white/5 hover:border-[#777BB4]/50 hover:bg-white/10 transition-all group/tool">
-    <i class="fa-brands fa-php text-2xl text-[#777BB4]"></i> 
-    <span class="text-[11px] font-bold tracking-wider">PHP</span>
+
+        <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-white/[0.03] rounded-2xl border border-white/5 hover:border-[#00758F]/40 hover:bg-[#00758F]/[0.05] transition-all duration-300 group/skill">
+            <i class="fa-solid fa-database text-lg md:text-xl text-[#00758F] group-hover/skill:scale-110 transition-transform"></i> 
+            <span class="text-[10px] md:text-[11px] font-bold tracking-wider opacity-80 group-hover/skill:opacity-100">SQL</span>
+        </div>
+
+        <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-white/[0.03] rounded-2xl border border-white/5 hover:border-purple-400/40 hover:bg-purple-400/[0.05] transition-all duration-300 group/skill">
+            <i class="ri-pen-nib-line text-lg md:text-xl text-purple-400 group-hover/skill:scale-110 transition-transform"></i> 
+            <span class="text-[10px] md:text-[11px] font-bold">UI/UX</span>
+        </div>
+
+        <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-white/[0.03] rounded-2xl border border-white/5 hover:border-pink-500/40 hover:bg-pink-500/[0.05] transition-all duration-300 group/skill">
+    <i class="ri-palette-line text-lg md:text-xl text-pink-500 group-hover/skill:scale-110 transition-transform"></i> 
+    <span class="text-[10px] md:text-[11px] font-bold">DESIGN</span>
 </div>
-       <div class="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-2xl border border-white/5 hover:border-[#3776AB]/50 hover:bg-white/10 transition-all group/tool">
-    <i class="fa-brands fa-python text-2xl text-[#3776AB]"></i> 
-    <span class="text-[11px] font-bold tracking-wider uppercase">Python</span>
+
+<div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-white/[0.03] rounded-2xl border border-white/5 hover:border-blue-600/40 hover:bg-blue-600/[0.05] transition-all duration-300 group/skill">
+    <i class="ri-brush-line text-lg md:text-xl text-blue-600 group-hover/skill:scale-110 transition-transform"></i> 
+    <span class="text-[10px] md:text-[11px] font-bold">ADOBE</span>
 </div>
-        <div class="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-2xl border border-white/5 hover:border-[#00758F]/50 hover:bg-white/10 transition-all group/tool">
-    <i class="fa-solid fa-database text-xl text-[#00758F]"></i> 
-    <span class="text-[11px] font-bold tracking-wider">SQL</span>
-</div>
+
+        <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-white/[0.03] rounded-2xl border border-white/5 hover:border-[#2B579A]/40 hover:bg-[#2B579A]/[0.05] transition-all duration-300 group/skill">
+            <i class="fa-solid fa-file-word text-lg md:text-xl text-[#2B579A] group-hover/skill:scale-110 transition-transform"></i> 
+            <span class="text-[10px] md:text-[11px] font-bold tracking-wider opacity-80 group-hover/skill:opacity-100">WORD</span>
         </div>
+
+        <div class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-white/[0.03] rounded-2xl border border-white/5 hover:border-[#217346]/40 hover:bg-[#217346]/[0.05] transition-all duration-300 group/skill">
+            <i class="fa-solid fa-file-excel text-lg md:text-xl text-[#217346] group-hover/skill:scale-110 transition-transform"></i> 
+            <span class="text-[10px] md:text-[11px] font-bold tracking-wider opacity-80 group-hover/skill:opacity-100">EXCEL</span>
+        </div>
+
+    </div>
 </div>
         </div>
     </section>
@@ -628,6 +693,24 @@
         header.style.background = 'rgba(15, 23, 42, 0.8)';
     }
 });
+
+        // Mematikan Klik Kanan
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Mematikan Shortcut Keyboard (F12, Ctrl+U, Ctrl+I, Ctrl+Shift+I, dll)
+    document.onkeydown = function(e) {
+        if (
+            e.keyCode === 123 || // F12
+            (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 65 || e.keyCode === 70)) || // Ctrl+U, S, A, F
+            (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 75 || e.keyCode === 67)) || // Ctrl+Shift+I, J, K, C
+            (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 85)) // Shortcut Mac (Cmd+Opt+I/U)
+        ) {
+            return false;
+        }
+    };
+
+    // Mematikan Drag Gambar/Elemen
+    document.addEventListener('dragstart', e => e.preventDefault());
 
         // Animasi Muncul saat Scroll
 gsap.utils.toArray(".reveal").forEach((el, i) => {
