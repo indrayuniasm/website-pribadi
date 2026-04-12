@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Satu Atap | Nexus Dashboard v4.0</title>
+    <title>Satu Atap | By Indra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
@@ -326,26 +326,39 @@
         window.deleteProduct = async (id) => confirm('Hapus Item?') && await deleteDoc(doc(db, "products", id));
 
         // Snapshot Pesanan
-        onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
-            const list = document.getElementById('order-list'); list.innerHTML = '';
-            snap.forEach(d => {
-                const o = d.data();
-                list.innerHTML += `
-                <div class="bento-card border-l-4 border-l-cyan-500">
-                    <div class="flex justify-between mb-4">
-                        <h5 class="font-bold text-white uppercase truncate">${o.customer}</h5>
-                        <p class="mono text-[9px] text-zinc-500">${o.wa}</p>
-                    </div>
-                    <div class="space-y-1 mb-6">
-                        ${o.items?.map(i => `<div class="flex justify-between text-[11px] text-zinc-400"><span>${i.name} x${i.qty}</span></div>`).join('')}
-                    </div>
-                    <div class="flex items-center justify-between pt-4 border-t border-white/5">
-                        <span class="text-sm font-black text-cyan-400">${o.total}</span>
-                        <button onclick="deleteOrder('${d.id}')" class="bg-white text-black px-4 py-2 rounded-xl text-[9px] font-black">CLEAR</button>
-                    </div>
-                </div>`;
-            });
-        });
+        // Snapshot Pesanan dengan Suara Notifikasi
+onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
+    const list = document.getElementById('order-list'); 
+    
+    // LOGIKA SUARA: Cek apakah ada dokumen yang baru ditambahkan
+    snap.docChanges().forEach((change) => {
+        if (change.type === "added") {
+            // Putar suara (Gunakan link mp3 atau file lokal kamu)
+            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+            audio.play().catch(e => console.log("Menunggu interaksi user untuk suara"));
+        }
+    });
+
+    // RENDER LIST (Tetap seperti kode kamu sebelumnya)
+    list.innerHTML = '';
+    snap.forEach(d => {
+        const o = d.data();
+        list.innerHTML += `
+        <div class="bento-card border-l-4 border-l-cyan-500">
+            <div class="flex justify-between mb-4">
+                <h5 class="font-bold text-white uppercase truncate">${o.customer}</h5>
+                <p class="mono text-[9px] text-zinc-500">${o.wa}</p>
+            </div>
+            <div class="space-y-1 mb-6">
+                ${o.items?.map(i => `<div class="flex justify-between text-[11px] text-zinc-400"><span>${i.name} x${i.qty}</span></div>`).join('')}
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-white/5">
+                <span class="text-sm font-black text-cyan-400">${o.total}</span>
+                <button onclick="deleteOrder('${d.id}')" class="bg-white text-black px-4 py-2 rounded-xl text-[9px] font-black">CLEAR</button>
+            </div>
+        </div>`;
+    });
+});
         window.deleteOrder = async (id) => await deleteDoc(doc(db, "orders", id));
 
         // Users & Promo (Logic sama dengan kode lama kamu)
@@ -483,18 +496,28 @@ window.sendNotif = async (type) => {
     if(type === 'selected') {
         const checkboxes = document.querySelectorAll('input[name="user-notif"]:checked');
         checkboxes.forEach(cb => targets.push(cb.value));
+        if(targets.length === 0) return alert("Pilih minimal satu user untuk pengiriman terpilih!");
     }
 
     try {
+        // PERBAIKAN: Pastikan hanya mengirim SATU dokumen ke Firestore
         await addDoc(collection(db, "notifications"), {
-            title,
-            body,
-            targetType: type,
-            targetUsers: targets,
+            title: title,
+            body: body,
+            targetType: type, // 'all' atau 'selected'
+            targetUsers: targets, // Akan kosong [] jika type adalah 'all'
             timestamp: new Date()
         });
-        alert("Sinyal notifikasi dikirim ke database!");
-    } catch (e) { alert("Gagal kirim"); }
+        
+        alert("Sinyal notifikasi berhasil dikirim!");
+        
+        // Reset Form agar tidak tidak sengaja tertekan dua kali
+        document.getElementById('notif-title').value = "";
+        document.getElementById('notif-body').value = "";
+    } catch (e) { 
+        console.error(e);
+        alert("Gagal kirim"); 
+    }
 };
     </script>
 </body>
