@@ -278,39 +278,83 @@
     } catch (e) { alert("Nomor sudah terdaftar atau error."); }
 };
 
-        // Register Service Worker & Minta Izin
 async function setupNotifications() {
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-        const registration = await navigator.serviceWorker.register('notif.js');
-        const permission = await Notification.requestPermission();
-        
-        if (permission === 'granted' && currentUser) {
-            // Kita gunakan cara sederhana: simpan status "allowNotifications" di doc user
-            // Untuk sistem real-push yang kompleks butuh FCM, tapi kita buat logic dasarnya dulu
-            await setDoc(doc(db, "users", currentUser.uid), {
-                pushEnabled: true,
-                lastToken: new Date().getTime() // Sebagai trigger
-            }, { merge: true });
+    if ('serviceWorker' in navigator) {
+        try {
+            // Pastikan file notif.js ada di folder yang sama dengan index.html
+            const registration = await navigator.serviceWorker.register('notif.js');
+            console.log('Service Worker terdaftar:', registration);
+            
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                console.log('Izin notifikasi diberikan!');
+            }
+        } catch (error) {
+            console.error('oke terimakasi', error);
         }
     }
 }
+// Listener untuk notifikasi baru dari Firestore
+if (currentUser) {
+    const q = query(
+        collection(db, "notifications"), 
+        where("timestamp", ">", new Date()) // Hanya ambil notif baru setelah login
+    );
+}
 
+// Fungsi untuk memicu notifikasi sistem browser
+function showLocalNotification(title, body) {
+    if (Notification.permission === 'granted') {
+        navigator.serviceWorker.ready.then((registration) => {
+            registration.showNotification(title, {
+                body: body,
+                icon: 'favicon.png',
+                vibrate: [200, 100, 200],
+                badge: 'favicon.png'
+            });
+        });
+    }
+}
+// Panggil fungsi ini di dalam onAuthStateChanged setelah user login
 // Panggil fungsi ini di dalam onAuthStateChanged setelah user login
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        currentUser = user;
+        currentUser = user; // Sekarang currentUser sudah ada isinya
         setupNotifications();
-                document.getElementById('modal-auth').classList.add('hidden');
-                const userSnap = await getDoc(doc(db, "users", user.uid));
-                if(userSnap.exists()){
-                    document.getElementById('auth-status').innerHTML = `Hi, ${userSnap.data().name} <button onclick="logout()" class="ml-2 text-red-500 hover:underline">Keluar</button>`;
-                    document.getElementById('cust-name').value = userSnap.data().name;
-                    document.getElementById('cust-wa').value = userSnap.data().wa;
+        
+        // --- PINDAHKAN LISTENER NOTIFIKASI KE SINI ---
+        const q = query(
+            collection(db, "notifications"), 
+            where("timestamp", ">", new Date()) 
+        );
+
+        onSnapshot(q, (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    const data = change.doc.data();
+                    
+                    // Filter apakah notif untuk user ini
+                    if (data.targetType === 'all' || (data.targetUsers && data.targetUsers.includes(currentUser.uid))) {
+                        showLocalNotification(data.title, data.body);
+                    }
                 }
-                const cartSnap = await getDoc(doc(db, "userCarts", user.uid));
-                if(cartSnap.exists()){ cart = cartSnap.data().items || []; window.renderCart(); }
-            } else { document.getElementById('modal-auth').classList.remove('hidden'); }
+            });
         });
+        // --------------------------------------------
+
+        document.getElementById('modal-auth').classList.add('hidden');
+        const userSnap = await getDoc(doc(db, "users", user.uid));
+        if(userSnap.exists()){
+            document.getElementById('auth-status').innerHTML = `Hi, ${userSnap.data().name} <button onclick="logout()" class="ml-2 text-red-500 hover:underline">Keluar</button>`;
+            document.getElementById('cust-name').value = userSnap.data().name;
+            document.getElementById('cust-wa').value = userSnap.data().wa;
+        }
+        const cartSnap = await getDoc(doc(db, "userCarts", user.uid));
+        if(cartSnap.exists()){ cart = cartSnap.data().items || []; window.renderCart(); }
+    } else { 
+        document.getElementById('modal-auth').classList.remove('hidden'); 
+    }
+});
 
         window.logout = () => signOut(auth);
 
