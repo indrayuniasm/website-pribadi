@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olympus Ultra - Final Grand Master</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --gold: #ffcc00; --purple: #8b5cf6; --dark: #050505; --lightning: #00f2ff; --green: #00ff88; }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { background: var(--dark); color: white; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; overflow: hidden; height: 100vh; }
+        
+        /* Layout & VFX */
+        .bg-fixed { position: fixed; inset: 0; background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%); z-index: -1; }
+        #flash { position: fixed; inset: 0; background: white; opacity: 0; pointer-events: none; z-index: 9999; }
+        
+        .page { display: none; height: 100vh; flex-direction: column; }
+        .active { display: flex; }
+
+        /* UI Components */
+        .top-nav { padding: 15px 20px; background: rgba(0,0,0,0.95); border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+        .balance-pill { background: #000; border: 1px solid var(--gold); border-radius: 20px; padding: 5px 15px; text-align: right; }
+        
+        .slot-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; }
+        .grid-frame { background: #111; border: 3px solid #222; border-radius: 25px; padding: 12px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; width: 100%; max-width: 450px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        .reel { background: #000; border-radius: 12px; height: 190px; overflow: hidden; border: 1px solid #333; position: relative; transform: translateZ(0); }
+        .symbol { height: 63px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; position: relative; }
+        .mult-popup { position: absolute; bottom: 2px; background: var(--lightning); color: #000; font-size: 0.6rem; font-weight: 900; padding: 2px 4px; border-radius: 4px; box-shadow: 0 0 10px var(--lightning); }
+
+        /* Buttons */
+        .btn { border: none; border-radius: 12px; padding: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; width: 100%; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); }
+        .btn-gold { background: linear-gradient(180deg, var(--gold), #b8860b); color: #000; }
+        .btn-gold:disabled { filter: grayscale(1); opacity: 0.5; }
+        .btn-dark { background: #1a1a1a; color: #fff; border: 1px solid #333; font-size: 0.7rem; }
+        
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; background: #000; color: #fff; border: 1px solid #333; outline: none; }
+
+        /* Modals */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-body { background: #0a0a0a; width: 100%; max-width: 400px; padding: 25px; border-radius: 30px; border: 1px solid var(--gold); max-height: 80vh; overflow-y: auto; }
+        .hist-item { background: #111; padding: 12px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid #444; font-size: 0.8rem; }
+        .DONE { border-left-color: var(--green); }
+        .PENDING { border-left-color: var(--gold); }
+
+               /* Floating Action Button (FAB) */
+.fab-cs {
+    position: fixed;
+    bottom: 25px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5), 0 0 15px rgba(255,204,0,0.3);
+    z-index: 1000;
+    cursor: pointer;
+    border: 2px solid #000;
+    transition: 0.3s;
+}
+.fab-cs:active { transform: scale(0.9); }
+.fab-cs span { font-size: 1.8rem; }
+
+/* Badge notifikasi kecil di icon */
+.badge-chat {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: red;
+    color: white;
+    font-size: 0.6rem;
+    padding: 3px 7px;
+    border-radius: 10px;
+    font-weight: 800;
+    display: none; /* Muncul jika ada pesan baru */
+}
+    </style>
+</head>
+<body>
+
+<div class="bg-fixed"></div>
+<div id="flash"></div>
+
+<audio id="s_spin" src="https://assets.mixkit.co/active_storage/sfx/2005/2005-preview.mp3"></audio>
+<audio id="s_win" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+<audio id="s_thunder" src="https://assets.mixkit.co/active_storage/sfx/2530/2530-preview.mp3"></audio>
+
+<div id="authPage" class="page active" style="justify-content:center; align-items:center;">
+    <div style="width:320px; text-align:center;">
+        <h1 id="authTitle" style="color:var(--gold); letter-spacing:5px; margin-bottom:30px;">OLYMPUS</h1>
+        <input type="text" id="u_id" placeholder="Username">
+        <input type="password" id="u_pw" placeholder="Password">
+        <button class="btn btn-gold" id="authBtn" onclick="processAuth()">LOGIN</button>
+        <p onclick="toggleAuthMode()" id="authToggle" style="font-size:0.75rem; margin-top:20px; cursor:pointer; color:#666">Belum punya akun? <span style="color:var(--gold)">Daftar</span></p>
+    </div>
+</div>
+
+<div id="gamePage" class="page">
+    <div class="top-nav">
+        <div><small style="color:#666">PLAYER</small><br><b id="disp_name">---</b></div>
+        <div class="balance-pill">
+            <div id="fs_badge" style="color:var(--lightning); font-size:0.6rem; font-weight:900; display:none;">FREE SPINS: <span id="disp_fs">0</span></div>
+            <b style="color:var(--gold);">IDR <span id="disp_bal">0</span></b>
+        </div>
+    </div>
+
+    <div id="ticker" style="text-align:center; padding:15px; font-weight:800; color:var(--gold); height:50px;">SIAP UNTUK MAXWIN?</div>
+
+    <div class="slot-wrapper">
+        <div class="grid-frame">
+            <div class="reel" id="r0"></div><div class="reel" id="r1"></div><div class="reel" id="r2"></div><div class="reel" id="r3"></div><div class="reel" id="r4"></div>
+        </div>
+    </div>
+
+    <div style="padding:20px; background:rgba(0,0,0,0.95); border-top:1px solid #222;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+            <div style="background:#111; padding:5px 12px; border-radius:12px; border:1px solid #333;">
+                <small style="font-size:0.6rem; color:#666; display:block">TARUHAN</small>
+                <select id="bet_val" onchange="updateJackpotPrice()" style="margin:0; padding:0; background:none; border:none; font-weight:bold;">
+                    <option value="200">200</option><option value="500">500</option><option value="1000">1.000</option><option value="5000">5.000</option>
+                </select>
+            </div>
+            <button class="btn" style="background:var(--purple); color:white; font-size:0.7rem;" onclick="buyJackpot()">
+                BUY JACKPOT<br><span id="jackpot_price" style="font-weight:800;">IDR 20.000</span>
+            </button>
+        </div>
+        <button class="btn btn-gold" id="spinBtn" onclick="manualSpin()" style="height:55px; font-size:1.2rem;">SPIN</button>
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-top:12px;">
+            <button class="btn btn-dark" onclick="openM('m_depo')">DEPO</button>
+            <button class="btn btn-dark" onclick="openM('m_wd')">WD</button>
+            <button class="btn btn-dark" onclick="showHistory()">RIWAYAT</button>
+            <button class="btn btn-dark" onclick="alert('CS Aktif 24 Jam')">CS</button>
+        </div>
+    </div>
+</div>
+
+<div id="m_depo" class="modal"><div class="modal-body">
+    <h3 style="color:var(--gold)">DEPOSIT</h3>
+    <select id="d_bank"><option>BCA - 12345 (ADMIN)</option><option>DANA - 08123 (ADMIN)</option></select>
+    <input type="number" id="d_amt" placeholder="Nominal Depo">
+    <button class="btn btn-gold" onclick="submitDepo()">KIRIM KONFIRMASI</button>
+    <button class="btn btn-dark" style="margin-top:10px" onclick="closeM()">TUTUP</button>
+</div></div>
+
+<div id="m_wd" class="modal"><div class="modal-body">
+    <h3 style="color:var(--purple)">WITHDRAW</h3>
+    <input type="text" id="w_rek" placeholder="Bank & No Rekening">
+    <input type="number" id="w_amt" placeholder="Nominal Tarik">
+    <button class="btn" style="background:var(--purple); color:white" onclick="submitWD()">TARIK SALDO</button>
+    <button class="btn btn-dark" style="margin-top:10px" onclick="closeM()">TUTUP</button>
+</div></div>
+
+<div id="m_hist" class="modal"><div class="modal-body">
+    <h3 style="color:var(--gold)">RIWAYAT TRANSAKSI</h3>
+    <div id="hist_cont"></div>
+    <button class="btn btn-dark" style="width:100%; margin-top:10px;" onclick="closeM()">TUTUP</button>
+</div></div>
+    <div class="fab-cs" onclick="openChatUser()">
+    <span>💬</span>
+    <div id="notif_chat" class="badge-chat">1</div>
+</div>
+
+<div id="m_chat" class="modal">
+    <div class="modal-body" style="height: 85vh; display: flex; flex-direction: column; border-color: var(--gold);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="color:var(--gold); margin:0;">CUSTOMER SERVICE</h3>
+            <span onclick="closeM()" style="cursor:pointer; font-size:1.5rem;">×</span>
+        </div>
+        
+        <div id="chat_box_user" style="flex: 1; overflow-y: auto; background: #000; border-radius: 15px; padding: 15px; border: 1px solid #222; display: flex; flex-direction: column; gap: 10px;">
+            </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <input type="text" id="u_chat_input" placeholder="Tulis pesan..." style="margin: 0; flex: 1;">
+            <button class="btn btn-gold" style="width: 70px; padding: 0;" onclick="sendChatUser()">KIRIM</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- FIREBASE CONFIG ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
+        authDomain: "fotobooth-e36ab.firebaseapp.com",
+        databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
+        projectId: "fotobooth-e36ab",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let user = null;
+    let balance = 0;
+    let isAuto = false;
+    let sessionWin = 0;
+    let authMode = 'login';
+    const icons = ['👑', '💎', '💰', '🔱', '⭐', '🍇', '🍒', '⚡'];
+    const rates = { '👑': 20, '💎': 10, '💰': 7, '🔱': 5, '⭐': 3, '🍇': 1.5, '🍒': 1 };
+
+    function toggleAuthMode() {
+        authMode = (authMode === 'login') ? 'reg' : 'login';
+        document.getElementById('authTitle').innerText = authMode === 'login' ? 'OLYMPUS' : 'DAFTAR';
+        document.getElementById('authBtn').innerText = authMode === 'login' ? 'LOGIN' : 'DAFTAR';
+        document.getElementById('authToggle').innerHTML = authMode === 'login' ? 'Belum punya akun? <span style="color:var(--gold)">Daftar</span>' : 'Sudah punya akun? <span style="color:var(--gold)">Login</span>';
+    }
+
+    function processAuth() {
+    const u = document.getElementById('u_id').value;
+    const p = document.getElementById('u_pw').value;
+    if(!u || !p) return alert("Isi data lengkap!");
+    
+    if(authMode === 'reg') {
+        db.ref('users/'+u).set({ 
+            pw: p, 
+            balance: 0, 
+            fs: 0, 
+            status: 'active' // Tambahkan status default saat daftar
+        }).then(() => { 
+            alert("Daftar Berhasil!"); 
+            toggleAuthMode(); 
+        });
+    } else {
+        db.ref('users/'+u).once('value', s => {
+            if(s.exists() && s.val().pw === p) {
+                
+                // --- CEK STATUS SUSPEND DISINI ---
+                if(s.val().status === 'suspended') {
+                    alert("⚠️ AKUN ANDA DIBEKUKAN!\nSilakan hubungi Admin untuk informasi lebih lanjut.");
+                    return; // Berhenti di sini, tidak lanjut ke game
+                }
+                // ---------------------------------
+
+                user = u;
+                document.getElementById('disp_name').innerText = u;
+                gsap.to("#authPage", { opacity: 0, duration: 0.4, onComplete: () => {
+                    document.getElementById('authPage').style.display = 'none';
+                    document.getElementById('gamePage').classList.add('active');
+                    initReels(); syncData(); updateJackpotPrice();
+                }});
+            } else {
+                alert("Username atau Password Salah!");
+            }
+        });
+    }
+}
+
+    function syncData() {
+    db.ref('users/'+user).on('value', s => {
+        const d = s.val();
+        
+        // Jika admin mengubah status jadi suspended saat user sedang login
+        if(d.status === 'suspended') {
+            alert("Sesi berakhir: Akun Anda telah dibekukan.");
+            location.reload(); // Paksa refresh halaman ke menu login
+            return;
+        }
+
+        balance = d.balance || 0;
+        document.getElementById('disp_bal').innerText = Math.floor(balance).toLocaleString();
+        document.getElementById('disp_fs').innerText = d.fs || 0;
+        document.getElementById('fs_badge').style.display = (d.fs > 0) ? 'block' : 'none';
+        
+        if(d.fs > 0 && !isAuto) { 
+            isAuto = true; 
+            sessionWin = 0; 
+            setTimeout(executeSpin, 1000); 
+        }
+    });
+}
+    function syncData() {
+        db.ref('users/'+user).on('value', s => {
+            const d = s.val();
+            balance = d.balance || 0;
+            document.getElementById('disp_bal').innerText = Math.floor(balance).toLocaleString();
+            document.getElementById('disp_fs').innerText = d.fs || 0;
+            document.getElementById('fs_badge').style.display = (d.fs > 0) ? 'block' : 'none';
+            if(d.fs > 0 && !isAuto) { isAuto = true; sessionWin = 0; setTimeout(executeSpin, 1000); }
+        });
+    }
+
+    function updateJackpotPrice() {
+        document.getElementById('jackpot_price').innerText = "IDR " + (document.getElementById('bet_val').value * 100).toLocaleString();
+    }
+
+    // --- TRANSAKSI ---
+    function submitDepo() {
+        const amt = parseInt(document.getElementById('d_amt').value);
+        if(!amt || amt < 10000) return alert("Minimal 10.000");
+        db.ref('transactions').push({ user: user, type: 'DEPO', amount: amt, status: 'PENDING', time: Date.now() });
+        alert("Deposit Dikirim!"); closeM();
+    }
+
+    function submitWD() {
+        const amt = parseInt(document.getElementById('w_amt').value);
+        if(!amt || amt > balance) return alert("Saldo Kurang!");
+        // Potong Saldo Instan
+        db.ref('users/'+user).update({ balance: balance - amt });
+        db.ref('transactions').push({ user: user, type: 'WD', amount: amt, status: 'PENDING', time: Date.now(), rek: document.getElementById('w_rek').value });
+        alert("WD Berhasil & Saldo Dipotong!"); closeM();
+    }
+
+    function showHistory() {
+        openM('m_hist');
+        db.ref('transactions').orderByChild('user').equalTo(user).on('value', s => {
+            const c = document.getElementById('hist_cont'); c.innerHTML = "";
+            let l = []; s.forEach(ch => l.push(ch.val()));
+            l.reverse().forEach(d => {
+                c.innerHTML += `<div class="hist-item ${d.status}"><span style="float:right; color:${d.status==='DONE'?'#00ff88':'#ffcc00'}">${d.status}</span><b>${d.type}</b><br><small>IDR ${d.amount.toLocaleString()}</small></div>`;
+            });
+        });
+    }
+
+    // --- GAME ENGINE ---
+    function initReels() { for(let i=0; i<5; i++) document.getElementById('r'+i).innerHTML = `<div class="symbol">🔱</div><div class="symbol">💎</div>`; }
+    
+    function buyJackpot() {
+        const cost = document.getElementById('bet_val').value * 100;
+        if(balance < cost) return alert("Saldo Kurang!");
+        db.ref('users/'+user).update({ balance: balance - cost, fs: 15 });
+    }
+
+    function manualSpin() { if(!isAuto) executeSpin(); }
+
+    function executeSpin() {
+        const bet = parseInt(document.getElementById('bet_val').value);
+        const btn = document.getElementById('spinBtn');
+        btn.disabled = true; document.getElementById('s_spin').play();
+
+        db.ref('users/'+user).once('value', s => {
+            if(!isAuto) {
+                if(balance < bet) { btn.disabled = false; return alert("Saldo Habis!"); }
+                db.ref('users/'+user).update({ balance: balance - bet });
+            } else {
+                db.ref('users/'+user).update({ fs: s.val().fs - 1 });
+            }
+
+            let results = [];
+            for(let i=0; i<5; i++) {
+                const reel = document.getElementById('r'+i);
+                gsap.to(reel, { y: 15, duration: 0.1, repeat: 10, yoyo: true });
+                setTimeout(() => {
+                    let html = "";
+                    for(let j=0; j<3; j++) {
+                        let sym = icons[Math.floor(Math.random()*icons.length)];
+                        let m = sym === '⚡' ? [2, 5, 10, 25, 50, 100][Math.floor(Math.random()*6)] : 1;
+                        html += `<div class="symbol">${sym}${sym==='⚡' ? `<div class="mult-popup">x${m}</div>` : ""}</div>`;
+                        results.push({ name: sym, m: m });
+                    }
+                    reel.innerHTML = html;
+                    if(i === 4) calculateWin(results, bet);
+                }, 300 + (i*120));
+            }
+        });
+    }
+
+    function calculateWin(res, bet) {
+        let baseWin = 0, totalMult = 0, counts = {}, lightningCount = 0;
+
+        res.forEach(item => {
+            if(item.name === '⚡') { totalMult += item.m; lightningCount++; } 
+            else counts[item.name] = (counts[item.name] || 0) + 1;
+        });
+
+        // VFX PETIR & GUNTUR
+        if(lightningCount > 0) {
+            gsap.to("#flash", { opacity: 0.4, duration: 0.1, yoyo: true, repeat: 1 });
+            document.getElementById('s_thunder').play();
+        }
+
+        // CEK SCATTER (4 PETIR = JACKPOT GRATIS)
+        if(lightningCount >= 4 && !isAuto) {
+            alert("SCATTER! 15 FREE SPIN GRATIS DIBUKA!");
+            db.ref('users/'+user).update({ fs: 15 });
+        }
+
+        for(let s in counts) { if(counts[s] >= 3) baseWin += (bet * rates[s] * (counts[s] / 3)); }
+        let win = Math.floor(totalMult > 0 ? baseWin * totalMult : baseWin);
+
+        // RTP WINRATE
+        db.ref('admin_settings/config/winRate').once('value', snap => {
+            const rtp = snap.val() || 35;
+            if(Math.random() * 100 > rtp) win = 0;
+
+            if(win > 0) {
+                sessionWin += win; document.getElementById('s_win').play();
+                db.ref('users/'+user).once('value', s => db.ref('users/'+user).update({ balance: s.val().balance + win }));
+                document.getElementById('ticker').innerText = "WIN: IDR " + win.toLocaleString();
+            } else {
+                document.getElementById('ticker').innerText = isAuto ? "TOTAL WIN: " + sessionWin.toLocaleString() : "COBA LAGI";
+            }
+
+            if(isAuto) {
+                db.ref('users/'+user).once('value', s => {
+                    if(s.val().fs > 0) setTimeout(executeSpin, 1400);
+                    else { alert("Jackpot Selesai! Menang: IDR " + sessionWin.toLocaleString()); isAuto = false; document.getElementById('spinBtn').disabled = false; }
+                });
+            } else document.getElementById('spinBtn').disabled = false;
+        });
+    }
+
+    function openM(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeM() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+
+
+    function openChatUser() {
+    if(!user) return alert("Login untuk chat admin");
+    document.getElementById('notif_chat').style.display = 'none'; // Sembunyikan notif saat dibuka
+    openM('m_chat');
+    
+    // Listen chat real-time
+    db.ref('chats/' + user).on('value', snap => {
+        const box = document.getElementById('chat_box_user');
+        box.innerHTML = "";
+        snap.forEach(child => {
+            const m = child.val();
+            const isAdmin = m.sender === 'admin';
+            
+            const align = isAdmin ? 'align-self: flex-start;' : 'align-self: flex-end;';
+            const bg = isAdmin ? 'background: #222; color: #fff; border: 1px solid #333;' : 'background: var(--gold); color: #000; font-weight: 600;';
+            const radius = isAdmin ? 'border-bottom-left-radius: 2px;' : 'border-bottom-right-radius: 2px;';
+
+            box.innerHTML += `
+                <div style="${align} ${bg} ${radius} padding: 10px 14px; border-radius: 15px; max-width: 85%; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                    <small style="font-size: 0.6rem; display: block; opacity: 0.6; margin-bottom: 3px;">${isAdmin ? 'SUPPORT' : 'SAYA'}</small>
+                    ${m.text}
+                </div>
+            `;
+        });
+        box.scrollTop = box.scrollHeight;
+    });
+}
+
+function sendChatUser() {
+    const inp = document.getElementById('u_chat_input');
+    if(!inp.value.trim()) return;
+
+    db.ref('chats/' + user).push({
+        sender: 'user',
+        text: inp.value,
+        time: Date.now()
+    });
+    inp.value = "";
+}
+</script>
+</body>
+</html>

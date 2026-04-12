@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olympus Admin - Super Command Center</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #ffcc00; --bg: #050505; --card: #111111; --text: #e0e0e0; --green: #00ff88; --red: #ff4444; --blue: #00d2ff; }
+        body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--card); border-right: 1px solid #222; padding: 25px; display: flex; flex-direction: column; gap: 10px; }
+        .nav-item { padding: 14px 18px; border-radius: 12px; cursor: pointer; transition: 0.3s; font-weight: 700; color: #666; display: flex; align-items: center; gap: 10px; }
+        .nav-item.active { background: var(--gold); color: black; box-shadow: 0 4px 15px rgba(255,204,0,0.2); }
+        .nav-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: #fff; }
+
+        /* Main Content */
+        .main { flex: 1; overflow-y: auto; padding: 40px; }
+        h1 { font-weight: 800; letter-spacing: -1px; margin-bottom: 30px; color: #fff; }
+
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #222; position: relative; overflow: hidden; }
+        .stat-card::after { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gold); }
+        .stat-card h3 { margin: 0; font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card p { margin: 10px 0 0; font-size: 1.8rem; font-weight: 800; color: var(--gold); }
+
+        /* Tables */
+        .table-container { background: var(--card); border-radius: 20px; border: 1px solid #222; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 18px; text-align: left; border-bottom: 1px solid #222; font-size: 0.9rem; }
+        th { background: #181818; color: var(--gold); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+
+        /* Action Buttons */
+        .btn-action { padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.7rem; font-weight: 800; margin-right: 4px; transition: 0.2s; text-transform: uppercase; }
+        .btn-action:active { transform: scale(0.9); }
+        
+        /* Chat Panel */
+        #chatPanel { display: grid; grid-template-columns: 320px 1fr; height: 600px; background: var(--card); border-radius: 24px; border: 1px solid #222; overflow: hidden; }
+        .user-list { border-right: 1px solid #222; overflow-y: auto; background: #0d0d0d; }
+        .user-chat-item { padding: 20px; border-bottom: 1px solid #1a1a1a; cursor: pointer; transition: 0.2s; }
+        .user-chat-item:hover { background: #181818; }
+        .user-chat-item.active { background: rgba(255,204,0,0.1); border-left: 4px solid var(--gold); }
+        
+        .chat-box { display: flex; flex-direction: column; background: #0a0a0a; }
+        .chat-header { padding: 15px 25px; background: #141414; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .messages { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { padding: 12px 18px; border-radius: 15px; max-width: 70%; font-size: 0.85rem; line-height: 1.4; }
+        .msg.admin { align-self: flex-end; background: var(--gold); color: black; font-weight: 600; border-bottom-right-radius: 2px; }
+        .msg.user { align-self: flex-start; background: #222; color: #fff; border-bottom-left-radius: 2px; }
+        
+        .chat-input { padding: 20px; display: flex; gap: 12px; background: #141414; border-top: 1px solid #222; }
+        input { background: #000; border: 1px solid #333; color: white; padding: 12px 18px; border-radius: 12px; flex: 1; outline: none; }
+        input:focus { border-color: var(--gold); }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div style="padding: 10px 15px; margin-bottom: 20px;">
+        <h2 style="color:var(--gold); margin:0; font-size:1.4rem; font-weight:800;">OLYMPUS</h2>
+        <small style="color:#666; letter-spacing:2px;">SUPER ADMIN</small>
+    </div>
+    <div class="nav-item active" onclick="showSection('dashboard', this)">🏠 Dashboard</div>
+    <div class="nav-item" onclick="showSection('users', this)">👥 Data User</div>
+    <div class="nav-item" onclick="showSection('transactions', this)">💰 Transaksi</div>
+    <div class="nav-item" onclick="showSection('chat', this)">💬 Live Chat</div>
+</div>
+
+<div class="main">
+    <section id="section-dashboard">
+        <h1>Overview</h1>
+        <div class="stats-grid">
+            <div class="stat-card"><h3>TOTAL USERS</h3><p id="stat-users">0</p></div>
+            <div class="stat-card"><h3>TOTAL DEPOSIT</h3><p id="stat-depo">0</p></div>
+            <div class="stat-card"><h3>TOTAL WITHDRAW</h3><p id="stat-wd">0</p></div>
+        </div>
+    </section>
+
+    <section id="section-users" style="display:none;">
+        <h1>Management User</h1>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User & Status</th>
+                        <th>Info Rekening</th>
+                        <th>Saldo</th>
+                        <th>Aksi Kontrol</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="section-transactions" style="display:none;">
+        <h1>Depo & WD Requests</h1>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Tipe</th>
+                        <th>Nominal</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="txTable"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="section-chat" style="display:none;">
+        <h1>Live Support</h1>
+        <div id="chatPanel">
+            <div class="user-list" id="chatUserList"></div>
+            <div class="chat-box">
+                <div class="chat-header">
+                    <b id="activeChatTitle">Pilih Chat...</b>
+                    <div id="chatActions" style="display:none;">
+                        <button class="btn-action" style="background:var(--red); color:white;" onclick="deleteChat()">HAPUS CHAT</button>
+                        <button class="btn-action" style="background:var(--green); color:black;" onclick="resolveChat()">SELESAI</button>
+                    </div>
+                </div>
+                <div class="messages" id="chatMessages"></div>
+                <div class="chat-input">
+                    <input type="text" id="chatMsgInput" placeholder="Tulis balasan...">
+                    <button class="btn-action" style="background:var(--gold); padding: 0 25px;" onclick="sendChat()">KIRIM</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBSo0nFUKNBDmUX0wSFV_idAFWBRnnTcXE",
+        authDomain: "fotobooth-e36ab.firebaseapp.com",
+        databaseURL: "https://fotobooth-e36ab-default-rtdb.firebaseio.com",
+        projectId: "fotobooth-e36ab",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let activeChatUser = null;
+
+    function showSection(id, el) {
+        document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+        document.getElementById('section-' + id).style.display = 'block';
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    // --- DATA USER & KONTROL ---
+    db.ref('users').on('value', snap => {
+        const table = document.getElementById('userTable');
+        table.innerHTML = "";
+        let count = 0;
+        snap.forEach(child => {
+            const d = child.val();
+            count++;
+            const isBeku = d.status === 'suspended';
+            table.innerHTML += `<tr>
+                <td><b>${child.key}</b><br>${isBeku ? '<span style="color:red; font-size:10px;">● DIBEKUKAN</span>' : '<span style="color:var(--green); font-size:10px;">● AKTIF</span>'}</td>
+                <td><small>${d.bank || '-'} / ${d.no_rek || '-'}</small></td>
+                <td style="color:var(--gold); font-weight:800;">IDR ${Math.floor(d.balance || 0).toLocaleString()}</td>
+                <td>
+                    <button class="btn-action" style="background:#222; color:var(--green)" onclick="adjustBal('${child.key}', 'add')">+ SALDO</button>
+                    <button class="btn-action" style="background:#222; color:var(--red)" onclick="adjustBal('${child.key}', 'sub')">TARIK</button>
+                    <button class="btn-action" style="background:${isBeku ? 'var(--green)' : 'orange'}; color:black" onclick="toggleFreeze('${child.key}', ${isBeku})">${isBeku ? 'AKTIFKAN' : 'BEKUKAN'}</button>
+                    <button class="btn-action" style="background:var(--red); color:white" onclick="nuclearOption('${child.key}')">HAPUS</button>
+                </td>
+            </tr>`;
+        });
+        document.getElementById('stat-users').innerText = count;
+    });
+
+    function adjustBal(uid, type) {
+        const amt = parseInt(prompt("Nominal IDR:"));
+        if(!amt) return;
+        db.ref('users/'+uid).once('value', s => {
+            let cur = s.val().balance || 0;
+            let res = type === 'add' ? cur + amt : cur - amt;
+            db.ref('users/'+uid).update({ balance: Math.max(0, res) });
+        });
+    }
+
+    function toggleFreeze(uid, isBeku) {
+        if(confirm(isBeku ? "Aktifkan akun?" : "Bekukan akun?")) {
+            db.ref('users/'+uid).update({ status: isBeku ? 'active' : 'suspended' });
+        }
+    }
+
+    function nuclearOption(uid) {
+        if(confirm("HAPUS PERMANEN akun, saldo, dan riwayat user " + uid + "?")) {
+            db.ref('users/'+uid).remove();
+            db.ref('chats/'+uid).remove();
+            db.ref('transactions').once('value', s => {
+                s.forEach(tx => { if(tx.val().user === uid) db.ref('transactions/'+tx.key).remove(); });
+            });
+            alert("User dimusnahkan.");
+        }
+    }
+
+    // --- TRANSAKSI ---
+    db.ref('transactions').on('value', snap => {
+        const table = document.getElementById('txTable');
+        table.innerHTML = "";
+        let tDepo = 0, tWD = 0;
+        snap.forEach(child => {
+            const d = child.val();
+            if(d.status === 'DONE') { d.type === 'DEPO' ? tDepo += d.amount : tWD += d.amount; }
+            table.innerHTML += `<tr>
+                <td>${d.user}</td>
+                <td><b>${d.type}</b></td>
+                <td style="color:var(--gold)">IDR ${d.amount.toLocaleString()}</td>
+                <td><span style="color:${d.status === 'DONE' ? 'var(--green)' : 'var(--gold)'}">${d.status}</span></td>
+                <td>
+                    ${d.status === 'PENDING' ? `
+                        <button class="btn-action" style="background:var(--green); color:black" onclick="updateTx('${child.key}','DONE','${d.user}',${d.amount},'${d.type}')">SETUJU</button>
+                        <button class="btn-action" style="background:var(--red); color:white" onclick="updateTx('${child.key}','BATAL','${d.user}',${d.amount},'${d.type}')">TOLAK</button>
+                    ` : 'SELESAI'}
+                </td>
+            </tr>`;
+        });
+        document.getElementById('stat-depo').innerText = "IDR " + tDepo.toLocaleString();
+        document.getElementById('stat-wd').innerText = "IDR " + tWD.toLocaleString();
+    });
+
+    function updateTx(key, status, uid, amt, type) {
+        if(status === 'DONE' && type === 'DEPO') {
+            db.ref('users/'+uid).once('value', s => db.ref('users/'+uid).update({ balance: (s.val().balance || 0) + amt }));
+        }
+        if(status === 'BATAL' && type === 'WD') {
+            db.ref('users/'+uid).once('value', s => db.ref('users/'+uid).update({ balance: (s.val().balance || 0) + amt }));
+        }
+        db.ref('transactions/'+key).update({ status: status });
+    }
+
+    // --- CHAT SYSTEM ---
+    db.ref('chats').on('value', snap => {
+        const list = document.getElementById('chatUserList');
+        list.innerHTML = "";
+        snap.forEach(child => {
+            list.innerHTML += `<div class="user-chat-item" onclick="openChat('${child.key}')">
+                <b>User: ${child.key}</b><br><small style="color:#666">Klik untuk membalas...</small>
+            </div>`;
+        });
+    });
+
+    function openChat(uid) {
+        activeChatUser = uid;
+        document.getElementById('activeChatTitle').innerText = "CHAT: " + uid;
+        document.getElementById('chatActions').style.display = 'block';
+        db.ref('chats/'+uid).on('value', snap => {
+            const box = document.getElementById('chatMessages');
+            box.innerHTML = "";
+            snap.forEach(child => {
+                const m = child.val();
+                box.innerHTML += `<div class="msg ${m.sender === 'admin' ? 'admin' : 'user'}">${m.text}</div>`;
+            });
+            box.scrollTop = box.scrollHeight;
+        });
+    }
+
+    function sendChat() {
+        const inp = document.getElementById('chatMsgInput');
+        if(!activeChatUser || !inp.value) return;
+        db.ref('chats/'+activeChatUser).push({ sender: 'admin', text: inp.value, time: Date.now() });
+        inp.value = "";
+    }
+
+    function deleteChat() {
+        if(confirm("Hapus seluruh riwayat chat user ini?")) {
+            db.ref('chats/'+activeChatUser).remove();
+            document.getElementById('chatMessages').innerHTML = "";
+        }
+    }
+
+    function resolveChat() {
+        sendChat("--- Masalah telah diselesaikan oleh Admin ---");
+        alert("Chat ditandai selesai.");
+    }
+</script>
+</body>
+</html>
