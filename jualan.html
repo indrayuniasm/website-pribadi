@@ -334,6 +334,27 @@ onAuthStateChanged(auth, async (user) => {
             window.renderCart(); await syncCart();
         };
 
+        // TAMBAHKAN KODE INI
+window.handleLogin = async () => {
+    const wa = document.getElementById('login-wa').value;
+    const pass = document.getElementById('login-pass').value;
+
+    if (!wa || !pass) {
+        return alert("Harap isi Nomor HP dan Password!");
+    }
+
+    // Format email harus sama dengan saat handleRegister (wa + "@indra.food")
+    const email = wa + "@indra.food";
+
+    try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        // Jika berhasil, onAuthStateChanged akan otomatis menutup modal login
+    } catch (e) {
+        console.error(e);
+        alert("Login Gagal: Nomor HP atau Password salah!");
+    }
+};
+        
         // --- PROMO ---
         window.applyPromo = async () => {
             const code = document.getElementById('promo-input').value.toUpperCase().trim();
