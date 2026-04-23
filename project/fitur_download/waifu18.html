@@ -488,23 +488,7 @@ body.loading-active {
         }, 3000); 
     });
 
-    // Mematikan Klik Kanan
-    document.addEventListener('contextmenu', e => e.preventDefault());
 
-    // Mematikan Shortcut Keyboard (F12, Ctrl+U, Ctrl+I, Ctrl+Shift+I, dll)
-    document.onkeydown = function(e) {
-        if (
-            e.keyCode === 123 || // F12
-            (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 65 || e.keyCode === 70)) || // Ctrl+U, S, A, F
-            (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 75 || e.keyCode === 67)) || // Ctrl+Shift+I, J, K, C
-            (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 85)) // Shortcut Mac (Cmd+Opt+I/U)
-        ) {
-            return false;
-        }
-    };
-
-    // Mematikan Drag Gambar/Elemen
-    document.addEventListener('dragstart', e => e.preventDefault());
 
     // 1. Mobile Menu Toggle
         const navToggle = document.getElementById('nav-toggle'),
