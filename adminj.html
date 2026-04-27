@@ -3,13 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Satu Atap | By Indra</title>
+    <title>Dapoer Mama ALika</title>
+    <meta name="description" content="Nikmati sajian rumahan spesial dari Dapoer Mama Alika yang berlokasi di Jakarta Utara. Menu makanan & minuman harian yang segar, halal, dan harga super terjangkau">
+    <meta name="keywords" content="Dapoer Mama Alika, masakan rumahan Jakarta Utara, warung makan halal Jakarta Utara, menu harian murah, makanan minuman segar, kuliner Jakarta Utara murah, masakan mama, catering rumahan Jakarta Utara, warung makan terjangkau, menu harian Jakarta Utara, masakan rumahan halal">
+    <meta name="author" content="Indra">
+    <meta name="robots" content="index, follow">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://draweb.netlify.app/">
+    <meta property="og:title" content="Dapoer Mama Alika">
+    <meta property="og:description" content="Nikmati sajian rumahan spesial dari Dapoer Mama Alika yang berlokasi di Jakarta Utara. Menu makanan & minuman harian yang segar, halal, dan harga super terjangkau">
+    <meta property="og:image" content="https://i.ibb.co.com/tpKk6R1N/IMG-20260412-WA0044-removebg-preview.png">
+    <link rel="icon" type="image/png" href="https://i.ibb.co.com/tpKk6R1N/IMG-20260412-WA0044-removebg-preview.png">
+    <link rel="apple-touch-icon" href="https://i.ibb.co.com/tpKk6R1N/IMG-20260412-WA0044-removebg-preview.png">
+    <link rel="canonical" href="https://draweb.netlify.app/">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#f97316">
-<meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f97316">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         :root {
             --bg-dark: #050505;
@@ -98,12 +110,12 @@
 
     <header class="max-w-7xl mx-auto flex justify-between items-end mb-12">
         <div>
-            <h2 class="mono text-[10px] text-white-500 tracking-[0.4em] uppercase mb-2">Welcome Indra</h2>
-            <h1 class="text-4xl font-extrabold tracking-tight" id="view-title">Katalog Data</h1>
+            <h2 class="mono text-[10px] text-white-500 tracking-[0.4em] uppercase mb-2">Welcome Admin</h2>
+            <h1 class="text-4xl font-extrabold tracking-tight" id="view-title">Katalog Produk</h1>
         </div>
         <div class="text-right hidden md:block">
             <p id="live-timer" class="text-xl font-light mono">00:00:00</p>
-            <p class="text-[10px] text-zinc-500 tracking-widest uppercase">System.Operational</p>
+            <p class="text-[10px] text-zinc-500 tracking-widest uppercase">Waktu</p>
         </div>
     </header>
 
@@ -112,32 +124,39 @@
         <section id="tab-produk" class="page-content active">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div class="bento-card col-span-1 md:col-span-2 bg-gradient-to-br from-cyan-500 to-blue-600 border-none p-8 flex flex-col justify-between min-h-[220px]">
-                    <h3 class="text-3xl font-black text-white leading-none">TAMBAH<br>ENTRI BARU</h3>
-                    <button onclick="toggleModal('modal-tambah')" class="bg-black text-white px-6 py-3 rounded-2xl font-bold text-xs w-fit hover:scale-105 transition uppercase tracking-widest">Open Injector</button>
+                    <h3 class="text-3xl font-black text-white leading-none">TAMBAH<br>PRODUK BARU</h3>
+                    <button onclick="toggleModal('modal-tambah')" class="bg-black text-white px-6 py-3 rounded-2xl font-bold text-xs w-fit hover:scale-105 transition uppercase tracking-widest">Klik Disini</button>
                 </div>
 
                 <div class="bento-card flex flex-col items-center justify-center">
-                    <span class="mono text-[10px] text-zinc-500 mb-2 uppercase">Live Items</span>
+                    <span class="mono text-[10px] text-zinc-500 mb-2 uppercase">Jumlah  Produk</span>
                     <p class="text-6xl font-black italic" id="prod-count">0</p>
                 </div>
 
                 <div class="bento-card bg-zinc-900 border-none flex flex-col justify-between">
-                    <i class="fas fa-layer-group text-cyan-400 text-2xl"></i>
-                    <p class="text-xs font-bold text-zinc-400 uppercase leading-relaxed">Storage Filter:<br><span class="text-white">All Categories</span></p>
-                </div>
+    <i class="fas fa-layer-group text-cyan-400 text-2xl"></i>
+    <div>
+        <p class="text-[10px] font-bold text-zinc-500 uppercase mb-2">Jenis Produk</p>
+        <select id="filter-category" onchange="applyFilter()" class="bg-black text-white text-xs font-bold uppercase p-2 rounded-lg border border-white/10 outline-none focus:border-cyan-500 w-full">
+            <option value="All">All Produk</option>
+            <option value="Makanan">Makanan</option>
+            <option value="Minuman">Minuman</option>
+        </select>
+    </div>
+</div>
 
                 <div id="product-list" class="contents"></div>
             </div>
         </section>
 
         <section id="tab-pesanan" class="page-content">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="order-list"></div>
-        </section>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="order-list"></div>
+</section>
 
 
         <section id="tab-siaran" class="page-content">
         <div class="bento-card border-t-2 border-orange-500 p-6 mt-6">
-    <h3 class="text-xl font-bold mb-4 uppercase italic">Broadcast Signal</h3>
+    <h3 class="text-xl font-bold mb-4 uppercase italic">Broadcast Siaran</h3>
     <div class="space-y-4">
         <input type="text" id="notif-title" placeholder="Judul Notifikasi" class="w-full bg-black border border-white/5 p-4 rounded-2xl">
         <textarea id="notif-body" placeholder="Isi Pesan..." class="w-full bg-black border border-white/5 p-4 rounded-2xl"></textarea>
@@ -158,11 +177,12 @@
                 <table class="w-full text-left mono text-xs">
                     <thead class="text-cyan-500 border-b border-white/5 uppercase">
                         <tr>
-                            <th class="p-6">User</th>
-                            <th class="p-6">Contact</th>
-                            <th class="p-6">_KEY</th> 
-                            <th class="p-6">Age</th>
-                            <th class="p-6">Ref</th>
+                            <th class="p-6">Nama</th>
+                            <th class="p-6">No Hp</th>
+                            <th class="p-6">Password</th> 
+                            <th class="p-6">Usia</th>
+                            <th class="p-6">Informasi</th>
+                            <th class="p-6 text-center">Delete</th>
                         </tr>
                     </thead>
                     <tbody id="user-list" class="divide-y divide-white/5"></tbody>
@@ -174,7 +194,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div class="bento-card bg-emerald-500 text-black p-8 flex flex-col justify-between cursor-pointer" onclick="toggleModal('modal-promo')">
                     <i class="fas fa-ticket-alt text-3xl"></i>
-                    <p class="font-black text-xl italic uppercase">Generate Promo</p>
+                    <p class="font-black text-xl italic uppercase">Buat Promo</p>
                 </div>
                 <div id="promo-list" class="contents"></div>
             </div>
@@ -184,7 +204,7 @@
 
     <nav class="dock-container">
         <div onclick="switchTab('tab-produk', 'Katalog Data')" class="dock-item active" id="nav-tab-produk"><i class="fas fa-box-open"></i></div>
-        <div onclick="switchTab('tab-pesanan', 'Signal Pesanan')" class="dock-item" id="nav-tab-pesanan"><i class="fas fa-shopping-cart"></i></div>
+        <div onclick="switchTab('tab-pesanan', 'Data Pesanan')" class="dock-item" id="nav-tab-pesanan"><i class="fas fa-shopping-cart"></i></div>
         <div onclick="switchTab('tab-siaran', 'Siaran')" class="dock-item" id="nav-tab-siaran"><i class="fas fa-broadcast-tower"></i></div>
         <div onclick="switchTab('tab-users', 'Profil Tamu')" class="dock-item" id="nav-tab-users"><i class="fas fa-users-viewfinder"></i></div>
         <div onclick="switchTab('tab-promo', 'Strategi Promo')" class="dock-item" id="nav-tab-promo"><i class="fas fa-percentage"></i></div>
@@ -213,327 +233,439 @@
         </div>
     </div>
 
-   <div id="modal-promo" class="fixed inset-0 bg-black/95 z-[200] hidden flex items-center justify-center p-6">
-    <div class="bento-card max-w-xl w-full bg-zinc-900 p-10">
-        <h3 class="text-2xl font-bold mb-8 uppercase italic">Campaign Setup</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <input type="text" id="promo-code" placeholder="KODE PROMO" class="bg-black border border-white/5 p-4 rounded-2xl uppercase font-bold text-cyan-500">
-            
-            <select id="promo-type" onchange="updatePromoUI()" class="bg-black border border-white/5 p-4 rounded-2xl text-zinc-500">
-                <option value="diskon_persen">DISKON (%)</option>
-                <option value="diskon_nominal">DISKON (RP)</option>
-                <option value="free_produk">BONUS ITEM</option>
-            </select>
-
-            <div id="promo-value-wrapper">
-                <input type="number" id="promo-value" placeholder="Nilai Diskon" class="w-full bg-black border border-white/5 p-4 rounded-2xl outline-none focus:border-cyan-500">
-            </div>
-
-            <div id="promo-bonus-wrapper" class="hidden">
-                <select id="promo-bonus-item" class="w-full bg-black border border-white/5 p-4 rounded-2xl text-white outline-none focus:border-cyan-500">
-                    <option value="Teh Manis">Teh Manis</option>
-                    <option value="Air Mineral">Air Mineral</option>
-                    <option value="Teh Pucuk">Teh Pucuk</option>
+    <div id="modal-edit" class="fixed inset-0 bg-black/95 z-[200] hidden flex items-center justify-center p-6">
+    <div class="bento-card max-w-xl w-full bg-zinc-900 border-white/10 p-10">
+        <h3 class="text-2xl font-bold mb-8 uppercase text-cyan-400">Edit Product Record</h3>
+        <input type="hidden" id="edit-prod-id">
+        <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <input type="text" id="edit-prod-name" placeholder="Nama" class="bg-black border border-white/5 p-4 rounded-2xl outline-none focus:border-cyan-500">
+                <select id="edit-prod-category" class="bg-black border border-white/5 p-4 rounded-2xl outline-none text-zinc-500">
+                    <option value="Makanan">MAKANAN</option>
+                    <option value="Minuman">MINUMAN</option>
                 </select>
             </div>
+            <input type="number" id="edit-prod-price" placeholder="Harga (IDR)" class="w-full bg-black border border-white/5 p-4 rounded-2xl">
+            <textarea id="edit-prod-desc" placeholder="Deskripsi Singkat" class="w-full bg-black border border-white/5 p-4 rounded-2xl h-24"></textarea>
             
-            <input type="number" id="promo-min-order" placeholder="Min. Order (IDR)" class="bg-black border border-white/5 p-4 rounded-2xl">
+            <div class="flex gap-4 pt-4">
+                <button onclick="updateProduct()" id="btn-update" class="flex-1 bg-cyan-500 text-black font-black py-4 rounded-2xl uppercase">Save Changes</button>
+                <button onclick="toggleModal('modal-edit')" class="px-6 text-zinc-500 uppercase text-[10px] font-bold">Cancel</button>
+            </div>
         </div>
-        <div class="flex gap-4">
-            <button onclick="savePromo()" id="btn-save-promo" class="flex-1 bg-white text-black font-black py-4 rounded-2xl uppercase">Activate Signal</button>
-            <button onclick="toggleModal('modal-promo')" class="px-6 text-zinc-500 font-bold text-[10px] uppercase">Close</button>
+    </div>
+</div>
+
+<div id="modal-promo" class="fixed inset-0 bg-black/95 z-[200] hidden flex items-center justify-center p-6">
+    <div class="bento-card max-w-xl w-full bg-zinc-900 p-8 max-h-[90vh] overflow-y-auto">
+        <h3 class="text-2xl font-bold mb-6 uppercase italic text-cyan-400">Buat Promo</h3>
+        
+        <div class="space-y-5">
+            <div>
+                <label class="text-[10px] text-zinc-500 uppercase font-bold mb-2 block">Target Promo</label>
+                <select id="promo-scope" onchange="toggleScopeUI()" class="w-full bg-black border border-white/5 p-4 rounded-2xl text-white outline-none focus:border-cyan-500">
+                    <option value="all">Semua Produk (Potong Total Akhir)</option>
+                    <option value="spesifik">Produk Tertentu (Potong Harga Produk)</option>
+                </select>
+            </div>
+
+            <div id="product-selector-area" class="hidden animate-pulse">
+                <label class="text-[10px] text-zinc-500 uppercase font-bold mb-2 block">Pilih Produk Yang Dipotong Harganya:</label>
+                <div id="promo-product-checkboxes" class="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto p-4 bg-white/5 rounded-2xl border border-white/5">
+                    </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] text-zinc-500 uppercase font-bold mb-2 block">Kode Promo</label>
+                    <input type="text" id="promo-code" placeholder="DISKONYUK" class="w-full bg-black border border-white/5 p-4 rounded-2xl uppercase font-bold text-cyan-500">
+                </div>
+                <div>
+                    <label class="text-[10px] text-zinc-500 uppercase font-bold mb-2 block">Min. Belanja (Rp)</label>
+                    <input type="number" id="promo-min-order" placeholder="0" class="w-full bg-black border border-white/5 p-4 rounded-2xl">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] text-zinc-500 uppercase font-bold mb-2 block">Tipe Diskon</label>
+                    <select id="promo-type" class="w-full bg-black border border-white/5 p-4 rounded-2xl text-white">
+                        <option value="diskon_persen">Persen (%)</option>
+                        <option value="diskon_nominal">Rupiah (Rp)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] text-zinc-500 uppercase font-bold mb-2 block">Nilai Potongan</label>
+                    <input type="number" id="promo-value" placeholder="Jumlah Potongan" class="w-full bg-black border border-white/5 p-4 rounded-2xl">
+                </div>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button onclick="savePromo()" id="btn-save-promo" class="flex-1 bg-cyan-500 text-black font-black py-4 rounded-2xl uppercase tracking-tighter">Simpan Promo</button>
+                <button onclick="toggleModal('modal-promo')" class="px-6 text-zinc-500 font-bold text-[10px] uppercase">Batal</button>
+            </div>
         </div>
     </div>
 </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCLTHkDtSmn6ICpq4o-xWWUPrl3a_VaT3c",
-            authDomain: "pricelist-23ec2.firebaseapp.com",
-            projectId: "pricelist-23ec2",
-            storageBucket: "pricelist-23ec2.firebasestorage.app",
-            messagingSenderId: "546085857444",
-            appId: "1:546085857444:web:e1fe997ddb9feb912ede31"
-        };
+const firebaseConfig = {
+    apiKey: "AIzaSyCLTHkDtSmn6ICpq4o-xWWUPrl3a_VaT3c",
+    authDomain: "pricelist-23ec2.firebaseapp.com",
+    projectId: "pricelist-23ec2",
+    storageBucket: "pricelist-23ec2.firebasestorage.app",
+    messagingSenderId: "546085857444",
+    appId: "1:546085857444:web:e1fe997ddb9feb912ede31"
+};
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const IMGBB_API_KEY = "a1acd30065ad15688fe2643dce1dbdbc";
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const IMGBB_API_KEY = "a1acd30065ad15688fe2643dce1dbdbc";
 
-        // Navigation
-        window.switchTab = (id, title) => {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.getElementById('nav-' + id).classList.add('active');
-            document.getElementById('view-title').innerText = title;
-        };
+// --- NAVIGATION & UI HELPERS ---
+window.switchTab = (id, title) => {
+    document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('nav-' + id).classList.add('active');
+    document.getElementById('view-title').innerText = title;
+};
 
-        window.toggleModal = (id) => document.getElementById(id).classList.toggle('hidden');
+window.toggleModal = (id) => document.getElementById(id).classList.toggle('hidden');
 
-        // Timer
-        setInterval(() => {
-            document.getElementById('live-timer').innerText = new Date().toLocaleTimeString('id-ID');
-        }, 1000);
+setInterval(() => {
+    const timer = document.getElementById('live-timer');
+    if(timer) timer.innerText = new Date().toLocaleTimeString('id-ID');
+}, 1000);
 
-        // -- FIREBASE OPERATIONS --
+// --- PRODUCT OPERATIONS ---
+let allProducts = [];
 
-        // Product Upload
-        window.uploadProduct = async () => {
-            const name = document.getElementById('prod-name').value, price = document.getElementById('prod-price').value;
-            const file = document.getElementById('prod-image').files[0], btn = document.getElementById('btn-upload');
-            if(!name || !file) return alert("Data tidak lengkap!");
+window.uploadProduct = async () => {
+    const name = document.getElementById('prod-name').value;
+    const price = document.getElementById('prod-price').value;
+    const desc = document.getElementById('prod-desc').value;
+    const category = document.getElementById('prod-category').value;
+    const file = document.getElementById('prod-image').files[0];
+    const btn = document.getElementById('btn-upload');
 
-            btn.innerText = "Syncing Data..."; btn.disabled = true;
-            try {
-                const fd = new FormData(); fd.append("image", file);
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: fd });
-                const r = await res.json();
-                await addDoc(collection(db, "products"), { 
-                    name, price: parseInt(price), image: r.data.url, 
-                    category: document.getElementById('prod-category').value, 
-                    status: 'ready', createdAt: new Date() 
-                });
-                toggleModal('modal-tambah');
-            } catch (e) { alert("Upload Gagal"); }
-            btn.innerText = "Execute Upload"; btn.disabled = false;
-        };
+    if(!name || !file) return alert("Data tidak lengkap!");
 
-        // Snapshot Produk
-        onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
-            const list = document.getElementById('product-list');
-            document.getElementById('prod-count').innerText = snap.size;
-            list.innerHTML = '';
-            snap.forEach(d => {
-                const p = d.data(), isH = p.status === 'habis';
-                list.innerHTML += `
-                <div class="bento-card col-span-1 group relative overflow-hidden">
-                    <img src="${p.image}" class="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:opacity-30 transition-all duration-700 group-hover:scale-110 ${isH ? 'grayscale' : ''}">
-                    <div class="relative z-10 h-full flex flex-col justify-between min-h-[160px]">
-                        <div class="flex justify-between items-start">
-                            <span class="text-[8px] font-black uppercase tracking-widest px-2 py-1 bg-white/5 border border-white/10 rounded-lg">${p.category}</span>
-                            <button onclick="deleteProduct('${d.id}')" class="text-white/20 hover:text-rose-500"><i class="fas fa-trash"></i></button>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-sm truncate">${p.name}</h4>
-                            <p class="text-xs text-cyan-400 font-bold italic">IDR ${p.price.toLocaleString()}</p>
-                            <button onclick="toggleStock('${d.id}', '${p.status}')" class="mt-4 w-full py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border border-white/5 hover:bg-white hover:text-black transition">
-                                ${isH ? 'Set Ready' : 'Set Out'}
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
-            });
-        });
-
-        window.toggleStock = async (id, cur) => await updateDoc(doc(db, "products", id), { status: cur === 'ready' ? 'habis' : 'ready' });
-        window.deleteProduct = async (id) => confirm('Hapus Item?') && await deleteDoc(doc(db, "products", id));
-
-        // Snapshot Pesanan
-        // Snapshot Pesanan dengan Suara Notifikasi
-onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
-    const list = document.getElementById('order-list'); 
-    
-    // LOGIKA SUARA: Cek apakah ada dokumen yang baru ditambahkan
-    snap.docChanges().forEach((change) => {
-        if (change.type === "added") {
-            // Putar suara (Gunakan link mp3 atau file lokal kamu)
-            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-            audio.play().catch(e => console.log("Menunggu interaksi user untuk suara"));
-        }
-    });
-
-    // RENDER LIST (Tetap seperti kode kamu sebelumnya)
-    list.innerHTML = '';
-    snap.forEach(d => {
-        const o = d.data();
-        list.innerHTML += `
-        <div class="bento-card border-l-4 border-l-cyan-500">
-            <div class="flex justify-between mb-4">
-                <h5 class="font-bold text-white uppercase truncate">${o.customer}</h5>
-                <p class="mono text-[9px] text-zinc-500">${o.wa}</p>
-            </div>
-            <div class="space-y-1 mb-6">
-                ${o.items?.map(i => `<div class="flex justify-between text-[11px] text-zinc-400"><span>${i.name} x${i.qty}</span></div>`).join('')}
-            </div>
-            <div class="flex items-center justify-between pt-4 border-t border-white/5">
-                <span class="text-sm font-black text-cyan-400">${o.total}</span>
-                <button onclick="deleteOrder('${d.id}')" class="bg-white text-black px-4 py-2 rounded-xl text-[9px] font-black">CLEAR</button>
-            </div>
-        </div>`;
-    });
-});
-        window.deleteOrder = async (id) => await deleteDoc(doc(db, "orders", id));
-
-        // Users & Promo (Logic sama dengan kode lama kamu)
-        onSnapshot(collection(db, "users"), (snap) => {
-    const list = document.getElementById('user-list'); 
-    list.innerHTML = '';
-    snap.forEach(d => {
-        const u = d.data();
-        // Password kita kasih efek blur, pas diklik baru kelihatan
-        list.innerHTML += `
-        <tr class="hover:bg-white/5 transition">
-            <td class="p-6 font-bold text-white">${u.name}</td>
-            <td class="p-6 text-zinc-500">${u.wa}</td>
-<td class="p-6">
-    <span class="mono bg-black px-2 py-1 rounded border border-white/10 cursor-pointer hover:border-cyan-500 transition-all select-none" 
-          onclick="this.innerText = this.innerText === '••••••••' ? '${u.password || 'N/A'}' : '••••••••'">
-        ••••••••
-    </span>
-</td>
-            <td class="p-6">${u.age}</td>
-            <td class="p-6"><span class="px-3 py-1 bg-white/5 rounded-full">${u.ref || 'Direct'}</span></td>
-        </tr>`;
-    });
-});
-
-        // Logic Simpan Promo Baru
-
-// Update Fungsi Save
-window.savePromo = async () => {
-    const code = document.getElementById('promo-code').value.toUpperCase().trim();
-    const type = document.getElementById('promo-type').value;
-    const min = parseInt(document.getElementById('promo-min-order').value) || 0;
-    const btn = document.getElementById('btn-save-promo');
-
-    if(!code) return alert("KODE_PROMO_WAJIB_ISI!");
-
-    btn.innerText = "ACTIVATING..."; btn.disabled = true;
-    
-    let rewardText = "";
-    let finalValue = 0;
-
-    if(type === 'diskon_persen') {
-        finalValue = parseInt(document.getElementById('promo-value').value);
-        rewardText = `${finalValue}% OFF`;
-    } else if(type === 'diskon_nominal') {
-        finalValue = parseInt(document.getElementById('promo-value').value);
-        rewardText = `-${finalValue.toLocaleString()}`;
-    } else {
-        // Ambil dari dropdown minuman
-        rewardText = "FREE " + document.getElementById('promo-bonus-item').value;
-        finalValue = 0; 
-    }
-
+    btn.innerText = "Syncing Data..."; btn.disabled = true;
     try {
-        await addDoc(collection(db, "promos"), { 
-            code, type, value: finalValue, reward: rewardText, minOrder: min, createdAt: new Date() 
+        const fd = new FormData(); 
+        fd.append("image", file);
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: fd });
+        const r = await res.json();
+
+        await addDoc(collection(db, "products"), { 
+            name: name,
+            price: parseInt(price), 
+            description: desc,
+            image: r.data.url, 
+            category: category, 
+            status: 'ready', 
+            createdAt: new Date() 
         });
-        toggleModal('modal-promo');
-        // Reset
-        document.getElementById('promo-code').value = "";
-        document.getElementById('promo-value').value = "";
-    } catch (e) { alert("ERROR_SYSTEM_FAILURE"); }
-    btn.innerText = "Activate Signal"; btn.disabled = false;
+
+        toggleModal('modal-tambah');
+        document.getElementById('prod-name').value = "";
+        document.getElementById('prod-price').value = "";
+        document.getElementById('prod-desc').value = "";
+        document.getElementById('prod-image').value = "";
+    } catch (e) { 
+        console.error(e);
+        alert("Upload Gagal"); 
+    }
+    btn.innerText = "Execute Upload"; btn.disabled = false;
 };
-// Render List Promo (Bento Style)
-onSnapshot(query(collection(db, "promos"), orderBy("createdAt", "desc")), (snap) => {
-    const list = document.getElementById('promo-list'); 
+
+window.applyFilter = () => {
+    const filterValue = document.getElementById('filter-category').value;
+    const list = document.getElementById('product-list');
+    const countDisplay = document.getElementById('prod-count');
+    
+    const filtered = filterValue === 'All' ? allProducts : allProducts.filter(item => item.data.category === filterValue);
+    if(countDisplay) countDisplay.innerText = filtered.length;
+
     list.innerHTML = '';
-    snap.forEach(d => {
-        const pr = d.data();
-        // Warna kartu beda berdasarkan tipe
-        const accentColor = pr.type.includes('diskon') ? 'border-emerald-500' : 'border-cyan-500';
-        
+    filtered.forEach(item => {
+        const p = item.data;
+        const id = item.id;
+        const isH = p.status === 'habis';
         list.innerHTML += `
-        <div class="bento-card border-t-2 ${accentColor} flex flex-col justify-between min-h-[140px] group">
-            <div>
+        <div class="bento-card col-span-1 group relative overflow-hidden">
+            <img src="${p.image}" class="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:opacity-30 transition-all duration-700 group-hover:scale-110 ${isH ? 'grayscale' : ''}">
+            <div class="relative z-10 h-full flex flex-col justify-between min-h-[160px]">
                 <div class="flex justify-between items-start">
-                    <p class="text-2xl font-black tracking-tighter">${pr.code}</p>
-                    <span class="text-[8px] mono bg-white/5 px-2 py-1 rounded text-zinc-500 uppercase">${pr.type.replace('_', ' ')}</span>
+                    <span class="text-[8px] font-black uppercase tracking-widest px-2 py-1 bg-white/5 border border-white/10 rounded-lg">${p.category}</span>
+                    <div class="flex gap-3">
+                        <button onclick="openEditModal('${id}', '${p.name}', ${p.price}, '${p.category}', '${p.description || ''}')" class="text-white/20 hover:text-cyan-400"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteProduct('${id}')" class="text-white/20 hover:text-rose-500"><i class="fas fa-trash"></i></button>
+                    </div>
                 </div>
-                <p class="mono text-[9px] text-zinc-500 mt-1 uppercase">Min. Order: Rp ${(pr.minOrder || 0).toLocaleString()}</p>
+                <div>
+                    <h4 class="font-bold text-sm truncate">${p.name}</h4>
+                    <p class="text-xs text-cyan-400 font-bold italic">IDR ${p.price.toLocaleString()}</p>
+                    <button onclick="toggleStock('${id}', '${p.status}')" class="mt-4 w-full py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border border-white/5 hover:bg-white hover:text-black transition">
+                        ${isH ? 'Set Ready' : 'Set Out'}
+                    </button>
+                </div>
             </div>
-            <div class="flex justify-between items-end">
-                <span class="text-emerald-400 font-bold italic text-lg">${pr.reward}</span>
-                <button onclick="deletePromo('${d.id}')" class="text-white/10 group-hover:text-rose-500 transition-colors"><i class="fas fa-trash"></i></button>
+        </div>`;
+    });
+};
+
+onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
+    allProducts = [];
+    snap.forEach(d => { allProducts.push({ id: d.id, data: d.data() }); });
+    applyFilter();
+});
+
+window.toggleStock = async (id, cur) => await updateDoc(doc(db, "products", id), { status: cur === 'ready' ? 'habis' : 'ready' });
+window.deleteProduct = async (id) => confirm('Hapus Item?') && await deleteDoc(doc(db, "products", id));
+
+// --- ORDER OPERATIONS (FITUR SELESAIKAN) ---
+window.tandaiSelesai = async (id) => {
+    if(confirm("Tandai pesanan ini sebagai selesai?")) {
+        try {
+            await updateDoc(doc(db, "orders", id), { status: 'selesai' });
+        } catch (e) { alert("Gagal memperbarui status!"); }
+    }
+};
+window.viewDetail = (id) => {
+    alert("ID Pesanan: " + id + "\nFitur detail sedang dikembangkan.");
+};
+window.deleteOrderPermanen = async (id) => {
+    if(confirm("Hapus permanen history pesanan ini?")) {
+        try {
+            await deleteDoc(doc(db, "orders", id));
+        } catch (e) { alert("Gagal menghapus!"); }
+    }
+};
+
+onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), (snap) => {
+    const list = document.getElementById('order-list');
+    if(!list) return;
+
+    list.innerHTML = '';
+    let ordersArr = [];
+    snap.forEach(docSnap => { ordersArr.push({ id: docSnap.id, ...docSnap.data() }); });
+
+    // Sortir agar yang selesai berada di bawah
+    ordersArr.sort((a, b) => (a.status === 'selesai') - (b.status === 'selesai'));
+
+    ordersArr.forEach(o => {
+        const isSelesai = o.status === 'selesai';
+        
+        // --- PERBAIKAN LOGIKA DISINI ---
+        // Kita cek field 'deliveryMethod' dari database
+        const isAnter = o.deliveryMethod === 'antar'; 
+        
+        const infoPengiriman = isAnter 
+            ? `<div class="p-3 bg-orange-500/10 border border-orange-500/20 rounded-2xl">
+                <p class="text-[9px] text-orange-500 font-black uppercase">Sistem Pengiriman: DIANTAR</p>
+                <p class="text-xs text-white mt-1"><i class="fas fa-map-marker-alt mr-1 text-orange-500"></i> ${o.address || 'Alamat tidak diisi'}</p>
+               </div>`
+            : `<div class="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-2xl">
+                <p class="text-[9px] text-cyan-500 font-black uppercase">Sistem Pengiriman: AMBIL SENDIRI</p>
+                <p class="text-xs text-white mt-1"><i class="fas fa-store mr-1 text-cyan-500"></i> Ambil di Toko</p>
+               </div>`;
+
+        list.innerHTML += `
+        <div class="bento-card border-l-4 ${isSelesai ? 'border-l-zinc-700 opacity-60' : (isAnter ? 'border-l-orange-500' : 'border-l-cyan-500')} mb-6 p-5 bg-zinc-900/80 rounded-3xl border border-white/5 relative">
+            
+            ${isSelesai ? '<div class="absolute top-4 right-4 bg-zinc-800 text-zinc-400 text-[8px] font-black px-3 py-1 rounded-full border border-white/5 uppercase tracking-widest z-20">SELESAI</div>' : ''}
+
+            <div class="mb-4">
+                <p class="text-[9px] text-zinc-500 font-bold uppercase">Nama Pemesan:</p>
+                <h5 class="font-black text-lg text-white uppercase tracking-tight">${o.customerName || 'No Name'}</h5>
+                <a href="https://wa.me/${o.customerWa}" target="_blank" class="text-cyan-400 text-[11px] font-bold hover:underline">
+                    <i class="fab fa-whatsapp mr-1"></i> ${o.customerWa || 'No WA'}
+                </a>
+            </div>
+
+            <div class="space-y-2 py-3 border-y border-white/5 mb-4">
+                <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Pesanan:</p>
+                ${o.items ? o.items.map(i => `
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-white font-medium">${i.name} (x${i.qty})</span>
+                        <span class="text-zinc-400">Rp ${(i.price * i.qty).toLocaleString()}</span>
+                    </div>
+                `).join('') : ''}
+                <div class="flex justify-between pt-2 mt-2 border-t border-white/5">
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase">Total Akhir:</p>
+                    <p class="text-sm font-black text-cyan-400 italic">Rp ${(o.totalBayar || 0).toLocaleString()}</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase mb-1">Sistem Bayar:</p>
+                    <span class="px-2 py-1 bg-white/5 rounded text-[10px] font-bold text-zinc-300 uppercase">${o.paymentMethod || 'COD'}</span>
+                </div>
+            </div>
+
+            ${infoPengiriman}
+
+            ${o.proofImg ? `
+                <div class="mt-4">
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase mb-2">Bukti TF:</p>
+                    <a href="${o.proofImg}" target="_blank">
+                        <img src="${o.proofImg}" class="w-full h-32 object-cover rounded-2xl border border-white/10 hover:opacity-80 transition">
+                    </a>
+                </div>
+            ` : ''}
+
+            <div class="flex items-center justify-end mt-5 pt-4 border-t border-white/5 gap-2">
+                ${isSelesai ? 
+                    `<button onclick="deleteOrderPermanen('${o.id}')" class="text-rose-500 text-[10px] font-bold uppercase px-3 py-2"><i class="fas fa-trash-alt mr-1"></i> Hapus</button>` : 
+                    `<button onclick="tandaiSelesai('${o.id}')" class="bg-emerald-500 text-black px-6 py-3 rounded-2xl text-[10px] font-black hover:scale-105 transition uppercase shadow-lg shadow-emerald-500/20">Selesaikan Pesanan</button>`
+                }
             </div>
         </div>`;
     });
 });
 
-// Helper UI untuk placeholder
-window.updatePromoUI = () => {
-    const type = document.getElementById('promo-type').value;
-    const valueWrapper = document.getElementById('promo-value-wrapper');
-    const bonusWrapper = document.getElementById('promo-bonus-wrapper');
-    const inputVal = document.getElementById('promo-value');
-
-    if (type === 'free_produk') {
-        // Sembunyikan input angka, munculkan dropdown minuman
-        valueWrapper.classList.add('hidden');
-        bonusWrapper.classList.remove('hidden');
-    } else {
-        // Munculkan input angka, sembunyikan dropdown minuman
-        valueWrapper.classList.remove('hidden');
-        bonusWrapper.classList.add('hidden');
-        
-        // Update placeholder biar sesuai (Persen atau Rupiah)
-        inputVal.placeholder = (type === 'diskon_persen') ? "Nilai Persen (%)" : "Nilai Potongan (Rp)";
-    }
-};
-        window.deletePromo = async (id) => await deleteDoc(doc(db, "promos", id));
-
-        // Render daftar user dengan checkbox
+// Fungsi pembantu untuk hitung total di sisi admin
+function calculateTotal(items) {
+    return items.reduce((acc, item) => acc + (item.price * item.qty), 0);
+}
+// --- USER & NOTIFICATION OPERATIONS ---
 onSnapshot(collection(db, "users"), (snap) => {
+    const list = document.getElementById('user-list');
     const targetList = document.getElementById('target-user-list');
-    targetList.innerHTML = '<p class="text-[10px] text-zinc-500 mb-2 uppercase">Pilih User Tertentu:</p>';
+    if(list) list.innerHTML = '';
+    if(targetList) targetList.innerHTML = '<p class="text-[10px] text-zinc-500 mb-2 uppercase">Pilih User Tertentu:</p>';
+
     snap.forEach(d => {
         const u = d.data();
-        targetList.innerHTML += `
-            <label class="flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer">
-                <input type="checkbox" name="user-notif" value="${d.id}" class="accent-orange-500">
-                <span class="text-sm">${u.name}</span>
-            </label>
-        `;
+        if(list) list.innerHTML += `
+            <tr class="hover:bg-white/5 transition">
+                <td class="p-6 font-bold text-white">${u.name}</td>
+                <td class="p-6 text-zinc-500">${u.wa}</td>
+                <td class="p-6"><span class="mono bg-black px-2 py-1 rounded border border-white/10 cursor-pointer" onclick="this.innerText = this.innerText === '••••••••' ? '${u.password || 'N/A'}' : '••••••••'">••••••••</span></td>
+                <td class="p-6">${u.age}</td>
+                <td class="p-6"><span class="px-3 py-1 bg-white/5 rounded-full">${u.ref || 'Direct'}</span></td>
+                <td class="p-6 text-center"><button onclick="deleteUser('${d.id}', '${u.name}')" class="text-zinc-600 hover:text-rose-500"><i class="fas fa-user-minus"></i></button></td>
+            </tr>`;
+        if(targetList) targetList.innerHTML += `<label class="flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer"><input type="checkbox" name="user-notif" value="${d.id}" class="accent-orange-500"><span class="text-sm">${u.name}</span></label>`;
     });
 });
+
+window.deleteUser = async (id, name) => confirm(`Hapus permanen user "${name}"?`) && await deleteDoc(doc(db, "users", id));
 
 window.sendNotif = async (type) => {
     const title = document.getElementById('notif-title').value;
     const body = document.getElementById('notif-body').value;
-    
     if(!title || !body) return alert("Isi pesan dulu!");
-
     let targets = [];
-    
-    // Logika pemilihan target
     if(type === 'selected') {
-        const checkboxes = document.querySelectorAll('input[name="user-notif"]:checked');
-        checkboxes.forEach(cb => targets.push(cb.value));
-        
-        // Jika mode terpilih tapi tidak ada yang dicentang, baru tampilkan alert
-        if(targets.length === 0) return alert("Pilih minimal satu user untuk pengiriman terpilih!");
-    } 
-    // Jika type === 'all', targets akan tetap berupa array kosong [] 
-    // dan Firestore akan memprosesnya sebagai broadcast ke semua.
-
-    try {
-        await addDoc(collection(db, "notifications"), {
-            title: title,
-            body: body,
-            targetType: type, // 'all' atau 'selected'
-            targetUsers: targets,
-            timestamp: new Date()
-        });
-        
-        alert(`Sinyal notifikasi (${type === 'all' ? 'Semua' : 'Terpilih'}) berhasil dikirim!`);
-        
-        // Reset Form
-        document.getElementById('notif-title').value = "";
-        document.getElementById('notif-body').value = "";
-        
-        // Uncheck semua checkbox setelah berhasil
-        document.querySelectorAll('input[name="user-notif"]').forEach(cb => cb.checked = false);
-        
-    } catch (e) { 
-        console.error(e);
-        alert("Gagal mengirim sinyal!"); 
+        document.querySelectorAll('input[name="user-notif"]:checked').forEach(cb => targets.push(cb.value));
+        if(targets.length === 0) return alert("Pilih minimal satu user!");
     }
+    try {
+        await addDoc(collection(db, "notifications"), { title, body, targetType: type, targetUsers: targets, timestamp: new Date() });
+        alert("Sinyal notifikasi berhasil dikirim!");
+        document.getElementById('notif-title').value = ""; document.getElementById('notif-body').value = "";
+    } catch (e) { alert("Gagal mengirim sinyal!"); }
+};
+
+// --- PROMO OPERATIONS ---
+window.toggleScopeUI = () => {
+    const scope = document.getElementById('promo-scope').value;
+    const area = document.getElementById('product-selector-area');
+    const container = document.getElementById('promo-product-checkboxes');
+    if (scope === 'spesifik') {
+        area.classList.remove('hidden');
+        container.innerHTML = allProducts.map(p => `
+            <label class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-xl cursor-pointer transition">
+                <input type="checkbox" name="promo-targets" value="${p.id}" data-name="${p.data.name}" class="w-4 h-4 accent-cyan-500">
+                <div class="flex flex-col"><span class="text-xs font-bold text-white">${p.data.name}</span><span class="text-[9px] text-zinc-500 italic">IDR ${p.data.price.toLocaleString()}</span></div>
+            </label>`).join('');
+    } else area.classList.add('hidden');
+};
+
+window.savePromo = async () => {
+    const code = document.getElementById('promo-code').value.toUpperCase().trim();
+    const scope = document.getElementById('promo-scope').value;
+    const minOrder = parseInt(document.getElementById('promo-min-order').value) || 0;
+    const type = document.getElementById('promo-type').value;
+    const val = parseInt(document.getElementById('promo-value').value) || 0;
+    const btn = document.getElementById('btn-save-promo');
+    if(!code || !val) return alert("Data tidak lengkap!");
+
+    let targetIds = [], targetNames = [];
+    if(scope === 'spesifik') {
+        document.querySelectorAll('input[name="promo-targets"]:checked').forEach(el => {
+            targetIds.push(el.value);
+            targetNames.push(el.getAttribute('data-name'));
+        });
+        if(targetIds.length === 0) return alert("Pilih produknya dulu!");
+    }
+
+    btn.innerText = "DEPLOYING..."; btn.disabled = true;
+    try {
+        await addDoc(collection(db, "promos"), { code, scope, minOrder, type, value: val, targetIds, targetNames, discountTarget: scope === 'spesifik' ? 'item' : 'total', reward: type === 'diskon_persen' ? `${val}% OFF` : `Rp ${val.toLocaleString()} OFF`, createdAt: new Date() });
+        toggleModal('modal-promo');
+        alert("Promo Berhasil!");
+    } catch (e) { alert("Gagal deploy promo."); }
+    btn.innerText = "Deploy Signal"; btn.disabled = false;
+};
+
+onSnapshot(query(collection(db, "promos"), orderBy("createdAt", "desc")), (snap) => {
+    const list = document.getElementById('promo-list'); 
+    if(!list) return;
+    list.innerHTML = '';
+    snap.forEach(d => {
+        const pr = d.data();
+        const isSpesifik = pr.scope === 'spesifik';
+        list.innerHTML += `
+        <div class="bento-card border-t-2 ${isSpesifik ? 'border-cyan-500' : 'border-emerald-500'} flex flex-col justify-between min-h-[160px] relative overflow-hidden group">
+            <div class="absolute -right-8 top-4 rotate-45 bg-${isSpesifik ? 'cyan' : 'emerald'}-500 text-black text-[7px] font-black py-1 w-32 text-center uppercase tracking-tighter shadow-lg">${isSpesifik ? 'Item Discount' : 'Total Discount'}</div>
+            <div>
+                <p class="text-2xl font-black tracking-tighter text-white">${pr.code}</p>
+                <p class="mono text-[8px] text-zinc-500 uppercase">Min. Belanja: Rp ${(pr.minOrder || 0).toLocaleString()}</p>
+                ${isSpesifik ? `<div class="mt-4"><div class="flex flex-wrap gap-1">${pr.targetNames.map(name => `<span class="text-[9px] bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-lg text-cyan-200">${name}</span>`).join('')}</div></div>` : ''}
+            </div>
+            <div class="flex justify-between items-end mt-4">
+                <div><p class="text-[8px] text-zinc-600 uppercase font-bold">Potongan</p><span class="text-white font-black italic text-xl tracking-tighter">${pr.reward}</span></div>
+                <button onclick="deletePromo('${d.id}')" class="w-8 h-8 rounded-lg bg-zinc-800 text-zinc-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center"><i class="fas fa-trash text-[10px]"></i></button>
+            </div>
+        </div>`;
+    });
+});
+
+window.deletePromo = async (id) => confirm('Hapus promo?') && await deleteDoc(doc(db, "promos", id));
+
+// --- EDIT PRODUCT LOGIC ---
+window.openEditModal = (id, name, price, category, desc) => {
+    document.getElementById('edit-prod-id').value = id;
+    document.getElementById('edit-prod-name').value = name;
+    document.getElementById('edit-prod-price').value = price;
+    document.getElementById('edit-prod-category').value = category;
+    document.getElementById('edit-prod-desc').value = desc;
+    toggleModal('modal-edit');
+};
+
+window.updateProduct = async () => {
+    const id = document.getElementById('edit-prod-id').value;
+    const name = document.getElementById('edit-prod-name').value;
+    const price = document.getElementById('edit-prod-price').value;
+    const category = document.getElementById('edit-prod-category').value;
+    const desc = document.getElementById('edit-prod-desc').value;
+    const btn = document.getElementById('btn-update');
+    if(!name || !price) return alert("Nama dan Harga wajib diisi!");
+    btn.innerText = "Updating..."; btn.disabled = true;
+    try {
+        await updateDoc(doc(db, "products", id), { name, price: parseInt(price), category, description: desc });
+        toggleModal('modal-edit');
+        alert("Data diperbarui!");
+    } catch (e) { alert("Gagal memperbarui data"); }
+    btn.innerText = "Save Changes"; btn.disabled = false;
 };
     </script>
 </body>
