@@ -13,63 +13,8 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        .container {
-            text-align: center;
-            padding: 30px;
-            background: #1e1e1e;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-            width: 90%;
-            max-width: 450px;
-        }
-
-        #waifu-display {
-            max-width: 100%;
-            max-height: 60vh;
-            border-radius: 12px;
-            display: none; /* Sembunyi saat loading */
-            margin-bottom: 20px;
-            border: 2px solid #333;
-        }
-
-        .loader {
-            border: 5px solid #333;
-            border-top: 5px solid #ff69b4;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 40px auto;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .btn-refresh {
-            background-color: #ff69b4;
-            color: white;
-            padding: 14px 28px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            border-radius: 10px;
-            transition: 0.3s;
-            width: 100%;
-        }
-
-        .btn-refresh:hover {
-            background-color: #ff1493;
-            transform: translateY(-2px);
-        }
-
-        .btn-refresh:active {
-            transform: translateY(0);
-        }
-
+       @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         
-        button, a { cursor: pointer; }
-    
         body { 
             background: #0f172a; 
             color: white; 
@@ -148,7 +93,6 @@
                 transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
                 box-shadow: 10px 0 30px rgba(0,0,0,0.2);
                 overflow-y: auto;
-                overflow-x: hidden;
             }
             .nav__menu.show-menu { left: 0; }
             .nav__list { display: flex; flex-direction: column; gap: 2rem; }
@@ -340,8 +284,6 @@ body.loading-active {
     0%, 100% { opacity: 0.3; }
     50% { opacity: 1; }
 }
-
-    
 </style>
 </head>
 <body class="light-theme">
