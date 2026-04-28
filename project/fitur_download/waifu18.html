@@ -25,6 +25,8 @@
             cursor: default !important; /* Kursor Asli */
         }
         .container {
+            position: relative; /* Tambahkan ini */
+    z-index: 10;       /* Tambahkan ini */
             text-align: center;
             padding: 30px;
             background: #1e1e1e;
@@ -258,6 +260,12 @@ body.loading-active {
     transition: opacity 1s ease, visibility 1s ease;
 }
 
+                                                    #preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; /* Tambahkan ini agar tidak menghalangi klik */
+}
+
 .luxury-loader {
     position: relative;
     width: 200px;
@@ -449,36 +457,80 @@ body.loading-active {
     </div>
 </footer>
     <script>
-        const imgElement = document.getElementById('waifu-display');
-        const loader = document.getElementById('loader');
+// Gunakan selector yang lebih spesifik
+const waifuImg = document.getElementById('waifu-display');
+const fetchLoader = document.getElementById('loader'); // Loader kecil di dalam box
 
-        async function fetchWaifu() {
-            // Tampilkan loader & sembunyikan gambar sebelumnya
-            loader.style.display = 'block';
-            imgElement.style.display = 'none';
+let isProcessing = false;
 
-            try {
-                // Fetch dari API waifu.pics
-                const response = await fetch(`https://api.waifu.pics/nsfw/waifu`);
-                const data = await response.json();
-                
-                // Set source gambar
-                imgElement.src = data.url;
+const waifuList = [
+    "https://i.ibb.co.com/RkdjfTdv/UIGJAw2.jpg",
+    "https://i.ibb.co.com/Q5zGBzQ/FIzb82G.jpg",
+    "https://i.ibb.co.com/kgRPh7tp/a-Y-q-QE.png",
+    "https://i.ibb.co.com/21hfRMbs/p-Ti47J.jpg",
+    "https://i.ibb.co.com/BVzLWNWw/48KNR5y.jpg",
+    "https://i.ibb.co.com/BFyYt5g/2AHN9y-M.jpg",
+    "https://i.ibb.co.com/G32LyPRT/tt2.png",
+    "https://i.ibb.co.com/dwzC4SVW/tt.jpg",
+    "https://img10.joyreactor.com/pics/post/surfing-orange-Anime-Original-anime-9298976.jpeg",
+    "https://img10.joyreactor.com/pics/post/Anime-Original-anime-fandoms-8969579.jpeg",
+    "https://img10.joyreactor.com/pics/post/pankeiki-Sumireko-Ogawa-Kaii-to-Otome-to-Kamikakushi-9316694.png",
+    "https://img10.joyreactor.com/pics/post/RuHee-Anime-Original-anime-9109849.jpeg",
+    "https://img10.joyreactor.com/pics/post/jason-jmca-Anime-Original-anime-8926676.png",
+    "https://img10.joyreactor.com/pics/post/Anime-Original-anime-fandoms-8972326.jpeg",
+    "https://img10.joyreactor.com/pics/post/sino42-anime-art-anime-style-9057418.png",
+    "https://img10.joyreactor.com/pics/post/abpart-Anime-Artist-artist-9342987.jpeg",
+    "https://img10.joyreactor.com/pics/post/LatteTrouble-Anime-Artist-artist-9070298.png",
+    "https://img10.joyreactor.com/pics/post/Anime-Original-anime-fandoms-8939529.jpeg",
+    "https://img10.joyreactor.com/pics/post/tsunade-Naruto-anime-9126450.jpeg",
+    "https://img10.joyreactor.com/pics/post/sg-(satoumogumogu)-Anime-Artist-artist-9282677.jpeg",
+    "https://img10.joyreactor.com/pics/post/hakua-(hka-art)-artist-reze-(chainsaw-man)-9106697.jpeg",
+    "https://img10.joyreactor.com/pics/post/piutahayo-artist-Akita-Neru-9037487.jpeg",
+    "https://img10.joyreactor.com/pics/post/kamidan-Anime-Artist-artist-9205820.png",
+    "https://i.ibb.co.com/7NRFJN6z/memek.jpg"
+];
 
-                // Munculkan kembali hanya jika gambar sudah benar-benar termuat
-                imgElement.onload = () => {
-                    loader.style.display = 'none';
-                    imgElement.style.display = 'inline-block';
-                };
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Waduh, koneksi bermasalah!');
-                loader.style.display = 'none';
-            }
-        }
+function fetchWaifu() {
+    if (isProcessing) return;
+    isProcessing = true;
 
-        // Panggil fungsi sekali saat halaman dibuka
-        fetchWaifu();
+    fetchLoader.style.display = 'block';
+    waifuImg.style.display = 'none';
+
+    // Ambil random
+    const randomIndex = Math.floor(Math.random() * waifuList.length);
+    const randomImage = waifuList[randomIndex];
+
+    const tempImg = new Image();
+    tempImg.src = randomImage;
+
+    tempImg.onload = () => {
+        waifuImg.src = randomImage;
+        fetchLoader.style.display = 'none';
+        waifuImg.style.display = 'inline-block';
+        isProcessing = false;
+    };
+
+    tempImg.onerror = () => {
+        console.log("Gagal load gambar");
+        fetchLoader.style.display = 'none';
+        isProcessing = false;
+    };
+}
+let lastIndex = -1;
+
+function getRandomIndex() {
+    let index;
+    do {
+        index = Math.floor(Math.random() * waifuList.length);
+    } while (index === lastIndex);
+    lastIndex = index;
+    return index;
+}
+// Jalankan saat DOM siap, tapi pastikan preloader selesai atau hampir selesai
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(fetchWaifu, 1000); 
+});
     // Loading
         document.body.classList.add('loading-active');
     window.addEventListener('load', () => {
