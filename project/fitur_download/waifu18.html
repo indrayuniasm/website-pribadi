@@ -13,9 +13,9 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     
 <style>
-       @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        
-        body { 
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+    body { 
             background: #0f172a; 
             color: white; 
             font-family: 'Plus Jakarta Sans', sans-serif; 
@@ -24,6 +24,62 @@
             flex-direction: column;
             cursor: default !important; /* Kursor Asli */
         }
+        .container {
+            text-align: center;
+            padding: 30px;
+            background: #1e1e1e;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+            width: 90%;
+            max-width: 450px;
+        }
+
+        #waifu-display {
+            max-width: 100%;
+            max-height: 60vh;
+            border-radius: 12px;
+            display: none; /* Sembunyi saat loading */
+            margin-bottom: 20px;
+            border: 2px solid #333;
+        }
+
+        .loader {
+            border: 5px solid #333;
+            border-top: 5px solid #ff69b4;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .btn-refresh {
+            background-color: #ff69b4;
+            color: white;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .btn-refresh:hover {
+            background-color: #ff1493;
+            transform: translateY(-2px);
+        }
+
+        .btn-refresh:active {
+            transform: translateY(0);
+        }
+
+        
+        button, a { cursor: pointer; }
+    
      /* 1. DEFINISI VARIABLE TEMA */
         :root {
             --gold: #D4AF37;
@@ -93,6 +149,7 @@
                 transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
                 box-shadow: 10px 0 30px rgba(0,0,0,0.2);
                 overflow-y: auto;
+                overflow-x: hidden;
             }
             .nav__menu.show-menu { left: 0; }
             .nav__list { display: flex; flex-direction: column; gap: 2rem; }
@@ -289,60 +346,63 @@ body.loading-active {
 <body class="light-theme">
 
     <header class="header">
-        <nav class="nav">
-            <div class="nav__data">
-                <a href="#" class="nav__logo">
-                    <i class="ri-skull-2-line"></i> INDRA
-                </a>
-            </div>
+    <nav class="nav">
+        <div class="nav__data">
+            <a href="#" class="nav__logo">
+                <i class="ri-skull-2-line"></i> INDRA
+            </a>
+        </div>
 
-            <div class="nav__toggle" id="nav-toggle">
-                <i class="ri-menu-4-fill"></i>
-            </div>
+        <div class="nav__toggle" id="nav-toggle">
+            <i class="ri-menu-4-fill"></i>
+        </div>
 
-            <div class="nav__menu" id="nav-menu">
-                <ul class="nav__list">
-                    <li><a href="#" class="nav__link active"><i class="ri-home-line"></i> Home</a></li>
-                    <li class="dropdown__item">
-                        <div class="dropdown__title nav__link">
-                            <span><i class="fas fa-diagram-project"></i> Project</span>
-                            <i class="ri-arrow-down-s-line dropdown__arrow"></i>
-                        </div>
+        <div class="nav__menu" id="nav-menu">
+            <ul class="nav__list">
+                <li><a href="#" class="nav__link active"><i class="ri-home-line"></i> Home</a></li>
+                
+                <li class="dropdown__item">
+                    <div class="dropdown__title nav__link">
+                        <span><i class="fas fa-diagram-project"></i> Project</span>
+                        <i class="ri-arrow-down-s-line dropdown__arrow"></i>
+                    </div>
+                    <ul class="dropdown__menu">
                         <li><a href="alldown.html" class="dropdown__sublink"><i class="ri-download-line"></i> All Download</a></li>
-                            <li><a href="allsearch.html" class="dropdown__sublink"><i class="ri-search-eye-line"></i> All Search</a></li>
-                            <li><a href="tt.html" class="dropdown__sublink"><i class="ri-tiktok-line"></i> Stalking Akun Tiktok</a></li>
-                            <li><a href="github.html" class="dropdown__sublink"><i class="ri-github-line"></i> Stalking Akun Github</a></li>
-                            <li><a href="ff.html" class="dropdown__sublink"><i class="ri-gamepad-line"></i> Stalking Akun FreeFire</a></li>
-                            <li><a href="fakessip.html" class="dropdown__sublink"><i class="ri-screenshot-2-line"></i> Fake Screenshot Iphone</a></li>
-                            <li><a href="fakeml.html" class="dropdown__sublink"><i class="ri-game-line"></i> Fake Loby Mobile Legends</a></li>
-                            <li><a href="fakeff.html" class="dropdown__sublink"><i class="ri-game-line"></i> Fake Loby FreeFire</a></li>
-                            <li><a href="waifu18.html" class="dropdown__sublink"><i class="fas fa-hot-tub-person"></i> Waifu (18+)</a></li>
-                            <li><a href="stikertele.html" class="dropdown__sublink"><i class="ri-download-line"></i> Download Stiker Telegram</a></li>
-                            <li><a href="hdfoto.html" class="dropdown__sublink"><i class="ri-hd-line"></i> Hd Foto</a></li>
-                            <li><a href="hdfoto2.html" class="dropdown__sublink"><i class="ri-hd-line"></i> Super HD</a></li>
-                            <li><a href="gcwa.html" class="dropdown__sublink"><i class="ri-search-eye-line"></i> Search Group Wa</a></li>
-                        </ul>
-                    </li>
+                        <li><a href="allsearch.html" class="dropdown__sublink"><i class="ri-search-eye-line"></i> All Search</a></li>
+                        <li><a href="tt.html" class="dropdown__sublink"><i class="ri-tiktok-line"></i> Stalking Akun Tiktok</a></li>
+                        <li><a href="github.html" class="dropdown__sublink"><i class="ri-github-line"></i> Stalking Akun Github</a></li>
+                        <li><a href="ff.html" class="dropdown__sublink"><i class="ri-gamepad-line"></i> Stalking Akun FreeFire</a></li>
+                        <li><a href="fakessip.html" class="dropdown__sublink"><i class="ri-screenshot-2-line"></i> Fake Screenshot Iphone</a></li>
+                        <li><a href="fakeml.html" class="dropdown__sublink"><i class="ri-game-line"></i> Fake Loby Mobile Legends</a></li>
+                        <li><a href="fakeff.html" class="dropdown__sublink"><i class="ri-game-line"></i> Fake Loby FreeFire</a></li>
+                        <li><a href="waifu18.html" class="dropdown__sublink"><i class="fas fa-hot-tub-person"></i> Waifu (18+)</a></li>
+                        <li><a href="stikertele.html" class="dropdown__sublink"><i class="ri-download-line"></i> Download Stiker Telegram</a></li>
+                        <li><a href="hdfoto.html" class="dropdown__sublink"><i class="ri-hd-line"></i> Hd Foto</a></li>
+                        <li><a href="hdfoto2.html" class="dropdown__sublink"><i class="ri-hd-line"></i> Super HD</a></li>
+                        <li><a href="gcwa.html" class="dropdown__sublink"><i class="ri-search-eye-line"></i> Search Group Wa</a></li>
+                    </ul>
+                </li>
 
-                    <li class="dropdown__item">
-                        <div class="dropdown__title nav__link">
-                            <span><i class="ri-camera-switch-line"></i> Medsos</span>
-                            <i class="ri-arrow-down-s-line dropdown__arrow"></i>
-                        </div>
-                        <ul class="dropdown__menu">     
-                            <li><a href="https://instagram.com/asmarabot" class="dropdown__sublink"><i class="ri-instagram-line"></i> Instagram</a></li>
-                            <li><a href="https://www.tiktok.com/@apaan_oy" class="dropdown__sublink"><i class="ri-tiktok-line"></i> Tiktok</a></li>
-                            <li><a href="https://wa.me/6283849997221" class="dropdown__sublink"><i class="ri-whatsapp-line"></i> WhatsApp</a></li>
-                        </ul>
-                    </li>
+                <li class="dropdown__item">
+                    <div class="dropdown__title nav__link">
+                        <span><i class="ri-camera-switch-line"></i> Medsos</span>
+                        <i class="ri-arrow-down-s-line dropdown__arrow"></i>
+                    </div>
+                    <ul class="dropdown__menu">     
+                        <li><a href="https://instagram.com/asmarabot" class="dropdown__sublink"><i class="ri-instagram-line"></i> Instagram</a></li>
+                        <li><a href="https://www.tiktok.com/@apaan_oy" class="dropdown__sublink"><i class="ri-tiktok-line"></i> Tiktok</a></li>
+                        <li><a href="https://wa.me/6283849997221" class="dropdown__sublink"><i class="ri-whatsapp-line"></i> WhatsApp</a></li>
+                    </ul>
+                </li>
 
-                    <li class="nav__link cursor-pointer" onclick="toggleTheme()">
-                        <i class="ri-moon-line" id="theme-icon"></i> <span>Ganti Tema</span>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+                <li class="nav__link cursor-pointer" onclick="toggleTheme()">
+                    <i class="ri-moon-line" id="theme-icon"></i> <span>Ganti Tema</span>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
     <div class="flex flex-col min-h-screen"> <main class="flex-grow p-4 md:p-10 pt-20 md:pt-32 flex flex-col items-center">
 <div id="preloader">
     <div class="luxury-loader">
@@ -430,7 +490,23 @@ body.loading-active {
         }, 3000); 
     });
 
+    // Mematikan Klik Kanan
+    document.addEventListener('contextmenu', e => e.preventDefault());
 
+    // Mematikan Shortcut Keyboard (F12, Ctrl+U, Ctrl+I, Ctrl+Shift+I, dll)
+    document.onkeydown = function(e) {
+        if (
+            e.keyCode === 123 || // F12
+            (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 65 || e.keyCode === 70)) || // Ctrl+U, S, A, F
+            (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 75 || e.keyCode === 67)) || // Ctrl+Shift+I, J, K, C
+            (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 85)) // Shortcut Mac (Cmd+Opt+I/U)
+        ) {
+            return false;
+        }
+    };
+
+    // Mematikan Drag Gambar/Elemen
+    document.addEventListener('dragstart', e => e.preventDefault());
 
     // 1. Mobile Menu Toggle
         const navToggle = document.getElementById('nav-toggle'),
