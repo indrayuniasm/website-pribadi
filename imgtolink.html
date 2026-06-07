@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Link - Luxury Style</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-200 min-h-screen flex items-center justify-center p-6">
+
+    <div class="glass p-8 rounded-[2rem] shadow-2xl max-w-md w-full text-center">
+        <h1 class="text-3xl font-extrabold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent mb-2">IMG UPLOADER</h1>
+        <p class="text-sm text-slate-400 mb-8">Ubah gambar menjadi link dalam sekejap</p>
+        
+        <div class="space-y-5">
+            <div class="group relative border-2 border-dashed border-slate-700 rounded-2xl p-8 hover:border-indigo-500 transition-all cursor-pointer bg-slate-800/30">
+                <input type="file" id="fileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                <div class="space-y-3">
+                    <div class="mx-auto w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    </div>
+                    <span class="block text-slate-300 font-semibold text-sm" id="fileName">Pilih Gambar</span>
+                </div>
+            </div>
+            
+            <button onclick="uploadImage()" id="btnUpload" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                GENERATE LINK
+            </button>
+        </div>
+
+        <div id="progressContainer" class="w-full bg-slate-800 rounded-full h-1.5 mt-6 hidden">
+            <div id="progressBar" class="bg-indigo-400 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <div id="resultArea" class="mt-8 pt-8 border-t border-slate-800 text-left hidden">
+            <label class="text-[10px] font-bold text-indigo-400 tracking-[0.2em] uppercase block mb-3">Link Gambar Anda</label>
+            <div class="flex gap-2">
+                <input type="text" readonly id="resultLink" class="w-full p-4 bg-slate-900/50 border border-slate-700 rounded-xl text-sm font-medium text-slate-200 outline-none focus:border-indigo-500">
+                <button onclick="copyLink()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 rounded-xl text-xs font-bold transition">SALIN</button>
+            </div>
+            
+            <div class="mt-6">
+                <label class="text-[10px] font-bold text-slate-500 tracking-[0.2em] uppercase block mb-3">Preview</label>
+                <img id="previewImg" src="" class="w-full h-48 object-cover rounded-2xl border border-slate-800 shadow-inner">
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js";
+
+        // Konfigurasi milik Indra
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-GSKbvVTc2e_6sGnL2WSPNU19wUd6BYQ",
+            authDomain: "bukber-9d73f.firebaseapp.com",
+            projectId: "bukber-9d73f",
+            storageBucket: "bukber-9d73f.firebasestorage.app",
+            appId: "1:86991458584:web:6ce66640bcb7fe45ba8e6d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+        // UI Listener
+        const fileInput = document.getElementById('fileInput');
+        fileInput.addEventListener('change', (e) => {
+            const name = e.target.files[0] ? e.target.files[0].name : "Pilih Gambar";
+            document.getElementById('fileName').innerText = name;
+        });
+
+        window.uploadImage = function() {
+            const file = fileInput.files[0];
+            if (!file) return alert("Pilih file dulu!");
+
+            const btn = document.getElementById('btnUpload');
+            const prog = document.getElementById('progressBar');
+            const container = document.getElementById('progressContainer');
+
+            btn.disabled = true;
+            btn.innerText = "SEDANG MEMPROSES...";
+            container.classList.remove('hidden');
+
+            // 1. Buat nama file unik (misal: img_171783.jpg)
+            const extension = file.name.split('.').pop();
+            const newName = `img_${Date.now()}.${extension}`;
+            const storageRef = ref(storage, 'uploads/' + newName);
+
+            // 2. Proses Upload
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on('state_changed', 
+                (snap) => {
+                    const percent = (snap.bytesTransferred / snap.totalBytes) * 100;
+                    prog.style.width = percent + '%';
+                }, 
+                (err) => { alert("Gagal: " + err.message); resetButton(); }, 
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                        // 3. Tampilkan Link Rapi (Custom Domain)
+                        // Ganti 'domainkamu.com' dengan domain asli milikmu nanti
+                        const myDomain = window.location.origin; 
+                        const fakeLink = `${myDomain}/uploads/${newName}`;
+                        
+                        document.getElementById('resultLink').value = fakeLink;
+                        document.getElementById('previewImg').src = url;
+                        document.getElementById('resultArea').classList.remove('hidden');
+                        resetButton();
+                    });
+                }
+            );
+        }
+
+        function resetButton() {
+            const btn = document.getElementById('btnUpload');
+            btn.disabled = false;
+            btn.innerText = "GENERATE LINK";
+            document.getElementById('progressContainer').classList.add('hidden');
+        }
+
+        window.copyLink = function() {
+            const copyText = document.getElementById("resultLink");
+            copyText.select();
+            navigator.clipboard.writeText(copyText.value);
+            alert("Link disalin!");
+        }
+    </script>
+</body>
+</html>
