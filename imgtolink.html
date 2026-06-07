@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image to Link - Luxury Style</title>
+    <title>Image to Link - GitHub Storage</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
@@ -15,7 +15,7 @@
 
     <div class="glass p-8 rounded-[2rem] shadow-2xl max-w-md w-full text-center">
         <h1 class="text-3xl font-extrabold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent mb-2">IMG UPLOADER</h1>
-        <p class="text-sm text-slate-400 mb-8">Ubah gambar menjadi link dalam sekejap</p>
+        <p class="text-sm text-slate-400 mb-8">Simpan gambar langsung ke GitHub & Netlify</p>
         
         <div class="space-y-5">
             <div class="group relative border-2 border-dashed border-slate-700 rounded-2xl p-8 hover:border-indigo-500 transition-all cursor-pointer bg-slate-800/30">
@@ -33,10 +33,6 @@
             </button>
         </div>
 
-        <div id="progressContainer" class="w-full bg-slate-800 rounded-full h-1.5 mt-6 hidden">
-            <div id="progressBar" class="bg-indigo-400 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
-        </div>
-
         <div id="resultArea" class="mt-8 pt-8 border-t border-slate-800 text-left hidden">
             <label class="text-[10px] font-bold text-indigo-400 tracking-[0.2em] uppercase block mb-3">Link Gambar Anda</label>
             <div class="flex gap-2">
@@ -51,89 +47,101 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js";
+    <script>
+        // ISI KONFIGURASI GITHUB KAMU DI SINI
+        const GITHUB_TOKEN = "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"; // Ganti dengan token baru yang aman!
+        const REPO_OWNER = "indrayuniasm"; 
+        const REPO_NAME = "website-pribadi"; 
+        const BRANCH = "main"; 
 
-        // Konfigurasi milik Indra
-        const firebaseConfig = {
-            apiKey: "AIzaSyB-GSKbvVTc2e_6sGnL2WSPNU19wUd6BYQ",
-            authDomain: "bukber-9d73f.firebaseapp.com",
-            projectId: "bukber-9d73f",
-            storageBucket: "bukber-9d73f.firebasestorage.app",
-            appId: "1:86991458584:web:6ce66640bcb7fe45ba8e6d"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const storage = getStorage(app);
-
-        // UI Elements
         const fileInput = document.getElementById('fileInput');
         const btnUpload = document.getElementById('btnUpload');
         const btnCopy = document.getElementById('btnCopy');
         const fileNameText = document.getElementById('fileName');
+        const resultArea = document.getElementById('resultArea');
+        const resultLink = document.getElementById('resultLink');
+        const previewImg = document.getElementById('previewImg');
 
-        // Listener saat file dipilih
+        // Menangani perubahan file (termasuk jika user membatalkan pilihan)
         fileInput.addEventListener('change', (e) => {
-            const name = e.target.files[0] ? e.target.files[0].name : "Pilih Gambar";
-            fileNameText.innerText = name;
+            if (e.target.files && e.target.files[0]) {
+                fileNameText.innerText = e.target.files[0].name;
+            } else {
+                fileNameText.innerText = "Pilih Gambar";
+            }
         });
 
-        // Listener tombol upload menggunakan EventListener (Lebih aman untuk type="module")
-        btnUpload.addEventListener('click', () => {
+        // Fungsi mengubah file gambar menjadi format Base64
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+        });
+
+        btnUpload.addEventListener('click', async () => {
             const file = fileInput.files[0];
             if (!file) return alert("Pilih file dulu!");
 
-            const prog = document.getElementById('progressBar');
-            const container = document.getElementById('progressContainer');
-
             btnUpload.disabled = true;
-            btnUpload.innerText = "SEDANG MEMPROSES...";
-            container.classList.remove('hidden');
+            btnUpload.innerText = "SEDANG MENGUPLOAD KE GITHUB...";
 
-            // Buat nama file unik
+            // Membuat nama file unik
             const extension = file.name.split('.').pop();
-            const newName = `img_${Date.now()}.${extension}`;
-            const storageRef = ref(storage, 'uploads/' + newName);
+            const randomString = Math.random().toString(36).substring(2, 8);
+            const newName = `img-${Date.now()}-${randomString}.${extension}`;
+            const filePath = `gambar/${newName}`; 
 
-            // Proses Upload
-            const uploadTask = uploadBytesResumable(storageRef, file);
+            try {
+                const base64Content = await toBase64(file);
 
-            uploadTask.on('state_changed', 
-                (snap) => {
-                    const percent = (snap.bytesTransferred / snap.totalBytes) * 100;
-                    prog.style.width = percent + '%';
-                }, 
-                (err) => { 
-                    alert("Gagal: " + err.message); 
-                    resetButton(); 
-                }, 
-                () => {
-                    getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                        // Menggunakan URL asli Firebase agar link valid dan bisa dibuka siapa saja
-                        document.getElementById('resultLink').value = url;
-                        document.getElementById('previewImg').src = url;
-                        document.getElementById('resultArea').classList.remove('hidden');
-                        resetButton();
-                    });
+                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Upload otomatis: ${newName}`,
+                        content: base64Content,
+                        branch: BRANCH
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // 1. Mengambil domain Netlify aktif tempat website diakses
+                    const myDomain = window.location.origin;
+                    
+                    // 2. Format link final menggunakan domain Netlify kamu
+                    const netlifyLink = `${myDomain}/${filePath}`; 
+                    resultLink.value = netlifyLink;
+
+                    // 3. Menggunakan GitHub Raw Link khusus untuk preview instan
+                    const githubRawLink = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${filePath}`;
+                    previewImg.src = githubRawLink;
+
+                    // Tampilkan area komponen hasil
+                    resultArea.classList.remove('hidden');
+                } else {
+                    alert("Gagal Upload: " + data.message);
                 }
-            );
+            } catch (err) {
+                alert("Terjadi kesalahan sistem!");
+                console.error(err);
+            } finally {
+                btnUpload.disabled = false;
+                btnUpload.innerText = "GENERATE LINK";
+            }
         });
 
-        function resetButton() {
-            btnUpload.disabled = false;
-            btnUpload.innerText = "GENERATE LINK";
-            document.getElementById('progressContainer').classList.add('hidden');
-        }
-
-        // Listener tombol salin
         btnCopy.addEventListener('click', () => {
-            const copyText = document.getElementById("resultLink");
-            if (!copyText.value) return;
-            
-            copyText.select();
-            navigator.clipboard.writeText(copyText.value);
-            alert("Link disalin!");
+            if (!resultLink.value) return;
+            resultLink.select();
+            navigator.clipboard.writeText(resultLink.value);
+            alert("Link gambar berhasil disalin!");
         });
     </script>
 </body>
