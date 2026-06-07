@@ -28,7 +28,7 @@
                 </div>
             </div>
             
-            <button onclick="uploadImage()" id="btnUpload" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+            <button id="btnUpload" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                 GENERATE LINK
             </button>
         </div>
@@ -41,7 +41,7 @@
             <label class="text-[10px] font-bold text-indigo-400 tracking-[0.2em] uppercase block mb-3">Link Gambar Anda</label>
             <div class="flex gap-2">
                 <input type="text" readonly id="resultLink" class="w-full p-4 bg-slate-900/50 border border-slate-700 rounded-xl text-sm font-medium text-slate-200 outline-none focus:border-indigo-500">
-                <button onclick="copyLink()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 rounded-xl text-xs font-bold transition">SALIN</button>
+                <button id="btnCopy" class="bg-slate-700 hover:bg-slate-600 text-white px-5 rounded-xl text-xs font-bold transition">SALIN</button>
             </div>
             
             <div class="mt-6">
@@ -67,31 +67,36 @@
         const app = initializeApp(firebaseConfig);
         const storage = getStorage(app);
 
-        // UI Listener
+        // UI Elements
         const fileInput = document.getElementById('fileInput');
+        const btnUpload = document.getElementById('btnUpload');
+        const btnCopy = document.getElementById('btnCopy');
+        const fileNameText = document.getElementById('fileName');
+
+        // Listener saat file dipilih
         fileInput.addEventListener('change', (e) => {
             const name = e.target.files[0] ? e.target.files[0].name : "Pilih Gambar";
-            document.getElementById('fileName').innerText = name;
+            fileNameText.innerText = name;
         });
 
-        window.uploadImage = function() {
+        // Listener tombol upload menggunakan EventListener (Lebih aman untuk type="module")
+        btnUpload.addEventListener('click', () => {
             const file = fileInput.files[0];
             if (!file) return alert("Pilih file dulu!");
 
-            const btn = document.getElementById('btnUpload');
             const prog = document.getElementById('progressBar');
             const container = document.getElementById('progressContainer');
 
-            btn.disabled = true;
-            btn.innerText = "SEDANG MEMPROSES...";
+            btnUpload.disabled = true;
+            btnUpload.innerText = "SEDANG MEMPROSES...";
             container.classList.remove('hidden');
 
-            // 1. Buat nama file unik (misal: img_171783.jpg)
+            // Buat nama file unik
             const extension = file.name.split('.').pop();
             const newName = `img_${Date.now()}.${extension}`;
             const storageRef = ref(storage, 'uploads/' + newName);
 
-            // 2. Proses Upload
+            // Proses Upload
             const uploadTask = uploadBytesResumable(storageRef, file);
 
             uploadTask.on('state_changed', 
@@ -99,36 +104,37 @@
                     const percent = (snap.bytesTransferred / snap.totalBytes) * 100;
                     prog.style.width = percent + '%';
                 }, 
-                (err) => { alert("Gagal: " + err.message); resetButton(); }, 
+                (err) => { 
+                    alert("Gagal: " + err.message); 
+                    resetButton(); 
+                }, 
                 () => {
                     getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                        // 3. Tampilkan Link Rapi (Custom Domain)
-                        // Ganti 'domainkamu.com' dengan domain asli milikmu nanti
-                        const myDomain = window.location.origin; 
-                        const fakeLink = `${myDomain}/uploads/${newName}`;
-                        
-                        document.getElementById('resultLink').value = fakeLink;
+                        // Menggunakan URL asli Firebase agar link valid dan bisa dibuka siapa saja
+                        document.getElementById('resultLink').value = url;
                         document.getElementById('previewImg').src = url;
                         document.getElementById('resultArea').classList.remove('hidden');
                         resetButton();
                     });
                 }
             );
-        }
+        });
 
         function resetButton() {
-            const btn = document.getElementById('btnUpload');
-            btn.disabled = false;
-            btn.innerText = "GENERATE LINK";
+            btnUpload.disabled = false;
+            btnUpload.innerText = "GENERATE LINK";
             document.getElementById('progressContainer').classList.add('hidden');
         }
 
-        window.copyLink = function() {
+        // Listener tombol salin
+        btnCopy.addEventListener('click', () => {
             const copyText = document.getElementById("resultLink");
+            if (!copyText.value) return;
+            
             copyText.select();
             navigator.clipboard.writeText(copyText.value);
             alert("Link disalin!");
-        }
+        });
     </script>
 </body>
 </html>
