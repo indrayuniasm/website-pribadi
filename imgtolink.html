@@ -86,7 +86,6 @@
             btnUpload.disabled = true;
             btnUpload.innerText = "SEDANG MENGUPLOAD KE GITHUB...";
 
-            // Membuat nama file unik
             const extension = file.name.split('.').pop();
             const randomString = Math.random().toString(36).substring(2, 8);
             const newName = `img-${Date.now()}-${randomString}.${extension}`;
