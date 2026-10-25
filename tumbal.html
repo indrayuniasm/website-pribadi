@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIO Downloader — Unduh Langsung Tanpa Pindah Halaman</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35);
+        }
+        .download-btn {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .download-btn:hover {
+            transform: scale(1.03);
+        }
+        .download-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .source-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .source-spotify { background: #1DB954; color: #000; }
+        .source-tiktok { background: #000; color: #fff; }
+        .source-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; }
+        .source-pinterest { background: #E60023; color: #fff; }
+        .source-threads { background: #000; color: #fff; }
+        .source-facebook { background: #1877F2; color: #fff; }
+        .source-youtube { background: #FF0000; color: #fff; }
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .info-note {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+    </style>
+</head>
+<body class="text-white">
+    <div class="container mx-auto px-4 py-10 max-w-3xl">
+        <div class="text-center mb-10">
+            <h1 class="text-[clamp(1.8rem,5vw,3rem)] font-bold mb-3">
+                <i class="fa fa-download mr-2"></i>AIO Downloader
+            </h1>
+            <p class="text-lg text-gray-200">Spotify • TikTok • Instagram • Pinterest • Threads • Facebook • YouTube — unduh langsung, halaman TIDAK pindah!</p>
+        </div>
+
+        <div class="glass rounded-2xl p-6 mb-8 shadow-xl">
+            <form id="downloadForm" class="space-y-4">
+                <div>
+                    <label for="urlInput" class="block text-sm font-medium mb-2">Tautan</label>
+                    <input 
+                        type="url" 
+                        id="urlInput" 
+                        placeholder="Tempel link di sini..." 
+                        required
+                        class="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-white placeholder-gray-300"
+                    >
+                </div>
+                <button 
+                    type="submit" 
+                    id="submitBtn"
+                    class="w-full btn-primary py-3 rounded-lg font-semibold text-lg"
+                >
+                    <span id="btnText">Ambil Data</span>
+                    <span id="btnLoading" class="hidden">
+                        <i class="fa fa-circle-o-notch fa-spin mr-2"></i>Memproses...
+                    </span>
+                </button>
+            </form>
+        </div>
+
+        <div id="errorBox" class="hidden glass rounded-xl p-4 mb-6 bg-red-500/20 border border-red-400/30">
+            <p id="errorText" class="text-red-200"></p>
+        </div>
+
+        <div id="resultSection" class="hidden space-y-6">
+            <div class="glass rounded-2xl p-6 shadow-xl">
+                <div class="flex flex-col sm:flex-row gap-5 items-center sm:items-start">
+                    <img 
+                        id="thumbnail" 
+                        src="" 
+                        alt="Cover"
+                        class="w-32 h-32 object-cover rounded-xl shadow-lg bg-black/20"
+                    >
+                    <div class="flex-1 text-center sm:text-left space-y-2">
+                        <span id="sourceBadge" class="source-badge mb-1"></span>
+                        <h2 id="title" class="text-xl font-bold leading-tight"></h2>
+                        <p id="author" class="text-gray-300"></p>
+                        <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-sm text-gray-400">
+                            <span id="duration"><i class="fa fa-clock-o mr-1"></i> —</span>
+                            <span id="stats"><i class="fa fa-bar-chart mr-1"></i> —</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass rounded-2xl p-6 shadow-xl">
+                <h3 class="text-lg font-bold mb-4">🔗 Tautan Unduhan</h3>
+                <div id="downloadList" class="grid gap-3"></div>
+                <p class="text-xs text-center mt-4 text-gray-400">
+                    ✅ Unduh langsung — halaman TIDAK akan pindah! <br>
+                    <span class="text-blue-300">Tanpa watermark: bisa langsung tersimpan • Dengan watermark: diproses lokal</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="text-center mt-10 text-sm text-gray-300">
+            <p>Powered by <a href="https://nexray.eu.cc" target="_blank" class="text-white underline">@nexray - ElrayyXml</a></p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('downloadForm');
+        const urlInput = document.getElementById('urlInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnLoading = document.getElementById('btnLoading');
+        const errorBox = document.getElementById('errorBox');
+        const errorText = document.getElementById('errorText');
+        const resultSection = document.getElementById('resultSection');
+        const downloadList = document.getElementById('downloadList');
+        let baseFileName = '';
+
+        function sanitizeName(str) {
+            return (str || 'downloaded-file').replace(/[<>:"/\\|?*]/g, '-').substring(0, 80);
+        }
+
+        function formatDuration(dur) {
+            if (!dur && dur !== 0) return '—';
+            if (typeof dur === 'number') {
+                const sec = Math.round(dur);
+                const h = Math.floor(sec / 3600);
+                const m = Math.floor((sec % 3600) / 60);
+                const s = sec % 60;
+                if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                return `${m}:${s.toString().padStart(2, '0')}`;
+            }
+            return dur;
+        }
+
+        function formatNumber(num) {
+            if (!num && num !== 0) return '—';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num;
+        }
+
+        // ==============================================
+        // FUNGSI UNDUH — VERSI TANGGUH
+        // ==============================================
+        async function triggerDirectDownload(url, name, ext, btnEl) {
+            if (!url) return;
+
+            const originalHTML = btnEl.innerHTML;
+            btnEl.disabled = true;
+            btnEl.innerHTML = `<i class="fa fa-circle-o-notch fa-spin mr-2"></i>Menyiapkan...`;
+
+            // ✅ METODE UTAMA: Pakai tag <a download> — PALING KUAT & TIDAK PINDAH HALAMAN
+            // Ini yang bekerja untuk tautan tanpa watermark juga
+            try {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${name}.${ext}`;
+                a.target = '_self'; // Buka di halaman ini = unduh langsung
+                a.rel = 'noopener noreferrer';
+                // Mencegah navigasi keluar halaman
+                a.addEventListener('click', (e) => {
+                    // Untuk tautan lintas domain, browser akan mengabaikan nama file
+                    // tapi unduh tetap berjalan di halaman yang sama
+                    setTimeout(() => {
+                        window.history.pushState({}, document.title, window.location.href);
+                    }, 50);
+                });
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+            } catch (err) {
+                console.warn('Metode utama gagal:', err);
+                
+                // ✅ METODE CADANGAN: Blob jika memungkinkan
+                try {
+                    const response = await fetch(url, {
+                        mode: 'cors',
+                        credentials: 'omit'
+                    });
+                    
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const blobUrl = window.URL.createObjectURL(blob);
+                        
+                        const a = document.createElement('a');
+                        a.href = blobUrl;
+                        a.download = `${name}.${ext}`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        
+                        setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+                    } else {
+                        throw new Error('Tidak dapat diambil');
+                    }
+                } catch (blobErr) {
+                    // ✅ METODE TERAKHIR: Buka di tab baru tapi segera kembali
+                    const tempWindow = window.open(url, '_blank', 'width=1,height=1,left=-10000,top=-10000');
+                    setTimeout(() => {
+                        if (tempWindow) tempWindow.close();
+                    }, 300);
+                }
+            }
+
+            // Kembalikan tombol
+            setTimeout(() => {
+                btnEl.disabled = false;
+                btnEl.innerHTML = originalHTML;
+            }, 1200);
+        }
+
+        function showError(msg) {
+            errorBox.classList.remove('hidden');
+            errorText.textContent = msg;
+            resultSection.classList.add('hidden');
+        }
+
+        function hideError() {
+            errorBox.classList.add('hidden');
+        }
+
+        function setSourceBadge(source) {
+            const badge = document.getElementById('sourceBadge');
+            const src = (source || 'unknown').toLowerCase();
+            badge.className = 'source-badge mb-1';
+
+            switch(src) {
+                case 'spotify':
+                    badge.classList.add('source-spotify');
+                    badge.innerHTML = `<i class="fa fa-spotify"></i> Spotify`;
+                    break;
+                case 'tiktok':
+                    badge.classList.add('source-tiktok');
+                    badge.innerHTML = `<i class="fa fa-music"></i> TikTok`;
+                    break;
+                case 'instagram':
+                    badge.classList.add('source-instagram');
+                    badge.innerHTML = `<i class="fa fa-instagram"></i> Instagram`;
+                    break;
+                case 'pinterest':
+                    badge.classList.add('source-pinterest');
+                    badge.innerHTML = `<i class="fa fa-pinterest-p"></i> Pinterest`;
+                    break;
+                case 'threads':
+                    badge.classList.add('source-threads');
+                    badge.innerHTML = `<i class="fa fa-threads"></i> Threads`;
+                    break;
+                case 'facebook':
+                    badge.classList.add('source-facebook');
+                    badge.innerHTML = `<i class="fa fa-facebook"></i> Facebook`;
+                    break;
+                case 'youtube':
+                    badge.classList.add('source-youtube');
+                    badge.innerHTML = `<i class="fa fa-youtube-play"></i> YouTube`;
+                    break;
+                default:
+                    badge.style.background = '#6b7280';
+                    badge.style.color = '#fff';
+                    badge.innerHTML = `<i class="fa fa-link"></i> ${source || 'Lainnya'}`;
+            }
+        }
+
+        function renderDownloadButtons(medias) {
+            downloadList.innerHTML = '';
+
+            if (!Array.isArray(medias) || medias.length === 0) {
+                downloadList.innerHTML = `<p class="text-yellow-400 text-center">Tautan unduhan tidak tersedia</p>`;
+                return;
+            }
+
+            medias.forEach((media, idx) => {
+                const btn = document.createElement('button');
+                const isNoWatermark = !!(media.quality?.toLowerCase().includes('no watermark') || 
+                                         media.quality?.toLowerCase().includes('tanpa watermark') ||
+                                         media.label?.toLowerCase().includes('no watermark') ||
+                                         media.label?.toLowerCase().includes('tanpa watermark'));
+                
+                btn.className = `download-btn py-3 px-4 rounded-lg text-center font-medium flex items-center justify-center gap-2 ${
+                    media.type === 'audio' ? 'bg-green-600/80 hover:bg-green-500' :
+                    media.type === 'image' ? 'bg-pink-600/80 hover:bg-pink-500' :
+                    isNoWatermark ? 'bg-purple-600/80 hover:bg-purple-500 ring-2 ring-purple-300' :
+                    'bg-blue-600/80 hover:bg-blue-500'
+                }`;
+
+                const icon = media.type === 'audio' ? 'music' : media.type === 'image' ? 'picture-o' : 'video-camera';
+                const label = media.quality || media.label || media.type.toUpperCase();
+                const res = media.resolution ? ` — ${media.resolution}` : '';
+                const ext = media.extension || media.ext || 'mp4';
+                const mark = isNoWatermark ? ' ⭐' : '';
+
+                btn.innerHTML = `
+                    <i class="fa fa-${icon}"></i>
+                    ${label}${res}${mark}
+                    <span class="text-xs opacity-70 ml-2">${ext.toUpperCase()}</span>
+                `;
+
+                btn.addEventListener('click', () => {
+                    const fileName = `${baseFileName}-${(media.quality || media.label || idx).replace(/[^a-zA-Z0-9]/g, '-')}`;
+                    triggerDirectDownload(media.url, fileName, ext, btn);
+                });
+
+                downloadList.appendChild(btn);
+            });
+        }
+
+        function displayResult(data) {
+            resultSection.classList.remove('hidden');
+            baseFileName = sanitizeName(`${data.author || 'Unknown'} - ${data.title || 'File'}`);
+
+            document.getElementById('title').textContent = data.title || 'Tanpa Judul';
+            document.getElementById('author').textContent = data.author || 'Tidak Diketahui';
+            document.getElementById('thumbnail').src = data.thumbnail || '';
+            document.getElementById('duration').innerHTML = `<i class="fa fa-clock-o mr-1"></i> ${formatDuration(data.duration)}`;
+
+            let statsText = '';
+            if (data.source === 'tiktok' && data.statistics) {
+                statsText = `${formatNumber(data.statistics.play_count)} Ditonton • ${formatNumber(data.statistics.digg_count)} Disukai`;
+            } else if (data.source === 'instagram') {
+                statsText = `${formatNumber(data.like_count)} Disukai`;
+            } else if (data.source === 'spotify') {
+                statsText = 'Lagu Musik';
+            } else if (data.source === 'pinterest') {
+                statsText = 'Gambar Pinterest';
+            } else if (data.source === 'threads') {
+                statsText = 'Postingan Threads';
+            } else if (data.source === 'facebook') {
+                statsText = 'Postingan Facebook';
+            } else if (data.source === 'youtube') {
+                statsText = 'Video YouTube';
+            }
+            document.getElementById('stats').innerHTML = `<i class="fa fa-bar-chart mr-1"></i> ${statsText || '—'}`;
+
+            setSourceBadge(data.source);
+            renderDownloadButtons(data.medias);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError();
+
+            const url = urlInput.value.trim();
+            if (!url) {
+                showError('Silakan masukkan tautan!');
+                return;
+            }
+
+            btnText.classList.add('hidden');
+            btnLoading.classList.remove('hidden');
+            submitBtn.disabled = true;
+
+            try {
+                const apiUrl = `https://api.nexray.eu.cc/downloader/aio?url=${encodeURIComponent(url)}`;
+                const response = await fetch(apiUrl);
+                const result = await response.json();
+
+                if (!result.status) {
+                    showError(result.error || 'Gagal mengambil data. Pastikan tautan benar!');
+                    return;
+                }
+                displayResult(result.result);
+
+            } catch (err) {
+                showError('Terjadi kesalahan saat menghubungi server. Coba lagi nanti.');
+                console.error(err);
+            } finally {
+                btnText.classList.remove('hidden');
+                btnLoading.classList.add('hidden');
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
